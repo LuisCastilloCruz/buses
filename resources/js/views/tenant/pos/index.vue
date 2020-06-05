@@ -160,6 +160,7 @@
               <el-select
                 ref="select_person"
                 v-model="form.customer_id"
+                value-key="customer_default"
                 filterable
                 placeholder="Cliente"
                 @change="changeCustomer"
@@ -205,6 +206,7 @@
                         :readonly="item.item.calculate_quantity"
                         class
                         @input="clickAddItem(item,index,true)"
+                        v-focus
                       ></el-input>
                       <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                     </td>
@@ -476,7 +478,8 @@
             user: {},
             form: {},
             categories: [ ],
-            colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3']
+            colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3'],
+            customer_default:'99999999'
           };
         },
         async created() {
@@ -529,7 +532,15 @@
                 }
             }
         },
-
+        directives: {
+            focus: {
+                inserted: function(el){
+                    //console.log(el.childNodes);
+                    //el.childNodes[1].focus();
+                    el.childNodes[1].select();
+                }
+            }
+        },
         methods: {
             filterCategorie(id,  mod = false)
             {
@@ -1070,6 +1081,7 @@
               this.renderCategories(response.data.categories)
               // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
               // this.changeCurrencyType();
+              this.form.customer_id = 1;
               this.filterItems();
               this.changeDateOfIssue();
               this.changeExchangeRate()
@@ -1168,11 +1180,18 @@
           },
           filterItems() {
             this.items = this.all_items;
+            console.log(items);
           },
           reloadDataCustomers(customer_id) {
             this.$http.get(`/${this.resource}/table/customers`).then(response => {
               this.all_customers = response.data;
-              this.form.customer_id = customer_id;
+               console.log(all_customers);
+              if(customer_id) {
+                  this.form.customer_id = customer_id;
+              }else{
+                  this.customer_default = '99999999';
+                  this.form.customer_id = '99999999';
+              }
               this.changeCustomer();
             });
           },
