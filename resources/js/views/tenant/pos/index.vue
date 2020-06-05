@@ -1180,12 +1180,10 @@
           },
           filterItems() {
             this.items = this.all_items;
-            console.log(items);
           },
           reloadDataCustomers(customer_id) {
             this.$http.get(`/${this.resource}/table/customers`).then(response => {
               this.all_customers = response.data;
-               console.log(all_customers);
               if(customer_id) {
                   this.form.customer_id = customer_id;
               }else{
