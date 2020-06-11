@@ -479,7 +479,8 @@
             form: {},
             categories: [ ],
             colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3'],
-            customer_default:'99999999'
+            customer_default:'99999999',
+            thumbnail:''
           };
         },
         async created() {
@@ -776,7 +777,7 @@
               number: "#",
               date_of_issue: moment().format("YYYY-MM-DD"),
               time_of_issue: moment().format("HH:mm:ss"),
-              customer_id: null,
+              customer_id: 1,
               currency_type_id: "PEN",
               purchase_order: null,
               exchange_rate_sale: 1,
@@ -1081,6 +1082,7 @@
               this.renderCategories(response.data.categories)
               // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
               // this.changeCurrencyType();
+              //this.customer_default = 1;
               this.form.customer_id = 1;
               this.filterItems();
               this.changeDateOfIssue();
@@ -1179,7 +1181,16 @@
             this.input_item = null;
           },
           filterItems() {
-            this.items = this.all_items;
+            console.log("filter items 22");
+            this.items = this.all_items;//'img-thumbail', 'img-custom';
+
+            //  if(!this.customer_id) {
+            //   let customer = _.find(this.all_customers, { id: 1});
+            //   this.customer = customer;
+            //   this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
+            //   this.setLocalStorageIndex('customer', this.customer)
+            //   this.setFormPosLocalStorage()
+            //  }
           },
           reloadDataCustomers(customer_id) {
             this.$http.get(`/${this.resource}/table/customers`).then(response => {
@@ -1187,6 +1198,8 @@
               if(customer_id) {
                   this.form.customer_id = customer_id;
               }else{
+
+                console.log("else 999");
                   this.customer_default = '99999999';
                   this.form.customer_id = '99999999';
               }
