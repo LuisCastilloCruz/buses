@@ -1,18 +1,20 @@
 #!/bin/bash
 
-PROYECT=${1:-'https://gitlab.com/eriquegasparcarlos/multifacturalonew.git'}
+PROYECT=${1:-'https://github.com/jefelon/facturador-mayo.git'}
 HOST=${2:-'test'}
-PATH_INSTALL=${3:-$(pwd)}
-SERVICE_NUMBER=${4:-'1'}
+SERVICE_NUMBER=${3:-'1'}
+EMAIL=${4:-'demo@aqfact.pe'}
 
-DIR=$(echo $PROYECT | rev | cut -d'/' -f1 | rev | cut -d '.' -f1)
+PATH_INSTALL=$(echo $HOME)
+DIR=$(echo $PROYECT | rev | cut -d'/' -f1 | rev | cut -d '.' -f1)$SERVICE_NUMBER
 
-MYSQL_USER=${5:-$DIR}
-MYSQL_PASSWORD=${6:-$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20 ; echo '')}
-MYSQL_DATABASE=${7:-$DIR}
-MYSQL_ROOT_PASSWORD=${8:-$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20 ; echo '')}
-MYSQL_PORT_HOST=${9:-'3306'}
+MYSQL_PORT_HOST=${5:-'3306'}
+MYSQL_USER=${6:-$DIR}
+MYSQL_PASSWORD=${7:-$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20 ; echo '')}
+MYSQL_DATABASE=${8:-$DIR}
+MYSQL_ROOT_PASSWORD=${9:-$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20 ; echo '')}
 
+if [ $SERVICE_NUMBER = '1' ]; then
 echo "Updating system"
 apt-get -y update
 apt-get -y upgrade
@@ -33,9 +35,9 @@ echo "Installing docker compose"
 curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-echo "Cloning the repository"
-rm -rf "$PATH_INSTALL/$DIR"
-git clone "$PROYECT" "$PATH_INSTALL/$DIR"
+echo "Installing letsencrypt"
+apt-get -y install letsencrypt
+mkdir $HOME/certs/
 
 echo "Configuring proxy"
 docker network create proxynet
@@ -50,6 +52,7 @@ services:
             - "80:80"
             - "443:443"
         volumes:
+            - ./../certs:/etc/nginx/certs
             - /var/run/docker.sock:/tmp/docker.sock:ro
         restart: always
         privileged: true
@@ -59,11 +62,20 @@ networks:
             name: proxynet
 
 EOF
+
 cd $HOME/proxy
 docker-compose up -d
 
-echo "Configuring $DIR"
 mkdir $HOME/proxy/fpms
+fi
+
+echo "Configuring $DIR"
+
+if ! [ -d $HOME/proxy/fpms/$DIR ]; then
+echo "Cloning the repository"
+rm -rf "$PATH_INSTALL/$DIR"
+git clone "$PROYECT" "$PATH_INSTALL/$DIR"
+
 mkdir $HOME/proxy/fpms/$DIR
 
 cat << EOF > $HOME/proxy/fpms/$DIR/default
@@ -174,9 +186,35 @@ sed -i "/DB_PASSWORD=/c\DB_PASSWORD=$MYSQL_ROOT_PASSWORD" .env
 sed -i "/DB_HOST=/c\DB_HOST=mariadb$SERVICE_NUMBER" .env
 sed -i "/DB_USERNAME=/c\DB_USERNAME=root" .env
 sed -i "/APP_URL_BASE=/c\APP_URL_BASE=$HOST" .env
+sed -i '/APP_URL=/c\APP_URL=https://${APP_URL_BASE}' .env
+sed -i '/FORCE_HTTPS=/c\FORCE_HTTPS=true' .env
 sed -i '/APP_DEBUG=/c\APP_DEBUG=false' .env
 
-echo "Configuring"
+echo "Configuring certbot"
+certbot certonly --manual --preferred-challenges=dns --email $EMAIL --server https://acme-v02.api.letsencrypt.org/directory --agree-tos -d "$HOST" -d *."$HOST"
+
+if ! [ -f /etc/letsencrypt/live/$HOST/privkey.pem ]; then
+rm -rf "$HOME/proxy/fpms/$DIR"
+rm -rf "$PATH_INSTALL/$DIR"
+
+if [ $SERVICE_NUMBER = '1' ]; then
+cd $HOME/proxy
+
+docker-compose down
+
+cd $HOME
+rm -rf "$HOME/proxy"
+fi
+
+echo "The ssl certificate could not be generated"
+
+exit 1
+fi
+
+cp /etc/letsencrypt/live/$HOST/privkey.pem $HOME/certs/$HOST.key
+cp /etc/letsencrypt/live/$HOST/cert.pem $HOME/certs/$HOST.crt
+
+echo "Configuring protect"
 docker-compose up -d
 docker-compose exec -T fpm$SERVICE_NUMBER composer install
 docker-compose exec -T fpm$SERVICE_NUMBER php artisan migrate:refresh --seed
@@ -184,3 +222,7 @@ docker-compose exec -T fpm$SERVICE_NUMBER php artisan key:generate
 docker-compose exec -T fpm$SERVICE_NUMBER php artisan storage:link
 
 chmod -Rv 777 "$PATH_INSTALL/$DIR/storage/" "$PATH_INSTALL/$DIR/bootstrap/" "$PATH_INSTALL/$DIR/vendor/"
+else
+echo "The $HOME/proxy/fpms/$DIR directory already exists"
+fi
+
