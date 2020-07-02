@@ -205,6 +205,7 @@
                         :readonly="item.item.calculate_quantity"
                         class
                         @input="clickAddItem(item,index,true)"
+                        v-focus
                       ></el-input>
                       <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                     </td>
@@ -529,7 +530,15 @@
                 }
             }
         },
-
+        directives: {
+            focus: {
+                inserted: function(el){
+                    //console.log(el.childNodes);
+                    //el.childNodes[1].focus();
+                    el.childNodes[1].select();
+                }
+            }
+        },
         methods: {
             filterCategorie(id,  mod = false)
             {
@@ -765,7 +774,7 @@
               number: "#",
               date_of_issue: moment().format("YYYY-MM-DD"),
               time_of_issue: moment().format("HH:mm:ss"),
-              customer_id: null,
+              customer_id: 1,
               currency_type_id: "PEN",
               purchase_order: null,
               exchange_rate_sale: 1,
@@ -802,8 +811,7 @@
 
             this.initFormItem();
             this.changeDateOfIssue();
-            this.initInputPerson()
-
+            this.initInputPerson();
           },
           initInputPerson(){
               this.input_person = {
@@ -1072,7 +1080,9 @@
               // this.changeCurrencyType();
               this.filterItems();
               this.changeDateOfIssue();
-              this.changeExchangeRate()
+              this.changeExchangeRate();
+              this.reloadDataCustomers(this.form.customer_id);
+              this.setFormPosLocalStorage();
             });
           },
           renderCategories(source)
@@ -1171,9 +1181,9 @@
           },
           reloadDataCustomers(customer_id) {
             this.$http.get(`/${this.resource}/table/customers`).then(response => {
-              this.all_customers = response.data;
-              this.form.customer_id = customer_id;
-              this.changeCustomer();
+            this.all_customers = response.data;
+            this.form.customer_id = customer_id;
+            this.changeCustomer();
             });
           },
           reloadDataItems(item_id) {
