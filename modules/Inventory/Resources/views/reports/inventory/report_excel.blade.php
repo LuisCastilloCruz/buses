@@ -48,25 +48,41 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Cod. Interno</th>
                                 <th>Descripción</th>
                                 <th>Inventario actual</th>
                                 <th>Costo</th>
+                                <th>Costo Total</th>
                                 <th>Precio de venta</th>
                                 <th>Almacén</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $total = 0;
+                            @endphp
                             @foreach($records as $key => $value)
-                            <tr>
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{$value->item->description ?? ''}}</td>
-                                <td>{{$value->stock}}</td>
-                                <td>{{$value->item->sale_unit_price}}</td>
-                                <td>{{$value->item->purchase_unit_price}}</td>
-                                <td>{{$value->warehouse->description}}</td>
-
-                            </tr>
+                                @php
+                                    $total_line = $value->stock * $value->item->sale_unit_price;
+                                    $total = $total + $total_line;
+                                @endphp
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>{{$value->item->internal_id ?? ''}}</td>
+                                    <td>{{$value->item->description ?? ''}}</td>
+                                    <td>{{$value->stock}}</td>
+                                    <td>{{$value->item->purchase_unit_price}}</td>
+                                    <td>{{number_format($total_line, 6)}}</td>
+                                    <td>{{$value->item->sale_unit_price}}</td>
+                                    <td>{{$value->warehouse->description}}</td>
+                                </tr>
                             @endforeach
+                            <tr>
+                                <td colspan="4" style="text-align: right;">Costo Total de Inventario</td>
+                                <td>{{number_format($total, 6)}}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

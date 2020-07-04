@@ -23,7 +23,7 @@
     {{--<link rel="dns-prefetch" href="https://fonts.gstatic.com">--}}
     {{--<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">--}}
 
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link async href="{{ asset('css/app.css') }}" rel="stylesheet">
 
     <!-- Styles -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
@@ -176,7 +176,6 @@
 
     <script src="{{ asset('js/manifest.js') }}"></script>
     <script src="{{ asset('js/vendor.js') }}"></script>
-    
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>
 
@@ -194,7 +193,7 @@
         }
 
     </script>
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script defer src="{{ asset('js/app.js') }}"></script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
 
 

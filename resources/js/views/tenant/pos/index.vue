@@ -12,7 +12,7 @@
           <h2><el-switch v-model="search_item_by_barcode" active-text="Buscar por código de barras" @change="changeSearchItemBarcode"></el-switch></h2>
         </div>
         <div class="col-md-4">
-            <h2>  <button type="button"  @click="place = 'cat'" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
+            <h2>  <button type="button" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
             <h2>  <button type="button" :disabled="place == 'cat2'" @click="setView"  class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button> </h2>
             <h2>  <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button> </h2>
         </div>
@@ -37,6 +37,8 @@
               v-model="input_item"
               @input="searchItems"
               autofocus
+              @keyup.native="keyupTabCustomer"
+              @keyup.enter.native="keyupEnterAddItem"
               class="m-bottom"
             >
             <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
@@ -51,6 +53,7 @@
                 v-model="input_item"
                 @change="searchItemsBarcode"
                 autofocus
+                @keyup.native="keyupTabCustomer"
                 class="m-bottom"
               >
               <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
@@ -83,7 +86,7 @@
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <template v-for="(item,index) in items">
-            <div v-bind:class="classObjectCol"  :key="index" >
+            <div v-bind:style="classObjectCol" :key="index">
               <section class="card ">
                 <div class="card-body pointer px-2 pt-2" @click="clickAddItem(item,index)">
                   <p class="font-weight-semibold mb-0" v-if="item.description.length > 50" data-toggle="tooltip" data-placement="top" :title="item.description">
@@ -151,6 +154,17 @@
           </template>
         </div>
 
+        <div v-if="place == 'prod' || place == 'cat2'" class="row">
+          <div class="col-md-12 text-center">
+            <el-pagination
+              @current-change="getRecords"
+              layout="total, prev, pager, next"
+              :total="pagination.total"
+              :current-page.sync="pagination.current_page"
+              :page-size="pagination.per_page">
+            </el-pagination>
+          </div>
+        </div><br>
 
       </div>
       <div class="col-lg-4 col-md-6 bg-white m-0 p-0" style="height: calc(100vh - 110px)">
@@ -205,7 +219,6 @@
                         :readonly="item.item.calculate_quantity"
                         class
                         @input="clickAddItem(item,index,true)"
-                        v-focus
                       ></el-input>
                       <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                     </td>
@@ -439,6 +452,7 @@
       import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
       import PersonForm from "../persons/form.vue";
       import WarehousesDetail from '../items/partials/warehouses.vue'
+      import queryString from 'query-string'
 
       export default {
         props: ['configuration', 'soapCompany', 'businessTurns'],
@@ -477,7 +491,9 @@
             user: {},
             form: {},
             categories: [ ],
-            colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3']
+            colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3'],
+            pagination: {},
+            category_selected: ''
           };
         },
         async created() {
@@ -504,51 +520,68 @@
                 switch(cols)
                 {
                     case 2:
-                         clase = '6'
+                         clase = '50%'
 
                         break;
                     case 3:
-                         clase = '4'
+                         clase = '33.33%'
 
                         break;
                     case 4:
-                         clase = '3'
+                         clase = '25%'
 
                         break;
                     case 5:
-                         clase = '2'
+                         clase = '20%'
 
                         break;
                     case 6:
-                         clase = '2'
+                         clase = '16.66%'
                         break;
                     default:
 
                 }
                 return {
-                    [`col-md-${clase}`] : true
+                    width: `${clase}`,
+                    padding: '5px'
                 }
             }
         },
-        directives: {
-            focus: {
-                inserted: function(el){
-                    //console.log(el.childNodes);
-                    //el.childNodes[1].focus();
-                    el.childNodes[1].select();
-                }
-            }
-        },
+
         methods: {
+          
+            keyupTabCustomer(e){
+              // console.log(e.keyCode)
+              if(e.keyCode === 9){
+                  this.$refs.select_person.$el.getElementsByTagName('input')[0].focus()
+              }
+
+            },
+            keyupEnterAddItem(){
+
+              if (this.items.length == 1) {
+
+                  this.clickAddItem(this.items[0], 0);
+                  this.filterItems();
+                  this.cleanInput();
+
+              }else{
+
+                  this.$message.warning('No puede añadir directamente el producto al listado, hay más de uno ubicado en la búsqueda')
+
+              }
+              
+            },
             filterCategorie(id,  mod = false)
             {
 
                 if(id)
                 {
-                    this.items = this.all_items.filter(x => x.category_id == id)
-
+                  this.category_selected = id
+                  this.getRecords()
                 }else{
-                    this.filterItems()
+                  this.category_selected = ''
+                  this.getRecords()
                 }
 
                 if(mod)
@@ -560,6 +593,27 @@
                 }
 
             },
+          getRecords() {
+            this.loading = true;
+            return this.$http.get(`/${this.resource}/items?${this.getQueryParameters()}&cat=${this.category_selected}`).then((response) => {
+              this.all_items = response.data.data
+              this.filterItems()
+              this.pagination = response.data.meta
+              this.pagination.per_page = parseInt(response.data.meta.per_page)
+              this.loading = false
+              if(response.data.meta.total > 0){
+                this.pagination.total=response.data.meta.total
+                } else {
+                  this.pagination.total = 0
+                }
+            });
+          },
+          getQueryParameters() {
+            return queryString.stringify({
+              page: (this.pagination.current_page) ? this.pagination.current_page : 1,
+              limit: this.limit
+            })
+          },
           getColor(i)
           {
             return this.colors[(i % this.colors.length )]
@@ -632,6 +686,13 @@
             // console.log(item)
           },
           keyupEnterCustomer(){
+
+            if(this.form.customer_id){
+
+              this.clickPayment()
+              return
+              
+            }
 
             if(this.input_person.number){
 
@@ -774,7 +835,7 @@
               number: "#",
               date_of_issue: moment().format("YYYY-MM-DD"),
               time_of_issue: moment().format("HH:mm:ss"),
-              customer_id: 1,
+              customer_id: null,
               currency_type_id: "PEN",
               purchase_order: null,
               exchange_rate_sale: 1,
@@ -805,13 +866,14 @@
               hotel: {},
               additional_information: null,
               actions: {
-                format_pdf: "a4"
+                format_pdf: 'a4'
               }
             };
 
             this.initFormItem();
             this.changeDateOfIssue();
-            this.initInputPerson();
+            this.initInputPerson()
+
           },
           initInputPerson(){
               this.input_person = {
@@ -1067,7 +1129,7 @@
           },
           async getTables() {
             await this.$http.get(`/${this.resource}/tables`).then(response => {
-              this.all_items = response.data.items;
+              //this.all_items = response.data.items;
               this.affectation_igv_types = response.data.affectation_igv_types;
               this.all_customers = response.data.customers;
               this.establishment = response.data.establishment;
@@ -1078,11 +1140,9 @@
               this.renderCategories(response.data.categories)
               // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
               // this.changeCurrencyType();
-              this.filterItems();
+              //this.filterItems();
               this.changeDateOfIssue();
-              this.changeExchangeRate();
-              this.reloadDataCustomers(this.form.customer_id);
-              this.setFormPosLocalStorage();
+              this.changeExchangeRate()
             });
           },
           renderCategories(source)
@@ -1102,24 +1162,26 @@
                     color: '#2C8DE3'
                     })
           },
-          searchItems() {
+          async searchItems() {
             if (this.input_item.length > 0) {
-              this.loading = true;
-              let parameters = `input_item=${this.input_item}`;
+              this.loading = true
+              let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;
+              
+                await this.$http.get(`/${this.resource}/search_items_cat?${parameters}`).then(response => {
+                  if(response.data.data.length > 0) {
+                    this.all_items = response.data.data
+                    this.filterItems()
+                    this.pagination = response.data.meta
+                    this.pagination.per_page = parseInt(response.data.meta.per_page)
 
-              this.$http
-                .get(`/${this.resource}/search_items?${parameters}`)
-                .then(response => {
-                  // console.log(response)
-                  this.items = response.data.items;
-
-                  this.loading = false;
-                  if (this.items.length == 0) {
-                    this.filterItems();
+                    this.loading = false;
+                  } else {
+                    this.loading = false;
+                    this.filterItems()
                   }
-                });
+                })
             } else {
-              // this.customers = []
+              this.getRecords()
               this.filterItems();
             }
 
@@ -1181,9 +1243,9 @@
           },
           reloadDataCustomers(customer_id) {
             this.$http.get(`/${this.resource}/table/customers`).then(response => {
-            this.all_customers = response.data;
-            this.form.customer_id = customer_id;
-            this.changeCustomer();
+              this.all_customers = response.data;
+              this.form.customer_id = customer_id;
+              this.changeCustomer();
             });
           },
           reloadDataItems(item_id) {
@@ -1215,7 +1277,9 @@
             },
             back()
             {
-                this.place = 'cat'
+              this.all_items = []
+              this.place = 'cat'
+              this.loading = false
             },
             setView()
             {

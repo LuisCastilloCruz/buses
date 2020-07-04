@@ -59,6 +59,7 @@ class EcommerceController extends Controller
             'internal_id' => $row->internal_id,
             'unit_type_id' => $row->unit_type_id,
             'description' => $row->description,
+            'technical_specifications' => $row->technical_specifications,
             'name' => $row->name,
             'second_name' => $row->second_name,
             'sale_unit_price' => ($row->currency_type_id === 'PEN') ? $sale_unit_price : ($sale_unit_price * $exchange_rate_sale),
@@ -209,9 +210,12 @@ class EcommerceController extends Controller
 
     public function paymentCash(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'telephone' => 'required|numeric',
-            'address' => 'required',
+        $validator = Validator::make($request->customer, [
+            'telefono' => 'required|numeric',
+            'direccion' => 'required',
+            'codigo_tipo_documento_identidad' => 'required|numeric',
+            'numero_documento' => 'required|numeric',
+            'identity_document_type_id' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
@@ -226,7 +230,8 @@ class EcommerceController extends Controller
                 'items' =>  $request->items,
                 'total' => $request->precio_culqi,
                 'reference_payment' => 'efectivo',
-                'status_order_id' => 1
+                'status_order_id' => 1,
+                'purchase' => $request->purchase
               ]);
 
             $customer_email = $user->email;

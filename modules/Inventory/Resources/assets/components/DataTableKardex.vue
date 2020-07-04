@@ -32,7 +32,7 @@
 
                                 <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
 
-                                <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
+                                <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportar Excel</el-button>
 
                             </template>
                         </div> 
@@ -131,6 +131,11 @@
                 // this.loadAll();
             },
             clickDownload(type) {                 
+                
+                if(!this.form.item_id){
+                    return this.$message.error('El producto es obligatorio')
+                }
+
                 let query = queryString.stringify({
                     ...this.form
                 });

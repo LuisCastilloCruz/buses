@@ -138,7 +138,7 @@ Vue.component('tenant-report-order-notes-consolidated-index', require('../../mod
 Vue.component('tenant-report-general-items-index', require('../../modules/Report/Resources/assets/js/views/general_items/index.vue'));
 Vue.component('tenant-report-order-notes-general-index', require('../../modules/Report/Resources/assets/js/views/order_notes_general/index.vue'));
 Vue.component('tenant-report-sales-consolidated-index', require('../../modules/Report/Resources/assets/js/views/sales_consolidated/index.vue'));
-
+Vue.component('tenant-report-user-commissions-index', require('../../modules/Report/Resources/assets/js/views/user_commissions/index.vue'));
 
 Vue.component('tenant-categories-index', require('../../modules/Item/Resources/assets/js/views/categories/index.vue'));
 Vue.component('tenant-brands-index', require('../../modules/Item/Resources/assets/js/views/brands/index.vue'));
@@ -190,6 +190,9 @@ Vue.component('tenant-contracts-index', require('@viewsModuleSale/contracts/inde
 Vue.component('tenant-contracts-form', require('@viewsModuleSale/contracts/form.vue'));
 Vue.component('tenant-production-orders-index', require('@viewsModuleSale/production_orders/index.vue'));
 
+//technical Services
+Vue.component('tenant-technical-services-index', require('@viewsModuleSale/technical-services/index.vue'));
+Vue.component('tenant-user-commissions-index', require('@viewsModuleSale/user-commissions/index.vue'));
 //Purchase
 
 Vue.component('tenant-fixed-asset-items-index', require('@viewsModulePurchase/fixed_asset_items/index.vue'));
@@ -201,6 +204,12 @@ Vue.component('tenant-fixed-asset-purchases-form', require('@viewsModulePurchase
 Vue.component('tenant-expense-types-index', require('@viewsModuleExpense/expense_types/index.vue'));
 Vue.component('tenant-expense-reasons-index', require('@viewsModuleExpense/expense_reasons/index.vue'));
 Vue.component('tenant-expense-method-types-index', require('@viewsModuleExpense/expense_method_types/index.vue'));
+
+//Order
+Vue.component('tenant-drivers-index', require('@viewsModuleOrder/drivers/index.vue'));
+Vue.component('tenant-dispatchers-index', require('@viewsModuleOrder/dispatchers/index.vue'));
+Vue.component('tenant-order-forms-index', require('@viewsModuleOrder/order_forms/index.vue'));
+Vue.component('tenant-order-forms-form', require('@viewsModuleOrder/order_forms/form.vue'));
 
 
 // System

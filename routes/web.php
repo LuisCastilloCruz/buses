@@ -5,7 +5,11 @@ $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 if ($hostname) {
     Route::domain($hostname->fqdn)->group(function() {
 
-        Auth::routes();
+        Auth::routes([
+            'register' => false,
+            'reset' => false,
+            'verify' => false
+        ]);
 
         Route::get('search', 'Tenant\SearchController@index')->name('search.index');
         Route::get('buscar', 'Tenant\SearchController@index')->name('search.index');
@@ -32,7 +36,10 @@ if ($hostname) {
             Route::get('orders', 'Tenant\OrderController@index')->name('tenant_orders_index');
             Route::get('orders/columns', 'Tenant\OrderController@columns');
             Route::get('orders/records', 'Tenant\OrderController@records');
+            Route::get('orders/record/{order}', 'Tenant\OrderController@record');
+            //Route::get('orders/print/{external_id}/{format?}', 'Tenant\OrderController@toPrint');
             Route::post('statusOrder/update/', 'Tenant\OrderController@updateStatusOrders');
+            Route::get('orders/pdf/{id}', 'Tenant\OrderController@pdf');
 
             //warehouse
             Route::post('orders/warehouse', 'Tenant\OrderController@searchWarehouse');
@@ -65,6 +72,7 @@ if ($hostname) {
             Route::get('configurations/visual_defaults', 'Tenant\ConfigurationController@visualDefaults')->name('visual_defaults');
             Route::post('configurations/visual_settings', 'Tenant\ConfigurationController@visualSettings')->name('visual-settings');
             Route::get('configurations/pdf_templates', 'Tenant\ConfigurationController@pdfTemplates')->name('tenant.advanced.pdf_templates');
+            Route::post('configurations/uploads', 'Tenant\ConfigurationController@uploadFile');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
@@ -136,6 +144,7 @@ if ($hostname) {
             Route::get('items/images/{item}', 'Tenant\ItemController@images');
             Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
             Route::get('items/export', 'Tenant\ItemController@export')->name('tenant.items.export');
+            Route::get('items/export/wp', 'Tenant\ItemController@exportWp')->name('tenant.items.export.wp');
 
             //Persons
             Route::get('persons/columns', 'Tenant\PersonController@columns');
@@ -154,6 +163,7 @@ if ($hostname) {
             Route::post('documents/brands', 'Tenant\DocumentController@storeBrands');
             Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
             Route::get('documents/search/customer/{id}', 'Tenant\DocumentController@searchCustomerById');
+            Route::get('documents/search/externalId/{external_id}', 'Tenant\DocumentController@searchExternalId');
 
             Route::get('documents', 'Tenant\DocumentController@index')->name('tenant.documents.index')->middleware(['redirect.level','tenant.internal.mode']);
             Route::get('documents/columns', 'Tenant\DocumentController@columns');
@@ -243,6 +253,8 @@ if ($hostname) {
             Route::get('dispatches/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchController@create');
             Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
             Route::post('dispatches', 'Tenant\DispatchController@store');
+            Route::get('dispatches/record/{id}', 'Tenant\DispatchController@record');
+            Route::post('dispatches/email', 'Tenant\DispatchController@email');
 
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
@@ -413,6 +425,8 @@ if ($hostname) {
            Route::get('pos/payment', 'Tenant\PosController@payment')->name('tenant.pos.payment');
            Route::get('pos/status_configuration', 'Tenant\PosController@status_configuration');
            Route::get('pos/validate_stock/{item}/{quantity}', 'Tenant\PosController@validate_stock');
+           Route::get('pos/items', 'Tenant\PosController@item');
+           Route::get('pos/search_items_cat', 'Tenant\PosController@search_items_cat');
 
            Route::get('cash', 'Tenant\CashController@index')->name('tenant.cash.index');
            Route::get('cash/columns', 'Tenant\CashController@columns');

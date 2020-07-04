@@ -46,7 +46,6 @@ class DocumentResource extends JsonResource
             'customer_email' => $this->customer->email,
             'download_pdf' => $this->download_external_pdf,
             'print_ticket' => url('')."/print/document/{$this->external_id}/ticket",
-            'print_ticket_50' => url('')."/print/document/{$this->external_id}/ticket_50",
             'print_a4' => url('')."/print/document/{$this->external_id}/a4",
             'print_a5' => url('')."/print/document/{$this->external_id}/a5",
             'image_detraction' => ($this->detraction) ? (($this->detraction->image_pay_constancy) ?

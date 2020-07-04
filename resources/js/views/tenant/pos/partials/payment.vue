@@ -107,7 +107,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="control-label">Ingrese monto</label>
-                                    <el-input v-model="enter_amount" @input="enterAmount()" >
+                                    <el-input v-model="enter_amount" @keyup.enter.native="keyupEnterAmount()" @input="enterAmount()" ref="enter_amount">
                                         <template slot="prepend">{{currencyTypeActive.symbol}}</template>
                                     </el-input>
 
@@ -275,6 +275,7 @@
         <multiple-payment-form
             :showDialog.sync="showDialogMultiplePayment"
             :payments="payments"
+            :total="form.total"
             @add="addRow"
             ></multiple-payment-form>
 
@@ -352,7 +353,10 @@
 
             this.$eventHub.$on('localSPayments', (payments) => {
                 this.payments = payments
+
             })
+
+            await this.setInitialAmount()
 
             await this.getFormPosLocalStorage()
             // console.log(this.form.payments, this.payments)
@@ -361,6 +365,23 @@
             // console.log(this.currencyTypeActive)
         },
         methods: {
+            keyupEnterAmount(){
+
+                if(this.button_payment){
+                    return this.$message.warning("El monto a pagar es menor al total")
+                }
+
+                this.clickPayment()
+
+            },
+            async setInitialAmount(){
+                this.enter_amount = this.form.total
+                // this.form.payments = this.payments
+                // this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
+                await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].focus()
+                await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].select()
+                // console.log(this.$refs.enter_amount.$el.getElementsByTagName('input')[0])
+            },
             changeEnabledDiscount(){
 
                 if(!this.enabled_discount){
@@ -724,6 +745,26 @@
             sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
+            async asignPlateNumberToItems() {
+                if(this.form.plate_number) {
+
+                    await this.form.items.forEach(item => {
+
+                        let at = _.find(item.attributes, {'attribute_type_id': '5010'})
+
+                        if(!at){
+                            item.attributes.push({
+                                attribute_type_id: '7000',
+                                description: "Gastos Art. 37 Renta:  Número de Placa",
+                                value: this.form.plate_number,
+                                start_date: null,
+                                end_date: null,
+                                duration: null,
+                            })
+                        }
+                    });
+                }
+            },
             async clickPayment(){
                 // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
@@ -743,6 +784,7 @@
                     this.resource_documents = "documents";
                     this.resource_payments = "document_payments";
                     this.resource_options = this.resource_documents;
+                    await this.asignPlateNumberToItems()
                 }
 
                 this.loading_submit = true

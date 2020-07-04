@@ -73,7 +73,7 @@ class QuotationController extends Controller
     public function columns()
     {
         return [
-          'customer' => 'Cliente',
+            'customer' => 'Cliente',
             'date_of_issue' => 'Fecha de emisión',
             'delivery_date' => 'Fecha de entrega',
             'user_name' => 'Vendedor'
@@ -89,6 +89,7 @@ class QuotationController extends Controller
 
     public function records(Request $request)
     {
+        // dd($request->all());
         $records = $this->getRecords($request);
 
         return new QuotationCollection($records->paginate(config('tenant.items_per_page')));
@@ -104,12 +105,27 @@ class QuotationController extends Controller
                         ->whereTypeUser()
                         ->latest();
 
+        }else if($request->column == 'customer'){
+
+            $records = Quotation::whereHas('person', function($query) use($request){
+                            $query->where('name', 'like', "%{$request->value}%")
+                                ->orWhere('number', 'like', "%{$request->value}%");
+                        })
+                        ->whereTypeUser()
+                        ->latest();
+
         }else{
 
             $records = Quotation::where($request->column, 'like', "%{$request->value}%")
                                 ->whereTypeUser()
                                 ->latest();
 
+        }
+
+        $form = json_decode($request->form);
+
+        if($form->date_start && $form->date_end){
+            $records = $records->whereBetween('date_of_issue', [$form->date_start, $form->date_end]);
         }
 
         return $records;
