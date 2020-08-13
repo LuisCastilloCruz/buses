@@ -724,6 +724,11 @@
                                     Exportar formatos - Sis. Contable
                                 </a>
                             </li>
+                            <li class="{{(($path[0] === 'account') && ($path[1] == 'ple'))   ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{ route('tenant.account_ple.index') }}">
+                                    PLE 5.1
+                                </a>
+                            </li>
                             <li class="{{(($path[0] === 'account') && ($path[1] == 'summary-report'))   ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{ route('tenant.account_summary_report.index') }}">
                                     Reporte resumido - Ventas

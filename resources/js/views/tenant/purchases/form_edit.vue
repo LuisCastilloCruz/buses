@@ -96,7 +96,20 @@
                                 <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                             </div>
                         </div>
-
+                        <div class="col-lg-2">
+                            <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
+                                <label>Tipo Base Imp.
+                                    <el-tooltip class="item" effect="dark" content="Si sus compra tienen IGV y venderá CON  IGV, le corresponde la opción por defecto, si tiene compras que serán en parte destinadas como NO GRABADA Y GRABADA, la opción sería PRORRATA, si su compra está destinado a la venta como exonerado, la opción que le corresponde es COSTO O GASTO, ejemplo zona selva." placement="top-end">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-select v-model="form.type_basimp">
+                                    <el-option key="01" value="01" label="CRÉDITO FIZCAL" title="Base imponible de las adquisiciones gravadas que dan derecho a crédito fiscal y/o saldo a favor por exportación, destinadas exclusivamente a operaciones gravadas y/o de exportación."></el-option>
+                                    <el-option key="02" value="02" label="PRORRATA" title="Base imponible de las adquisiciones gravadas que dan derecho a crédito fiscal y/o saldo a favor por exportación, destinadas a operaciones gravadas y/o de exportación y a operaciones no gravadas."></el-option>
+                                    <el-option key="03" value="03" label="COSTO O GASTO" title="Base imponible de las adquisiciones gravadas que no dan derecho a crédito fiscal y/o saldo a favor por exportación, por no estar destinadas a operaciones gravadas y/o de exportación."></el-option>
+                                </el-select>
+                            </div>
+                        </div>
                         <div class="col-md-8 mt-4">
                             <div class="form-group" > 
                                 <el-checkbox v-model="form.has_client" @change="changeHasClient">¿Desea agregar el cliente para esta compra?</el-checkbox>
@@ -572,6 +585,7 @@
 
                     this.form.has_payment = (this.form.payments.length>0) ? true:false
                     this.form.has_client = (this.form.customer_id) ? true:false
+                    this.form.type_basimp= dato.type_basimp
 
                     this.changeDocumentType()
                     // this.changePaymentMethodType()
@@ -676,6 +690,7 @@
                     customer_id: null,
                     has_client: false,
                     has_payment: false,
+                    type_basimp: null
                 }
 
                 // this.clickAddPayment()

@@ -10,7 +10,9 @@ if($hostname) {
                 Route::get('/', 'AccountController@index')->name('tenant.account.index');
                 Route::get('download', 'AccountController@download');
                 Route::get('format', 'FormatController@index')->name('tenant.account_format.index');
+                Route::get('ple', 'PleController@index')->name('tenant.account_ple.index');
                 Route::get('format/download', 'FormatController@download');
+                Route::get('ple/download', 'PleController@download');
 
 
                 Route::get('summary-report', 'SummaryReportController@index')->name('tenant.account_summary_report.index');
