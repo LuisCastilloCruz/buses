@@ -53,7 +53,7 @@
         <td class="text-center"><h5>{{ 'RUC '.$company->number }}</h5></td>
     </tr>
     <tr>
-        <td class="text-center">
+        <td class="text-center" style="text-transform: uppercase;">
             {{ ($establishment->address !== '-')? $establishment->address : '' }}
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
@@ -150,7 +150,7 @@
         </tr>
         <tr>
             <td  class="align-top"><p class="desc">Monto detracción:</p></td>
-            <td><p class="desc">{{ $document->currency_type->symbol }} {{ $document->detraction->amount}}</p></td>
+            <td><p class="desc">S/ {{ $document->detraction->amount}}</p></td>
         </tr>
         @if($document->detraction->pay_constancy)
         <tr>
@@ -182,8 +182,8 @@
     @endif
     @isset($document->quotation->delivery_date)
         <tr>
-            <td><p class="desc">F. Entrega</p></td>
-            <td><p class="desc">{{ $document->quotation->delivery_date->format('Y-m-d')}}</p></td>
+            <td><p class="desc">T. Entrega</p></td>
+            <td><p class="desc">{{ $document->quotation->delivery_date}}</p></td>
         </tr>
     @endisset
     @isset($document->quotation->sale_opportunity)
@@ -267,9 +267,9 @@
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
-                    {!!$row->item->description!!} 
+                    {!!$row->item->description!!}
                 @endif
-                
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
                 @foreach($row->additional_information as $information)
@@ -423,7 +423,13 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} {{$account->number}}
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
 
@@ -448,6 +454,13 @@
         </tr>
     @endif
 
+    @if($document->payment_method_type_id)
+        <tr>
+            <td class="desc pt-5">
+                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+            </td>
+        </tr> 
+    @endif
     @if($payments->count())
         <tr>
             <td class="desc pt-5">

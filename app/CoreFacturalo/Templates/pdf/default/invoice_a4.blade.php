@@ -53,7 +53,7 @@
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6>
+                <h6 style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
@@ -139,7 +139,7 @@
     <tr>
         <td class="align-top">DIRECCIÓN:</td>
         <td>:</td>
-        <td>
+        <td style="text-transform: uppercase;">
             {{ $customer->address }}
             {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
             {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
@@ -149,7 +149,7 @@
         @if ($document->detraction)
             <td width="120px">MONTO DETRACCIÓN</td>
             <td width="8px">:</td>
-            <td>{{ $document->currency_type->symbol }} {{ $document->detraction->amount}}</td>
+            <td>S/ {{ $document->detraction->amount}}</td>
         @endif
     </tr>
     @endif
@@ -239,11 +239,11 @@
             <td width="120px">COTIZACIÓN</td>
             <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
-            
+
             @isset($document->quotation->delivery_date)
-                    <td width="120px">F. ENTREGA</td>
+                    <td width="120px">T. ENTREGA</td>
                     <td width="8px">:</td>
-                    <td>{{ $document->quotation->delivery_date->format('Y-m-d')}}</td>
+                    <td>{{ $document->quotation->delivery_date}}</td>
             @endisset
         </tr>
 
@@ -313,13 +313,13 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left align-top">
                 @if($row->name_product_pdf)
-                    {!!$row->name_product_pdf!!} 
+                    {!!$row->name_product_pdf!!}
                 @else
-                    {!!$row->item->description!!} 
+                    {!!$row->item->description!!}
                 @endif
-                
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
-                
+
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -386,6 +386,8 @@
             <td class="text-left align-top">
                 ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
             </td>
+            <td class="text-center align-top"></td>
+            <td class="text-center align-top"></td>
             <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
             <td class="text-right align-top">
                 0
@@ -393,7 +395,7 @@
             <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="6" class="border-bottom"></td>
+            <td colspan="8" class="border-bottom"></td>
         </tr>
         @endforeach
     @endif
@@ -483,7 +485,7 @@
         <td width="65%" style="text-align: top; vertical-align: top;">
             @foreach(array_reverse( (array) $document->legends) as $row)
                 @if ($row->code == "1000")
-                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
+                    <p style="text-transform: uppercase;">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
                     @if (count((array) $document->legends)>1)
                         <p><span class="font-bold">Leyendas</span></p>
                     @endif
@@ -525,7 +527,13 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <p><span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} {{$account->number}}</p>
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
         </td>
@@ -535,6 +543,17 @@
         </td>
     </tr>
 </table>
+
+@if($document->payment_method_type_id)
+    <table class="full-width">
+        <tr>
+            <td>
+                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+            </td>
+        </tr> 
+    </table>
+@endif
+
 @if($payments->count())
 
 
