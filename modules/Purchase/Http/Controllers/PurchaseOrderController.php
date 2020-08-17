@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Tenant\PurchaseOrderRequest;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use Modules\Sale\Models\SaleOpportunity;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 class PurchaseOrderController extends Controller
 {
@@ -268,7 +269,8 @@ class PurchaseOrderController extends Controller
                                 'price3' => $row->price3,
                                 'price_default' => $row->price_default,
                             ];
-                        })
+                        }),
+                        'series_enabled' => (bool) $row->series_enabled,
                     ];
                 });
                 return $items;
@@ -301,7 +303,7 @@ class PurchaseOrderController extends Controller
         if (!$purchase_order) throw new Exception("El código {$external_id} es inválido, no se encontro la orden de compra relacionada");
 
         return Storage::disk('tenant')->download('purchase_order_attached'.DIRECTORY_SEPARATOR.$purchase_order->upload_filename);
-        
+
     }
 
     public function toPrint($external_id, $format) {
@@ -412,6 +414,13 @@ class PurchaseOrderController extends Controller
 
     public function uploadAttached(Request $request)
     {
+        
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg,pdf');
+        
+        if(!$validate_upload['success']){
+            return $validate_upload;
+        }
+
         if ($request->hasFile('file')) {
             $new_request = [
                 'file' => $request->file('file'),
