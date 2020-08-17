@@ -18,7 +18,7 @@ class Purchase extends ModelTenant
         'user_id',
         'external_id',
         'establishment_id',
-        'establishment',
+        // 'establishment',
         'soap_type_id',
         'state_type_id',
         'group_id',
@@ -63,7 +63,7 @@ class Purchase extends ModelTenant
         'date_of_due',
         'purchase_order_id',
         'customer_id',
-        'total_canceled',
+        'total_canceled'
     ];
 
     protected $casts = [
@@ -71,15 +71,21 @@ class Purchase extends ModelTenant
         'date_of_due' => 'date',
     ];
 
-    public function getEstablishmentAttribute($value)
+    
+    public function establishment()
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return $this->belongsTo(Establishment::class);
     }
 
-    public function setEstablishmentAttribute($value)
-    {
-        $this->attributes['establishment'] = (is_null($value))?null:json_encode($value);
-    }
+    // public function getEstablishmentAttribute($value)
+    // {
+    //     return (is_null($value))?null:(object) json_decode($value);
+    // }
+
+    // public function setEstablishmentAttribute($value)
+    // {
+    //     $this->attributes['establishment'] = (is_null($value))?null:json_encode($value);
+    // }
 
 
     public function getSupplierAttribute($value)

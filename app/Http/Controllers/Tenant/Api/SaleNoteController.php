@@ -52,7 +52,7 @@ class SaleNoteController extends Controller
 
     public function lists()
     {
-        $record = SaleNote::orderBy('series', 'desc')->orderBy('number', 'desc')->get();
+        $record = SaleNote::orderBy('series', 'desc')->orderBy('number', 'desc')->take(50)->get();
         $records = new SaleNoteCollection($record);
         return $records;
     }
@@ -113,7 +113,6 @@ class SaleNoteController extends Controller
             'data' => [
                 'id' => $this->sale_note->id,
                 'number' => $this->sale_note->number_full,
-				'external_id' => $this->sale_note->external_id,
             ],
         ];
 
@@ -160,17 +159,17 @@ class SaleNoteController extends Controller
 
         $series = Series::find($series_id)->number;
 
-        if(!$id){ 
+        if(!$id){
 
             $sale_note = SaleNote::select('number')->where('soap_type_id', $this->company->soap_type_id)
                                 ->where('series', $series)
                                 ->orderBy('number', 'desc')
                                 ->first();
-    
+
             $number = ($sale_note) ? $sale_note->number + 1 : 1;
 
         }
- 
+
         return [
             'series' => $series,
             'number' => $number,
@@ -398,7 +397,7 @@ class SaleNoteController extends Controller
                             'number' => $row->number
                         ];
                     });
-                    
+
     }
 
 }

@@ -197,7 +197,12 @@ class ClientController extends Controller
 
             $tenancy = app(Environment::class);
             $tenancy->tenant($client->hostname->website);
-            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan), 'config_system_env' => $request->config_system_env]);
+            DB::connection('tenant')->table('configurations')->where('id', 1)
+                ->update([
+                            'plan' => json_encode($plan),
+                            'config_system_env' => $request->config_system_env,
+                            'limit_documents' =>  $plan->limit_documents
+                        ]);
 
             DB::connection('tenant')->table('companies')->where('id', 1)->update([
                 'soap_type_id' => $request->soap_type_id,
@@ -230,6 +235,10 @@ class ClientController extends Controller
                             ['module_level_id' => 7, 'user_id' => 1],
                             ['module_level_id' => 8, 'user_id' => 1],
                             ['module_level_id' => 9, 'user_id' => 1],
+                            ['module_level_id' => 10, 'user_id' => 1],
+                            ['module_level_id' => 11, 'user_id' => 1],
+                            ['module_level_id' => 12, 'user_id' => 1],
+                            ['module_level_id' => 13, 'user_id' => 1],
                         ]);
                     }
                 }
@@ -366,10 +375,12 @@ class ClientController extends Controller
             'code' => '0000'
         ]);
 
-        // DB::connection('tenant')->table('warehouses')->insertGetId([
-        //     'establishment_id' => $establishment_id,
-        //     'description' => 'Almacén - '.'Oficina Principal',
-        // ]);
+        DB::connection('tenant')->table('warehouses')->insertGetId([
+            'establishment_id' => $establishment_id,
+            'description' => 'Almacén Oficina Principal',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         DB::connection('tenant')->table('series')->insert([
             ['establishment_id' => 1, 'document_type_id' => '01', 'number' => 'F001'],
@@ -381,6 +392,7 @@ class ClientController extends Controller
             ['establishment_id' => 1, 'document_type_id' => '20', 'number' => 'R001'],
             ['establishment_id' => 1, 'document_type_id' => '09', 'number' => 'T001'],
             ['establishment_id' => 1, 'document_type_id' => '40', 'number' => 'P001'],
+            ['establishment_id' => 1, 'document_type_id' => '80', 'number' => 'NV01'],
         ]);
 
 
@@ -414,6 +426,10 @@ class ClientController extends Controller
                             ['module_level_id' => 7, 'user_id' => $user_id],
                             ['module_level_id' => 8, 'user_id' => $user_id],
                             ['module_level_id' => 9, 'user_id' => $user_id],
+                            ['module_level_id' => 10, 'user_id' => $user_id],
+                            ['module_level_id' => 11, 'user_id' => $user_id],
+                            ['module_level_id' => 12, 'user_id' => $user_id],
+                            ['module_level_id' => 13, 'user_id' => $user_id],
                         ]);
                     }
                 }

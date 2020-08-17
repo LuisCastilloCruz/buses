@@ -165,7 +165,7 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $user = auth()->user()->type;
-        $payment_method_types = PaymentMethodType::all();
+        $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
         $is_client = $this->getIsClient();
@@ -240,18 +240,32 @@ class DocumentController extends Controller
 
         if ($table === 'prepayment_documents') {
             $prepayment_documents = Document::whereHasPrepayment()->get()->transform(function($row) {
+
+                $total = round($row->pending_amount_prepayment, 2);
+                $amount = ($row->affectation_type_prepayment == '10') ? round($total/1.18, 2) : $total;
+
                 return [
                     'id' => $row->id,
                     'description' => $row->series.'-'.$row->number,
                     'series' => $row->series,
                     'number' => $row->number,
                     'document_type_id' => ($row->document_type_id == '01') ? '02':'03',
-                    'amount' => $row->total_value,
-                    'total' => $row->total,
+                    // 'amount' => $row->total_value,
+                    // 'total' => $row->total,
+                    'amount' => $amount,
+                    'total' => $total,
 
                 ];
             });
             return $prepayment_documents;
+        }
+        
+        if ($table === 'payment_method_types') {
+            
+            $payment_method_types = PaymentMethodType::whereNotIn('id', ['05', '08', '09'])->get();
+            $end_payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get(); //by requirement
+
+            return $payment_method_types->merge($end_payment_method_types);
         }
 
         if ($table === 'items') {
@@ -324,7 +338,7 @@ class DocumentController extends Controller
                             'has_sale' => (bool)$row->has_sale,
                             'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                         ];
-                    }),
+                    })->values(),
                     'lots_enabled' => (bool) $row->lots_enabled,
                     'series_enabled' => (bool) $row->series_enabled,
 
@@ -840,13 +854,16 @@ class DocumentController extends Controller
         return $records;
     }
 
-    public function report_payments()
+    public function report_payments($month, $anulled)
     {
-
-        $records = Document::get();
+        $month_format = Carbon::parse($month)->format('m');
+        if($anulled == 'true') {
+           $records = Document::whereMonth('created_at', $month_format)->get();
+        } else {
+            $records = Document::whereMonth('created_at', $month_format)->where('state_type_id', '!=', '11')->get();
+        }
 
         $source =  $this->transformReportPayment( $records );
-
 
         return (new PaymentExport)
                 ->records($source)

@@ -84,6 +84,7 @@ class SaleNoteController extends Controller
     {
         return [
             'series' => Series::whereIn('document_type_id', ['80'])->get(),
+
         ];
     }
 
@@ -93,7 +94,7 @@ class SaleNoteController extends Controller
         $records = $this->getRecords($request);
 
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
-    
+
     }
 
 
@@ -115,10 +116,15 @@ class SaleNoteController extends Controller
                                 ->latest('id');
 
         }
- 
+
         if($request->series)
         {
             $records = $records->where('series', 'like', '%' . $request->series . '%');
+        }
+
+        if($request->paid != null)
+        {
+            $records = $records->where('paid', $request->paid);
         }
 
         return $records;
@@ -263,6 +269,7 @@ class SaleNoteController extends Controller
 
             $this->setFilename();
             $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
+            $this->regularizePayments($data['payments']);
 
         });
 
@@ -272,6 +279,26 @@ class SaleNoteController extends Controller
                 'id' => $this->sale_note->id,
             ],
         ];
+
+    }
+
+
+    private function regularizePayments($payments){
+
+        $total_payments = collect($payments)->sum('payment');
+
+        $balance = $this->sale_note->total - $total_payments;
+
+        if($balance <= 0){
+
+            $this->sale_note->total_canceled = true;
+            $this->sale_note->save();
+
+        }else{
+            
+            $this->sale_note->total_canceled = false;
+            $this->sale_note->save();
+        }
 
     }
 
@@ -777,7 +804,7 @@ class SaleNoteController extends Controller
             $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
 
             foreach ($obj->items as $sale_note_item) {
-                
+
                 // voided sets
                 $this->voidedSaleNoteItem($sale_note_item, $warehouse);
                 // voided sets
@@ -837,10 +864,10 @@ class SaleNoteController extends Controller
     }
 
 
-    public function totals()
+    public function totals(Request $request)
     {
 
-        $records = SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
+        $records =  $this->getRecords($request)->get(); //SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
         $total_pen = 0;
         $total_paid_pen = 0;
         $total_pending_paid_pen = 0;
@@ -864,10 +891,10 @@ class SaleNoteController extends Controller
 
     }
 
-    public function downloadExternal($external_id)
+    public function downloadExternal($external_id, $format = 'a4')
     {
         $document = SaleNote::where('external_id', $external_id)->first();
-        $this->reloadPDF($document, 'a4', null);
+        $this->reloadPDF($document, $format, null);
         return $this->downloadStorage($document->filename, 'sale_note');
 
     }
@@ -964,10 +991,10 @@ class SaleNoteController extends Controller
                     $ilt = ItemLot::find($it->id);
                     $ilt->has_sale = false;
                     $ilt->save();
-                    
+
                 }
 
-            } 
+            }
         }
 
     }

@@ -15,24 +15,25 @@ class RedirectModule
      */
     public function handle($request, Closure $next)
     {
-      
+
         $module = $request->user()->getModule();
         $path = explode('/', $request->path());
         $modules = $request->user()->getModules();
 
-        if(! $request->ajax()){
+        if(!$request->ajax()){
 
             if(count($modules)){
 
                 if(count($modules) < 9){
 
                     $group = $this->getGroup($path, $module);
+
                     if($group){
                         if($this->getModuleByGroup($modules,$group) === 0){
                             return $this->redirectRoute($module);
                         }
-
                     }
+
                 }
 
             }
@@ -73,7 +74,7 @@ class RedirectModule
 
             case 'finance':
                 return redirect()->route('tenant.finances.global_payments.index');
-                
+
             /*case 'ecommerce':
                 return redirect()->route('tenant.ecommerce.index');*/
 
@@ -234,10 +235,22 @@ class RedirectModule
             $group = "finance";
         }
 
-        // elseif($path[0] == "cash"){
-        //     $group = "pos";
+        elseif($path[0] == "orders"){
+             $group = "ecommerce";
 
-        // }
+        }
+        elseif($path[0] == "ecommerce" && $path[1] == "configuration"){
+            $group = "ecommerce";
+        }
+        elseif($path[0] == "items_ecommerce"){
+            $group = "ecommerce";
+        }
+        elseif($path[0] == "tags"){
+            $group = "ecommerce";
+        }
+        elseif($path[0] == "promotions"){
+            $group = "ecommerce";
+        }
 
         else{
             $group = null;

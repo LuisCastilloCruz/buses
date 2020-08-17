@@ -41,6 +41,14 @@ class ConfigurationController extends Controller
             ->insert(['formats' => $insertar[2] ]);
         }
 
+        // revisión custom
+        $exists = Storage::disk('core')->exists('Templates/pdf/custom/style.css');
+        if (!$exists) {
+            Storage::disk('core')->copy('Templates/pdf/default/style.css', 'Templates/pdf/custom/style.css');
+            Storage::disk('core')->copy('Templates/pdf/default/invoice_a4.blade.php', 'Templates/pdf/custom/invoice_a4.blade.php');
+            Storage::disk('core')->copy('Templates/pdf/default/partials/footer.blade.php', 'Templates/pdf/custom/partials/footer.blade.php');
+        }
+
         return [
             'success' => true,
             'message' => 'Configuración actualizada'
@@ -167,45 +175,45 @@ class ConfigurationController extends Controller
 
     public function getSystemPhone()
     {
-        $configuration = Configuration::first();
-        $ws = $configuration->enable_whatsapp;
+        // $configuration = Configuration::first();
+        // $ws = $configuration->enable_whatsapp;
 
-        $current = url('/phone');
-        $parse_current = parse_url($current);
-        $explode_current = explode('.', $parse_current['host']);
-        $app_url = config('app.url');
-        if(!array_key_exists('port', $parse_current)){
-            $path = $app_url.$parse_current['path'];
-        }else{
-            $path = $app_url.':'.$parse_current['port'].$parse_current['path'];
-        }
+        // $current = url('/phone');
+        // $parse_current = parse_url($current);
+        // $explode_current = explode('.', $parse_current['host']);
+        // $app_url = config('app.url');
+        // if(!array_key_exists('port', $parse_current)){
+        //     $path = $app_url.$parse_current['path'];
+        // }else{
+        //     $path = $app_url.':'.$parse_current['port'].$parse_current['path'];
+        // }
 
-        $http = new Client(['verify' => false]);
-        $response = $http->request('GET', $path);
-        if($response->getStatusCode() == '200'){
-            $body = $response->getBody();
+        // $http = new Client(['verify' => false]);
+        // $response = $http->request('GET', $path);
+        // if($response->getStatusCode() == '200'){
+        //     $body = $response->getBody();
 
-            $configuration->phone_whatsapp = $body;
-            $configuration->save();
-        }
-        return 'error';
+        //     $configuration->phone_whatsapp = $body;
+        //     $configuration->save();
+        // }
+        // return 'error';
     }
 
-    
+
     public function uploadFile(Request $request)
     {
         if ($request->hasFile('file')) {
 
             $configuration = Configuration::first();
-            
-            
+
+
             $file = $request->file('file');
             $ext = $file->getClientOriginalExtension();
             $name = date('Ymd').'_'.$configuration->id.'.'.$ext;
-         
-            
+
+
             request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
-            
+
             $file->storeAs('public/uploads/header_images', $name);
 
 

@@ -39,6 +39,7 @@ class ItemResource extends JsonResource
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'calculate_quantity' => (bool) $this->calculate_quantity,
             'has_igv' => (bool) $this->has_igv,
+            'purchase_has_igv' => (bool) $this->purchase_has_igv,
             'has_perception' => (bool) $this->has_perception,
             'lots_enabled' => (bool) $this->lots_enabled,
             'percentage_perception' => $this->percentage_perception,
@@ -73,7 +74,9 @@ class ItemResource extends JsonResource
                 ];
             }),
             'commission_type' => $this->commission_type ?? 'amount',
-            'attributes' => $this->attributes ? $this->attributes : []
+            'attributes' => $this->attributes ? $this->attributes : [],
+            'series_enabled' => (bool)$this->series_enabled,
+            'lots_enabled' => (bool)$this->lots_enabled,
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [
