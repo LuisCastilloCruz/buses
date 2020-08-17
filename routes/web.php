@@ -43,6 +43,9 @@ if ($hostname) {
 
             //warehouse
             Route::post('orders/warehouse', 'Tenant\OrderController@searchWarehouse');
+            Route::get('orders/tables', 'Tenant\OrderController@tables');
+
+            Route::get('orders/tables/item/{internal_id}', 'Tenant\OrderController@item');
 
             //Status Orders
             Route::get('statusOrder/records', 'Tenant\StatusOrdersController@records');
@@ -175,7 +178,7 @@ if ($hostname) {
             Route::get('documents/record/{document}', 'Tenant\DocumentController@record');
             Route::post('documents', 'Tenant\DocumentController@store');
             Route::get('documents/send/{document}', 'Tenant\DocumentController@send');
-            Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
+            // Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
             Route::post('documents/email', 'Tenant\DocumentController@email');
             Route::get('documents/note/{document}', 'Tenant\NoteController@create');
             Route::get('documents/note/record/{document}', 'Tenant\NoteController@record');
@@ -183,6 +186,7 @@ if ($hostname) {
             Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
             Route::get('documents/re_store/{document}', 'Tenant\DocumentController@reStore');
             Route::get('documents/locked_emission', 'Tenant\DocumentController@messageLockedEmission');
+            Route::get('documents/note/has-documents/{document}', 'Tenant\NoteController@hasDocuments');
 
            Route::get('document_payments/records/{document_id}', 'Tenant\DocumentPaymentController@records');
            Route::get('document_payments/document/{document_id}', 'Tenant\DocumentPaymentController@document');
@@ -190,7 +194,7 @@ if ($hostname) {
            Route::post('document_payments', 'Tenant\DocumentPaymentController@store');
            Route::delete('document_payments/{document_payment}', 'Tenant\DocumentPaymentController@destroy');
            Route::get('document_payments/initialize_balance', 'Tenant\DocumentPaymentController@initialize_balance');
-           Route::get('document_payments/report/{start}/{end}', 'Tenant\DocumentPaymentController@report');
+           Route::get('document_payments/report/{start}/{end}/{report}', 'Tenant\DocumentPaymentController@report');
 
 
             Route::get('documents/send_server/{document}/{query?}', 'Tenant\DocumentController@sendServer');
@@ -200,7 +204,7 @@ if ($hostname) {
             Route::post('documents/import', 'Tenant\DocumentController@import');
             Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
-            Route::get('documents/payments/excel', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
+            Route::get('documents/payments/excel/{month}/{anulled}', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
 
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
@@ -221,6 +225,7 @@ if ($hostname) {
             Route::get('summaries/status/{summary}', 'Tenant\SummaryController@status');
             Route::get('summaries/columns', 'Tenant\SummaryController@columns');
             Route::delete('summaries/{summary}', 'Tenant\SummaryController@destroy');
+            Route::get('summaries/record/{summary}', 'Tenant\SummaryController@record');
 
             //Voided
             Route::get('voided', 'Tenant\VoidedController@index')->name('tenant.voided.index')->middleware('redirect.level','tenant.internal.mode');
@@ -340,6 +345,9 @@ if ($hostname) {
             Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular');
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');
+            Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
+            // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
+
 
 
             // Route::get('documents/send/{document}', 'Tenant\DocumentController@send');
@@ -348,6 +356,9 @@ if ($hostname) {
             // Route::get('documents/note/{document}', 'Tenant\NoteController@create');
             Route::get('purchases/item/tables', 'Tenant\PurchaseController@item_tables');
             // Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
+
+            Route::delete('purchases/destroy_purchase_item/{purchase_item}', 'PurchaseController@destroy_purchase_item');
+
 
             //quotations
             Route::get('quotations', 'Tenant\QuotationController@index')->name('tenant.quotations.index')->middleware('redirect.level');
@@ -411,7 +422,7 @@ if ($hostname) {
 
            Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
 
-           Route::get('sale-notes/downloadExternal/{external_id}', 'Tenant\SaleNoteController@downloadExternal');
+           Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
 
 
            //POS
@@ -597,6 +608,17 @@ if ($hostname) {
 
             Route::get('auto-update/version', 'System\UpdateController@version')->name('system.update.version');
 
+            //Configuration
+
+            Route::post('configurations', 'System\ConfigurationController@store');
+            Route::get('configurations/record', 'System\ConfigurationController@record');
+            Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
+
+            // backup
+            Route::get('backup', 'System\BackupController@index')->name('system.backup');
+            Route::get('backup/db', 'System\BackupController@db')->name('system.backup.db');
+            Route::get('backup/files', 'System\BackupController@files')->name('system.backup.files');
+            Route::post('backup/upload', 'System\BackupController@upload')->name('system.backup.upload');
 
         });
     });

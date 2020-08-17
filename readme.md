@@ -54,20 +54,20 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 [Documentación](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 
-[Colección para Postman](https://drive.google.com/file/d/1RuLOPbl1QoVfOPu-UH8VGkVSOfWiI0Ot/view?usp=sharing "Clic")
+[Colección para Postman](https://drive.google.com/file/d/18u_2U8z4tADIlZ0DbWg8-wg3JYYnT_t9/view?usp=sharing "Clic")
 
 ## Pruebas online
 
 ### Panel de administración
 
-[URL](https://facturador.pro "Clic")
+[URL](https://demo.aqpfact.pe "Clic")
 <br>
 Usuario: admin@gmail.com<br>
 Contraseña: 123456
 
 ### Panel de cliente
 
-[URL](https://demo.facturador.pro "Clic")
+[URL](https://demo.demo.aqpfact.pe "Clic")
 <br>
 Usuario: demo@gmail.com<br>
 Contraseña: 123456
@@ -91,7 +91,8 @@ Linux - Eliminar temporales: [Guía](https://docs.google.com/document/d/17-9F9xr
 Linux - Eliminar archivos por extensión: [Guía](https://docs.google.com/document/d/1M1s6EYF7sA89JccrXh7d_UhLB367F7Kk41yKCpSIzdo/edit#heading=h.ghi3ru1xdrna "Clic")<br>
 Configuración servidor alterno SUNAT: [Guía](https://docs.google.com/document/d/1pr-9ewFYY7JFtYg-0V5MY4R16OGv-02VH5MqXjeUCh0/edit#heading=h.nezjsyganf1w "Clic")<br>
 Habilitar debug: [Guía](https://drive.google.com/open?id=1OdU-rDjr_cxM7t3fujBxPnEQn7qMoxIO6KZNjiKzyvU "Clic")<br>
-Configuracion de API RUC/DNI (APIPERU): [Guía](https://docs.google.com/document/d/15_MjQBamZI20UC08p-zC9N3yrMhIqh8iObikZ_eNKKg/edit?usp=sharing "Clic")<br>
+Configuración de API RUC/DNI (APIPERU): [Guía](https://docs.google.com/document/d/15_MjQBamZI20UC08p-zC9N3yrMhIqh8iObikZ_eNKKg/edit?usp=sharing "Clic")<br>
+Configuración de tareas programadas (crontab-LAMP): [Guía](https://docs.google.com/document/d/1fv_wWZSbbhEBo_uHiIE80y7PcU3m-A-HhPTPgQBth3Y/edit?usp=sharing "Clic")<br>
 
 ### Base de datos
 Guía acceso a base de datos: [Guía](https://drive.google.com/open?id=1uZ_qt34I8HucJYmt_RfI2orgfl9_dpqIh8RukwiG1uM "Clic")<br>
@@ -106,6 +107,7 @@ Guía incrementar espacio disco: [Guía](https://docs.google.com/document/d/1hpE
 Limpiar inodes: [Guía](https://drive.google.com/open?id=1foPKDI3V3Z9uKTjRc2SPSoztVSOBevPAluT2BqFbfxA "Clic")<br>
 Migración servidor: [Guía](https://docs.google.com/document/d/1HjAoa2d6mPDVY5lrDxprwfteKrP6n100LeSox_g34Eg/edit "Clic")<br>
 Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE08nVjqyKGQ2BiupfQ0yODVBfTfhkSjjZuZLyv38 "Clic")<br>
+Habilitar puertos en Google Cloud: [Manual](https://docs.google.com/document/d/1pbCXJyRyR4VOaQ2BE3aJp-3_vhFIp-b6RXnT_6rtw1o/edit?usp=sharing "clic")<br>
 
 ### Laragon
 Acceso red local - laragon: [Guía](https://docs.google.com/document/d/13kOE5N5LJtCJIr3hswrfNgBYxi9wx07YwUCrAfgyCoQ/edit "Clic")<br>
@@ -120,16 +122,17 @@ Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suR
 Proyecto Espejo (Mirror/Fork): [Guía](https://docs.google.com/document/d/1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98/edit "Clic")<br>
 Migracion Jira-Issues(Gitlab): [Guía](https://docs.google.com/document/d/156wEGBlBiM35aFWbbnEi6HTWhag2TWtUMHkz_aoP7Lg/edit?usp=sharing "Clic")<br>
 
-## Soporte
+## Soporte - Prueba 
 
 * Use Issues como sistema de tickets para añadir sus sugerencias, problemas o inquietudes
 * Inconvenientes con facturación serán atendidos con prioridad
-* Una vez obtiene acceso al repositorio tendrá un año de vigencia, pasado el año debe renovar su contrato
-* Toda instalación es gestionada mediante los canales de Slack
+* Una vez que  obtiene acceso al repositorio tendrá vigencia hasta finalizar la contrata pactad, pasado el año debe renovar su contrato
+* Toda instalación es gestionada mediante los canales del administrador.
 * Nuevas instalaciones o actualizaciones deben ser programadas y gestionadas, para ser ejecutada el mismo día debe haber un problema previo
 
-## FacturaloPeru
+## AQPFACT - Peru
 
-[facturaloperu.com](http://facturaloperu.com "Clic")<br>
-soporte@facturaloperu.com<br>
-wsapp: 930 973 902<br>
+Proyecto BETA - Pronto Lanzamiento Oficial<br>
+soporte<br>
+WatsApp: +51950360472<br>
+ Sugerencias y/o cambios contactar

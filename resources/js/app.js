@@ -220,6 +220,7 @@ Vue.component('system-users-form', require('./views/system/users/form.vue'));
 Vue.component('system-certificate-index', require('./views/system/certificate/index.vue'));
 Vue.component('system-companies-form', require('./views/system/companies/form.vue'));
 
+Vue.component('system-accounting-index', require('@viewsModuleAccount/system/accounting/index.vue'));
 
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
@@ -243,6 +244,15 @@ Vue.component('tenant-account-configuration-index', require('./views/tenant/acco
 
 //auto update
 Vue.component('system-update', require('./views/system/update/index.vue'));
+
+//auto update
+Vue.component('system-backup', require('./views/system/backup/index.vue'));
+
+//culqi
+Vue.component('system-configuration-culqi', require('./views/system/configuration/culqi.vue'))
+
+//token
+Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 
 const app = new Vue({
     el: '#main-wrapper'
