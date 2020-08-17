@@ -50,7 +50,7 @@
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'configurations')?'nav-active':'' }}">
                         <a class="nav-link" href="{{route('system.configuration.index')}}">
-                            <i class="fas fa-cogs"></i><span>Cerfticado PSE</span>
+                            <i class="fas fa-cogs"></i><span>Configuracion</span>
                         </a>
                     </li>
                 </ul>
@@ -65,6 +65,27 @@
                     </li>
                 </ul>
             </nav>
+
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
+                    <li class="{{ ($path[0] === 'accounting')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{route('system.accounting.index')}}">
+                            <i class="fas fa-calculator"></i><span>Contabilidad</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
+                    <li class="{{ ($path[0] === 'backup')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{route('system.backup')}}">
+                            <i class="fas fa-download"></i><span>Backup</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
 
 
         <script>
