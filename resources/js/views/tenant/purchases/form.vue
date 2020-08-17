@@ -112,13 +112,13 @@
                         </div>
                         
                         <div class="col-md-8 mt-4">
-                            <div class="form-group" > 
+                            <div class="form-group" >
                                 <el-checkbox v-model="form.has_client" @change="changeHasClient">¿Desea agregar el cliente para esta compra?</el-checkbox>
                             </div>
                         </div>
 
                         <div class="col-md-8 mt-2 mb-2">
-                            <div class="form-group" > 
+                            <div class="form-group" >
                                 <el-checkbox v-model="form.has_payment" @change="changeHasPayment">¿Desea agregar pagos a esta compra?</el-checkbox>
                             </div>
                         </div>
@@ -145,14 +145,14 @@
                                 <thead>
                                     <tr width="100%">
                                         <th v-if="form.payments.length>0" class="pb-2">Forma de pago</th>
-                                        <th v-if="form.payments.length>0" class="pb-2">Destino</th>
+                                        <th v-if="form.payments.length>0" class="pb-2">Desde</th>
                                         <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
                                         <th v-if="form.payments.length>0" class="pb-2">Monto</th>
                                         <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(row, index) in form.payments" :key="index"> 
+                                    <tr v-for="(row, index) in form.payments" :key="index">
                                         <td>
                                             <div class="form-group mb-2 mr-2">
                                                 <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(true,index)">
@@ -177,16 +177,16 @@
                                                 <el-input v-model="row.payment"></el-input>
                                             </div>
                                         </td>
-                                        <td class="series-table-actions text-center"> 
+                                        <td class="series-table-actions text-center">
                                             <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickCancel(index)">
                                                 <i class="fa fa-trash"></i>
                                             </button>
-                                        </td> 
+                                        </td>
                                         <br>
                                     </tr>
-                                </tbody> 
-                            </table> 
-                        
+                                </tbody>
+                            </table>
+
 
                         </div>
 
@@ -226,6 +226,7 @@
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                         <td class="text-right">
+                                            <button v-if="purchase_order_id && row.item.series_enabled" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOpenSeries(index, row.quantity, row.lots)">Series</button>
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                         </td>
                                     </tr>
@@ -308,6 +309,12 @@
         <purchase-options :showDialog.sync="showDialogOptions"
                           :recordId="purchaseNewId"
                           :showClose="false"></purchase-options>
+
+        <series-form
+            ref="series_form"
+            @addRowLot="addRowLot">
+        </series-form>
+
     </div>
 </template>
 
@@ -318,10 +325,11 @@
     import PurchaseOptions from './partials/options.vue'
     import {functions, exchangeRate} from '../../../mixins/functions'
     import {calculateRowItem} from '../../../helpers/functions'
+    import SeriesForm from './partials/series'
 
     export default {
         props:['purchase_order_id'],
-        components: {PurchaseFormItem, PersonForm, PurchaseOptions},
+        components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm},
         mixins: [functions, exchangeRate],
         data() {
             return {
@@ -354,7 +362,8 @@
                 payment_destinations:  [],
                 currency_type: {},
                 loading_search: false,
-                purchaseNewId: null
+                purchaseNewId: null,
+                showDialogLots: false
             }
         },
         async created() {
@@ -456,21 +465,22 @@
                             }
 
                             // console.log(purchase_order.supplier_id)
-                            
+
                             this.form.items = response.data.data.purchase_order.items
-                            this.form.supplier_id = purchase_order.supplier_id 
+                            this.form.supplier_id = purchase_order.supplier_id
                             this.form.currency_type_id = purchase_order.currency_type_id
                             this.form.purchase_order_id = purchase_order.id
                             this.form.payments[0].payment_method_type_id = purchase_order.payment_method_type_id
                             this.form.payments[0].payment = purchase_order.total
                             this.form.total = purchase_order.total
                             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
-                            
+
                             this.form.items.forEach((it)=>{
                                 it.warehouse_id = warehouse.id
                                 it.charges = it.charges ? Object.values(it.charges):[]
                                 it.attributes = it.attributes ? Object.values(it.attributes):[]
                                 it.discounts = it.discounts ? Object.values(it.discounts):[]
+                                it.lots = it.item.lots ? it.item.lots:[]
                             })
                             // this.changeDocumentType()
 
@@ -479,7 +489,7 @@
                 }
             },
             async validate_payments(){
- 
+
                 let error_by_item = 0
                 let acum_total = 0
                 let q_affectation_free = 0
@@ -497,7 +507,7 @@
                 })
 
                 let all_free = (q_affectation_free == this.form.items.length) ? true : false
-    
+
                 if(!all_free && (acum_total > parseFloat(this.form.total) || error_by_item > 0)) {
                     return  {
                         success : false,
@@ -537,7 +547,7 @@
                     payment_destination_id:'cash',
                     payment: 0,
                 });
-            },   
+            },
             initInputPerson(){
                 this.input_person = {
                     number:'',
@@ -677,7 +687,6 @@
                     customer_id: null,
                     has_client: false,
                     has_payment: false,
-                    type_basimp: '01'
 
                 }
                 this.clickAddPayment()
@@ -777,7 +786,7 @@
 
             },
             setTotalDefaultPayment(){
-                
+
                 if(this.form.payments.length > 0){
 
                     this.form.payments[0].payment = this.form.total
@@ -816,13 +825,14 @@
                         this.form.total_perception = null
 
                     }
-
                 }
-
-
             },
             async submit() {
-          
+                let validate_item_series = await this.validationItemSeries()
+                if(!validate_item_series.success) {
+                    return this.$message.error(validate_item_series.message);
+                }
+
                 let validate = await this.validate_payments()
                 if(!validate.success) {
                     return this.$message.error(validate.message);
@@ -882,6 +892,38 @@
 
                 })
             },
+            clickOpenSeries(ind, qt, lt)
+            {
+                this.$refs.series_form.openDialog(ind, qt, lt)
+            },
+            addRowLot({lots, indexItem})
+            {
+                console.log(lots, indexItem)
+                this.form.items[indexItem].lots = lots
+            },
+            async validationItemSeries()
+            {
+                let error = 0
+
+                await this.form.items.forEach( (element) => {
+
+                    if(element.item.series_enabled)
+                    {
+                        const count_lot = element.lots ? element.lots.length : 0
+                        if(element.quantity != count_lot)
+                        {
+                            error ++;
+                        }
+                    }
+                })
+
+                if(error>0)
+                    return {success:false, message:'Las series y la cantidad en los productos deben ser iguales.'}
+
+
+                return {success:true, message: ''}
+            }
+
         }
     }
 </script>

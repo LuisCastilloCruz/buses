@@ -77,6 +77,22 @@
                                     <small class="form-control-feedback" v-if="errors.detraction_account" v-text="errors.detraction_account[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Rúbrica (Firma digital)</label>
+                                    <el-input v-model="form.img_firm" :readonly="true">
+                                        <el-upload slot="append"
+                                                   :headers="headers"
+                                                   :data="{'type': 'img_firm'}"
+                                                   action="/companies/uploads"
+                                                   :show-file-list="false"
+                                                   :on-success="successUpload">
+                                            <el-button type="primary" icon="el-icon-upload"></el-button>
+                                        </el-upload>
+                                    </el-input>
+                                    <div class="sub-title text-danger"><small>Se recomienda resoluciones 700x300</small></div>
+                                </div>
+                            </div>
                             <div class="col-md-6" v-if="form.soap_type_id == '02'">
                                 <div class="form-group" :class="{'has-danger': errors.certificate_due}">
                                     <label class="control-label">Vencimiento de Certificado</label>
@@ -104,11 +120,11 @@
                                         <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
 
-                                    <el-checkbox
+                                    <!-- <el-checkbox
                                            v-if="form.soap_send_id == '02' && form.soap_type_id == '01'"
                                            v-model="toggle"
                                            label="Ingresar Usuario">
-                                    </el-checkbox>
+                                    </el-checkbox> -->
                                     <small class="form-control-feedback" v-if="errors.soap_type_id" v-text="errors.soap_type_id[0]"></small>
                                 </div>
                             </div>
@@ -122,10 +138,10 @@
                                 </div>
                             </div>
                         </div>
-                        <template v-if="form.soap_type_id == '02' || toggle == true ">
+                        <template v-if="form.soap_type_id == '02' || form.soap_send_id == '02'">
                             <div class="row" >
                                 <div class="col-md-12 mt-2">
-                                    <h4 class="border-bottom">Usuario Secundario Sunat</h4>
+                                    <h4 class="border-bottom">Usuario Secundario Sunat/OSE</h4>
                                 </div>
                             </div>
                             <div class="row">
@@ -215,7 +231,8 @@
                     detraction_account: null,
                     operation_amazonia: false,
                     toggle: false,
-                    config_system_env: false
+                    config_system_env: false,
+                    img_firm: null
 
                 }
             },
@@ -231,7 +248,7 @@
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
-                            this.errors = error.response.data.errors
+                            this.errors = error.response.data
                         } else {
                             console.log(error)
                         }

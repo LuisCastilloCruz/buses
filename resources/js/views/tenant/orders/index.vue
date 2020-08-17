@@ -1,3 +1,5 @@
+
+
 <template>
   <div v-loading="loading_submit">
     <div class="page-header pr-0">
@@ -89,7 +91,7 @@
                 ></el-option>
               </el-select>
             </td>
-            <td>{{row.number_document}}</td>
+            <td class="text-center">{{row.number_document}}</td>
             <td class="text-center">
               <el-button v-if="row.document_external_id" class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.document_external_id)"></el-button>
             </td>
@@ -154,17 +156,22 @@
       :statusDocument="statusDocument"
       :resource="resource_options"
     ></options-form>
+
+    <document-form :order_id="order_id" :user="user" :document_types="document_types" ref="document_form">
+
+    </document-form>
   </div>
 </template>
 <script>
 import DataTable from "../../../components/DataTable.vue";
 import queryString from "query-string";
 import OptionsForm from "../pos/partials/options.vue";
+import DocumentForm from "./partials/document_form.vue";
 
 export default {
   props: ['user'],
 
-  components: { DataTable, OptionsForm },
+  components: { DataTable, OptionsForm, DocumentForm},
   data() {
     return {
       showDialog: false,
@@ -184,10 +191,13 @@ export default {
       documentNewId: null,
       statusDocument: {},
       resource_options: null,
-      loading_submit: false
+      loading_submit: false,
+      document_types:[],
+      order_id: null
+
     }
   },
-  created() {
+  async created() {
     this.$http.get(`/statusOrder/records`).then(response => {
       this.options = response.data;
     });
@@ -230,8 +240,17 @@ export default {
     async updateStatus(record) {
       this.record = record
       if (record.status_order_id === 2) {
-        this.loading_submit = true
-        await this.sendDocument(record.purchase)
+
+         this.order_id =  record.id
+
+        if(record.document_external_id)
+        {
+            return this.$message.success("Ya existe un comprobante.")
+        }
+
+        this.$refs.document_form.sendPreview(record.purchase)
+        //this.loading_submit = true
+        //await this.sendDocument(record.purchase)
       } else if (record.status_order_id === 3) {
         this.totalProduct = await this.products(record)
         await this.$http
@@ -287,14 +306,7 @@ export default {
         this.showDialogOptions = false
       });
     },
-    async sendDocument(purchase) {
-      await this.$http.post(`/api/documents`, purchase, this.getHeaderConfig()).then(response => {
-        this.finallyProcess(this.getDataFinally(response.data))
-      }).catch(error => {
-        this.loading_submit = false
-        this.$message.error(error.response.data.message)
-      })
-    },
+
     getHeaderConfig() {
       let token = this.user.api_token
       let httpConfig = {
@@ -305,28 +317,8 @@ export default {
       }
       return httpConfig
     },
-    finallyProcess(form) {
-      this.$http.post(`/ecommerce/transaction_finally`, form, this.getHeaderConfig()).then(response => {
-        this.saveUpdateStatus()
-        this.$message.success('transaccion finalizada correctamente')
-        this.$eventHub.$emit('reloadData')
-      }).catch(error => {
-        this.$message.error(error.response.data.message)
-      }).then(() => {
-        this.loading_submit = false
-      })
-    },
-    getDataFinally(document) {
-      return {
-        document_external_id: document.data.external_id,
-        number_document: document.number,
-        orderId: this.record.id,
-        product: 'Compras Ecommerce Facturador Pro',
-        precio_culqi: Number(this.record.total),
-        identity_document_type_id: (this.record.purchase.serie_documento === 'B001') ? '1' : '6',
-        number: (this.record.purchase.serie_documento === 'B001') ? 'dni' : 'ruc'
-      }
-    }
-  }
+
+  },
+
 }
 </script>

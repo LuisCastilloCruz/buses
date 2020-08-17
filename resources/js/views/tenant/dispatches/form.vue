@@ -288,6 +288,18 @@
                                 <small class="form-control-feedback" v-if="errors.license_plate" v-text="errors.license_plate[0]"></small>
                             </div>
                         </div>
+                        <div class="col-lg-4">
+                            <div class="form-group" >
+                                <label class="control-label">Licencia del conductor</label>
+                                <el-input v-model="form.driver.license" ></el-input>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group" >
+                                <label class="control-label">N° placa semirremolque</label>
+                                <el-input v-model="form.secondary_license_plates.semitrailer" ></el-input>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <hr>
@@ -330,18 +342,25 @@
         <!--<person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>-->
 
         <!--<items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>-->
+        
+        <dispatch-options :showDialog.sync="showDialogOptions"
+                            :recordId="recordId"
+                            :showClose="false"
+                            :isUpdate="true"></dispatch-options>
     </div>
 </template>
 
 <script>
     import PersonForm from '../persons/form.vue';
     import Items from './items.vue';
+    import DispatchOptions from './partials/options.vue'
 
     export default {
         props: ['document', 'typeDocument', 'dispatch'],
-        components: {PersonForm, Items},
+        components: {PersonForm, Items, DispatchOptions},
         data() {
             return {
+                showDialogOptions: false,
                 showDialogNewPerson: false,
                 identityDocumentTypes: [],
                 showDialogAddItems: false,
@@ -370,6 +389,7 @@
                 errors: {
                     errors: {}
                 },
+                recordId:null,
                 form: {}
             }
         },
@@ -426,6 +446,10 @@
                 this.form.driver = this.dispatch.driver
                 this.form.license_plate = this.dispatch.license_plate
 
+                if(this.dispatch.secondary_license_plates){
+                    this.form.secondary_license_plates = this.dispatch.secondary_license_plates
+                }
+
             }
 
             // console.log(this.dispatch)
@@ -461,7 +485,8 @@
                         identity_document_type_id: null
                     },
                     driver: {
-                        identity_document_type_id: null
+                        identity_document_type_id: null,
+                        license: null,
                     },
                     delivery: {
                         country_id: 'PE',
@@ -477,6 +502,9 @@
                         invoice_number: this.document.series+'-'+this.document.number
                     },
                     items: [],
+                    secondary_license_plates: {
+                        semitrailer: null
+                    }
 
                 }
             },
@@ -565,8 +593,12 @@
 
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                         if (response.data.success) {
-                            this.$message.success(response.data.message)
-                            location.href = '/dispatches'
+
+                            // this.$message.success(response.data.message)
+                            // location.href = '/dispatches'
+                            this.recordId = response.data.data.id
+                            this.showDialogOptions = true
+
                         } else {
                             this.$message.error(response.data.message)
                         }

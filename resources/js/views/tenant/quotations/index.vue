@@ -27,7 +27,7 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
-                        <th class="text-center" v-if="columns.delivery_date.visible">Fecha Entrega</th>
+                        <th class="text-center" v-if="columns.delivery_date.visible">T. Entrega</th>
                         <th>Vendedor</th>
                         <th>Cliente</th>
                         <th>Estado</th>
@@ -91,6 +91,10 @@
                                         <tr>
                                             <td><strong>O. Venta: </strong></td>
                                             <td><strong>{{row.sale_opportunity_number_full}}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Detalle: </strong></td>
+                                            <td><strong>{{row.sale_opportunity.detail}}</strong></td>
                                         </tr>
                                         <tr  class="mt-4 mb-4">
                                             <td><strong>F. Emisión:</strong></td>
@@ -216,7 +220,7 @@
                         visible: false
                     },
                     delivery_date: {
-                        title: 'F.Entrega',
+                        title: 'T.Entrega',
                         visible: false
                     }
                 }

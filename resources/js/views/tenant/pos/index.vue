@@ -1,20 +1,41 @@
 <template >
-  <div>
-    <header class="page-header pr-0">
+  <div class="container-fluid">
+    <div class="row page-header pr-0" style="height:auto">
+      <Keypress key-event="keyup" :key-code="112" @success="handleFn112" />
+     <!-- <Keypress key-event="keyup" :key-code="113" @success="handleFn113" /> -->
+
+
       <!-- <h2 class="text-sm">POS</h2>
       <div class="right-wrapper pull-right">
         <h2 class="text-sm pr-5">T/C 3.321</h2>
         <h2 class="text-sm">{{user.name}}</h2>
       </div> -->
-      <div class="row">
         <div class="col-md-4">
           <h2 class="text-sm">POS</h2>
           <h2><el-switch v-model="search_item_by_barcode" active-text="Buscar por código de barras" @change="changeSearchItemBarcode"></el-switch></h2>
         </div>
         <div class="col-md-4">
-            <h2>  <button type="button" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
-            <h2>  <button type="button" :disabled="place == 'cat2'" @click="setView"  class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button> </h2>
-            <h2>  <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button> </h2>
+            <h2>
+                <el-tooltip class="item" effect="dark" content="Todas las categorías" placement="top-start">
+                    <button type="button" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button>
+                </el-tooltip>
+            </h2>
+            <h2>
+                <el-tooltip class="item" effect="dark" content="Categorías y productos" placement="top-start">
+                    <button type="button" :disabled="place == 'cat2'" @click="setView('cat2')"  class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button>
+                </el-tooltip>
+            </h2>
+            <h2>
+                <el-tooltip class="item" effect="dark" content="Listado de todos los productos" placement="top-start">
+                    <button type="button" :disabled="place == 'cat3'"  @click="setView('cat3')" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fas fa-list-ul"></i></i></button>
+                </el-tooltip>
+            </h2>
+            <h2>
+                <el-tooltip class="item" effect="dark" content="Regresar" placement="top-start">
+                    <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button>
+                </el-tooltip>
+            </h2>
+
         </div>
         <div class="col-md-4">
           <div class="right-wrapper">
@@ -22,8 +43,8 @@
             <h2 class="text-sm  pull-right">{{user.name}}</h2>
           </div>
         </div>
-      </div>
-    </header>
+
+    </div>
 
 
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
@@ -31,15 +52,16 @@
 
         <template v-if="!search_item_by_barcode">
           <el-input
-              v-show="place  == 'prod' || place == 'cat2'"
+              v-show="place  == 'prod' || place == 'cat2' || place == 'cat3'"
               placeholder="Buscar productos"
               size="medium"
               v-model="input_item"
               @input="searchItems"
-              autofocus
+
               @keyup.native="keyupTabCustomer"
               @keyup.enter.native="keyupEnterAddItem"
               class="m-bottom"
+              ref="ref_search_items"
             >
             <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
           </el-input>
@@ -47,13 +69,14 @@
 
         <template v-else>
             <el-input
-                v-show="place  == 'prod' || place == 'cat2'"
+                v-show="place  == 'prod' || place == 'cat2' || place == 'cat3'"
                 placeholder="Buscar productos"
                 size="medium"
                 v-model="input_item"
                 @change="searchItemsBarcode"
-                autofocus
+
                 @keyup.native="keyupTabCustomer"
+                ref="ref_search_items"
                 class="m-bottom"
               >
               <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
@@ -82,7 +105,6 @@
             </template>
 
         </div>
-
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <template v-for="(item,index) in items">
@@ -114,15 +136,15 @@
                   <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                   <template v-if="!item.edit_unit_price">
-                    <h5   class="font-weight-semibold text-right text-white" >
+                    <h5 class="font-weight-semibold text-right text-white" >
                       <button v-if="configuration.options_pos" type="button" class="btn btn-xs btn-primary-pos" @click="clickOpenInputEditUP(index)"><span style='font-size:16px;'>&#9998;</span> </button>
-                      {{item.currency_type_symbol}} {{item.sale_unit_price}}
+                      ({{ item.unit_type_id }}) {{item.currency_type_symbol}} {{item.sale_unit_price}}
                     </h5>
                   </template>
                   <template v-else>
-                    <el-input     min="0"  v-model="item.edit_sale_unit_price" class="mt-3 mb-3" size="mini">
-                      <el-button slot="append" icon="el-icon-check" type="primary" @click="clickEditUnitPriceItem(index)"></el-button>
-                      <el-button slot="append" icon="el-icon-close" type="danger" @click="clickCancelUnitPriceItem(index)"></el-button>
+                    <el-input min="0" v-model="item.edit_sale_unit_price" class="mt-3 mb-3" size="mini">
+                    <el-button slot="append" icon="el-icon-check" type="primary" @click="clickEditUnitPriceItem(index)"></el-button>
+                    <el-button slot="append" icon="el-icon-close" type="danger" @click="clickCancelUnitPriceItem(index)"></el-button>
                     </el-input>
                   </template>
 
@@ -135,24 +157,83 @@
                     </el-table>
                     <button type="button" style="width:100% !important;" slot="reference" class="btn btn-xs btn-default " @click="clickHistorySales(item.item_id)"><i class="fa fa-search"></i></button>
                   </el-popover> -->
-                  <el-tooltip class="item" effect="dark" content="Visualizar stock" placement="bottom-end">
-                    <button type="button" style="width:33.5% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
+                  <!--<el-tooltip class="item" effect="dark" content="Visualizar stock" placement="bottom-end">
+                    <button type="button" style="width:25% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
                       <i class="fa fa-search"></i>
                     </button>
                   </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="Visualizar historial de ventas del producto (precio venta) y cliente" placement="bottom-end">
-                    <button type="button" style="width:33% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
+                    <button type="button" style="width:25% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="Visualizar historial de compras del producto (precio compra)" placement="bottom-end">
-                    <button type="button" style="width:33.5% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                    <button type="button" style="width:25% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
                   </el-tooltip>
+
+                  <el-popover
+                    placement="top-start"
+                    title="Title"
+                    width="400"
+                    trigger="hover"
+                    content="this is content, this is content, this is content">
+                    <el-button slot="reference">Hov</el-button>
+                </el-popover>-->
+
+                <el-row style="width:100%">
+                    <el-col :span="6">
+                        <el-tooltip class="item" effect="dark" content="Visualizar stock" placement="bottom-end">
+                            <button style="width:100%" type="button" class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </el-tooltip>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-tooltip class="item" effect="dark" content="Visualizar historial de ventas del producto (precio venta) y cliente" placement="bottom-end">
+                            <button type="button" style="width:100%;" class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
+                        </el-tooltip>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-tooltip class="item" effect="dark" content="Visualizar historial de compras del producto (precio compra)" placement="bottom-end">
+                            <button type="button" style="width:100%" class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                        </el-tooltip>
+                    </el-col>
+                     <el-col :span="6">
+                         <el-tooltip class="item" effect="dark" content="Visualizar precios disponibles" placement="bottom-end">
+                            <el-popover
+                                placement="top"
+                                title="Precios"
+                                width="240"
+                                trigger="click"
+                                >
+                                <el-table v-if="item.unit_type" :data="item.unit_type">
+                                    <el-table-column width="90" label="Precio">
+                                      <template slot-scope="{row}">
+                                        <span v-if="row.price_default == 1" > {{row.price1}} </span>
+                                        <span v-else-if="row.price_default == 2" > {{row.price2}} </span>
+                                        <span v-else-if="row.price_default == 3" > {{row.price3}} </span>
+                                      </template>
+                                    </el-table-column>
+                                    <el-table-column width="80" label="Unidad" property="unit_type_id"></el-table-column>
+                                    <el-table-column width="80" label="">
+                                        <template slot-scope="{row}" >
+                                            <button @click="setPriceItem(row, index)" type="button" class="btn btn-custom btn-xs"><i class="fas fa-check"></i></button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                                <button slot="reference" type="button" style="width:100%" class="btn btn-xs btn-primary-pos"><i class="fa fa-money-bill-alt"></i></button>
+                            </el-popover>
+                        </el-tooltip>
+                    </el-col>
+                </el-row>
+
                 </div>
               </section>
             </div>
           </template>
         </div>
+
+        <table-items ref="table_items"  @clickAddItem="clickAddItem" @clickWarehouseDetail="clickWarehouseDetail" @clickHistorySales="clickHistorySales" @clickHistoryPurchases="clickHistoryPurchases" v-if="place == 'cat3'" :records="items" :visibleTagsCustomer="focusClienteSelect" ></table-items>
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <div class="col-md-12 text-center">
@@ -164,7 +245,8 @@
               :page-size="pagination.per_page">
             </el-pagination>
           </div>
-        </div><br>
+        </div>
+
 
       </div>
       <div class="col-lg-4 col-md-6 bg-white m-0 p-0" style="height: calc(100vh - 110px)">
@@ -179,6 +261,9 @@
                 @change="changeCustomer"
                 @keyup.native="keyupCustomer"
                 @keyup.enter.native="keyupEnterCustomer"
+                @focus="focusClienteSelect = true"
+                @blur="focusClienteSelect = false"
+
               >
                 <el-option
                   v-for="option in all_customers"
@@ -226,6 +311,9 @@
                       <p class="m-0">{{item.item.description}}</p>
                       <small> {{nameSets(item.item_id)}} </small>
                       <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
+                    </td>
+                    <td>
+                        <small>{{ item.unit_type_id }}</small>
                     </td>
                     <!-- <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
@@ -395,6 +483,10 @@
 </template>
 <style>
 
+.el-select-dropdown__item.hover {
+    /* background-color: red; */
+    background-color: #e6e9ee;
+}
 
 /* The heart of the matter */
 .testimonial-group > .row {
@@ -444,6 +536,7 @@
 </style>
 
 <script>
+      import Keypress from 'vue-keypress'
       import { calculateRowItem } from "../../../helpers/functions";
       import PaymentForm from "./partials/payment.vue";
       import ItemForm from "./partials/form.vue";
@@ -453,10 +546,10 @@
       import PersonForm from "../persons/form.vue";
       import WarehousesDetail from '../items/partials/warehouses.vue'
       import queryString from 'query-string'
-
+      import TableItems from './partials/table.vue'
       export default {
         props: ['configuration', 'soapCompany', 'businessTurns'],
-        components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail},
+        components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail, Keypress, TableItems},
         mixins: [functions, exchangeRate],
 
         data() {
@@ -493,7 +586,8 @@
             categories: [ ],
             colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3'],
             pagination: {},
-            category_selected: ''
+            category_selected: '',
+            focusClienteSelect: false,
           };
         },
         async created() {
@@ -505,9 +599,10 @@
           await this.initCurrencyType()
           this.customer = await this.getLocalStorageIndex('customer')
 
-           if(document.querySelector('.sidebar-toggle')){
-               document.querySelector('.sidebar-toggle').click()
-           }
+          if(document.querySelector('.sidebar-toggle')){
+              document.querySelector('.sidebar-toggle').click()
+          }
+
         },
 
         computed:{
@@ -547,9 +642,19 @@
                 }
             }
         },
-
         methods: {
-          
+
+            handleFn112(response)
+            {
+              this.search_item_by_barcode = !this.search_item_by_barcode
+            },
+            handleFn113()
+            {
+                this.setView('cat3')
+            },
+            initFocus(){
+                this.$refs.ref_search_items.$el.getElementsByTagName('input')[0].focus()
+            },
             keyupTabCustomer(e){
               // console.log(e.keyCode)
               if(e.keyCode === 9){
@@ -558,6 +663,10 @@
 
             },
             keyupEnterAddItem(){
+                if(this.place == 'cat3')
+                {
+                    return false
+                }
 
               if (this.items.length == 1) {
 
@@ -570,7 +679,7 @@
                   this.$message.warning('No puede añadir directamente el producto al listado, hay más de uno ubicado en la búsqueda')
 
               }
-              
+
             },
             filterCategorie(id,  mod = false)
             {
@@ -666,6 +775,24 @@
             this.items[index].edit_unit_price = false
 
           },
+          setPriceItem(price, index)
+            {
+                let value = 0
+                switch(price.price_default)
+                {
+                    case 1: value = price.price1
+                        break;
+                    case 2: value = price.price2
+                        break;
+                    case 3: value = price.price3
+                        break;
+                }
+
+                this.items[index].sale_unit_price = value
+                this.items[index].unit_type_id = price.unit_type_id
+                this.items[index].presentation = price
+                this.$message.success('Precio seleccionado')
+            },
           clickWarehouseDetail(item){
             this.unittypeDetail = item.unit_type
               this.warehousesDetail = item.warehouses
@@ -687,11 +814,16 @@
           },
           keyupEnterCustomer(){
 
+            if(this.place == 'cat3')
+            {
+                return false
+            }
+
             if(this.form.customer_id){
 
               this.clickPayment()
               return
-              
+
             }
 
             if(this.input_person.number){
@@ -717,6 +849,11 @@
             }
           },
           keyupCustomer(e){
+
+            if(this.place == 'cat3')
+            {
+                  return false
+            }
 
             if(e.key !== "Enter"){
 
@@ -772,11 +909,18 @@
             this.calculateTotal();
           },
           changeCustomer() {
+
+            console.log('clien 13')
+
+
             let customer = _.find(this.all_customers, { id: this.form.customer_id });
             this.customer = customer;
-            this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
+            // this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
+            this.form.document_type_id = "03";
             this.setLocalStorageIndex('customer', this.customer)
             this.setFormPosLocalStorage()
+
+
           },
 
           getLocalStorageIndex(key, re_default = null){
@@ -808,7 +952,14 @@
               this.initForm();
               this.changeExchangeRate()
               this.cancelFormPosLocalStorage()
+              this.$nextTick(() => {
+                this.initFocus();
+              });
             });
+
+            // await this.$eventHub.$on("indexInitFocus", () => {
+            //   if(!this.is_payment) this.initFocus()
+            // });
 
             await this.$eventHub.$on("reloadDataPersons", customer_id => {
               this.reloadDataCustomers(customer_id);
@@ -829,7 +980,7 @@
           initForm() {
             this.form = {
               establishment_id: null,
-              document_type_id: "01",
+              document_type_id: "03",
               series_id: null,
               prefix: null,
               number: "#",
@@ -932,7 +1083,7 @@
           async clickAddItem(item, index, input = false) {
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
-            let exist_item = _.find(this.form.items, { item_id: item.item_id });
+            let exist_item = _.find(this.form.items, { item_id: item.item_id, unit_type_id: item.unit_type_id });
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
 
@@ -983,9 +1134,11 @@
                 exchangeRateSale
               );
 
+              this.row['unit_type_id'] = item.unit_type_id;
+
               this.form.items[pos] = this.row;
             } else {
-              response = await this.getStatusStock(item.item_id, 1);
+              response = await this.getStatusStock(item.item_id, item.presentation ? parseInt(item.presentation.quantity_unit) : 1);
               if (!response.success) {
                 this.loading = false;
                 return this.$message.error(response.message);
@@ -1002,7 +1155,7 @@
 
               this.form_item.unit_price = unit_price;
               this.form_item.item.unit_price = unit_price;
-              this.form_item.item.presentation = null;
+              this.form_item.item.presentation = item.presentation ? item.presentation : null;
 
               this.form_item.charges = [];
               this.form_item.discounts = [];
@@ -1019,6 +1172,8 @@
                 exchangeRateSale
               );
               // console.log(this.row)
+
+              this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : 'NIU';
 
               this.form.items.push(this.row);
               item.aux_quantity = 1;
@@ -1163,10 +1318,11 @@
                     })
           },
           async searchItems() {
+
             if (this.input_item.length > 0) {
               this.loading = true
               let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;
-              
+
                 await this.$http.get(`/${this.resource}/search_items_cat?${parameters}`).then(response => {
                   if(response.data.data.length > 0) {
                     this.all_items = response.data.data
@@ -1281,9 +1437,16 @@
               this.place = 'cat'
               this.loading = false
             },
-            setView()
+            async setView(view)
             {
-                  this.place = 'cat2'
+                  this.place = view
+
+                  if(view == 'cat3')
+                  {
+                    this.category_selected = ''
+                    await this.getRecords()
+                    this.$refs.table_items.reset()
+                  }
             },
             nameSets(id)
             {

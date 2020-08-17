@@ -286,6 +286,18 @@
                                 <small class="form-control-feedback" v-if="errors.license_plate" v-text="errors.license_plate[0]"></small>
                             </div>
                         </div>
+                        <div class="col-lg-4">
+                            <div class="form-group" >
+                                <label class="control-label">Licencia del conductor</label>
+                                <el-input v-model="form.driver.license" ></el-input>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group" >
+                                <label class="control-label">N° placa semirremolque</label>
+                                <el-input v-model="form.secondary_license_plates.semitrailer" ></el-input>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <hr>
@@ -330,18 +342,26 @@
         <person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>
 
         <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
+
+        <dispatch-options :showDialog.sync="showDialogOptions"
+                            :recordId="recordId"
+                            :showClose="false"
+                            :isUpdate="(order_form_id) ? true:false"></dispatch-options>
+
     </div>
 </template>
 
 <script>
     import PersonForm from '../persons/form.vue';
     import Items from './items.vue';
+    import DispatchOptions from './partials/options.vue'
 
     export default {
         props: ['order_form_id'],
-        components: {PersonForm, Items},
+        components: {PersonForm, Items, DispatchOptions},
         data() {
             return {
+                showDialogOptions: false,
                 showDialogNewPerson: false,
                 identityDocumentTypes: [],
                 showDialogAddItems: false,
@@ -368,7 +388,9 @@
                 errors: {
                     errors: {}
                 },
-                form: {}
+                form: {},
+                recordId:null,
+                company: {},
             }
         },
         async created() {
@@ -376,6 +398,7 @@
             await this.initForm()
 
             await this.$http.post(`/${this.resource}/tables`).then(response => {
+                this.company = response.data.company;
                 this.identityDocumentTypes = response.data.identityDocumentTypes;
                 this.transferReasonTypes = response.data.transferReasonTypes;
                 this.transportModeTypes = response.data.transportModeTypes;
@@ -390,20 +413,31 @@
                 this.seriesAll = response.data.series;
             });
 
+            await this.setDefaultCustomer()
+
             await this.createFromOrderForm()
         },
         methods: {
+            setDefaultCustomer(){
+
+                let customer = _.find(this.customers, {number: this.company.number})
+
+                if(customer){
+                    this.form.customer_id = customer.id
+                }
+
+            },
             createFromOrderForm(){
 
                 if(this.order_form_id){
 
                     this.$http.get(`/order-forms/record/${this.order_form_id}` )
                         .then(response => {
-                            
+
                             let order_form = response.data.data.order_form
                             // console.log(order_form)
                             // this.form = order_form
-                            
+
                             this.form.establishment_id = order_form.establishment_id
                             this.form.establishment = order_form.establishment
                             this.form.date_of_issue = order_form.date_of_issue
@@ -444,9 +478,9 @@
                             });
 
                             this.changeEstablishment()
-                        
+
                         })
-                
+
                 }
             },
             initForm() {
@@ -474,7 +508,8 @@
                         identity_document_type_id: null
                     },
                     driver: {
-                        identity_document_type_id: null
+                        identity_document_type_id: null,
+                        license: null,
                     },
                     delivery: {
                         country_id: 'PE',
@@ -492,6 +527,9 @@
                     items: [],
                     reference_order_form_id: null,
                     license_plate:null,
+                    secondary_license_plates: {
+                        semitrailer: null
+                    }
 
                 }
             },
@@ -561,9 +599,14 @@
             clickRemoveItem(index) {
                 this.form.items.splice(index, 1);
             },
-            submit() {
+            async submit() {
 
-                // console.log(this.form)
+                const validateQuantity = await  this.verifyQuantityItems()
+                if(!validateQuantity.validate)
+                {
+                    return this.$message.error('Los productos no pueden tener cantidad 0.')
+                }
+
                 if(this.form.origin.location_id.length != 3 || this.form.delivery.location_id.length != 3)
                     return this.$message.error('El campo ubigeo es obligatorio')
 
@@ -573,11 +616,14 @@
                         if (response.data.success) {
                             this.initForm();
 
-                            this.$message.success(response.data.message)
+                            // this.$message.success(response.data.message)
+                            // console.log(response)
+                            this.recordId = response.data.data.id
+                            this.showDialogOptions = true
 
-                            if(this.order_form_id){
-                                this.close()
-                            }
+                            // if(this.order_form_id){
+                            //     this.close()
+                            // }
                         }
                         else {
                             this.$message.error(response.data.message);
@@ -621,6 +667,17 @@
             close() {
                 location.href = '/dispatches';
             },
+            verifyQuantityItems()
+            {
+                let validate = true
+                this.form.items.forEach( (element) => {
+
+                    if(parseInt(element.quantity) < 1) validate= false
+
+                })
+
+                return { validate }
+            }
         }
     }
 </script>
