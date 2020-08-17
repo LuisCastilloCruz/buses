@@ -88,6 +88,7 @@ trait FinanceTrait
         $company = Company::active();
 
         $model->global_payment()->create([
+            'user_id' => auth()->id(),
             'soap_type_id' => $company->soap_type_id,
             'destination_id' => $destination['destination_id'],
             'destination_type' => $destination['destination_type'],
@@ -230,7 +231,7 @@ trait FinanceTrait
 
             $entry = $document_payment + $sale_note_payment + $quotation_payment + $contract_payment + $income_payment;
             $egress = $expense_payment + $purchase_payment;
-            $balance = $entry - $egress;
+            $balance = $row->initial_balance + $entry - $egress;
 
             return [
 
