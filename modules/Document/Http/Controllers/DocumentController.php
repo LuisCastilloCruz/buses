@@ -20,6 +20,9 @@ use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use App\Models\Tenant\Item;
 use Modules\Document\Traits\SearchTrait;
+use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Document\Helpers\ConsultCdr;
+
 
 class DocumentController extends Controller
 {
@@ -117,6 +120,13 @@ class DocumentController extends Controller
 
     public function upload(Request $request)
     {
+        
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg');
+        
+        if(!$validate_upload['success']){
+            return $validate_upload;
+        }
+        
         if ($request->hasFile('file')) {
             $new_request = [
                 'file' => $request->file('file'),
@@ -225,14 +235,20 @@ class DocumentController extends Controller
     {
 
         $prepayment_documents = Document::whereHasPrepayment()->whereAffectationTypePrepayment($type)->get()->transform(function($row) {
+            
+            $total = round($row->pending_amount_prepayment, 2);
+            $amount = ($row->affectation_type_prepayment == '10') ? round($total/1.18, 2) : $total;
+
             return [
                 'id' => $row->id,
                 'description' => $row->series.'-'.$row->number,
                 'series' => $row->series,
                 'number' => $row->number,
                 'document_type_id' => ($row->document_type_id == '01') ? '02':'03',
-                'amount' => $row->total_value,
-                'total' => $row->total,
+                // 'amount' => $row->total_value,
+                // 'total' => $row->total,
+                'amount' => $amount,
+                'total' => $total,
 
             ];
         });
@@ -411,6 +427,16 @@ class DocumentController extends Controller
         });
 
         return compact('items');
+    }
+
+    
+    public function consultCdr($document_id)
+    {
+
+        $document = Document::find($document_id);
+
+        return (new ConsultCdr)->search($document); 
+        
     }
 
 }
