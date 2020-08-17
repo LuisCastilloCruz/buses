@@ -104,6 +104,7 @@ class DocumentInput
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
             'affectation_type_prepayment' => Functions::valueKeyInArray($inputs, 'affectation_type_prepayment'),
             'was_deducted_prepayment' => Functions::valueKeyInArray($inputs, 'was_deducted_prepayment', 0),
+            'pending_amount_prepayment' => Functions::valueKeyInArray($inputs, 'pending_amount_prepayment', 0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
@@ -123,6 +124,7 @@ class DocumentInput
             'data_json' => $data_json,
             'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
+            'payment_method_type_id' => Functions::valueKeyInArray($inputs, 'payment_method_type_id'),
         ];
     }
 
@@ -144,7 +146,7 @@ class DocumentInput
                         'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation']:[]):[],
                         'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
                         'is_set' => $item->is_set,
-                        'lots' => (isset($row['item']['lots'])) ? $row['item']['lots']:[],
+                        'lots' => self::lots($row),
                         'IdLoteSelected' => ( isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null )
                     ],
                     'quantity' => $row['quantity'],
@@ -181,6 +183,20 @@ class DocumentInput
         return null;
     }
 
+    private static function lots($row)
+    {
+        if(isset($row['item']['lots']))
+        {
+            return $row['item']['lots'];
+        }
+        else if(isset($row['lots']))
+        {
+            return  $row['lots'];
+        }
+        else{
+            return [];
+        }
+    }
     private static function attributes($inputs)
     {
         if(array_key_exists('attributes', $inputs)) {

@@ -37,6 +37,7 @@ class Facturalo
 {
     use StorageDocument, FinanceTrait;
 
+    const REGISTERED = '01';
     const SENT = '03';
     const ACCEPTED = '05';
     const OBSERVED = '07';
@@ -467,7 +468,7 @@ class Facturalo
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
-        if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58')) {
+        if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
             if(config('tenant.pdf_template_footer')) {
 
@@ -618,22 +619,56 @@ class Facturalo
         } else {
             $cdrResponse = $res->getCdrResponse();
             $this->uploadFile($res->getCdrZip(), 'cdr');
-            $this->updateState(self::ACCEPTED);
+            
+            $this->response = [
+                'sent' => true,
+                'code' => $cdrResponse->getCode(),
+                'description' => $cdrResponse->getDescription(),
+                'notes' => $cdrResponse->getNotes(),
+                'is_accepted' => $cdrResponse->isAccepted(),
+                'status_code' => $extService->getCustomStatusCode(),
+            ];
+
+            $this->validationStatusCodeResponse($extService->getCustomStatusCode());
+            // $this->updateState(self::ACCEPTED);
+
             if($this->type === 'summary') {
-                if($this->document->summary_status_type_id === '1') {
-                    $this->updateStateDocuments(self::ACCEPTED);
-                } else {
-                    $this->updateStateDocuments(self::VOIDED);
+
+                if($extService->getCustomStatusCode() === 0){
+
+                    if($this->document->summary_status_type_id === '1') {
+                        $this->updateStateDocuments(self::ACCEPTED);
+                    } else {
+                        $this->updateStateDocuments(self::VOIDED);
+                    }
+
+                }else if($extService->getCustomStatusCode() === 99){
+
+                    $this->updateStateDocuments(self::REGISTERED);
+
                 }
+                
             } else {
                 $this->updateStateDocuments(self::VOIDED);
             }
-            $this->response = [
-                'code' => $cdrResponse->getCode(),
-                'description' => $cdrResponse->getDescription(),
-                'notes' => $cdrResponse->getNotes()
-            ];
+
         }
+    }
+
+    public function validationStatusCodeResponse($status_code)
+    { 
+
+        switch ($status_code) {
+            case 0:
+                $this->updateState(self::ACCEPTED);
+                break;
+
+            case 99:
+                $this->updateState(self::REJECTED);
+                break;
+            
+        }
+
     }
 
     public function consultCdr()
@@ -703,13 +738,24 @@ class Facturalo
 
     private function setSoapCredentials()
     {
-        if($this->isDemo) {
-            $this->soapUsername = $this->company->number.'MODDATOS';
-            $this->soapPassword = 'moddatos';
-        } else {
+
+        if($this->isOse) {
+            
             $this->soapUsername = $this->company->soap_username;
             $this->soapPassword = $this->company->soap_password;
+
+        }else{
+
+            if($this->isDemo) {
+                $this->soapUsername = $this->company->number.'MODDATOS';
+                $this->soapPassword = 'moddatos';
+            } else {
+                $this->soapUsername = $this->company->soap_username;
+                $this->soapPassword = $this->company->soap_password;
+            }
+
         }
+        
 
 //        $this->soapUsername = ($this->isDemo)?$this->company->number.'MODDATOS':$this->company->soap_username;
 //        $this->soapPassword = ($this->isDemo)?'moddatos':$this->company->soap_password;
@@ -747,9 +793,19 @@ class Facturalo
                 $number = $fullnumber[1];
 
                 $doc = Document::where([['series',$series],['number',$number]])->first();
+                
                 if($doc){
-                    $doc->was_deducted_prepayment = true;
+
+                    $total = $row['total'];
+                    $balance = $doc->pending_amount_prepayment - $total;
+                    $doc->pending_amount_prepayment = $balance;
+
+                    if($balance <= 0){
+                        $doc->was_deducted_prepayment = true;
+                    }
+
                     $doc->save();
+
                 }
             }
         }
