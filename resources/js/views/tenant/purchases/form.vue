@@ -110,7 +110,7 @@
                                 </el-select>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-8 mt-4">
                             <div class="form-group" >
                                 <el-checkbox v-model="form.has_client" @change="changeHasClient">¿Desea agregar el cliente para esta compra?</el-checkbox>
@@ -687,6 +687,7 @@
                     customer_id: null,
                     has_client: false,
                     has_payment: false,
+                    type_basimp: '01'
 
                 }
                 this.clickAddPayment()
