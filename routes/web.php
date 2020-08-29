@@ -19,6 +19,7 @@ if ($hostname) {
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
         Route::get('/exchange_rate/ecommence/{date}', 'Tenant\Api\ServiceController@exchangeRateTest');
+        Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
 
@@ -422,7 +423,7 @@ if ($hostname) {
 
            Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
 
-           Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
+           //Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
 
 
            //POS
