@@ -211,6 +211,8 @@ class OrderNoteController extends Controller
             'success' => true,
             'data' => [
                 'id' => $this->order_note->id,
+                'external_id' => $this->order_note->external_id,
+				'number' => $this->order_note->id,
             ],
         ];
     }
