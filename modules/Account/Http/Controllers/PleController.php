@@ -407,17 +407,6 @@ class PleController extends Controller
             }
 
             foreach ($row->items as $item) {
-               $fechaMod  = '';
-               $seriesMod = '';
-               $numberMod = '';
-               $tipoMod   = '';
-                if($row->document_type_id=='07' || $row->document_type_id=='08'){
-                    $seriesMod = $row->note->affected_document->series;
-                    $numberMod = $row->note->affected_document->number;
-                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT); 
-                    $tipoMod =  $row->note->affected_document->document_type_id;
-                }
-
                 $estado=$row->state_type_id;
                 $tc    = $row->exchange_rate_sale;
                 $total_taxed = $row->total_taxed;
@@ -434,6 +423,28 @@ class PleController extends Controller
                     $total_exonerated  = $total_exonerated *$tc;
                     $total_unaffected  = $total_unaffected *$tc;
                     $total             = $total *$tc;
+                }
+
+                /*================NOTAS DE CRÉDITO DEBITO===============*/
+                $fechaMod  = '';
+                $seriesMod = '';
+                $numberMod = '';
+                $tipoMod   = '';
+                if($row->document_type_id=='07' || $row->document_type_id=='08'){
+                    $seriesMod = $row->note->affected_document->series;
+                    $numberMod = $row->note->affected_document->number;
+                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT); 
+                    $tipoMod =  $row->note->affected_document->document_type_id;                  
+                }
+
+                 /*================CAMBIO SIGNOS==================*/
+                if($row->document_type_id=='07'){ //nota de crédito
+                    $total_taxed       = $total_taxed       * -1;
+                    $total_igv         = $total_igv         * -1;
+                    $total_exportation = $total_exportation * -1;
+                    $total_exonerated  = $total_exonerated  * -1;
+                    $total_unaffected  = $total_unaffected  * -1;
+                    $total             = $total             * -1;
                 }
 
                 
