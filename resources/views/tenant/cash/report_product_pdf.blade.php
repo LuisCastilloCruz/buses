@@ -107,7 +107,7 @@ $establishment = $cash->user->establishment;
 
             </table>
         </div>
-        @if($documents->count())
+        @if($documents->count() || $sale_notes->count())
             <div class="">
                 <div class=" ">
                     <table class="">
@@ -120,14 +120,30 @@ $establishment = $cash->user->establishment;
                             </tr>
                         </thead>
                         <tbody>
-
+                            @php
+                                $num = 1;
+                            @endphp
                             @foreach($documents as $item)
                                 <tr>
-                                    <td class="celda">{{ $loop->iteration }}</td>
+                                    <td class="celda">{{ $num }}</td>
                                     <td class="celda">{{ $item['description'] }}</td>
                                     <td class="celda">{{ $item['quantity'] }}</td>
                                     <td class="celda">{{ $item['number_full'] }}</td>
                                 </tr>
+                                @php
+                                    $num++;
+                                @endphp
+                            @endforeach
+                            @foreach($sale_notes as $item)
+                                <tr>
+                                    <td class="celda">{{ $num }}</td>
+                                    <td class="celda">{{ $item['description'] }}</td>
+                                    <td class="celda">{{ $item['quantity'] }}</td>
+                                    <td class="celda">{{ $item['number_full'] }}</td>
+                                </tr>
+                                @php
+                                    $num++;
+                                @endphp
                             @endforeach
                         </tbody>
                     </table>

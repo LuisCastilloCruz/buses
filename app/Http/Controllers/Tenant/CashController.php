@@ -21,6 +21,7 @@ use Maatwebsite\Excel\Excel;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\SaleNoteItem;
 
 
 
@@ -255,20 +256,30 @@ class CashController extends Controller
         $cash = Cash::findOrFail($id);
         $company = Company::first();
         $cash_documents =  CashDocument::select('document_id')->where('cash_id', $cash->id)->get();
+        $cash_documents2 =  CashDocument::select('sale_note_id')->where('cash_id', $cash->id)->get();
 
         $source = DocumentItem::with('document')->whereIn('document_id', $cash_documents)->get();
+        $source2 = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cash_documents2)->get();
 
         $documents = collect($source)->transform(function($row){
             return [
                 'id' => $row->id,
-                'number_full' => $row->document->number_full,
+                'number_full' =>$row->document->number_full,
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+        $sale_notes = collect($source2)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->sale_note->series . '-' .str_pad($row->sale_note->number,8,'0',STR_PAD_LEFT),
                 'description' => $row->item->description,
                 'quantity' => $row->quantity,
             ];
         });
 
 
-        $pdf = PDF::loadView('tenant.cash.report_product_pdf', compact("cash", "company", "documents"));
+        $pdf = PDF::loadView('tenant.cash.report_product_pdf', compact("cash", "company", "documents","sale_notes"));
 
         $filename = "Reporte_POS_PRODUCTOS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
 
