@@ -29,6 +29,7 @@ class DocumentCollection extends ResourceCollection
             if ($row->group_id === '01') {
                 if ($row->state_type_id === '01') {
                     $btn_resend = true;
+                    $btn_voided = true;
                 }
 
                 if ($row->state_type_id === '05') {
