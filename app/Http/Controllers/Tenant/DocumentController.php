@@ -389,6 +389,7 @@ class DocumentController extends Controller
     {
         DB::beginTransaction();
         try{
+            $response='';
             $fact = DB::connection('tenant')->transaction(function () use ($request) {
                 $facturalo = new Facturalo();
                 $facturalo->save($request->all());
@@ -419,9 +420,16 @@ class DocumentController extends Controller
             DB::rollback();
             return [
                 'success' => false,
+                'status'=>422,
                 'data' => [
                     'id' => '',
-                    'response' =>'Ocurrió un error al registrar el comprobante, se canceló la ejecución de la acción anterior, intente nuévamente.'
+                    'message'=>'Ocurrió un error en el registro; probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
+                    'response' =>[
+                        'code'=> "8",
+                        'description' =>'Ocurrió un error en el registro; probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
+                        'sent'=> false,
+
+                    ]
 
                 ],
             ];
