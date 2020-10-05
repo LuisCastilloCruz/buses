@@ -387,30 +387,46 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
-        $fact = DB::connection('tenant')->transaction(function () use ($request) {
-            $facturalo = new Facturalo();
-            $facturalo->save($request->all());
-            $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
-            $facturalo->updateHash();
-            $facturalo->updateQr();
-            $facturalo->createPdf();
-            $facturalo->senderXmlSignedBill();
+        DB::beginTransaction();
+        try{
+            $fact = DB::connection('tenant')->transaction(function () use ($request) {
+                $facturalo = new Facturalo();
+                $facturalo->save($request->all());
+                $facturalo->createXmlUnsigned();
+                $facturalo->signXmlUnsigned();
+                $facturalo->updateHash();
+                $facturalo->updateQr();
+                $facturalo->createPdf();
+                $facturalo->senderXmlSignedBill();
 
-            return $facturalo;
-        });
+                return $facturalo;
+            });
 
-        $document = $fact->getDocument();
-        $response = $fact->getResponse();
+            $document = $fact->getDocument();
+            $response = $fact->getResponse();
 
-        return [
-            'success' => true,
-            'data' => [
-                'id' => $document->id,
-                'response' =>$response
+            DB::commit();
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $document->id,
+                    'response' =>$response
 
-            ],
-        ];
+                ],
+            ];
+        }
+        catch (\Exception $e) {
+            DB::rollback();
+            return [
+                'success' => false,
+                'data' => [
+                    'id' => '',
+                    'response' =>'Ocurrió un error al registrar el comprobante, se canceló la ejecución de la acción anterior, intente nuévamente.'
+
+                ],
+            ];
+        }
+
     }
 
     public function reStore($document_id)
