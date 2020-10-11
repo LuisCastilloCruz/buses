@@ -37,6 +37,8 @@ class ConfigurationResource extends JsonResource
             'product_only_location' => (bool) $this->product_only_location,
             'legend_footer' => (bool) $this->legend_footer,
             'header_image' => $this->header_image,
+            'color1'=>$this->color1,
+            'color2'=>$this->color2
         ];
     }
 }

@@ -70,6 +70,36 @@ class ConfigurationController extends Controller
         ];
 
     }
+    public function changeColor1(Request $request){
+        $format = Configuration::first();
+        $format->fill($request->all());
+        $format->save();
+
+        $config_format = config(['tenant.pdf_template' => $format->formats]);
+        // $fp = fopen(base_path() .'/config/tenant.php' , 'w');
+        // fwrite($fp, '<?php return ' . var_export(config('tenant'), true) . ';');
+        // fclose($fp);
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada'
+        ];
+
+    }
+    public function changeColor2(Request $request){
+        $format = Configuration::first();
+        $format->fill($request->all());
+        $format->save();
+
+        $config_format = config(['tenant.pdf_template' => $format->formats]);
+        // $fp = fopen(base_path() .'/config/tenant.php' , 'w');
+        // fwrite($fp, '<?php return ' . var_export(config('tenant'), true) . ';');
+        // fclose($fp);
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada'
+        ];
+
+    }
 
     public function getFormats(){
          $formats = DB::connection('tenant')->table('format_templates')->get();

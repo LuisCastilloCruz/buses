@@ -35,6 +35,8 @@ class Configuration extends ModelTenant
         'product_only_location',
         'header_image',
         'legend_footer',
+        'color1',
+        'color2'
     ];
 
     public function setPlanAttribute($value)
