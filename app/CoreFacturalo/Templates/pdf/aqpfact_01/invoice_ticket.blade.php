@@ -44,7 +44,7 @@
 @endif
 <table class="full-width">
     <tr>
-        <td class="text-center"><h4>{{ $company->name }}</h4></td>
+        <td class="text-center"><h4><b>{{ $company->name }}</b></h4></td>
     </tr>
     {{--<tr>
         <td class="text-center"><h5>{{ $company->trade_name }}</h5></td>
@@ -88,36 +88,36 @@
         <td class="text-center pt-3 border-top"><h4>{{ $document->document_type->description }}</h4></td>
     </tr>
     <tr>
-        <td class="text-center pb-3 border-bottom"><h3>{{ $document_number }}</h3></td>
+        <td class="text-center pb-3 border-bottom"><h3><b>{{ $document_number }}</b></h3></td>
     </tr>
 </table>
 <table class="full-width">
     <tr >
-        <td width="" class="pt-3"><p class="desc">F. Emisión:</p></td>
+        <td width="" class="pt-3"><p class="desc"><b>F. Emisión:</b></p></td>
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
     <tr>
-        <td width="" ><p class="desc">H. Emisión:</p></td>
+        <td width="" ><p class="desc"><b>H. Emisión:</b></p></td>
         <td width="" ><p class="desc">{{ $document->time_of_issue }}</p></td>
     </tr>
     @isset($invoice->date_of_due)
     <tr>
-        <td><p class="desc">F. Vencimiento:</p></td>
+        <td><p class="desc"><b>F. Vencimiento:</b></p></td>
         <td><p class="desc">{{ $invoice->date_of_due->format('Y-m-d') }}</p></td>
     </tr>
     @endisset
 
     <tr>
-        <td class="align-top"><p class="desc">Cliente:</p></td>
+        <td class="align-top"><p class="desc"><b>Cliente:</b></p></td>
         <td><p class="desc">{{ $customer->name }}</p></td>
     </tr>
     <tr>
-        <td><p class="desc">{{ $customer->identity_document_type->description }}:</p></td>
+        <td><p class="desc"><b>{{ $customer->identity_document_type->description }}:</b></p></td>
         <td><p class="desc">{{ $customer->number }}</p></td>
     </tr>
     @if ($customer->address !== '')
         <tr>
-            <td class="align-top"><p class="desc">Dirección:</p></td>
+            <td class="align-top"><p class="desc"><b>Dirección:</b></p></td>
             <td>
                 <p class="desc">
                     {{ $customer->address }}
@@ -163,32 +163,32 @@
     @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
-            <td><p class="desc">Anticipo :</p></td>
+            <td><p class="desc"><b>Anticipo :</b></p></td>
             <td><p class="desc">{{$p->number}}</p></td>
         </tr>
         @endforeach
     @endif
     @if ($document->purchase_order)
         <tr>
-            <td><p class="desc">Orden de Compra:</p></td>
+            <td><p class="desc"><b>Orden de Compra:</b></p></td>
             <td><p class="desc">{{ $document->purchase_order }}</p></td>
         </tr>
     @endif
     @if ($document->quotation_id)
         <tr>
-            <td><p class="desc">Cotización:</p></td>
+            <td><p class="desc"><b>Cotización:</b></p></td>
             <td><p class="desc">{{ $document->quotation->identifier }}</p></td>
         </tr>
     @endif
     @isset($document->quotation->delivery_date)
         <tr>
-            <td><p class="desc">T. Entrega</p></td>
+            <td><p class="desc"><b>T. Entrega</b></p></td>
             <td><p class="desc">{{ $document->quotation->delivery_date}}</p></td>
         </tr>
     @endisset
     @isset($document->quotation->sale_opportunity)
         <tr>
-            <td><p class="desc">O. Venta</p></td>
+            <td><p class="desc"><b>O. Venta</b></p></td>
             <td><p class="desc">{{ $document->quotation->sale_opportunity->number_full}}</p></td>
         </tr>
     @endisset
@@ -228,15 +228,15 @@
 @if(!is_null($document_base))
 <table>
     <tr>
-        <td class="desc">Documento Afectado:</td>
+        <td class="desc"><b>Documento Afectado:</b></td>
         <td class="desc">{{ $affected_document_number }}</td>
     </tr>
     <tr>
-        <td class="desc">Tipo de nota:</td>
+        <td class="desc"><b>Tipo de nota:</b></td>
         <td class="desc">{{ ($document_base->note_type === 'credit')?$document_base->note_credit_type->description:$document_base->note_debit_type->description}}</td>
     </tr>
     <tr>
-        <td class="align-top desc">Descripción:</td>
+        <td class="align-top desc"><b>Descripción:</b></td>
         <td class="text-left desc">{{ $document_base->note_description }}</td>
     </tr>
 </table>
@@ -390,9 +390,9 @@
         @foreach(array_reverse((array) $document->legends) as $row)
             <tr>
                 @if ($row->code == "1000")
-                    <td class="desc pt-3">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
+                    <td class="desc pt-1">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
                     @if (count((array) $document->legends)>1)
-                    <tr><td class="desc pt-3"><span class="font-bold">Leyendas</span></td></tr>
+                    <tr><td class="desc pt-2"><span class="font-bold">Leyendas</span></td></tr>
                     @endif
                 @else
                     <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>
@@ -404,14 +404,14 @@
 
     @if ($document->detraction)
         <tr>
-            <td class="desc pt-3 font-bold">
+            <td class="desc pt-2 font-bold">
                 Operación sujeta al Sistema de Pago de Obligaciones Tributarias
             </td>
         </tr>
     @endif
 
     <tr>
-        <td class="desc pt-3">
+        <td class="desc">
             @foreach($document->additional_information as $information)
                 @if ($information)
                     @if ($loop->first)
@@ -436,7 +436,7 @@
         </td>
     </tr>
     <tr>
-        <td class="text-center pt-3"><img class="qr_code" src="data:image/png;base64, {{ $document->qr }}" /></td>
+        <td class="text-center"><img class="qr_code" src="data:image/png;base64, {{ $document->qr }}" /></td>
     </tr>
     <tr>
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
@@ -444,7 +444,7 @@
 
     @if ($customer->department_id == 16)
         <tr>
-            <td class="text-center desc pt-5">
+            <td class="text-center desc pt-2">
                 Representación impresa del Comprobante de Pago Electrónico.
                 <br/>Esta puede ser consultada en:
                 <br/> <b>{!! url('/buscar') !!}</b>
@@ -456,14 +456,14 @@
 
     @if($document->payment_method_type_id)
         <tr>
-            <td class="desc pt-5">
+            <td class="desc pt-2">
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
         </tr> 
     @endif
     @if($payments->count())
         <tr>
-            <td class="desc pt-5">
+            <td class="desc pt-2">
                 <strong>PAGOS:</strong>
             </td>
         </tr>
@@ -484,7 +484,7 @@
         </tr>
 
     <tr>
-        <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
+        <td class="text-center desc pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
 </table>
 
