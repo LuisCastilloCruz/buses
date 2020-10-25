@@ -3,7 +3,22 @@
     $customer = $document->customer;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $accounts = \App\Models\Tenant\BankAccount::all();
+    $configuracion = \App\Models\Tenant\Configuration::all();
+     foreach($configuracion as $config){
+        $color1= $config['color1'];
+        $color2= $config['color2'];
+        $formato=$config['formats'];
+        $fondo=$config['fondo'];
+     }
+
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
+    $config = \App\Models\Tenant\Configuration::first();
+    $miimage = null;
+
+        if($formato == "aqpfact_01")
+        {
+            $miimage = public_path("storage/uploads/fondos/{$fondo}");
+        }
 @endphp
 <html>
 <head>
@@ -11,22 +26,16 @@
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
+<div class="" style="position: absolute; text-align: center; z-index: 0; top: -5px; left: -10px;">
+    <img src="data:{{mime_content_type($miimage)}};base64, {{base64_encode(file_get_contents($miimage))}}" alt="anulado" class="">
+</div>
+<div style="position: absolute; left: 157px;top:7px;width: 79%;text-align:right;">COTIZACIÓN: {{ $tittle }}</div>
+<div style="z-index: 1; position: absolute; left: 157px;padding-left:3px;padding-right: 4px;margin-top: -30px">
 <table class="full-width">
     <tr>
-        @if($company->logo)
-            <td width="20%">
-                <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
-                </div>
-            </td>
-        @else
-            <td width="20%">
-                {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
-            </td>
-        @endif
-        <td width="50%" class="pl-3">
-            <div class="text-left">
-                <h4 class="">{{ $company->name }}</h4>
+        <td width="70%">
+            <div class="text-center">
+                <h4 class=""><b>{{ $company->name }}</b></h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
                 <h6 style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
@@ -51,30 +60,37 @@
                 @endisset
             </div>
         </td>
-        <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">COTIZACIÓN</h5>
-            <h3 class="text-center">{{ $tittle }}</h3>
-        </td>
+        @if($company->logo)
+            <td width="30%" style="text-align:center;">
+                <div class="company_logo_box">
+                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 250px;">
+                </div>
+            </td>
+        @else
+            <td width="30%">
+                {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
+            </td>
+        @endif
     </tr>
 </table>
-<table class="full-width mt-5">
+<table class="full-width mt-4">
     <tr>
-        <td width="15%">Cliente:</td>
+        <td width="15%"><b>Cliente:</b></td>
         <td width="45%">{{ $customer->name }}</td>
-        <td width="25%">Fecha de emisión:</td>
+        <td width="25%"><b>Fecha de emisión:</b></td>
         <td width="15%">{{ $document->date_of_issue->format('Y-m-d') }}</td>
     </tr>
     <tr>
-        <td>{{ $customer->identity_document_type->description }}:</td>
+        <td><b>{{ $customer->identity_document_type->description }}:</b></td>
         <td>{{ $customer->number }}</td>
         @if($document->date_of_due)
-            <td width="25%">Tiempo de Validez:</td>
+            <td width="25%"><b>Tiempo de Validez:</b></td>
             <td width="15%">{{ $document->date_of_due }}</td>
         @endif
     </tr>
     @if ($customer->address !== '')
         <tr>
-            <td class="align-top">Dirección:</td>
+            <td class="align-top"><b>Dirección:</b></td>
             <td colspan="">
                 {{ $customer->address }}
                 {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
@@ -82,26 +98,26 @@
                 {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
             </td>
             @if($document->delivery_date)
-                <td width="25%">Tiempo de Entrega:</td>
+                <td width="25%"><b>Tiempo de Entrega:</b></td>
                 <td width="15%">{{ $document->delivery_date }}</td>
             @endif
         </tr>
     @endif
     @if ($document->payment_method_type)
         <tr>
-            <td class="align-top">T. Pago:</td>
+            <td class="align-top"><b>T. Pago:</b></td>
             <td colspan="">
                 {{ $document->payment_method_type->description }}
             </td>
             @if($document->sale_opportunity)
-                <td width="25%">O. Venta:</td>
+                <td width="25%"><b>O. Venta:</b></td>
                 <td width="15%">{{ $document->sale_opportunity->number_full }}</td>
             @endif
         </tr>
     @endif
     @if ($document->account_number)
         <tr>
-            <td class="align-top">N° Cuenta:</td>
+            <td class="align-top"><b>N° Cuenta:</b></td>
             <td colspan="3">
                 {{ $document->account_number }}
             </td>
@@ -109,7 +125,7 @@
     @endif
     @if ($document->shipping_address)
         <tr>
-            <td class="align-top">Dir. Envío:</td>
+            <td class="align-top"><b>Dir. Envío:</b></td>
             <td colspan="3">
                 {{ $document->shipping_address }}
             </td>
@@ -117,14 +133,14 @@
     @endif
     @if ($customer->telephone)
         <tr>
-            <td class="align-top">Teléfono:</td>
+            <td class="align-top"><b>Teléfono:</b></td>
             <td colspan="3">
                 {{ $customer->telephone }}
             </td>
         </tr>
     @endif
     <tr>
-        <td class="align-top">Vendedor:</td>
+        <td class="align-top"><b>Vendedor:</b></td>
         <td colspan="3">
             {{ $document->user->name }}
         </td>
@@ -134,7 +150,7 @@
 <table class="full-width mt-3">
     @if ($document->description)
         <tr>
-            <td width="15%" class="align-top">Descripción: </td>
+            <td width="15%" class="align-top"><b>Descripción:</b> </td>
             <td width="85%">{{ $document->description }}</td>
         </tr>
     @endif
@@ -147,9 +163,9 @@
         @foreach($document->guides as $guide)
             <tr>
                 @if(isset($guide->document_type_description))
-                    <td>{{ $guide->document_type_description }}</td>
+                    <td><b>{{ $guide->document_type_description }}</b></td>
                 @else
-                    <td>{{ $guide->document_type_id }}</td>
+                    <td><b>{{ $guide->document_type_id }}</b></td>
                 @endif
                 <td>:</td>
                 <td>{{ $guide->number }}</td>
@@ -161,12 +177,12 @@
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr class="bg-grey">
-        <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
-        <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
-        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
-        <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
-        <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
+        <th class="border-top-bottom text-center text-white py-2" width="8%" style="background: {{$color1}}">CANT.</th>
+        <th class="border-top-bottom text-center text-white py-2" width="10%" style="background: {{$color1}}">UNIDAD</th>
+        <th class="border-top-bottom text-left text-white py-2" style="background: {{$color1}}">DESCRIPCIÓN</th>
+        <th class="border-top-bottom text-right text-white py-2" width="12%" style="background: {{$color2}}">P.UNIT</th>
+        <th class="border-top-bottom text-right text-white py-2" width="8%" style="background: {{$color2}}">DTO.</th>
+        <th class="border-top-bottom text-right text-white py-2" width="12%" style="background: {{$color2}}">TOTAL</th>
     </tr>
     </thead>
     <tbody>
@@ -312,5 +328,6 @@
     </tr>
 
 </table>
+</div>
 </body>
 </html>

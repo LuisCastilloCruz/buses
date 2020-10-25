@@ -212,7 +212,7 @@
 
 @if ($document->reference_guides)
 <br/>
-<strong>Guias de remisión</strong>
+<strong><b>Guias de remisión</b></strong>
 <table>
     @foreach($document->reference_guides as $guide)
         <tr>
@@ -229,7 +229,7 @@
     @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
-            <td width="120px">ANTICIPO</td>
+            <td width="120px"><b>ANTICIPO</b></td>
             <td width="8px">:</td>
             <td>{{$p->number}}</td>
         </tr>
@@ -237,19 +237,19 @@
     @endif
     @if ($document->purchase_order)
         <tr>
-            <td width="120px">ORDEN DE COMPRA</td>
+            <td width="120px"><b>ORDEN DE COMPRA</b></td>
             <td width="8px">:</td>
             <td>{{ $document->purchase_order }}</td>
         </tr>
     @endif
     @if ($document->quotation_id)
         <tr>
-            <td width="120px">COTIZACIÓN</td>
+            <td width="120px"><b>COTIZACIÓN</b></td>
             <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
 
             @isset($document->quotation->delivery_date)
-                    <td width="120px">T. ENTREGA</td>
+                    <td width="120px"><b>T. ENTREGA</b></td>
                     <td width="8px">:</td>
                     <td>{{ $document->quotation->delivery_date}}</td>
             @endisset
@@ -258,24 +258,24 @@
     @endif
     @isset($document->quotation->sale_opportunity)
         <tr>
-            <td width="120px">O. VENTA</td>
+            <td width="120px"><b>O. VENTA</b></td>
             <td width="8px">:</td>
             <td>{{ $document->quotation->sale_opportunity->number_full}}</td>
         </tr>
     @endisset
     @if(!is_null($document_base))
     <tr>
-        <td width="120px">DOC. AFECTADO</td>
+        <td width="120px"><b>DOC. AFECTADO</b></td>
         <td width="8px">:</td>
         <td>{{ $affected_document_number }}</td>
     </tr>
     <tr>
-        <td>TIPO DE NOTA</td>
+        <td><b>TIPO DE NOTA</b></td>
         <td>:</td>
         <td>{{ ($document_base->note_type === 'credit')?$document_base->note_credit_type->description:$document_base->note_debit_type->description}}</td>
     </tr>
     <tr>
-        <td>DESCRIPCIÓN</td>
+        <td><b>DESCRIPCIÓN</b></td>
         <td>:</td>
         <td>{{ $document_base->note_description }}</td>
     </tr>

@@ -235,14 +235,14 @@
     @endif
     @if ($document->purchase_order)
         <tr>
-            <td width="50px">ORDEN DE COMPRA</td>
+            <td width="50px"><b>ORDEN DE COMPRA</b></td>
             <td width="8px">:</td>
             <td>{{ $document->purchase_order }}</td>
         </tr>
     @endif
     @if ($document->quotation_id)
         <tr>
-            <td width="50px">COTIZACIÓN</td>
+            <td width="50px"><b>COTIZACIÓN</b></td>
             <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
             @isset($document->quotation->delivery_date)
@@ -254,23 +254,23 @@
     @endif
     @isset($document->quotation->sale_opportunity)
         <tr>
-            <td width="50px">O. VENTA</td>
+            <td width="50px"><b>O. VENTA</b></td>
             <td width="8px">:</td>
             <td>{{ $document->quotation->sale_opportunity->number_full}}</td>
         </tr>
     @endisset
     @if(!is_null($document_base))
     <tr>
-        <td width="50px">DOC. AFECTADO</td>
+        <td width="50px"><b>DOC. AFECTADO</b></td>
         <td width="8px">:</td>
         <td>{{ $affected_document_number }}</td>
 
-        <td width="50px">TIPO DE NOTA</td>
+        <td width="50px"><b>TIPO DE NOTA</b></td>
         <td width="8px">:</td>
         <td>{{ ($document_base->note_type === 'credit')?$document_base->note_credit_type->description:$document_base->note_debit_type->description}}</td>
     </tr>
     <tr>
-        <td>DESCRIPCIÓN</td>
+        <td><b>DESCRIPCIÓN</b></td>
         <td>:</td>
         <td>{{ $document_base->note_description }}</td>
     </tr>
