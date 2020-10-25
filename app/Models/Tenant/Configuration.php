@@ -36,7 +36,8 @@ class Configuration extends ModelTenant
         'header_image',
         'legend_footer',
         'color1',
-        'color2'
+        'color2',
+        'fondo'
     ];
 
     public function setPlanAttribute($value)

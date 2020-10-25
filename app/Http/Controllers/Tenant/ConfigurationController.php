@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use App\Models\Tenant\Company;
 
 class ConfigurationController extends Controller
 {
@@ -233,21 +234,23 @@ class ConfigurationController extends Controller
     public function uploadFile(Request $request)
     {
         if ($request->hasFile('file')) {
-
+            $company = Company::active();
             $configuration = Configuration::first();
-
+            $type = $request->input('type');
 
             $file = $request->file('file');
             $ext = $file->getClientOriginalExtension();
-            $name = date('Ymd').'_'.$configuration->id.'.'.$ext;
+            $name = $type.'_'.$company->number.'.'.$ext;
 
+            if (($type === 'fondo')) request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
 
-            request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+            $file->storeAs(($type === 'fondo') ? 'public/uploads/fondos' : 'certificates', $name);
 
-            $file->storeAs('public/uploads/header_images', $name);
+            if (($type === 'header_images')) request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
 
+            $file->storeAs(($type === 'header_images') ? 'public/uploads/header_images' : 'certificates', $name);
 
-            $configuration->header_image = $name;
+            $configuration->$type = $name;
 
             $configuration->save();
 
