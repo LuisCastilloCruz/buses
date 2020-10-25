@@ -7,6 +7,7 @@ git pull origin "$BRANCH"
 
 docker-compose exec -T fpm$SERVICE_NUMBER composer install
 docker-compose exec -T fpm$SERVICE_NUMBER composer require zanysoft/laravel-zip
+docker-compose exec -T fpm$SERVICE_NUMBER composer require mike42/escpos-php
 docker-compose exec -T fpm$SERVICE_NUMBER php artisan migrate
 docker-compose exec -T fpm$SERVICE_NUMBER php artisan tenancy:migrate
 docker-compose exec -T fpm$SERVICE_NUMBER php artisan cache:clear
