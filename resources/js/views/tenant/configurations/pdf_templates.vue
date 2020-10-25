@@ -31,7 +31,7 @@
 
                         </div>
                         <div v-if="form.formats == o.formats && form.formats == 'aqpfact_01'" class="row">
-                           <div class="col-md-6">
+                           <div class="col-md-3">
                                <label class="control-label float-left">
                                    <el-tooltip class="item" effect="dark" content="Color primario de la plantilla." placement="top-start">
                                        <i class="fa fa-info-circle"></i>
@@ -39,12 +39,30 @@
                                    <input type="color" id="primary_color" class="field-radio" v-bind:value="form.color1"  @change="changeColor1(o.formats,$event)">
                                </label>
                            </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label class="control-label float-left">
                                     <el-tooltip class="item" effect="dark" content="Color secundario de la plantilla." placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                     <input type="color" id="secondary_color" class="field-radio"  v-bind:value="form.color2" @change="changeColor2(o.formats,$event)">
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label float-left">
+                                    <el-tooltip class="item" effect="dark" content="Cambiar fondo para cotización. Se recomienda diseñar según el formato por
+                                        defecto, o editar en Photoshop o Corel y sinó descargar de www.aqpfact.pe/recursos" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+
+                                        <el-upload slot="append"
+                                                   :headers="headers"
+                                                   :data="{'type': 'fondo'}"
+                                                   action="/configurations/uploads"
+                                                   :show-file-list="false"
+                                                   :on-success="successUpload">
+                                            <el-button type="primary" icon="el-icon-upload"></el-button>
+                                        </el-upload>
+
                                 </label>
                             </div>
 
@@ -77,6 +95,7 @@
         data() {
             return {
                 loading_submit: false,
+                headers: headers_token,
                 resource: 'configurations',
                 errors: {},
                 form: {},
@@ -157,6 +176,14 @@
                 })
                 //alert('cambiando color: '+ ' - otro: '+value+ ' color: ' +e.target.value);
             },
+            successUpload(response, file, fileList) {
+                if (response.success) {
+                    this.$message.success(response.message)
+                    this.form[response.type] = response.name
+                } else {
+                    this.$message({message:'Error al subir el archivo', type: 'error'})
+                }
+            }
         }
     }
 </script>

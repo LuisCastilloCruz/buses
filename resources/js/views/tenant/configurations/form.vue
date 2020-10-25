@@ -170,6 +170,7 @@
                                     <el-input v-model="form.header_image" :readonly="true">
                                         <el-upload slot="append"
                                                    :headers="headers"
+                                                   :data="{'type': 'header_images'}"
                                                    action="/configurations/uploads"
                                                    :show-file-list="false"
                                                    :on-success="successUpload">
