@@ -212,6 +212,7 @@ if ($hostname) {
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
             Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
+            Route::get('documents/esc-print/{id}', 'Tenant\DocumentController@esc');
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level','tenant.internal.mode');
@@ -424,6 +425,7 @@ if ($hostname) {
            Route::post('sale-notes/enabled-concurrency', 'Tenant\SaleNoteController@enabledConcurrency');
 
            Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
+           Route::get('sale-notes/esc-print/{id}', 'Tenant\SaleNoteController@esc');
 
            //Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
 

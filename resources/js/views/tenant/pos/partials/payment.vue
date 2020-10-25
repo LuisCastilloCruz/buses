@@ -18,7 +18,7 @@
 
                         </div>
                         <div class="col-6 px-0">
-                            <h4 class="font-weight-semibold m-0 text-center m-b-0">{{item.item.description}}</h4>
+                            <h4 class="font-weight-semibold m-0 text-center m-b-0">{{item.item.description}} hula  {{item.item.category}} {{item.item.category_id}}</h4>
                             <!-- <p class="m-b-0">Descripción del producto</p> -->
                             <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                         </div>
@@ -299,7 +299,7 @@
 
 </style>
 
-<script>
+<script type="text/babel">
     import Keypress from 'vue-keypress'
 
     import CardBrandsForm from '../../card_brands/form.vue'
@@ -340,16 +340,20 @@
                 form_cash_document:{},
                 statusDocument:{},
                 payment_method_types:[],
-                payments:[]
+                payments:[],
+                business_turns: [],
             }
         },
         async created() {
-
             await this.initLStoPayment()
             await this.getTables()
             this.initFormPayment()
             this.inputAmount()
             this.form.payments = []
+            await this.$http.get(`/documents/tables`)
+                .then(response => {
+                    this.business_turns = response.data.business_turns
+                })
             this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
                 this.reloadDataCardBrands(card_brand_id)
             })
@@ -816,13 +820,25 @@
                             // this.form_payment.sale_note_id = response.data.data.id;
                             this.form_cash_document.sale_note_id = response.data.data.id;
 
+                            if(this.isActiveBussinessTurn('restaurant')){
+                                this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.sale_note_id}`).then((response) => {
+                                    //algo más antes de imprimir en cocina y barra?
+                                })
+                            }
+
                         } else {
 
                             // this.form_payment.document_id = response.data.data.id;
                             this.form_cash_document.document_id = response.data.data.id;
                             this.statusDocument = response.data.data.response
+                            if(this.isActiveBussinessTurn('restaurant')){
+                                this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.document_id}`).then((response) => {
+                                    //algo más antes de imprimir en cocina y barra?
+                                })
+                            }
 
                         }
+
 
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;
@@ -887,6 +903,9 @@
                         this.filterSeries()
                     })
 
+            },
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
             },
         }
     }

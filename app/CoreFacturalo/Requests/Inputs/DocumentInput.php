@@ -137,6 +137,7 @@ class DocumentInput
                 $items[] = [
                     'item_id' => $item->id,
                     'item' => [
+                        'category_id'=>$item->category_id,
                         'description' => $item->description,
                         'item_type_id' => $item->item_type_id,
                         'internal_id' => $item->internal_id,

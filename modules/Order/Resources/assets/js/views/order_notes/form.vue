@@ -206,7 +206,7 @@
     </div>
 </template>
 
-<script>
+<script type="text/babel">
     import OrderNoteFormItem from './partials/item.vue'
     import PersonForm from '@views/persons/form.vue'
     import OrderNoteOptions from './partials/options.vue'
@@ -240,11 +240,16 @@
                 currency_type: {},
                 orderNoteNewId: null,
                 activePanel: 0,
-                loading_search:false
+                loading_search:false,
+                business_turns: [],
             }
         },
         async created() {
             await this.initForm()
+            await this.$http.get(`/documents/tables`)
+                .then(response => {
+                    this.business_turns = response.data.business_turns
+                })
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.currency_types = response.data.currency_types
@@ -335,8 +340,8 @@
                     total_value: 0,
                     total: 0,
                     operation_type_id: null,
-                    date_of_due: null,
-                    delivery_date: null,
+                    date_of_due: moment().format('YYYY-MM-DD'),
+                    delivery_date: moment().format('YYYY-MM-DD'),
                     items: [],
                     charges: [],
                     discounts: [],
@@ -455,6 +460,13 @@
                     if (response.data.success) {
                         this.resetForm();
                         this.orderNoteNewId = response.data.data.id;
+
+                        if(this.isActiveBussinessTurn('restaurant')){
+                            this.$http.get(`/${this.resource}/esc-print/${this.orderNoteNewId}`).then((response) => {
+                                //algo más antes de imprimir en cocina y barra?
+                            })
+                        }
+
                         this.showDialogOptions = true;
                     }
                     else {
@@ -479,6 +491,9 @@
                     this.customers = response.data.customers
                     this.form.customer_id = customer_id
                 })
+            },
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
             },
         }
     }

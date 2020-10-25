@@ -47,6 +47,13 @@ use Modules\Finance\Traits\FinanceTrait;
 use Modules\Item\Models\ItemLotsGroup;
 use App\Models\Tenant\Configuration;
 use Modules\Inventory\Traits\InventoryTrait;
+use Modules\Item\Models\Category;
+use Mike42\Escpos\EscposImage;
+use Illuminate\Support\Facades\Storage;
+use Mike42\Escpos\CapabilityProfile;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 
 class SaleNoteController extends Controller
@@ -997,6 +1004,161 @@ class SaleNoteController extends Controller
             }
         }
 
+    }
+    public function esc(Request $request)
+    {
+        $note_id=$request->id;
+        $data=$this->record($note_id);
+        $observation= '';
+
+        $number=$data->number;
+
+        $cocina=[];
+        $barra=[];
+        $imp_coc='';
+        $imp_bar='';
+        foreach ($data['items'] as $row) {
+            $categories = DB::connection('tenant')
+                ->table('categories')
+                ->select('printer', DB::raw('count(*) as total'))
+                ->groupBy('printer')
+                ->get();
+
+            $category = Category::findOrFail($row->item->category_id);
+
+            if ($category->name == 'COCINA') {
+                $data =[
+
+                    'quantity'=> $row->quantity,
+                    'printer' =>$category->printer,
+                    'description'=> $row->item->description
+
+                ];
+                $imp_coc=$category->printer;
+                array_push($cocina,$data);
+
+            }
+            else if ($category->name == 'BARRA') {
+                $array=[
+                    'items'=>[
+                        'quantity'=> $row->quantity,
+                        'printer' =>$category->printer,
+                        'description'=> $row->item->description
+                    ]
+                ];
+                $imp_bar=$category->printer;
+                array_push($barra,$array);
+            }
+        }
+
+        if(!empty($cocina)){
+            $this->toPrintEsc($cocina,$number,$imp_coc,$observation);
+        }
+        if(!empty($barra)){
+            $this->toPrintEsc($barra,$number,$imp_bar,$observation);
+        }
+    }
+    public function toPrintEsc($data,$number,$printer,$observation)
+    {
+        //$logo = EscposImage::load("resources/rawbtlogo.png", false);
+        //$logo =  Storage::disk('tenant')->get(storage_path('public/uploads/logos/logo_20601411076.png'));
+        //$logo =EscposImage::load(public_path("storage/uploads/logos/aqpfact.jpg"));
+
+        /* Start the printer */
+
+        $connector = null;
+        $connector = new WindowsPrintConnector($printer);
+        /* Print a "Hello world" receipt" */
+        $printer = new Printer($connector);
+
+        /* Print top logo */
+//        $profile = CapabilityProfile::load("simple");
+//        if ($profile->getSupportsGraphics()) {
+//           $printer->graphics($logo);
+//        }
+//        if ($profile->getSupportsBitImageRaster() && !$profile->getSupportsGraphics()) {
+//            $printer->bitImage($logo);
+//        }
+
+        try {
+
+            $date = date('Y-m-d H:i:s A');
+
+            /* Name of shop */
+            $printer->feed();
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text("Pedido No. ".$number."\n");
+            $printer->feed();
+
+
+            /* Title of receipt */
+            $printer->selectPrintMode();
+            $printer->setEmphasis(true);
+            $printer->text($date."\n");
+            $printer->setEmphasis(false);
+
+            /* Items */
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->setEmphasis(true);
+
+//            foreach ($items as $item) {
+//                $printer->text($item->getAsString(32)); // for 58mm Font A
+//            }
+
+            $printer->feed();
+            $printer->setEmphasis(true);
+            $printer->text("CANT. DESCRIPCION\n");
+            $printer->setEmphasis(false);
+            $printer->text("-------------------------------\n");
+
+
+            foreach ($data as $row) {
+                $printer->text(' '.round($row['quantity'],2).'  '.substr($row['printer'],0,27).' '.$row['description']."\n");
+            }
+            // $printer->text($subtotal->getAsString(32));
+            $printer->feed();
+
+            /* Tax and total */
+            //$printer->text($tax->getAsString(32));
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            // $printer->text($total->getAsString(32));
+            $printer->selectPrintMode();
+
+            /* Footer */
+//            $printer->feed(2);
+//            $printer->setJustification(Printer::JUSTIFY_CENTER);
+//            $printer->text("Gracias campeón shopping\n");
+//            $printer->feed(2);
+            $printer->text("$observation\n");
+            $printer->feed(3);
+
+            /* Barcode Default look */
+
+//            $printer->barcode("ABC", Printer::BARCODE_CODE39);
+//            $printer->feed();
+//            $printer->feed();
+
+
+            // Demo that alignment QRcode is the same as text
+//            $printer2 = new Printer($connector); // dirty printer profile hack !!
+//            $printer2->setJustification(Printer::JUSTIFY_CENTER);
+//            $printer2->qrCode("https://rawbt.ru/mike42", Printer::QR_ECLEVEL_M, 8);
+//            $printer2->text("rawbt.ru/mike42\n");
+//            $printer2->setJustification();
+//            $printer2->feed();
+
+
+            /* Cut the receipt and open the cash drawer */
+            $printer->cut();
+            $printer->pulse();
+
+        } catch (Exception $e) {
+            $printer->close();
+            //echo $e->getMessage();
+        } finally {
+            $printer->close();
+        }
     }
 
 }

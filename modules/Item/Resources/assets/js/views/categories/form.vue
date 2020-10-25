@@ -9,6 +9,11 @@
                             <el-input v-model="form.name"></el-input>
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
+                        <div v-if="isActiveBussinessTurn('restaurant')" class="form-group" :class="{'has-danger': errors.printer}">
+                            <label class="control-label">Impresora</label>
+                            <el-input v-model="form.printer"></el-input>
+                            <small class="form-control-feedback" v-if="errors.printer" v-text="errors.printer[0]"></small>
+                        </div>
                     </div> 
                 </div> 
             </div>
@@ -20,7 +25,7 @@
     </el-dialog>
 </template>
  
-<script>
+<script type="text/babel">
  
 
     export default {
@@ -31,7 +36,8 @@
                 titleDialog: null,
                 resource: 'categories', 
                 errors: {}, 
-                form: {}, 
+                form: {},
+                business_turns: []
             }
         },
         created() {
@@ -43,16 +49,23 @@
 
                 this.form = {
                     id: null,
-                    name: null, 
+                    name: null,
+                    printer:null
                 }
             },
-            create() {
+            async create() {
 
                 this.titleDialog = (this.recordId)? 'Editar categoría':'Nueva categoría'
+                await this.$http.get(`/documents/tables`)
+                    .then(response => {
+                        this.business_turns = response.data.business_turns
+                    })
+
+                this.loading_form = true
                 if (this.recordId) {
-                    this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                    await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                             this.form = response.data
-                        })
+                    })
                 }
             },
             submit() {   
@@ -84,6 +97,9 @@
             close() {
                 this.$emit('update:showDialog', false)
                 this.initForm()
+            },
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
             }
         }
     }

@@ -34,6 +34,7 @@ if($current_hostname) {
                 Route::post('duplicate', 'OrderNoteController@duplicate');
                 Route::get('record2/{quotation}', 'OrderNoteController@record2');
                 Route::delete('destroy_order_note_item/{order_note_item}', 'OrderNoteController@destroy_order_note_item');
+                Route::get('esc-print/{id}', 'OrderNoteController@esc');
 
             });
 

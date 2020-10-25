@@ -19,12 +19,14 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th>Nombre</th>
+                        <th v-if="isActiveBussinessTurn('restaurant')">Impresora</th>
                         <th>Fecha creación</th>
                         <th class="text-right">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td>{{ row.name }}</td>
+                        <td v-if="isActiveBussinessTurn('restaurant')">{{ row.printer }}</td>
                         <td>{{ row.created_at }}</td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
@@ -42,7 +44,7 @@
     </div>
 </template>
 
-<script>
+<script type="text/babel">
 
     import CategoryForm from './form.vue' 
     import DataTable from '../../../../../../../resources/js/components/DataTable.vue'
@@ -57,10 +59,16 @@
                 showDialog: false, 
                 resource: 'categories',
                 recordId: null,
+                business_turns: [],
             }
         },
-        created() {
+        async created() {
             this.title = 'Categorías'
+            await this.$http.get(`/documents/tables`)
+                .then(response => {
+                    this.business_turns = response.data.business_turns
+                })
+            this.loading_form = true
         },
         methods: { 
             clickCreate(recordId = null) {
@@ -71,7 +79,10 @@
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
-            }
+            },
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
+            },
         }
     }
 </script>
