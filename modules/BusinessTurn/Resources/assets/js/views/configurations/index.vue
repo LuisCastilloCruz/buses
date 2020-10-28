@@ -29,7 +29,7 @@
             </div>
  
         </div>
-        <div class="card">
+        <div v-if="isActiveBussinessTurn('restaurant')" class="card">
             <div class="card-header bg-info">
                 <h3 class="my-0">Impresoras</h3>
             </div>
@@ -117,8 +117,11 @@
                 if (response.data !== ''){
                     this.form = response.data.data;
                 }
-                console.log(response.data.data)
             });
+            await this.$http.get(`/documents/tables`)
+                .then(response => {
+                    this.business_turns = response.data.business_turns
+                })
         },
         methods: {
             
@@ -142,6 +145,9 @@
                     }
                 }).then(() => {
                     this.loading_submit = false;
+                    if(id===3){
+                        location.reload();
+                    }
                 });
             },
             submit2() {
@@ -178,6 +184,9 @@
                 // alert(this.form.PrinterTipoConexion2);
                 // this.form.PrinterTipoConexion2 = _.find(this.conexiones, {'name': this.form.PrinterTipoConexion1})
             },
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
+            }
         }
     }
 </script>
