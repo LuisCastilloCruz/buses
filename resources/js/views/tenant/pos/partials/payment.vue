@@ -18,7 +18,7 @@
 
                         </div>
                         <div class="col-6 px-0">
-                            <h4 class="font-weight-semibold m-0 text-center m-b-0">{{item.item.description}} hula  {{item.item.category}} {{item.item.category_id}}</h4>
+                            <h4 class="font-weight-semibold m-0 text-center m-b-0">{{item.item.description}}</h4>
                             <!-- <p class="m-b-0">Descripción del producto</p> -->
                             <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                         </div>

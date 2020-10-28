@@ -106,22 +106,22 @@ class DocumentController extends Controller
 //        $operation_type_id_id = $this->getIdentityDocumentTypeId($request->operation_type_id);
 
         $customers = Person::where('number','like', "%{$request->input}%")
-                            ->orWhere('name','like', "%{$request->input}%")
-                            ->whereType('customers')->orderBy('name')
-                            ->whereIn('identity_document_type_id',$identity_document_type_id)
-                            ->whereIsEnabled()
-                            ->get()->transform(function($row) {
-                                return [
-                                    'id' => $row->id,
-                                    'description' => $row->number.' - '.$row->name,
-                                    'name' => $row->name,
-                                    'number' => $row->number,
-                                    'identity_document_type_id' => $row->identity_document_type_id,
-                                    'identity_document_type_code' => $row->identity_document_type->code,
-                                    'addresses' => $row->addresses,
-                                    'address' =>  $row->address
-                                ];
-                            });
+            ->orWhere('name','like', "%{$request->input}%")
+            ->whereType('customers')->orderBy('name')
+            ->whereIn('identity_document_type_id',$identity_document_type_id)
+            ->whereIsEnabled()
+            ->get()->transform(function($row) {
+                return [
+                    'id' => $row->id,
+                    'description' => $row->number.' - '.$row->name,
+                    'name' => $row->name,
+                    'number' => $row->number,
+                    'identity_document_type_id' => $row->identity_document_type_id,
+                    'identity_document_type_code' => $row->identity_document_type->code,
+                    'addresses' => $row->addresses,
+                    'address' =>  $row->address
+                ];
+            });
 
         return compact('customers');
     }
@@ -201,10 +201,10 @@ class DocumentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
 
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
-                        'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
-                        'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user','payment_method_types','enabled_discount_global',
-                        'business_turns','is_client','select_first_document_type_03', 'payment_destinations');
+            'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
+            'discount_types', 'charge_types', 'company', 'document_type_03_filter',
+            'document_types_guide', 'user','payment_method_types','enabled_discount_global',
+            'business_turns','is_client','select_first_document_type_03', 'payment_destinations');
 
     }
 
@@ -222,7 +222,7 @@ class DocumentController extends Controller
         $is_client = $this->getIsClient();
 
         return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                       'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client');
+            'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client');
     }
 
     public function table($table)
@@ -266,9 +266,9 @@ class DocumentController extends Controller
             });
             return $prepayment_documents;
         }
-        
+
         if ($table === 'payment_method_types') {
-            
+
             $payment_method_types = PaymentMethodType::whereNotIn('id', ['05', '08', '09'])->get();
             $end_payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get(); //by requirement
 
@@ -537,7 +537,7 @@ class DocumentController extends Controller
         $api_url = $this->getUrlServer();
         $client = new Client(['base_uri' => $api_url, 'verify' => false]);
 
-       // $zipFly = new ZipFly();
+        // $zipFly = new ZipFly();
         if(!$document->data_json) throw new Exception("Campo data_json nulo o inválido - Comprobante: {$document->fullnumber}");
 
         $data_json = (array) $document->data_json;
@@ -601,19 +601,19 @@ class DocumentController extends Controller
     {
 
         $customers = Person::with('addresses')->whereType('customers')
-                    ->where('id',$id)
-                    ->get()->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'description' => $row->number.' - '.$row->name,
-                            'name' => $row->name,
-                            'number' => $row->number,
-                            'identity_document_type_id' => $row->identity_document_type_id,
-                            'identity_document_type_code' => $row->identity_document_type->code,
-                            'addresses' => $row->addresses,
-                            'address' =>  $row->address
-                        ];
-                    });
+            ->where('id',$id)
+            ->get()->transform(function($row) {
+                return [
+                    'id' => $row->id,
+                    'description' => $row->number.' - '.$row->name,
+                    'name' => $row->name,
+                    'number' => $row->number,
+                    'identity_document_type_id' => $row->identity_document_type_id,
+                    'identity_document_type_code' => $row->identity_document_type->code,
+                    'addresses' => $row->addresses,
+                    'address' =>  $row->address
+                ];
+            });
 
         return compact('customers');
     }
@@ -739,22 +739,22 @@ class DocumentController extends Controller
         if($d_start && $d_end){
 
             $records = Document::where('document_type_id', 'like', '%' . $document_type_id . '%')
-                            ->where('series', 'like', '%' . $series . '%')
-                            ->where('number', 'like', '%' . $number . '%')
-                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
-                            ->whereBetween('date_of_issue', [$d_start , $d_end])
-                            ->whereTypeUser()
-                            ->latest();
+                ->where('series', 'like', '%' . $series . '%')
+                ->where('number', 'like', '%' . $number . '%')
+                ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+                ->whereBetween('date_of_issue', [$d_start , $d_end])
+                ->whereTypeUser()
+                ->latest();
 
         }else{
 
             $records = Document::where('date_of_issue', 'like', '%' . $date_of_issue . '%')
-                            ->where('document_type_id', 'like', '%' . $document_type_id . '%')
-                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
-                            ->where('series', 'like', '%' . $series . '%')
-                            ->where('number', 'like', '%' . $number . '%')
-                            ->whereTypeUser()
-                            ->latest();
+                ->where('document_type_id', 'like', '%' . $document_type_id . '%')
+                ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+                ->where('series', 'like', '%' . $series . '%')
+                ->where('number', 'like', '%' . $number . '%')
+                ->whereTypeUser()
+                ->latest();
         }
 
         if($pending_payment){
@@ -767,17 +767,17 @@ class DocumentController extends Controller
 
         if($item_id){
             $records = $records->whereHas('items', function($query) use($item_id){
-                                    $query->where('item_id', $item_id);
-                                });
+                $query->where('item_id', $item_id);
+            });
         }
 
         if($category_id){
 
             $records = $records->whereHas('items', function($query) use($category_id){
-                                    $query->whereHas('relation_item', function($q) use($category_id){
-                                        $q->where('category_id', $category_id);
-                                    });
-                                });
+                $query->whereHas('relation_item', function($q) use($category_id){
+                    $q->where('category_id', $category_id);
+                });
+            });
         }
 
         return $records;
@@ -816,14 +816,14 @@ class DocumentController extends Controller
     public function getDataTableItem(Request $request) {
 
         $items = Item::where('description','like', "%{$request->input}%")
-                        ->orWhere('internal_id','like', "%{$request->input}%")
-                        ->orderBy('description')
-                        ->get()->transform(function($row) {
-                            return [
-                                'id' => $row->id,
-                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
-                            ];
-                        });
+            ->orWhere('internal_id','like', "%{$request->input}%")
+            ->orderBy('description')
+            ->get()->transform(function($row) {
+                return [
+                    'id' => $row->id,
+                    'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                ];
+            });
 
         return $items;
 
@@ -836,7 +836,7 @@ class DocumentController extends Controller
         {
             $this->max_count_payment = $value;
         }
-       // $this->max_count_payment = 20 ;//( $value > $this->max_count_payment) ? $value : $this->$max_count_payment;
+        // $this->max_count_payment = 20 ;//( $value > $this->max_count_payment) ? $value : $this->$max_count_payment;
     }
 
     private function transformReportPayment($resource)
@@ -889,7 +889,7 @@ class DocumentController extends Controller
     {
         $month_format = Carbon::parse($month)->format('m');
         if($anulled == 'true') {
-           $records = Document::whereMonth('created_at', $month_format)->get();
+            $records = Document::whereMonth('created_at', $month_format)->get();
         } else {
             $records = Document::whereMonth('created_at', $month_format)->where('state_type_id', '!=', '11')->get();
         }
@@ -897,9 +897,9 @@ class DocumentController extends Controller
         $source =  $this->transformReportPayment( $records );
 
         return (new PaymentExport)
-                ->records($source)
-                ->payment_count($this->max_count_payment)
-                ->download('Reporte_Pagos_'.Carbon::now().'.xlsx');
+            ->records($source)
+            ->payment_count($this->max_count_payment)
+            ->download('Reporte_Pagos_'.Carbon::now().'.xlsx');
 
     }
 
@@ -946,7 +946,7 @@ class DocumentController extends Controller
     }
 
     public function storeBrands(BrandRequest $request){
-         $id = $request->input('id');
+        $id = $request->input('id');
         $brand = Brand::firstOrNew(['id' => $id]);
         $brand->fill($request->all());
         $brand->save();
@@ -975,48 +975,54 @@ class DocumentController extends Controller
         $barra=[];
         $imp_coc='';
         $imp_bar='';
+        $printerTipoConexion1='';
+        $printerTipoConexion2='';
+        $printerRuta1='';
+        $printerRuta2='';
+        $config = Configuration::get();
+
+        foreach($config as $printers){
+            $imp_coc= $printers['PrinterNombre1'];
+            $imp_bar= $printers['PrinterNombre2'];
+            $printerTipoConexion1= $printers['PrinterTipoConexion1'];
+            $printerTipoConexion2= $printers['PrinterTipoConexion2'];
+            $printerRuta1= $printers['PrinterRuta1'];
+            $printerRuta2= $printers['PrinterRuta2'];
+        }
+
         foreach ($data['items'] as $row) {
-            $categories = DB::connection('tenant')
-                ->table('categories')
-                ->select('printer', DB::raw('count(*) as total'))
-                ->groupBy('printer')
-                ->get();
-
-            $category = Category::findOrFail($row->item->category_id);
-
-            if ($category->name == 'COCINA') {
+            $categoria=Category::find($row->item->category_id);
+            if ($imp_coc != '' && $imp_coc != '-' &&  $categoria->printer==$imp_coc) {//COCINA
                 $data =[
 
                     'quantity'=> $row->quantity,
-                    'printer' =>$category->printer,
+                    'printer' =>$row->printer,
                     'description'=> $row->item->description
 
                 ];
-                $imp_coc=$category->printer;
                 array_push($cocina,$data);
 
             }
-            else if ($category->name == 'BARRA') {
+            else if ($imp_bar != '' && $imp_bar != '-' &&  $categoria->printer==$imp_bar) {//BARRA
                 $array=[
                     'items'=>[
                         'quantity'=> $row->quantity,
-                        'printer' =>$category->printer,
+                        'printer' =>$row->printer,
                         'description'=> $row->item->description
                     ]
                 ];
-                $imp_bar=$category->printer;
                 array_push($barra,$array);
             }
         }
 
         if(!empty($cocina)){
-            $this->toPrintEsc($cocina,$number,$imp_coc,$observation);
+            $this->toPrintEsc($cocina,$number,$imp_coc,$printerTipoConexion1,$printerRuta1,$observation);
         }
         if(!empty($barra)){
-            $this->toPrintEsc($barra,$number,$imp_bar,$observation);
+            $this->toPrintEsc($barra,$number,$imp_bar,$printerTipoConexion2,$printerRuta2,$observation);
         }
     }
-    public function toPrintEsc($data,$number,$printer,$observation)
+    public function toPrintEsc($data,$number,$printer,$tipo,$ruta,$observation)
     {
         //$logo = EscposImage::load("resources/rawbtlogo.png", false);
         //$logo =  Storage::disk('tenant')->get(storage_path('public/uploads/logos/logo_20601411076.png'));
@@ -1025,7 +1031,13 @@ class DocumentController extends Controller
         /* Start the printer */
 
         $connector = null;
-        $connector = new WindowsPrintConnector($printer);
+        if($tipo=="USB"){
+            $connector = new WindowsPrintConnector($printer);
+        }
+        else if($tipo=="RED"){
+            $connector = new NetworkPrintConnector($ruta, 9100);
+        }
+
         /* Print a "Hello world" receipt" */
         $printer = new Printer($connector);
 

@@ -38,7 +38,13 @@ class ConfigurationResource extends JsonResource
             'legend_footer' => (bool) $this->legend_footer,
             'header_image' => $this->header_image,
             'color1'=>$this->color1,
-            'color2'=>$this->color2
+            'color2'=>$this->color2,
+            'PrinterNombre1'=>$this->PrinterNombre1,
+            'PrinterRuta1'=>$this->PrinterRuta1,
+            'PrinterTipoConexion1'=>$this->PrinterTipoConexion1,
+            'PrinterNombre2'=>$this->PrinterNombre2,
+            'PrinterRuta2'=>$this->PrinterRuta2,
+            'PrinterTipoConexion2'=>$this->PrinterTipoConexion2,
         ];
     }
 }

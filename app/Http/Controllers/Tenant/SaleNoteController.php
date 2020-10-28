@@ -1017,48 +1017,54 @@ class SaleNoteController extends Controller
         $barra=[];
         $imp_coc='';
         $imp_bar='';
+        $printerTipoConexion1='';
+        $printerTipoConexion2='';
+        $printerRuta1='';
+        $printerRuta2='';
+        $config = Configuration::get();
+
+        foreach($config as $printers){
+            $imp_coc= $printers['PrinterNombre1'];
+            $imp_bar= $printers['PrinterNombre2'];
+            $printerTipoConexion1= $printers['PrinterTipoConexion1'];
+            $printerTipoConexion2= $printers['PrinterTipoConexion2'];
+            $printerRuta1= $printers['PrinterRuta1'];
+            $printerRuta2= $printers['PrinterRuta2'];
+        }
+
         foreach ($data['items'] as $row) {
-            $categories = DB::connection('tenant')
-                ->table('categories')
-                ->select('printer', DB::raw('count(*) as total'))
-                ->groupBy('printer')
-                ->get();
-
-            $category = Category::findOrFail($row->item->category_id);
-
-            if ($category->name == 'COCINA') {
+            $categoria=Category::find($row->item->category_id);
+            if ($imp_coc != '' && $imp_coc != '-' &&  $categoria->printer==$imp_coc) {//COCINA
                 $data =[
 
                     'quantity'=> $row->quantity,
-                    'printer' =>$category->printer,
+                    'printer' =>$row->printer,
                     'description'=> $row->item->description
 
                 ];
-                $imp_coc=$category->printer;
                 array_push($cocina,$data);
 
             }
-            else if ($category->name == 'BARRA') {
+            else if ($imp_bar != '' && $imp_bar != '-' &&  $categoria->printer==$imp_bar) {//BARRA
                 $array=[
                     'items'=>[
                         'quantity'=> $row->quantity,
-                        'printer' =>$category->printer,
+                        'printer' =>$row->printer,
                         'description'=> $row->item->description
                     ]
                 ];
-                $imp_bar=$category->printer;
                 array_push($barra,$array);
             }
         }
 
         if(!empty($cocina)){
-            $this->toPrintEsc($cocina,$number,$imp_coc,$observation);
+            $this->toPrintEsc($cocina,$number,$imp_coc,$printerTipoConexion1,$printerRuta1,$observation);
         }
         if(!empty($barra)){
-            $this->toPrintEsc($barra,$number,$imp_bar,$observation);
+            $this->toPrintEsc($barra,$number,$imp_bar,$printerTipoConexion2,$printerRuta2,$observation);
         }
     }
-    public function toPrintEsc($data,$number,$printer,$observation)
+    public function toPrintEsc($data,$number,$printer,$tipo,$ruta,$observation)
     {
         //$logo = EscposImage::load("resources/rawbtlogo.png", false);
         //$logo =  Storage::disk('tenant')->get(storage_path('public/uploads/logos/logo_20601411076.png'));
@@ -1067,7 +1073,12 @@ class SaleNoteController extends Controller
         /* Start the printer */
 
         $connector = null;
-        $connector = new WindowsPrintConnector($printer);
+        if($tipo=="USB"){
+            $connector = new WindowsPrintConnector($printer);
+        }
+        else if($tipo=="RED"){
+            $connector = new NetworkPrintConnector($ruta, 9100);
+        }
         /* Print a "Hello world" receipt" */
         $printer = new Printer($connector);
 

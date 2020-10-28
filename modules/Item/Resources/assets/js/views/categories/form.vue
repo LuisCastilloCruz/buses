@@ -11,8 +11,16 @@
                         </div>
                         <div v-if="isActiveBussinessTurn('restaurant')" class="form-group" :class="{'has-danger': errors.printer}">
                             <label class="control-label">Impresora</label>
-                            <el-input v-model="form.printer"></el-input>
-                            <small class="form-control-feedback" v-if="errors.printer" v-text="errors.printer[0]"></small>
+                            <el-select v-model="form.printer" @change="selectPrinter">
+                                <el-option
+                                        :label="printers.PrinterNombre1"
+                                        :value="printers.PrinterNombre1">
+                                </el-option>
+                                <el-option
+                                        :label="printers.PrinterNombre2"
+                                        :value="printers.PrinterNombre2">
+                                </el-option>
+                            </el-select>
                         </div>
                     </div> 
                 </div> 
@@ -37,7 +45,8 @@
                 resource: 'categories', 
                 errors: {}, 
                 form: {},
-                business_turns: []
+                business_turns: [],
+                printers:{}
             }
         },
         created() {
@@ -50,11 +59,17 @@
                 this.form = {
                     id: null,
                     name: null,
-                    printer:null
+                    printer:null,
                 }
             },
             async create() {
 
+                await this.$http.get(`/configurations/record`) .then(response => {
+                    if (response.data !== ''){
+                        this.printers = response.data.data;
+                    }
+                    //console.log(response.data.data)
+                });
                 this.titleDialog = (this.recordId)? 'Editar categoría':'Nueva categoría'
                 await this.$http.get(`/documents/tables`)
                     .then(response => {
@@ -64,7 +79,8 @@
                 this.loading_form = true
                 if (this.recordId) {
                     await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
-                            this.form = response.data
+                            this.form = response.data;
+                            console.log(this.form)
                     })
                 }
             },

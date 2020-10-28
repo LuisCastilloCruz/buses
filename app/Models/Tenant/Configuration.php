@@ -37,7 +37,13 @@ class Configuration extends ModelTenant
         'legend_footer',
         'color1',
         'color2',
-        'fondo'
+        'fondo',
+        'PrinterNombre1',
+        'PrinterRuta1',
+        'PrinterTipoConexion1',
+        'PrinterNombre2',
+        'PrinterRuta2',
+        'PrinterTipoConexion2'
     ];
 
     public function setPlanAttribute($value)
