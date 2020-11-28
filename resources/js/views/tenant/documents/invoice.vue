@@ -1620,7 +1620,7 @@ import moment from 'moment'
                         this.saveCashDocument();
                     }
                     else {
-                        alert("Ocurrió un error en el registro; probablemente ya no tiene stock en uno o varios de los productos que está intentando vender.  Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.");
+                        alert("Ocurrió un error en el registro; probablemente no tiene el perfil para enviar a SUNAT o ya no tiene stock en uno o varios de los productos que está intentando vender.  Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.");
                         this.loading_submit = false;
                         this.$message.error(response.data.message);
                     }
