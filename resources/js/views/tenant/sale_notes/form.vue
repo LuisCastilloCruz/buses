@@ -81,43 +81,51 @@
                                     <thead>
                                         <tr width="100%">
                                             <th v-if="form.payments.length>0">Método de pago</th>
-                                            <th v-if="form.payments.length>0">Destino</th>
-                                            <th v-if="form.payments.length>0">Referencia</th>
-                                            <th v-if="form.payments.length>0">Monto</th>
-                                            <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                            <template v-if="enabled_payments">
+                                                <th v-if="form.payments.length>0">Destino
+                                                    <el-tooltip class="item" effect="dark" content="Aperture caja o cuentas bancarias" placement="top-start">
+                                                        <i class="fa fa-info-circle"></i>
+                                                    </el-tooltip>
+                                                </th>
+                                                <th v-if="form.payments.length>0">Referencia</th>
+                                                <th v-if="form.payments.length>0">Monto</th>
+                                                <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                            </template>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(row, index) in form.payments" :key="index">
                                             <td>
                                                 <div class="form-group mb-2 mr-2">
-                                                    <el-select v-model="row.payment_method_type_id">
+                                                    <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(index)">
                                                         <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                     </el-select>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-select v-model="row.payment_destination_id" filterable >
-                                                        <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                    </el-select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2"  >
-                                                    <el-input v-model="row.reference"></el-input>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2" >
-                                                    <el-input v-model="row.payment"></el-input>
-                                                </div>
-                                            </td>
-                                            <td class="series-table-actions text-center">
-                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </td>
+                                            <template v-if="enabled_payments">
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.payment_destination_id" filterable >
+                                                            <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2"  >
+                                                        <el-input v-model="row.reference"></el-input>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2" >
+                                                        <el-input v-model="row.payment"></el-input>
+                                                    </div>
+                                                </td>
+                                                <td class="series-table-actions text-center">
+                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </template>
                                             <br>
                                         </tr>
                                     </tbody>
@@ -174,6 +182,14 @@
                                 </div>
                             </div>
 
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Observación
+                                    </label>
+                                    <el-input  type="textarea"  v-model="form.observation"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
+                                </div>
+                            </div>
                         </div>
 
 
@@ -188,6 +204,7 @@
                                                 <th class="font-weight-bold">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
+                                                <th class="text-right font-weight-bold">Valor Unitario</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
@@ -202,6 +219,7 @@
                                                 <td class="text-center">{{ row.item.unit_type_id }}</td>
                                                 <td class="text-right">{{ row.quantity }}</td>
                                                 <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
+                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                                 <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
 
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
@@ -218,7 +236,7 @@
 
                                                 </td>
                                             </tr>
-                                            <tr><td colspan="8"></td></tr>
+                                            <tr><td colspan="9"></td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -312,7 +330,9 @@
                 series: [],
                 all_series: [],
                 is_contingency: false,
+                enabled_payments: true,
                 payment_destinations:  [],
+                configuration: {},
 
             }
         },
@@ -334,10 +354,12 @@
                     this.type_periods = [{id:'month',description:'Mensual'}, {id:'year',description:'Anual'}]
                     this.all_series = response.data.series
                     this.payment_destinations = response.data.payment_destinations
+                    this.configuration = response.data.configuration
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeCurrencyType()
                     this.allCustomers()
+                    this.selectDestinationSale()
                 })
             this.loading_form = true
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
@@ -348,6 +370,55 @@
 
         },
         methods: {
+            changePaymentMethodType(index){
+
+                let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
+
+                if(payment_method_type.id == '09'){
+
+                    this.form.payment_method_type_id = payment_method_type.id
+                    this.form.date_of_due = this.form.date_of_issue
+                    // this.form.payments = []
+                    this.enabled_payments = false
+
+                }else{
+
+                    this.form.date_of_due = this.form.date_of_issue
+                    this.readonly_date_of_due = false
+                    this.form.payment_method_type_id = null
+                    this.enabled_payments = true
+
+                }
+
+            },
+            selectDestinationSale() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+                    this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
+                }
+
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
+            setTotalDefaultPayment(){
+
+                if(this.form.payments.length > 0){
+
+                    this.form.payments[0].payment = this.form.total
+                }
+            },
             filterSeries() {
                 this.form.series_id = null
                 this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id, 'document_type_id': '80', 'contingency': this.is_contingency});
@@ -355,36 +426,47 @@
             },
             async clickDeleteSNItem(id, index){
 
-                await this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
-                    .then(res => {
-                        this.clickRemoveItem(index)
-                        this.$eventHub.$emit('reloadDataItems', null)
+                this.$confirm('¿Desea eliminar el item?', 'Eliminar', {
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
 
-                    })
-                    .catch(error => {
-                        if (error.response.status === 500) {
-                            this.$message.error('Error al intentar eliminar');
-                        } else {
-                            console.log(error.response.data.message)
-                        }
-                    })
+                    this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
+                        .then(res => {
 
-                await this.$http.post(`/${this.resource}`, this.form).then(response => {
-                    if (response.data.success) {
-                        this.isUpdate()
-                    }
-                    else {
-                        this.$message.error(response.data.message);
-                    }
+                            this.clickRemoveItem(index)
+                            this.$eventHub.$emit('reloadDataItems', null)
+
+                            this.$http.post(`/${this.resource}`, this.form).then(response => {
+                                if (response.data.success) {
+                                    this.isUpdate()
+                                }
+                                else {
+                                    this.$message.error(response.data.message);
+                                }
+                            }).catch(error => {
+                                if (error.response.status === 422) {
+                                    this.errors = error.response.data;
+                                }
+                                else {
+                                    this.$message.error(error.response.data.message);
+                                }
+                            })
+
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar eliminar');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+
+
                 }).catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data;
-                    }
-                    else {
-                        this.$message.error(error.response.data.message);
-                    }
-                })
-
+                    console.log(error)
+                });
 
             },
             getFormatUnitPriceRow(unit_price){
@@ -411,9 +493,12 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:'cash',
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
                 });
+
+                this.setTotalDefaultPayment()
+
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
@@ -438,6 +523,7 @@
             initForm() {
                 this.errors = {}
                 this.form = {
+                    id:null,
                     series_id: null,
                     prefix:'NV',
                     establishment_id: null,
@@ -480,10 +566,13 @@
                     automatic_date_of_issue:null,
                     enabled_concurrency:false,
                     license_plate: null,
-                    paid: false
+                    payment_method_type_id:null,
+                    paid: false,
+                    observation: null,
                 }
 
                 this.clickAddPayment()
+                this.enabled_payments = true
 
             },
             resetForm() {
@@ -582,7 +671,45 @@
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
                 this.form_payment.payment = this.form.total
-             },
+                this.setTotalDefaultPayment()
+            },
+            async saveCashDocument(sale_note_id){
+
+                if(!this.id){
+
+                    await this.$http.post(`/cash/cash_document`, {
+                            document_id: null,
+                            sale_note_id: sale_note_id
+                        })
+                        .then(response => {
+                            if (response.data.success) {
+                                // console.log(response)
+                            } else {
+                                this.$message.error(response.data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        })
+
+                }
+
+            },
+            validatePaymentDestination(){
+
+                let error_by_item = 0
+
+                this.form.payments.forEach((item)=>{
+                    if(!['05', '08', '09'].includes(item.payment_method_type_id)){
+                        if(item.payment_destination_id == null) error_by_item++;
+                    }
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                }
+
+            },
             async submit() {
 
                 let validate = await this.validate_payments()
@@ -604,17 +731,28 @@
                   this.form.paid = true
                 }
 
+                let validate_payment_destination = await this.validatePaymentDestination()
 
+                if(validate_payment_destination.error_by_item > 0) {
+                    return this.$message.error('El destino del pago es obligatorio');
+                }
+
+                if(!this.enabled_payments){
+                    this.form.payments = []
+                }
 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
 
                         this.form_payment.sale_note_id = response.data.data.id;
+                        this.$eventHub.$emit('reloadDataItems', null)
                         // if(!this.id) this.sale_note_payment()
                         this.resetForm();
                         this.saleNotesNewId = response.data.data.id;
                         this.showDialogOptions = true;
+                        this.saveCashDocument(response.data.data.id)
+
                         this.isUpdate()
 
                     }

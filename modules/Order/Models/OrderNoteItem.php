@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\ModelTenant;
+use Modules\Inventory\Models\Warehouse;
 
 class OrderNoteItem extends ModelTenant
 {
@@ -44,7 +45,8 @@ class OrderNoteItem extends ModelTenant
 
         'attributes',
         'charges',
-        'discounts'
+        'discounts',
+        'warehouse_id',
     ];
 
     public function getItemAttribute($value)
@@ -119,7 +121,7 @@ class OrderNoteItem extends ModelTenant
                                 ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                                 ->where('customer_id', $params['person_id'])
                                 ->whereTypeUser();
-                        })->latest('id');
+                        });
         }
 
         
@@ -128,7 +130,7 @@ class OrderNoteItem extends ModelTenant
                         ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id'])
                         ->whereTypeUser();
-                })->latest('id');
+                });
 
     }
 
@@ -143,7 +145,7 @@ class OrderNoteItem extends ModelTenant
                                 ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                                 ->where('customer_id', $params['person_id'])
                                 ->whereTypeUser();
-                        })->latest('id');
+                        });
 
         }
 
@@ -153,7 +155,7 @@ class OrderNoteItem extends ModelTenant
                         ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id'])
                         ->whereTypeUser();
-                })->latest('id');
+                });
 
     }
 
@@ -166,7 +168,7 @@ class OrderNoteItem extends ModelTenant
                             $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                                 ->where('customer_id', $params['person_id'])
                                 ->whereTypeUser();
-                        })->latest('id');
+                        });
                         
         }
 
@@ -175,8 +177,14 @@ class OrderNoteItem extends ModelTenant
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id'])
                         ->whereTypeUser();
-                })->latest('id');
+                });
 
+    }
+
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
 }

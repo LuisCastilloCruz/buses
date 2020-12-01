@@ -4,15 +4,24 @@
             <h3 class="my-0">Cuentas por pagar</h3>
         </div>
         <div class="card mb-0">
-            <div class="card-body"> 
+            <div class="card-body">
 
                 <div class="row">
-                
+
                     <div class="col-xl-12">
                         <section >
                         <div>
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-2" >
+                                    <div class="form-group">
+                                        <label class="control-label">Usuario</label>
+                                        <el-select v-model="form.user" @change="loadToPay">
+                                            <el-option v-for="option in users" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
                                     <div class="form-group">
                                         <label class="control-label">Establecimiento</label>
                                         <el-select v-model="form.establishment_id" @change="loadToPay">
@@ -21,7 +30,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label class="control-label">Periodo</label>
                                     <el-select v-model="form.period" @change="changePeriod">
                                         <el-option key="month" value="month" label="Por mes"></el-option>
@@ -100,7 +109,7 @@
                                         >
                                         <i class="fa fa-file-excel"></i> Exportar Excel
                                     </el-button>
-                                    
+
                                     <el-tooltip class="item" effect="dark" content="Reporte por formas de pago (Días)" placement="top-start">
                                         <el-button
                                             v-if="records.length > 0"
@@ -112,6 +121,14 @@
                                         </el-button>
                                     </el-tooltip>
 
+                                    <el-button
+                                        v-if="records.length > 0"
+                                        class="submit"
+                                        type="danger"
+                                        @click.prevent="clickDownload('pdf')"
+                                        >
+                                        <i class="fa fa-file-pdf"></i> Exportar PDF
+                                    </el-button>
                                 </div>
                             </div>
                             <div class="row mt-5 mb-3 text-right">
@@ -171,7 +188,7 @@
                                             <td>{{ row.number_full }}</td>
                                             <td>{{ row.supplier_name }}</td>
                                             <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
- 
+
                                             <td>
                                                 <el-popover placement="right" width="300" trigger="click">
                                                 <p>
@@ -221,7 +238,7 @@
                                                     @click.prevent="clickExpensePayment(row.id)"
                                                 >Pagos</button>
                                                 </template>
- 
+
                                             </td>
                                         </tr>
                                     </template>
@@ -284,7 +301,7 @@
             }
         },
         async created() {
-            
+
             this.$eventHub.$on("reloadDataToPay", () => {
                 this.loadToPay();
             });
@@ -392,7 +409,7 @@
         },
 
         methods: {
-            
+
             clickDownloadPaymentMethod() {
                 let query = queryString.stringify({
                     ...this.form
@@ -400,20 +417,22 @@
                 window.open(`/${this.resource}/report-payment-method-days/?${query}`, "_blank");
             },
             initForm() {
-                this.form = { 
+                this.form = {
                     establishment_id: null,
                     period: 'between_dates',
                     date_start: moment().format('YYYY-MM-DD'),
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),
                     month_end: moment().format('YYYY-MM'),
-                    supplier_id: null
+                    supplier_id: null,
+                    user: null,
                 };
             },
             filter() {
                 this.$http.get(`/${this.resource}/filter`, this.form).then(response => {
                     this.establishments = response.data.establishments;
                     this.suppliers = response.data.suppliers;
+                    this.users = response.data.users;
                     this.form.establishment_id = this.establishments.length > 0 ? this.establishments[0].id : null;
                 });
             },
@@ -443,6 +462,11 @@
                 let query = queryString.stringify({
                     ...this.form
                 });
+
+                if(type == 'pdf'){
+                    return window.open(`/${this.resource}/${type}?${query}`, "_blank");
+                }
+
                 window.open(`/${this.resource}/to-pay/?${query}`, "_blank");
             },
             clickOpen(){

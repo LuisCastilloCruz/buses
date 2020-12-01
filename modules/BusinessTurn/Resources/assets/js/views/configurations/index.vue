@@ -17,10 +17,10 @@
                     <div class="col-md-12">
                         
                        <template  v-for="(option,ind) in records">
-                            <!--<template v-if="option.id === 3">-->
-                                <!--<el-checkbox class="plan_documents d-block" :disabled="true"  v-model="option.active"  :label="option.id"  :key="ind"  @change="submit(option.id)">{{option.name+' (Pronto)'}}</el-checkbox>-->
-                            <!--</template>-->
-                            <template>
+                            <template v-if="option.id === 3">
+                                <el-checkbox class="plan_documents d-block" :disabled="true"  v-model="option.active"  :label="option.id"  :key="ind"  @change="submit(option.id)">{{option.name+' (Pronto)'}}</el-checkbox>
+                            </template>
+                            <template v-else>
                                 <el-checkbox class="plan_documents d-block"  v-model="option.active"  :label="option.id"  :key="ind"  @change="submit(option.id)">{{option.name}}</el-checkbox>
                             </template>
                        </template>

@@ -33,6 +33,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Warehouse;
+use App\Models\Tenant\User;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
@@ -106,22 +107,22 @@ class DocumentController extends Controller
 //        $operation_type_id_id = $this->getIdentityDocumentTypeId($request->operation_type_id);
 
         $customers = Person::where('number','like', "%{$request->input}%")
-            ->orWhere('name','like', "%{$request->input}%")
-            ->whereType('customers')->orderBy('name')
-            ->whereIn('identity_document_type_id',$identity_document_type_id)
-            ->whereIsEnabled()
-            ->get()->transform(function($row) {
-                return [
-                    'id' => $row->id,
-                    'description' => $row->number.' - '.$row->name,
-                    'name' => $row->name,
-                    'number' => $row->number,
-                    'identity_document_type_id' => $row->identity_document_type_id,
-                    'identity_document_type_code' => $row->identity_document_type->code,
-                    'addresses' => $row->addresses,
-                    'address' =>  $row->address
-                ];
-            });
+                            ->orWhere('name','like', "%{$request->input}%")
+                            ->whereType('customers')->orderBy('name')
+                            ->whereIn('identity_document_type_id',$identity_document_type_id)
+                            ->whereIsEnabled()
+                            ->get()->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->number.' - '.$row->name,
+                                    'name' => $row->name,
+                                    'number' => $row->number,
+                                    'identity_document_type_id' => $row->identity_document_type_id,
+                                    'identity_document_type_code' => $row->identity_document_type->code,
+                                    'addresses' => $row->addresses,
+                                    'address' =>  $row->address
+                                ];
+                            });
 
         return compact('customers');
     }
@@ -172,6 +173,7 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $user = auth()->user()->type;
+        $sellers = User::whereIn('type', ['seller'])->orWhere('id', auth()->user()->id)->get();
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
@@ -201,10 +203,10 @@ class DocumentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
 
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
-            'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
-            'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-            'document_types_guide', 'user','payment_method_types','enabled_discount_global',
-            'business_turns','is_client','select_first_document_type_03', 'payment_destinations');
+                        'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
+                        'discount_types', 'charge_types', 'company', 'document_type_03_filter',
+                        'document_types_guide', 'user', 'sellers','payment_method_types','enabled_discount_global',
+                        'business_turns','is_client','select_first_document_type_03', 'payment_destinations');
 
     }
 
@@ -222,7 +224,7 @@ class DocumentController extends Controller
         $is_client = $this->getIsClient();
 
         return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-            'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client');
+                       'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client');
     }
 
     public function table($table)
@@ -280,7 +282,8 @@ class DocumentController extends Controller
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
 
-            $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
+            // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
+            $items_u = Item::whereWarehouse()->whereIsActive()->orderBy('description')->take(20)->get();
             $items_s = Item::where('unit_type_id','ZZ')->whereIsActive()->orderBy('description')->take(10)->get();
             $items = $items_u->merge($items_s);
 
@@ -296,7 +299,7 @@ class DocumentController extends Controller
                     'description' => $row->description,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
-                    'sale_unit_price' => round($row->sale_unit_price, 2),
+                    'sale_unit_price' => number_format($row->sale_unit_price, 4, ".",""),
                     'purchase_unit_price' => $row->purchase_unit_price,
                     'unit_type_id' => $row->unit_type_id,
                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
@@ -335,17 +338,18 @@ class DocumentController extends Controller
                             'checked'  => false
                         ];
                     }),
-                    'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'series' => $row->series,
-                            'date' => $row->date,
-                            'item_id' => $row->item_id,
-                            'warehouse_id' => $row->warehouse_id,
-                            'has_sale' => (bool)$row->has_sale,
-                            'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
-                        ];
-                    })->values(),
+                    'lots' => [],
+                    // 'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                    //     return [
+                    //         'id' => $row->id,
+                    //         'series' => $row->series,
+                    //         'date' => $row->date,
+                    //         'item_id' => $row->item_id,
+                    //         'warehouse_id' => $row->warehouse_id,
+                    //         'has_sale' => (bool)$row->has_sale,
+                    //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                    //     ];
+                    // })->values(),
                     'lots_enabled' => (bool) $row->lots_enabled,
                     'series_enabled' => (bool) $row->series_enabled,
 
@@ -430,10 +434,10 @@ class DocumentController extends Controller
                 'status'=>422,
                 'data' => [
                     'id' => '',
-                    'message'=>'Ocurrió un error en el registro; probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
+                    'message'=>'Ocurrió un error en el registro; falta el certificado, no hay conexión con la SUNAT, o probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el envío automático a la SUNAT, Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
                     'response' =>[
                         'code'=> "8",
-                        'description' =>'Ocurrió un error en el registro; probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
+                        'description' =>'Ocurrió un error en el registro; falta el certificado, no hay conexión con la SUNAT, o probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el envío automático a la SUNAT, Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
                         'sent'=> false,
 
                     ]
@@ -537,7 +541,7 @@ class DocumentController extends Controller
         $api_url = $this->getUrlServer();
         $client = new Client(['base_uri' => $api_url, 'verify' => false]);
 
-        // $zipFly = new ZipFly();
+       // $zipFly = new ZipFly();
         if(!$document->data_json) throw new Exception("Campo data_json nulo o inválido - Comprobante: {$document->fullnumber}");
 
         $data_json = (array) $document->data_json;
@@ -601,26 +605,29 @@ class DocumentController extends Controller
     {
 
         $customers = Person::with('addresses')->whereType('customers')
-            ->where('id',$id)
-            ->get()->transform(function($row) {
-                return [
-                    'id' => $row->id,
-                    'description' => $row->number.' - '.$row->name,
-                    'name' => $row->name,
-                    'number' => $row->number,
-                    'identity_document_type_id' => $row->identity_document_type_id,
-                    'identity_document_type_code' => $row->identity_document_type->code,
-                    'addresses' => $row->addresses,
-                    'address' =>  $row->address
-                ];
-            });
+                    ->where('id',$id)
+                    ->get()->transform(function($row) {
+                        return [
+                            'id' => $row->id,
+                            'description' => $row->number.' - '.$row->name,
+                            'name' => $row->name,
+                            'number' => $row->number,
+                            'identity_document_type_id' => $row->identity_document_type_id,
+                            'identity_document_type_code' => $row->identity_document_type->code,
+                            'addresses' => $row->addresses,
+                            'address' =>  $row->address
+                        ];
+                    });
 
         return compact('customers');
     }
 
     public function getIdentityDocumentTypeId($document_type_id, $operation_type_id){
 
-        if($operation_type_id === '0101' || $operation_type_id === '1001') {
+        // if($operation_type_id === '0101' || $operation_type_id === '1001') {
+
+        if(in_array($operation_type_id, ['0101', '1001', '1004'])) {
+
             if($document_type_id == '01'){
                 $identity_document_type_id = [6];
             }else{
@@ -739,22 +746,22 @@ class DocumentController extends Controller
         if($d_start && $d_end){
 
             $records = Document::where('document_type_id', 'like', '%' . $document_type_id . '%')
-                ->where('series', 'like', '%' . $series . '%')
-                ->where('number', 'like', '%' . $number . '%')
-                ->where('state_type_id', 'like', '%' . $state_type_id . '%')
-                ->whereBetween('date_of_issue', [$d_start , $d_end])
-                ->whereTypeUser()
-                ->latest();
+                            ->where('series', 'like', '%' . $series . '%')
+                            ->where('number', 'like', '%' . $number . '%')
+                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+                            ->whereBetween('date_of_issue', [$d_start , $d_end])
+                            ->whereTypeUser()
+                            ->latest();
 
         }else{
 
             $records = Document::where('date_of_issue', 'like', '%' . $date_of_issue . '%')
-                ->where('document_type_id', 'like', '%' . $document_type_id . '%')
-                ->where('state_type_id', 'like', '%' . $state_type_id . '%')
-                ->where('series', 'like', '%' . $series . '%')
-                ->where('number', 'like', '%' . $number . '%')
-                ->whereTypeUser()
-                ->latest();
+                            ->where('document_type_id', 'like', '%' . $document_type_id . '%')
+                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+                            ->where('series', 'like', '%' . $series . '%')
+                            ->where('number', 'like', '%' . $number . '%')
+                            ->whereTypeUser()
+                            ->latest();
         }
 
         if($pending_payment){
@@ -767,17 +774,17 @@ class DocumentController extends Controller
 
         if($item_id){
             $records = $records->whereHas('items', function($query) use($item_id){
-                $query->where('item_id', $item_id);
-            });
+                                    $query->where('item_id', $item_id);
+                                });
         }
 
         if($category_id){
 
             $records = $records->whereHas('items', function($query) use($category_id){
-                $query->whereHas('relation_item', function($q) use($category_id){
-                    $q->where('category_id', $category_id);
-                });
-            });
+                                    $query->whereHas('relation_item', function($q) use($category_id){
+                                        $q->where('category_id', $category_id);
+                                    });
+                                });
         }
 
         return $records;
@@ -816,14 +823,14 @@ class DocumentController extends Controller
     public function getDataTableItem(Request $request) {
 
         $items = Item::where('description','like', "%{$request->input}%")
-            ->orWhere('internal_id','like', "%{$request->input}%")
-            ->orderBy('description')
-            ->get()->transform(function($row) {
-                return [
-                    'id' => $row->id,
-                    'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
-                ];
-            });
+                        ->orWhere('internal_id','like', "%{$request->input}%")
+                        ->orderBy('description')
+                        ->get()->transform(function($row) {
+                            return [
+                                'id' => $row->id,
+                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                            ];
+                        });
 
         return $items;
 
@@ -836,7 +843,7 @@ class DocumentController extends Controller
         {
             $this->max_count_payment = $value;
         }
-        // $this->max_count_payment = 20 ;//( $value > $this->max_count_payment) ? $value : $this->$max_count_payment;
+       // $this->max_count_payment = 20 ;//( $value > $this->max_count_payment) ? $value : $this->$max_count_payment;
     }
 
     private function transformReportPayment($resource)
@@ -885,21 +892,22 @@ class DocumentController extends Controller
         return $records;
     }
 
-    public function report_payments($month, $anulled)
+    public function report_payments(Request $request)
     {
-        $month_format = Carbon::parse($month)->format('m');
-        if($anulled == 'true') {
-            $records = Document::whereMonth('created_at', $month_format)->get();
+        // $month_format = Carbon::parse($month)->format('m');
+
+        if($request->anulled == 'true') {
+           $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->get();
         } else {
-            $records = Document::whereMonth('created_at', $month_format)->where('state_type_id', '!=', '11')->get();
+            $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->where('state_type_id', '!=', '11')->get();
         }
 
         $source =  $this->transformReportPayment( $records );
 
         return (new PaymentExport)
-            ->records($source)
-            ->payment_count($this->max_count_payment)
-            ->download('Reporte_Pagos_'.Carbon::now().'.xlsx');
+                ->records($source)
+                ->payment_count($this->max_count_payment)
+                ->download('Reporte_Pagos_'.Carbon::now().'.xlsx');
 
     }
 
@@ -946,7 +954,7 @@ class DocumentController extends Controller
     }
 
     public function storeBrands(BrandRequest $request){
-        $id = $request->input('id');
+         $id = $request->input('id');
         $brand = Brand::firstOrNew(['id' => $id]);
         $brand->fill($request->all());
         $brand->save();

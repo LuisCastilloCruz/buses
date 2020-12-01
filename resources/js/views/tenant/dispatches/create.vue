@@ -89,7 +89,7 @@
 
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.transfer_reason_description}">
-                                <label class="control-label">Descripción de motivo de traslado<span class="text-danger"> *</span></label>
+                                <label class="control-label">Descripción de motivo de traslado</label>
                                 <el-input type="textarea" :rows="3" placeholder="Descripción de motivo de traslado..." v-model="form.transfer_reason_description" maxlength="100"></el-input>
                                 <small class="form-control-feedback" v-if="errors.transfer_reason_description" v-text="errors.transfer_reason_description[0]"></small>
                             </div>
@@ -128,7 +128,7 @@
                         </div> -->
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.observations}">
-                                <label class="control-label">Observaciones<span class="text-danger"> *</span></label>
+                                <label class="control-label">Observaciones</label>
                                 <el-input type="textarea" :rows="3" placeholder="Observaciones..." v-model="form.observations" maxlength="250"></el-input>
                                 <small class="form-control-feedback" v-if="errors.observations" v-text="errors.observations[0]"></small>
                             </div>
@@ -579,8 +579,15 @@
                 this.$set(this.form.delivery, 'location_id', null);
             },
             addItem(form) {
-
+                // console.log(form)
                 let exist = this.form.items.find((item) => item.id == form.item.id);
+
+                let attributes = null
+
+                if(form.item.attributes){
+                    attributes = form.item.attributes
+                    this.incrementValueAttr(form)
+                }
 
                 if (exist) {
                     exist.quantity += form.quantity;
@@ -588,6 +595,7 @@
                 }
 
                 this.form.items.push({
+                    'attributes': attributes,
                     'description': form.item.description,
                     'internal_id': form.item.internal_id,
                     'quantity': form.quantity,
@@ -596,7 +604,44 @@
                     'id': form.item.id,
                 });
             },
+            decrementValueAttr(form){
+
+                this.form.packages_number -= parseFloat(form.quantity)
+
+                let total_weight = 0
+
+                if(form.attributes){
+
+                    form.attributes.forEach(attr => {
+                        if(attr.attribute_type_id === '5032'){
+                            total_weight -= parseFloat(attr.value) * parseFloat(form.quantity)
+                        }
+                    });
+                }
+
+                this.form.total_weight += total_weight
+            },
+            incrementValueAttr(form){
+
+                this.form.packages_number += parseFloat(form.quantity)
+
+                let total_weight = 0
+
+                if(form.item.attributes){
+
+                    form.item.attributes.forEach(attr => {
+                        if(attr.attribute_type_id === '5032'){
+                            total_weight += parseFloat(attr.value) * parseFloat(form.quantity)
+                        }
+                    });
+                }
+
+                this.form.total_weight += total_weight
+            },
             clickRemoveItem(index) {
+
+                // console.log(this.form.items[index])
+                this.decrementValueAttr(this.form.items[index])
                 this.form.items.splice(index, 1);
             },
             async submit() {

@@ -25,6 +25,8 @@ docker-compose exec -T fpm$SERVICE_NUMBER chmod -R 777 vendor/mpdf/mpdf
 # ejecutar en contenedor php-fpm
     composer require mike42/escpos-php
 
+# si dá error al compilar ejecutar npm install
+
 
 
 

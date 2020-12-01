@@ -70,6 +70,28 @@
         </ul>
         @endif
 
+        @if($vc_document_regularize_shipping > 0)
+        <span class="separator"></span>
+        <ul class="notifications">
+            <li class="open">
+
+                <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-exclamation-triangle text-secondary"></i>
+                    <span class="badge badge-red">{{ $vc_document_regularize_shipping }}</span>
+                </a>
+                <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
+                    <a href="{{route('tenant.documents.regularize_shipping')}}">
+                        <div class="notification-title">
+                            <span class="float-right badge badge-default"><i class="fas fa-arrow-right"></i></span>Comprobantes pendientes de rectificación
+                        </div>
+                    </a>
+                    {{-- <div class="content">
+                    </div> --}}
+                </div>
+            </li>
+        </ul>
+        @endif
+
         <span class="separator"></span>
         <div id="userbox" class="userbox">
             <a href="#" data-toggle="dropdown">
@@ -110,10 +132,10 @@
     <div id="switcher-list" class="d-flex justify-content-center switcher-hover">
         <div class="row">
             <div class="px-3"><a class="py-3" href="{{ route('tenant.documents.create') }}"><i class="fas fa-fw fa-file-invoice" aria-hidden="true"></i> Nuevo Comprobante</a></div>
-            <div class="px-3"><a class="py-3" href="{{ route('tenant.pos.index') }}"><i class="fas fa-fw fa-cash-register" aria-hidden="true"></i> POS</a></div>
+            <div class="px-3"><a class="py-3" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}"><i class="fas fa-fw fa-cash-register" aria-hidden="true"></i> POS</a></div>
             <div style="min-width: 220px;"></div>
-            <div class="px-3"><a class="py-3" href="{{ route('tenant.companies.create') }}"><i class="fas fa-fw fa-industry" aria-hidden="true"></i> Empresa</a></div>
-            <div class="px-3"><a class="py-3" href="{{ route('tenant.establishments.index') }}"><i class="fas fa-fw fa-warehouse" aria-hidden="true"></i> Establecimientos</a></div>
+            <div class="px-3"><a class="py-3" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}"><i class="fas fa-fw fa-industry" aria-hidden="true"></i> Empresa</a></div>
+            <div class="px-3"><a class="py-3" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}"><i class="fas fa-fw fa-warehouse" aria-hidden="true"></i> Establecimientos</a></div>
         </div>
     </div>
 </div>

@@ -5,12 +5,14 @@ namespace Modules\Finance\Providers;
 use App\Models\Tenant\{
     SaleNotePayment,
     DocumentPayment,
-    PurchasePayment,
+    PurchasePayment
 };  
 use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\ContractPayment;
+use Modules\Sale\Models\TechnicalServicePayment;
 use Modules\Expense\Models\ExpensePayment;
 use Modules\Finance\Models\IncomePayment;
+use Modules\Pos\Models\CashTransaction;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +33,8 @@ class GlobalPaymentServiceProvider extends ServiceProvider
         $this->deletingPayment(ExpensePayment::class);
         $this->deletingPayment(ContractPayment::class);
         $this->deletingPayment(IncomePayment::class);
+        $this->deletingPayment(CashTransaction::class);
+        $this->deletingPayment(TechnicalServicePayment::class);
 
         $this->paymentsPurchases(); 
 

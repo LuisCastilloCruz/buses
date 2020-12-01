@@ -203,8 +203,10 @@
                                         <th>#</th>
                                         <th>Descripción</th>
                                         <th>Almacén</th>
+                                        <th>Lote</th>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-right">Cantidad</th>
+                                        <th class="text-right">Valor Unitario</th>
                                         <th class="text-right">Precio Unitario</th>
                                         <th class="text-right">Descuento</th>
                                         <th class="text-right">Cargo</th>
@@ -217,9 +219,11 @@
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                         <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td>
+                                        <td class="text-left">{{ row.lot_code }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
                                         <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
+                                        <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
@@ -359,6 +363,7 @@
                 series: [],
                 loading_search: false,
                 currency_type: {},
+                configuration: {},
                 purchaseNewId: null
             }
         },
@@ -375,6 +380,7 @@
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
                     this.all_customers = response.data.customers
+                    this.configuration = response.data.configuration
 
                     this.charges_types = response.data.charges_types
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
@@ -493,16 +499,40 @@
                 this.form.payments.splice(index, 1);
             },
             clickAddPayment() {
+
                 this.form.payments.push({
                     id: null,
                     purchase_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:'cash',
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
                 });
-            },   
+
+                this.setTotalDefaultPayment()
+
+            },
+            setTotalDefaultPayment(){
+
+                if(this.form.payments.length > 0){
+
+                    this.form.payments[0].payment = this.form.total
+                }
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
             initInputPerson(){
                 this.input_person = {
                     number:'',
@@ -780,6 +810,8 @@
                 this.form.total = _.round(total, 2)
 
                 this.calculatePerception()
+                this.setTotalDefaultPayment()
+
             },
             calculatePerception(){
                 
@@ -819,12 +851,31 @@
                 
                 
             },
+            validatePaymentDestination(){
+
+                let error_by_item = 0
+
+                this.form.payments.forEach((item)=>{
+                    if(item.payment_destination_id == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                }
+
+            },
             async submit() {
 
                 
                 let validate = await this.validate_payments()
                 if(!validate.success) {
                     return this.$message.error(validate.message);
+                }
+
+                let validate_payment_destination = await this.validatePaymentDestination()
+
+                if(validate_payment_destination.error_by_item > 0) {
+                    return this.$message.error('El destino del pago es obligatorio');
                 }
 
                 this.loading_submit = true

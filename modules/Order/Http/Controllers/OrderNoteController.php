@@ -35,13 +35,19 @@ use App\Models\Tenant\PaymentMethodType;
 use Modules\Order\Models\OrderNote;
 use Modules\Order\Models\OrderNoteItem;
 use Modules\Order\Http\Resources\OrderNoteCollection;
+use Modules\Order\Http\Resources\OrderNoteDocumentCollection;
 use Modules\Order\Http\Resources\OrderNoteResource;
 use Modules\Order\Http\Resources\OrderNoteResource2;
 use Modules\Order\Http\Requests\OrderNoteRequest;
 use Modules\Order\Mail\OrderNoteEmail;
 use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Configuration;
-
+use App\Http\Controllers\Tenant\SaleNoteController;
+use App\CoreFacturalo\Requests\Inputs\DocumentInput;
+use App\CoreFacturalo\Requests\Web\Validation\DocumentValidation;
+use App\Http\Requests\Tenant\SaleNoteRequest;
+use App\Http\Requests\Tenant\DocumentRequest;
+use App\Http\Controllers\Tenant\DocumentController;
 use Mike42\Escpos\EscposImage;
 use Illuminate\Support\Facades\Storage;
 use Mike42\Escpos\CapabilityProfile;
@@ -114,6 +120,59 @@ class OrderNoteController extends Controller
 
         return $records;
     }
+
+
+    public function documents(Request $request)
+    {
+
+        $records = OrderNote::doesntHave('documents')
+                            ->doesntHave('sale_notes')
+                            ->whereTypeUser()
+                            ->latest();
+
+        return new OrderNoteDocumentCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+
+    public function document_tables()
+    {
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id',$establishment->id)->get();
+        // $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+
+        return compact('series', 'establishment');
+    }
+
+
+    public function generateDocuments(Request $request) {
+
+        DB::connection('tenant')->transaction(function () use ($request) {
+
+            foreach ($request->documents as $row) {
+
+                if($row['document_type_id'] === "80"){
+
+                    app(SaleNoteController::class)->store(new SaleNoteRequest($row));
+
+                }else{
+
+                    $data_val = DocumentValidation::validation($row);
+
+                    app(DocumentController::class)->store(new DocumentRequest(DocumentInput::set($data_val)));
+
+                }
+
+            }
+
+        });
+
+        return [
+            'success' => true,
+            'message' => 'Comprobantes generados'
+        ];
+
+    }
+
 
     public function searchCustomers(Request $request)
     {
@@ -379,7 +438,7 @@ class OrderNoteController extends Controller
                     // ->with(['warehouses' => function($query) use($warehouse){
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
-                    ->get()->transform(function($row) {
+                    ->get()->transform(function($row) use($warehouse){
                     $full_description = $this->getFullDescription($row);
                     // $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
@@ -410,11 +469,12 @@ class OrderNoteController extends Controller
                                 'price_default' => $row->price_default,
                             ];
                         }),
-                        'warehouses' => collect($row->warehouses)->transform(function($row) {
+                        'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
                             return [
                                 'warehouse_id' => $row->warehouse->id,
                                 'warehouse_description' => $row->warehouse->description,
                                 'stock' => $row->stock,
+                                'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                             ];
                         }),
                         'lots' => collect($row->item_lots->where('has_sale', false))->transform(function($row) {
@@ -496,7 +556,8 @@ class OrderNoteController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->order_note->filename;
 
-        $base_template = config('tenant.pdf_template');
+        // $base_template = config('tenant.pdf_template');
+        $base_template = Configuration::first()->formats;
 
         $html = $template->pdf($base_template, "order_note", $company, $document, $format_pdf);
 
@@ -646,7 +707,7 @@ class OrderNoteController extends Controller
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
-                $html_footer = $template->pdfFooter($base_template);
+                $html_footer = $template->pdfFooter($base_template,$this->order_note);
                 $pdf->SetHTMLFooter($html_footer);
             }
             //$html_footer = $template->pdfFooter();

@@ -6,6 +6,8 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Modules\BusinessTurn\Models\DocumentHotel;
 use Modules\BusinessTurn\Models\DocumentTransport;
+use Modules\Order\Models\OrderNote;
+
 
 class Document extends ModelTenant
 {
@@ -80,6 +82,9 @@ class Document extends ModelTenant
         'soap_shipping_response',
         'pending_amount_prepayment',
         'payment_method_type_id',
+        'regularize_shipping',
+        'response_regularize_shipping',
+        'seller_id',
 
     ];
 
@@ -208,6 +213,15 @@ class Document extends ModelTenant
         $this->attributes['soap_shipping_response'] = (is_null($value))?null:json_encode($value);
     }
 
+    public function getResponseRegularizeShippingAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setResponseRegularizeShippingAttribute($value)
+    {
+        $this->attributes['response_regularize_shipping'] = (is_null($value))?null:json_encode($value);
+    }
 
     public function getAdditionalInformationAttribute($value)
     {
@@ -368,14 +382,29 @@ class Document extends ModelTenant
     {
         return $query->where('affectation_type_prepayment', $type);
     }
-    
+
     public function scopeWhereStateTypeAccepted($query)
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
     }
-    
+
     public function payment_method_type()
     {
         return $this->belongsTo(PaymentMethodType::class);
+    }
+
+    public function scopeWhereRegularizeShipping($query)
+    {
+        return  $query->where('state_type_id', '01')->where('regularize_shipping', true);
+    }
+
+    public function order_note()
+    {
+        return $this->belongsTo(OrderNote::class);
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class);
     }
 }

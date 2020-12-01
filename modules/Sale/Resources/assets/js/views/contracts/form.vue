@@ -125,7 +125,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-8 mt-2" >
+                            <div class="col-lg-8 mt-2" v-if="showPayments && !form.quotation_id">
 
                                 <table>
                                     <thead>
@@ -196,6 +196,7 @@
                                                 <th class="font-weight-bold">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
+                                                <th class="text-right font-weight-bold">Valor Unitario</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
@@ -210,6 +211,7 @@
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
+                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                                 <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
 
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
@@ -219,7 +221,7 @@
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                 </td>
                                             </tr>
-                                            <tr><td colspan="8"></td></tr>
+                                            <tr><td colspan="9"></td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -288,7 +290,7 @@
     import Logo from '@views/companies/logo.vue'
 
     export default {
-        props:['typeUser', 'quotationId', 'id'],
+        props:['typeUser', 'quotationId', 'id', 'showPayments'],
         components: {ContractFormItem, PersonForm, ContractOptionsPdf, Logo, TermsCondition},
         mixins: [functions, exchangeRate],
         data() {
@@ -316,6 +318,7 @@
                 currency_type: {},
                 contractNewId: null,
                 payment_destinations:  [],
+                configuration: {},
                 activePanel: 0,
                 loading_search:false
             }
@@ -334,11 +337,13 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
+                    this.configuration = response.data.configuration
 
                     this.changeEstablishment()
                     this.changeDateOfIssue() 
                     this.changeCurrencyType()
                     this.allCustomers()
+                    this.selectDestinationSale()
                 })
             this.loading_form = true
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
@@ -349,6 +354,27 @@
             await this.generateFromQuotation()
         },
         methods: {
+            selectDestinationSale() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0 && this.showPayments) {
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+                    this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
+                }
+
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
             async generateFromQuotation(){
 
                 if(this.quotationId){
@@ -364,7 +390,7 @@
                     this.form.customer_id = this.quotation.customer_id
                     this.form.currency_type_id = this.quotation.currency_type_id
                     this.form.items = this.quotation.items
-                    this.form.payments = this.quotation.payments
+                    // this.form.payments = this.quotation.payments
                     this.form.total_exportation = this.quotation.total_exportation
                     this.form.total_free = this.quotation.total_free
                     this.form.total_taxed = this.quotation.total_taxed
@@ -390,6 +416,7 @@
                         .then(response => {
                             this.form = response.data.data.contract;
                             this.reloadDataCustomers(this.form.customer_id)
+
                         })
                 }
 
@@ -411,7 +438,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:'cash',
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
 
                 });
@@ -505,7 +532,9 @@
                     quotation_id:null,
                 }
 
-                this.clickAddPayment()
+                if(this.showPayments){
+                    this.clickAddPayment()
+                }
 
             },
             resetForm() {
@@ -646,9 +675,11 @@
 
                         if(this.quotationId){
 
-                            this.$http.get(`/quotations/changed/${this.quotationId}`).then(() => {
-                                this.$eventHub.$emit('reloadData');
-                            });
+                            if(this.showPayments){
+                                this.$http.get(`/quotations/changed/${this.quotationId}`).then(() => {
+                                    this.$eventHub.$emit('reloadData');
+                                });
+                            }
                             
                             this.$message.success(`El contrato ${response.data.data.number_full} fue generado`)
                             this.close()

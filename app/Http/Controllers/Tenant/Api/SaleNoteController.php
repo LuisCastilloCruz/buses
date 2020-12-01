@@ -374,7 +374,7 @@ class SaleNoteController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if(config('tenant.pdf_template_footer')) {
-            $html_footer = $template->pdfFooter($base_template);
+            $html_footer = $template->pdfFooter($base_template, $this->document);
             $pdf->SetHTMLFooter($html_footer);
         }
 
@@ -399,6 +399,20 @@ class SaleNoteController extends Controller
                         ];
                     });
 
+    }
+
+    public function email(Request $request)
+    {
+        $company = Company::active();
+        $record = SaleNote::find($request->input('id'));
+        $customer_email = $request->input('email');
+
+        Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+
+        return [
+            'success' => true,
+            'message'=> 'Email enviado correctamente.'
+        ];
     }
 
 }

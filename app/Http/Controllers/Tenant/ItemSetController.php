@@ -25,6 +25,7 @@ use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\Catalogs\Tag;
 use Illuminate\Support\Facades\DB;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Item\Models\WebPlatform;
 
 
 
@@ -66,9 +67,18 @@ class ItemSetController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $system_isc_types = SystemIscType::whereActive()->orderByDescription()->get();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
+        $web_platforms = WebPlatform::get();
         // $warehouses = Warehouse::all();
         // $accounts = Account::all();
         // $tags = Tag::all();
+
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types', 'web_platforms');
+    }
+
+
+    public function item_tables()
+    {
+
         $individual_items = Item::whereWarehouse()->whereTypeUser()->whereNotIsSet()->whereIsActive()->get()->transform(function($row) {
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
             return [
@@ -80,8 +90,9 @@ class ItemSetController extends Controller
             ];
         });
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types', 'individual_items');
+        return compact('individual_items');
     }
+
 
     public function record($id)
     {
@@ -121,11 +132,15 @@ class ItemSetController extends Controller
 
             $item->sets()->delete();
 
-            foreach ($request->individual_items as $value) {
+            foreach ($request->individual_items as $row) {
+
                 $item->sets()->create([
-                    'individual_item_id' => $value
+                    'individual_item_id' => $row['individual_item_id'],
+                    'quantity' => $row['quantity'],
                 ]);
+
             }
+
             $item->update();
 
             return $item;

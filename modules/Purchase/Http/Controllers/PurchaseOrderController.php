@@ -108,6 +108,7 @@ class PurchaseOrderController extends Controller
     {
 
         $items = $this->table('items');
+        $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
         $price_types = PriceType::whereActive()->get();
@@ -256,6 +257,7 @@ class PurchaseOrderController extends Controller
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                         'has_perception' => (bool) $row->has_perception,
+                        'purchase_has_igv' => (bool) $row->purchase_has_igv,
                         'percentage_perception' => $row->percentage_perception,
                         'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
                             return [
@@ -380,7 +382,7 @@ class PurchaseOrderController extends Controller
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
-                $html_footer = $template->pdfFooter($base_template);
+                $html_footer = $template->pdfFooter($base_template,$this->purchase_order);
                 $pdf->SetHTMLFooter($html_footer);
             }
         }
@@ -394,29 +396,23 @@ class PurchaseOrderController extends Controller
     }
 
 
-    // public function email($purchase_order)
-    // {
-    //     $suppliers = $purchase_order->suppliers;
-    //     // dd($suppliers);
+    public function email(Request $request)
+    {
+        $record = PurchaseOrder::find($request->input('id'));
+        $customer_email = $request->input('customer_email');
 
-    //     foreach ($suppliers as $supplier) {
+        Mail::to($customer_email)->send(new PurchaseOrderEmail($record));
 
-    //         $client = Person::find($supplier->supplier_id);
-    //         $supplier_email = $supplier->email;
-
-    //         Mail::to($supplier_email)->send(new PurchaseOrderEmail($client, $purchase_order));
-    //     }
-
-    //     return [
-    //         'success' => true
-    //     ];
-    // }
+        return [
+            'success' => true
+        ];
+    }
 
     public function uploadAttached(Request $request)
     {
-        
+
         $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg,pdf');
-        
+
         if(!$validate_upload['success']){
             return $validate_upload;
         }

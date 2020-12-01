@@ -111,7 +111,7 @@
                 if (response.data !== ''){
                 this.form = response.data.data;
                 }
-                //console.log(response.data.data)
+                // console.log(this.placeholder)
             });
 
             await this.$http.get(`/${this.resource}/getFormats`) .then(response => {

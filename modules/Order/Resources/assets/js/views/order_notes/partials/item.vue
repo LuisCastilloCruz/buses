@@ -58,7 +58,7 @@
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price}">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price" @input="calculateQuantity">
+                            <el-input v-model="form.unit_price" @input="calculateQuantity" :readonly="typeUser != 'admin'">
                                 <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
@@ -274,12 +274,13 @@
 
     import itemForm from '@views/items/form.vue'
     import {calculateRowItem} from '@helpers/functions'
-    import WarehousesDetail from './warehouses.vue'
+    // import WarehousesDetail from './warehouses.vue'
     import SelectLotsForm from './lots.vue'
+    import WarehousesDetail from '@views/documents/partials/select_warehouses.vue'
 
 
     export default {
-        props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
+        props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
         components: {itemForm, WarehousesDetail, SelectLotsForm},
         data() {
             return {
@@ -323,9 +324,15 @@
             this.$eventHub.$on('reloadDataItems', (item_id) => {
                 this.reloadDataItems(item_id)
             })
+            this.events()
         },
         methods: {
+            events(){
 
+                this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
+                    this.form.warehouse_id = warehouse_id
+                })
+            },
             clickWarehouseDetail(){
 
                 if(!this.form.item_id){
@@ -361,6 +368,7 @@
                     item_unit_type_id: null,
                     unit_type_id: null,
                     is_set: false,
+                    warehouse_id:null,
                 };
 
                 this.total_item = 0;

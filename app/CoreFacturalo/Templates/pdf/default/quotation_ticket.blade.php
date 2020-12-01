@@ -171,10 +171,24 @@
     </tr>
     @if ($document->description)
         <tr>
-            <td class="align-top"><p class="desc">Descripción:</p></td>
+            <td class="align-top"><p class="desc">Observación:</p></td>
             <td><p class="desc">{{ $document->description }}</p></td>
         </tr>
     @endif
+
+    @if ($document->contact)
+        <tr>
+            <td class="align-top"><p class="desc">Contacto:</p></td>
+            <td><p class="desc">{{ $document->contact }}</p></td>
+        </tr>
+    @endif
+    @if ($document->phone)
+        <tr>
+            <td class="align-top"><p class="desc">Telf. Contacto:</p></td>
+            <td><p class="desc">{{ $document->phone }}</p></td>
+        </tr>
+    @endif
+
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>
@@ -329,7 +343,9 @@
 
     @if($document->terms_condition)
     <tr>
-        <td class="text-center desc pt-5 font-bold">{{$document->terms_condition}}</td>
+        <td class="desc pt-5 ">
+            {!!$document->terms_condition!!}
+        </td>
     </tr>
     @endif
 </table>

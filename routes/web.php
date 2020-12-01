@@ -20,6 +20,8 @@ if ($hostname) {
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
         Route::get('/exchange_rate/ecommence/{date}', 'Tenant\Api\ServiceController@exchangeRateTest');
         Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
+        Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
+        Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
 
@@ -66,7 +68,9 @@ if ($hostname) {
 
             //Configurations
             Route::get('configurations/addSeeder', 'Tenant\ConfigurationController@addSeeder');
+            Route::get('configurations/preprinted/addSeeder', 'Tenant\ConfigurationController@addPreprintedSeeder');
             Route::get('configurations/getFormats', 'Tenant\ConfigurationController@getFormats');
+            Route::get('configurations/preprinted/getFormats', 'Tenant\ConfigurationController@getPreprintedFormats');
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
@@ -78,7 +82,10 @@ if ($hostname) {
             Route::get('configurations/visual_defaults', 'Tenant\ConfigurationController@visualDefaults')->name('visual_defaults');
             Route::post('configurations/visual_settings', 'Tenant\ConfigurationController@visualSettings')->name('visual-settings');
             Route::get('configurations/pdf_templates', 'Tenant\ConfigurationController@pdfTemplates')->name('tenant.advanced.pdf_templates');
+            Route::get('configurations/pdf_preprinted_templates', 'Tenant\ConfigurationController@pdfPreprintedTemplates')->name('tenant.advanced.pdf_preprinted_templates');
             Route::post('configurations/uploads', 'Tenant\ConfigurationController@uploadFile');
+            Route::post('configurations/preprinted/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
+            Route::get('configurations/preprinted/{template}', 'Tenant\ConfigurationController@show');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
@@ -151,6 +158,9 @@ if ($hostname) {
             Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
             Route::get('items/export', 'Tenant\ItemController@export')->name('tenant.items.export');
             Route::get('items/export/wp', 'Tenant\ItemController@exportWp')->name('tenant.items.export.wp');
+            Route::get('items/export/barcode', 'Tenant\ItemController@exportBarCode')->name('tenant.items.export.barcode');
+            Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');
+            Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
 
             //Persons
             Route::get('persons/columns', 'Tenant\PersonController@columns');
@@ -208,6 +218,7 @@ if ($hostname) {
             Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
             Route::get('documents/payments/excel/{month}/{anulled}', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
+            Route::get('documents/payments-complete', 'Tenant\DocumentController@report_payments');
 
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
@@ -264,6 +275,7 @@ if ($hostname) {
             Route::post('dispatches', 'Tenant\DispatchController@store');
             Route::get('dispatches/record/{id}', 'Tenant\DispatchController@record');
             Route::post('dispatches/email', 'Tenant\DispatchController@email');
+            Route::get('dispatches/generate/{sale_note}', 'Tenant\DispatchController@generate');
 
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
@@ -349,7 +361,9 @@ if ($hostname) {
             Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular');
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');
-            Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
+            // Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
+            Route::get('purchases/search-items', 'Tenant\PurchaseController@searchItems');
+            Route::get('purchases/search/item/{item}', 'Tenant\PurchaseController@searchItemById');
             // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
 
 
@@ -407,7 +421,7 @@ if ($hostname) {
             Route::get('sale-notes/item/tables', 'Tenant\SaleNoteController@item_tables');
             Route::get('sale-notes/search/customers', 'Tenant\SaleNoteController@searchCustomers');
             Route::get('sale-notes/search/customer/{id}', 'Tenant\SaleNoteController@searchCustomerById');
-            Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
+            // Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
             Route::get('sale-notes/record2/{salenote}', 'Tenant\SaleNoteController@record2');
             Route::get('sale-notes/option/tables', 'Tenant\SaleNoteController@option_tables');
             Route::get('sale-notes/changed/{salenote}', 'Tenant\SaleNoteController@changed');
@@ -415,6 +429,9 @@ if ($hostname) {
             Route::get('sale-notes/print-a5/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
             Route::get('sale-notes/dispatches', 'Tenant\SaleNoteController@dispatches');
             Route::delete('sale-notes/destroy_sale_note_item/{sale_note_item}', 'Tenant\SaleNoteController@destroy_sale_note_item');
+            Route::get('sale-notes/search-items', 'Tenant\SaleNoteController@searchItems');
+            Route::get('sale-notes/search/item/{item}', 'Tenant\SaleNoteController@searchItemById');
+
 
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');
@@ -465,6 +482,7 @@ if ($hostname) {
            Route::get('cash/search/customer/{id}', 'Tenant\CashController@searchCustomerById');
 
            Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
+           Route::get('cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
 
            //Tags
            Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
@@ -496,6 +514,7 @@ if ($hostname) {
            Route::post('item-sets/import', 'Tenant\ItemSetController@import');
            Route::post('item-sets/upload', 'Tenant\ItemSetController@upload');
            Route::post('item-sets/visible_store', 'Tenant\ItemSetController@visibleStore');
+           Route::get('item-sets/item/tables', 'Tenant\ItemSetController@item_tables');
 
            Route::get('person-types/columns', 'Tenant\PersonTypeController@columns');
            Route::get('person-types', 'Tenant\PersonTypeController@index')->name('tenant.person_types.index');
@@ -624,6 +643,9 @@ if ($hostname) {
             Route::get('backup/db', 'System\BackupController@db')->name('system.backup.db');
             Route::get('backup/files', 'System\BackupController@files')->name('system.backup.files');
             Route::post('backup/upload', 'System\BackupController@upload')->name('system.backup.upload');
+
+            Route::get('backup/last-backup', 'System\BackupController@mostRecent');
+            Route::get('backup/download/{filename}', 'System\BackupController@download');
 
         });
     });

@@ -37,9 +37,10 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use Modules\Sale\Mail\ContractEmail;
 use App\Models\Tenant\PaymentMethodType;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Configuration;
-use App\Models\Tenant\StateType;
+// use App\Models\Tenant\StateType;
+use Modules\Sale\Models\ContractStateType;
 
 
 class ContractController extends Controller
@@ -59,14 +60,17 @@ class ContractController extends Controller
     public function create($id = null)
     {
         $quotationId = null;
-        return view('sale::contracts.form', compact('id', 'quotationId'));
+        $showPayments = true;
+
+        return view('sale::contracts.form', compact('id', 'quotationId', 'showPayments'));
     }
- 
+
     public function generateContract($quotationId)
     {
         $id = null;
+        $showPayments = false;
 
-        return view('sale::contracts.form', compact('id', 'quotationId'));
+        return view('sale::contracts.form', compact('id', 'quotationId', 'showPayments'));
     }
 
     public function columns()
@@ -80,7 +84,7 @@ class ContractController extends Controller
 
     public function filter()
     {
-        $state_types = StateType::whereIn('id',['01','05','09'])->get();
+        $state_types = ContractStateType::get();
 
         return compact('state_types');
     }
@@ -95,7 +99,7 @@ class ContractController extends Controller
     private function getRecords($request){
 
         if($request->column == 'user_name'){
-            
+
             $records = Contract::whereHas('user', function($query) use($request){
                             $query->where('name', 'like', "%{$request->value}%");
                         });
@@ -103,9 +107,13 @@ class ContractController extends Controller
         }else{
 
             $records = Contract::where($request->column, 'like', "%{$request->value}%");
-        
+
         }
-        
+
+        if($request->column == 'delivery_date'){
+            return $records->whereTypeUser()->orderBy('delivery_date');
+        }
+
         return $records->whereTypeUser()->latest();
     }
 
@@ -142,8 +150,9 @@ class ContractController extends Controller
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
+        $configuration = Configuration::select('destination_sale')->first();
 
-        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types',
+        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types', 'configuration',
                         'company', 'document_type_03_filter','payment_method_types', 'payment_destinations');
 
     }
@@ -179,7 +188,7 @@ class ContractController extends Controller
 
         return $record;
     }
- 
+
 
     public function getFullDescription($row){
 
@@ -223,12 +232,12 @@ class ContractController extends Controller
             ],
         ];
     }
- 
+
 
     private function getTermsCondition(){
-        
+
         $configuration = Configuration::select('terms_condition')->first();
-        
+
         if($configuration){
             return $configuration->terms_condition;
         }
@@ -236,7 +245,7 @@ class ContractController extends Controller
         return null;
 
     }
- 
+
     public function voided($id)
     {
         $obj =  Contract::find($id);
@@ -486,8 +495,8 @@ class ContractController extends Controller
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
-                
-                $html_footer = $template->pdfFooter($base_template);
+
+                $html_footer = $template->pdfFooter($base_template,$document);
                 $html_footer_term_condition = ($document->terms_condition) ? $template->pdfFooterTermCondition($base_template, $document):"";
 
                 $pdf->SetHTMLFooter($html_footer_term_condition.$html_footer);
@@ -516,7 +525,7 @@ class ContractController extends Controller
         ];
     }
 
-    
+
     private function savePayments($contract, $payments){
 
         foreach ($payments as $payment) {

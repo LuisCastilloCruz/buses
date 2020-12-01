@@ -395,6 +395,8 @@
                     return this.$message.warning("El monto a pagar es menor al total")
                 }
 
+                if(this.locked_submit) return;
+
                 this.clickPayment()
 
             },
@@ -792,6 +794,10 @@
             async clickPayment(){
                 // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
+                if(!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)){
+                   return this.$message.error('La fecha de emisión no coincide con la del día actual');
+                }
+
                 if(!this.form.series_id)
                 {
                    return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
@@ -812,6 +818,8 @@
                 }
 
                 this.loading_submit = true
+                this.locked_submit = true
+
                 await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                     if (response.data.success) {
 
@@ -862,6 +870,7 @@
                     }
                 }).then(() => {
                     this.loading_submit = false;
+                    this.locked_submit = false
                 });
             },
             saveCashDocument(){

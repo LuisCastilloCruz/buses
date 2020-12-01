@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\Warehouse;
 
 class DocumentItem extends ModelTenant
 {
@@ -154,15 +155,32 @@ class DocumentItem extends ModelTenant
         }
 
         
-        return $query->whereHas('document', function($q) use($params){
+        $data = $query->whereHas('document', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
-                        ->where('user_id', $params['seller_id'])
+                        // ->where('user_id', $params['seller_id'])
                         ->whereTypeUser();
                 })
                 ->join('documents', 'document_items.document_id', '=', 'documents.id')
                 ->select($db_raw)
                 ->latest('id');
+        
 
+        $sellers = json_decode($params['sellers']);
+
+        // dd($sellers, count($sellers));
+
+        if(count($sellers) > 0){
+            $data = $data->whereHas('document', function($q) use($params, $sellers){$q->whereIn('user_id', $sellers);});
+        }
+
+        return $data;
+
+    }
+
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
 }

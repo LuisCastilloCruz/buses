@@ -32,6 +32,7 @@ if($hostname) {
 
                 Route::post('remove', 'InventoryController@remove');
                 Route::get('initialize', 'InventoryController@initialize');
+                Route::get('regularize_stock', 'InventoryController@regularize_stock');
             });
 
             Route::prefix('reports')->group(function () {
@@ -107,6 +108,22 @@ if($hostname) {
 
                 Route::get('items/{warehouse_id}', 'TransferController@items');
 
+
+            });
+
+
+            Route::prefix('devolutions')->group(function () {
+
+                Route::get('/', 'DevolutionController@index')->name('devolutions.index');
+                Route::get('records', 'DevolutionController@records');
+                Route::get('columns', 'DevolutionController@columns');
+                Route::get('item/tables', 'DevolutionController@item_tables');
+                Route::get('tables', 'DevolutionController@tables');
+                Route::get('record/{id}', 'DevolutionController@record');
+                Route::post('/', 'DevolutionController@store');
+                Route::get('create', 'DevolutionController@create')->name('devolutions.create');
+                Route::get('search-items', 'DevolutionController@searchItems');
+                Route::get('download/{external_id}/{format?}', 'DevolutionController@download');
 
             });
 

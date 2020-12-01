@@ -243,6 +243,18 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
+        @elseif(collect($document->prepayments)->count() > 0 && collect($document->discounts)->where('discount_type_id', '04')->count() === 1 && $document->total_taxed >= 0)
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_taxed }}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_igv }}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>1000</cbc:ID>
+                    <cbc:Name>IGV</cbc:Name>
+                    <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
         @endif
         @if($document->total_unaffected > 0)
         <cac:TaxSubtotal>
@@ -256,8 +268,32 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
+        @elseif(collect($document->prepayments)->count() > 0 && collect($document->discounts)->where('discount_type_id', '06')->count() === 1 && $document->total_unaffected >= 0)
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_unaffected }}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">0</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>9998</cbc:ID>
+                    <cbc:Name>INA</cbc:Name>
+                    <cbc:TaxTypeCode>FRE</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
         @endif
         @if($document->total_exonerated > 0)
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_exonerated }}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">0</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>9997</cbc:ID>
+                    <cbc:Name>EXO</cbc:Name>
+                    <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        @elseif(collect($document->prepayments)->count() > 0 && collect($document->discounts)->where('discount_type_id', '05')->count() === 1 && $document->total_exonerated >= 0)
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_exonerated }}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">0</cbc:TaxAmount>
@@ -347,6 +383,47 @@
                 <cbc:PriceTypeCode>{{ $row->price_type_id }}</cbc:PriceTypeCode>
             </cac:AlternativeConditionPrice>
         </cac:PricingReference>
+        @if($document->detraction && $invoice->operation_type_id == '1004')
+        <cac:Delivery>
+            <cac:Despatch>
+                <cbc:Instructions>{{$document->detraction->trip_detail}}</cbc:Instructions>
+                <cac:DespatchAddress>
+                <cbc:ID>{{ $document->detraction->origin_location_id[2] }}</cbc:ID>
+                <cac:AddressLine>
+                    <cbc:Line>{{$document->detraction->origin_address}}</cbc:Line>
+                </cac:AddressLine>
+                </cac:DespatchAddress>
+            </cac:Despatch>
+        </cac:Delivery>
+        <cac:Delivery>
+            <cac:DeliveryTerms>
+                <cbc:ID>01</cbc:ID>
+                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_service}}</cbc:Amount>
+            </cac:DeliveryTerms>
+        </cac:Delivery>
+        <cac:Delivery>
+            <cac:DeliveryTerms>
+                <cbc:ID>02</cbc:ID>
+                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_effective_load}}</cbc:Amount>
+            </cac:DeliveryTerms>
+        </cac:Delivery>
+        <cac:Delivery>
+            <cac:DeliveryTerms>
+                <cbc:ID>03</cbc:ID>
+                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_payload}}</cbc:Amount>
+            </cac:DeliveryTerms>
+        </cac:Delivery>
+        <cac:Delivery>
+            <cac:DeliveryLocation>
+                <cac:Address>
+                <cbc:ID>{{ $document->detraction->delivery_location_id[2] }}</cbc:ID>
+                <cac:AddressLine>
+                    <cbc:Line>{{$document->detraction->delivery_address}}</cbc:Line>
+                </cac:AddressLine>
+                </cac:Address>
+            </cac:DeliveryLocation>
+        </cac:Delivery>
+        @endif
         @if($row->charges)
         @foreach($row->charges as $charge)
         <cac:AllowanceCharge>

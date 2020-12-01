@@ -122,13 +122,28 @@
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
+
+                    <!-- <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
                             <el-input-number v-model="form.quantity" :min="0.01" :disabled="form.item.calculate_quantity"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
+                    </div> -->
+
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group" :class="{'has-danger': errors.quantity}">
+
+                            <label class="control-label">Cantidad</label>
+                            <el-input v-model="form.quantity" :disabled="form.item.calculate_quantity" @blur="validateQuantity" >
+                                <el-button slot="prepend" icon="el-icon-minus" @click="clickDecrease" :disabled="form.quantity < 0.01 || form.item.calculate_quantity"></el-button>
+                                <el-button slot="append" icon="el-icon-plus" @click="clickIncrease"  :disabled="form.item.calculate_quantity"></el-button>
+                            </el-input>
+                            <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
+
+                        </div>
                     </div>
+
                     <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price_value}">
                             <label class="control-label">Precio Unitario</label>
@@ -508,6 +523,8 @@
         <select-lots-form
             :showDialog.sync="showDialogSelectLots"
             :lots="lots"
+            :itemId="form.item_id"
+            :documentItemId="form.document_item_id"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
@@ -534,7 +551,8 @@
     import VueCkeditor from 'vue-ckeditor5'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote', 'configuration'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser',
+                'isEditItemNote', 'configuration', 'documentTypeId', 'noteCreditOrDebitTypeId'],
         components: {ItemForm, WarehousesDetail, LotsGroup, SelectLotsForm, 'vue-ckeditor': VueCkeditor.component},
         data() {
             return {
@@ -603,6 +621,44 @@
             })
         },
         methods: {
+            validateQuantity(){
+
+                if(!this.form.quantity){
+                    this.setMinQuantity()
+                }
+
+                if (isNaN(Number(this.form.quantity))) {
+                    this.setMinQuantity()
+                }
+
+                if (typeof parseFloat(this.form.quantity) !== 'number'){
+                    this.setMinQuantity()
+                }
+
+                if(this.form.quantity <= this.getMinQuantity()){
+                    this.setMinQuantity()
+                }
+                // console.log(isNaN(Number(this.form.quantity)))
+            },
+            getMinQuantity(){
+                return 0.01
+            },
+            setMinQuantity(){
+                this.form.quantity = this.getMinQuantity()
+            },
+            clickDecrease(){
+
+                this.form.quantity = parseInt(this.form.quantity-1)
+
+                if(this.form.quantity <= this.getMinQuantity()){
+                    this.setMinQuantity()
+                    return
+                }
+
+            },
+            clickIncrease(){
+                this.form.quantity = parseInt(this.form.quantity + 1)
+            },
             async searchRemoteItems(input) {
                 // console.log(input)
 
@@ -693,7 +749,8 @@
                     has_plastic_bag_taxes:false,
                     warehouse_id:null,
                     lots_group: [],
-                    IdLoteSelected: null
+                    IdLoteSelected: null,
+                    document_item_id: null,
                 };
 
                 this.activePanel = 0;
@@ -714,6 +771,7 @@
 
                 if (this.recordItem) {
                     // console.log(this.recordItem)
+                    await this.reloadDataItems(this.recordItem.item_id)
                     this.form.item_id = await this.recordItem.item_id
                     await this.changeItem()
                     this.form.quantity = this.recordItem.quantity
@@ -725,14 +783,57 @@
                     if(this.isEditItemNote){
                         this.form.item.currency_type_id = this.currencyTypeIdActive
                         this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
+
+                        if(this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07'){
+
+                            this.form.document_item_id =  this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
+                            this.form.item.lots = this.recordItem.item.lots
+                            await this.regularizeLots()
+                            this.lots = this.form.item.lots
+                            // console.log(this.lots)
+                        }
+
                     }
 
-                    this.form.name_product_pdf = this.recordItem.name_product_pdf
+                    if(this.recordItem.name_product_pdf){
+                        this.form.name_product_pdf = this.recordItem.name_product_pdf
+                    }
 
 
                     this.calculateQuantity()
                 }else{
                     this.isUpdateWarehouseId = null
+                }
+
+            },
+            async regularizeLots(){
+
+                if(this.form.document_item_id && this.form.item.lots.length > 0){
+
+                    await this.$http.get(`/${this.resource}/regularize-lots/${this.form.document_item_id}`).then((response) => {
+
+                                        let all_lots = this.form.item.lots
+                                        let available_lots = response.data
+
+                                        all_lots.forEach((lot, index)  => {
+
+                                            let exist_lot = _.find(available_lots, (it) =>{
+                                                return it.id == lot.id
+                                            })
+
+                                            if(!exist_lot){
+                                                this.form.item.lots.splice(index, 1)
+                                            }
+
+                                        })
+
+                                        // console.log(response)
+                                    })
+                                    .catch(error => {
+                                    })
+                                    .then(() => {
+                                    })
+
                 }
 
             },
@@ -866,13 +967,15 @@
             },
             async clickAddItem() {
 
+                // if(this.form.quantity < this.getMinQuantity()){
+                //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
+                // }
+                this.validateQuantity()
 
                 if(this.form.item.lots_enabled){
                     if(!this.form.IdLoteSelected)
                         return this.$message.error('Debe seleccionar un lote.');
                 }
-
-
 
 
                 if (this.validateTotalItem().total_item) return;
@@ -887,15 +990,19 @@
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
 
                 let IdLoteSelected = this.form.IdLoteSelected
+                let document_item_id = this.form.document_item_id
 
                 // console.log(this.form)
                 // return
                 // console.log
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+                // console.log(this.row, this.form)
 
 
                 let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
                 let un_select_lots = await _.filter(this.row.item.lots, {'has_sale':false})
+
+                // console.log(select_lots.length)
 
                 if(this.form.item.series_enabled){
                     if(select_lots.length != this.form.quantity)
@@ -912,6 +1019,7 @@
                 }
 
                 this.row.IdLoteSelected = IdLoteSelected
+                this.row.document_item_id = document_item_id
 
                 this.$emit('add', this.row);
 
@@ -932,11 +1040,11 @@
 
                 return this.errors
             },
-            reloadDataItems(item_id) {
+            async reloadDataItems(item_id) {
 
                 if(!item_id){
 
-                    this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                    await this.$http.get(`/${this.resource}/table/items`).then((response) => {
                         this.items = response.data
                         this.form.item_id = item_id
                         // if(item_id) this.changeItem()
@@ -945,7 +1053,7 @@
 
                 }else{
 
-                    this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
+                    await this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
 
                         this.items = response.data.items
                         this.form.item_id = item_id
