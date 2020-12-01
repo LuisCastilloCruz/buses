@@ -764,7 +764,6 @@
                         {{ ($path[0] === 'account')?'nav-active nav-expanded':'' }}
                         ">
                         <a class="nav-link" href="#">
-                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
                             <i class="fas fa-chart-bar" aria-hidden="true"></i>
                             <span>Contabilidad</span>
                         </a>
