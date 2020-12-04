@@ -68,6 +68,15 @@
         ul.nav-main > li.nav-active > a {
             box-shadow: 2px 0 0 #0088CC inset;
         }
+        .header {
+            position: sticky;
+            top:0;
+        }
+        .div-clientes {
+            width: 800px;
+            height: 600px;
+            overflow: auto;
+        }
     </style>
 </head>
 <body class="pr-0">

@@ -214,30 +214,30 @@
             </button>
           </div>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive div-clientes">
           <table class="table">
-            <thead>
+            <thead class="header">
               <tr>
-                <th>#</th>
-                <th>Hostname</th>
-                <th>Nombre</th>
-                <th>RUC</th>
-                <th>Plan</th>
-                <th>Correo</th>
-                <th class="text-center">Comprobantes</th>
-                <th class="text-center">Usuarios</th>
-                <th class="text-center">F.Creación</th>
+                <th class="header">#</th>
+                <th class="header">Hostname</th>
+                <th class="header">Nombre</th>
+                <th class="header">RUC</th>
+                <th class="header">Plan</th>
+                <th class="header">Correo</th>
+                <th class="text-center header">Comprobantes</th>
+                <th class="text-center header">Usuarios</th>
+                <th class="text-center header">F.Creación</th>
 
-                <th class="text-center">Bloquear cuenta</th>
+                <th class="text-center header">Bloquear cuenta</th>
 
-                <th class="text-right">Limitar Doc.</th>
-                <th class="text-center">Limitar Usuarios</th>
-                <th class="text-right">Acciones</th>
-                <th class="text-right">Pagos</th>
-                <th class="text-right">E. Cuenta</th>
-                <th class="text-right">Editar</th>
-                <th class="text-right">Inicio Ciclo Facturacion</th>
-                <th class="text-center">Comprobantes Ciclo Facturacion</th>
+                <th class="text-right header">Limitar Doc.</th>
+                <th class="text-center header">Limitar Usuarios</th>
+                <th class="text-right header">Acciones</th>
+                <th class="text-right header">Pagos</th>
+                <th class="text-right header">E. Cuenta</th>
+                <th class="text-right header">Editar</th>
+                <th class="text-right header">Inicio Ciclo Facturacion</th>
+                <th class="text-center header">Comprobantes Ciclo Facturacion</th>
               </tr>
             </thead>
             <tbody>
