@@ -25,7 +25,7 @@
     @if (file_exists(public_path('porto-light/background/fondo-navidad.gif')))
         <style>
             .app{
-                background: url('{{ asset('porto-light/background/fondo-navidad.gif') }}') center center / cover;
+                background: url('{{ asset('porto-light/background/fondo-navidad.gif') }}') center -450px / cover;
             }
         </style>
     @else
