@@ -216,28 +216,28 @@
         </div>
         <div class="table-responsive div-clientes">
           <table class="table">
-            <thead class="header">
+            <thead class="header2">
               <tr>
-                <th class="header">#</th>
-                <th class="header">Hostname</th>
-                <th class="header">Nombre</th>
-                <th class="header">RUC</th>
-                <th class="header">Plan</th>
-                <th class="header">Correo</th>
-                <th class="text-center header">Comprobantes</th>
-                <th class="text-center header">Usuarios</th>
-                <th class="text-center header">F.Creación</th>
+                <th class="header2">#</th>
+                <th class="header2">Hostname</th>
+                <th class="header2">Nombre</th>
+                <th class="header2">RUC</th>
+                <th class="header2">Plan</th>
+                <th class="header2">Correo</th>
+                <th class="text-center header2">Comprobantes</th>
+                <th class="text-center header2">Usuarios</th>
+                <th class="text-center header2">F.Creación</th>
 
-                <th class="text-center header">Bloquear cuenta</th>
+                <th class="text-center header2">Bloquear cuenta</th>
 
-                <th class="text-right header">Limitar Doc.</th>
-                <th class="text-center header">Limitar Usuarios</th>
-                <th class="text-right header">Acciones</th>
-                <th class="text-right header">Pagos</th>
-                <th class="text-right header">E. Cuenta</th>
-                <th class="text-right header">Editar</th>
-                <th class="text-right header">Inicio Ciclo Facturacion</th>
-                <th class="text-center header">Comprobantes Ciclo Facturacion</th>
+                <th class="text-right header2">Limitar Doc.</th>
+                <th class="text-center header2">Limitar Usuarios</th>
+                <th class="text-right header2">Acciones</th>
+                <th class="text-right header2">Pagos</th>
+                <th class="text-right header2">E. Cuenta</th>
+                <th class="text-right header2">Editar</th>
+                <th class="text-right header2">Inicio Ciclo Facturacion</th>
+                <th class="text-center header2">Comprobantes Ciclo Facturacion</th>
               </tr>
             </thead>
             <tbody>

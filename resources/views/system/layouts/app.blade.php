@@ -68,13 +68,17 @@
         ul.nav-main > li.nav-active > a {
             box-shadow: 2px 0 0 #0088CC inset;
         }
-        .header {
+        .header2 {
             position: sticky;
-            top:0;
+            top: 0;
+            background: #0088cc;
+        }
+        .header2 tr th{
+            color:#fff;
         }
         .div-clientes {
-            width: 800px;
-            height: 600px;
+            width: 100%;
+            height: 660px;
             overflow: auto;
         }
     </style>
