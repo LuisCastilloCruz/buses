@@ -121,3 +121,7 @@ ul.nav-main li .nav-children li.nav-active > .nav-link {
         text-align: center;
     }
 }
+
+.card {
+    width: 100%;
+}
