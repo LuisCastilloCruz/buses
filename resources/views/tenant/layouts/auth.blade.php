@@ -5,10 +5,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ asset('porto-light/favicon/animated_favicon.gif') }}" type="image/gif" >
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{--    <title>{{ config('app.name', 'Facturación Electrónica') }}</title>--}}
-    <title>Facturación Electrónica</title>
+    <title>Facturación Electrónica - 2021</title>
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
 
@@ -21,10 +22,10 @@
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
 
-    @if (file_exists(public_path('theme/background/bg1.jpeg')))
+    @if (file_exists(public_path('porto-light/background/fondo-navidad.gif')))
         <style>
             .app{
-                background: url('{{ asset('theme/background/bg1.jpg') }}') center center / cover;
+                background: url('{{ asset('porto-light/background/fondo-navidad.gif') }}') center center / cover;
             }
         </style>
     @else

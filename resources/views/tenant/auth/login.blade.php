@@ -5,7 +5,7 @@
         <div class="center-sign">
             <div class="card">
                 <div class="card card-header card-primary" style="background:#6EB23F">
-                    <p class="card-title text-center">AQPFACT NUBE</p>
+                    <p class="card-title text-center">AQPFACT NUBE 2021</p>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
