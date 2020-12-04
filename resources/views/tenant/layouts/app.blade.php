@@ -10,12 +10,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ asset('porto-light/favicon/animated_favicon.gif') }}" type="image/gif" >
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{--    <title>{{ config('app.name', 'Facturación Electrónica') }}</title>--}}
-    <title>Facturación Electrónica</title>
+    <title>Facturación Electrónica 2025</title>
 
     <!-- Scripts -->
 
