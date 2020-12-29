@@ -29,6 +29,7 @@ class OrderNoteCollection extends ResourceCollection
                 'user_name' => $row->user->name,
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
+                'shipping_address'=>$row->shipping_address,
                 'currency_type_id' => $row->currency_type_id,
                 'total_exportation' => number_format($row->total_exportation,2),
                 // 'total_free' => number_format($row->total_free,2),
