@@ -9,6 +9,19 @@
                             <el-input v-model="form.name"></el-input>
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
+                        <div v-if="isActiveBussinessTurn('restaurant')" class="form-group" :class="{'has-danger': errors.printer}">
+                            <label class="control-label">Impresora</label>
+                            <el-select v-model="form.printer" @change="selectPrinter">
+                                <el-option
+                                        :label="printers.PrinterNombre1"
+                                        :value="printers.PrinterNombre1">
+                                </el-option>
+                                <el-option
+                                        :label="printers.PrinterNombre2"
+                                        :value="printers.PrinterNombre2">
+                                </el-option>
+                            </el-select>
+                        </div>
                     </div> 
                 </div> 
             </div>
@@ -20,7 +33,7 @@
     </el-dialog>
 </template>
  
-<script>
+<script type="text/babel">
  
 
     export default {
@@ -31,7 +44,9 @@
                 titleDialog: null,
                 resource: 'categories', 
                 errors: {}, 
-                form: {}, 
+                form: {},
+                business_turns: [],
+                printers:{}
             }
         },
         created() {
@@ -43,16 +58,30 @@
 
                 this.form = {
                     id: null,
-                    name: null, 
+                    name: null,
+                    printer:null,
                 }
             },
-            create() {
+            async create() {
 
+                await this.$http.get(`/configurations/record`) .then(response => {
+                    if (response.data !== ''){
+                        this.printers = response.data.data;
+                    }
+                    //console.log(response.data.data)
+                });
                 this.titleDialog = (this.recordId)? 'Editar categoría':'Nueva categoría'
+                await this.$http.get(`/documents/tables`)
+                    .then(response => {
+                        this.business_turns = response.data.business_turns
+                    })
+
+                this.loading_form = true
                 if (this.recordId) {
-                    this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
-                            this.form = response.data
-                        })
+                    await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                            this.form = response.data;
+                            console.log(this.form)
+                    })
                 }
             },
             submit() {   
@@ -84,6 +113,9 @@
             close() {
                 this.$emit('update:showDialog', false)
                 this.initForm()
+            },
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
             }
         }
     }

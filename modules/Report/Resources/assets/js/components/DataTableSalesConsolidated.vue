@@ -79,12 +79,17 @@
                                 <label class="control-label">Vendedor
                                 </label>
                                 
-                                <el-select v-model="form.seller_id" filterable  popper-class="el-select-customers"  clearable
+                                <!-- <el-select v-model="form.seller_id" filterable  popper-class="el-select-customers"  clearable
+                                    placeholder="Nombre"
+                                    @change="changeSellers">
+                                    <el-option v-for="option in sellers" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                </el-select> -->
+
+                                <el-select v-model="form.sellers" filterable multiple  popper-class="el-select-customers"  clearable
                                     placeholder="Nombre"
                                     @change="changeSellers">
                                     <el-option v-for="option in sellers" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                 </el-select>
- 
                             </div>
                         </div> 
  
@@ -94,7 +99,7 @@
                             
                             <template v-if="records.length>0"> 
 
-                                <!-- <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button> -->
+                                <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
                                 <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
 
                                 <template v-if="resource == 'reports/sales-consolidated'"> 
@@ -123,7 +128,7 @@
                         </tbody> 
                         <tfoot v-if="resource == 'reports/order-notes-consolidated' || resource == 'reports/sales-consolidated'">
                             <tr>
-                                <td colspan="2"></td>
+                                <td colspan="4"></td>
                                 <td class="text-center"><strong>Total</strong></td>
                                 <td class="text-center">{{totals}}</td>
                             </tr> 
@@ -229,7 +234,7 @@
                 // this.loadAll();
             },
             changePersons(){
-                this.form.seller_id = null
+                // this.form.seller_id = null
                 this.$eventHub.$emit('changeFilterColumn', 'person')
                 // this.records = []
             },
@@ -264,11 +269,13 @@
             filterPersons() { 
                 this.persons = this.all_persons
             }, 
-            clickDownload(type) {                 
-                let query = queryString.stringify({
-                    ...this.form
-                });
-                window.open(`/${this.resource}/${type}/?${query}`, '_blank');
+            clickDownload(type) {
+
+                // let query = queryString.stringify({
+                //     ...this.form
+                // });
+
+                window.open(`/${this.resource}/${type}/?${this.getQueryParameters()}`, '_blank');
             },
             initForm(){
  
@@ -278,7 +285,7 @@
                     date_range_type_id: 'date_of_issue',
                     order_state_type_id: 'all_states',
                     type_person:null,
-                    seller_id:null,
+                    sellers:[],
                     date_start: moment().startOf('month').format('YYYY-MM-DD'), 
                     date_end: moment().endOf('month').format('YYYY-MM-DD'), 
                 }
@@ -289,9 +296,9 @@
             }, 
             async getRecordsByFilter(){
                 
-                if(!this.form.person_id &&  !this.form.seller_id){
-                    return this.$message.error('Debe seleccionar un cliente o vendedor')
-                }
+                // if(!this.form.person_id &&  !this.form.seller_id){
+                //     return this.$message.error('Debe seleccionar un cliente o vendedor')
+                // }
 
                 this.loading_submit = await true
                 await this.getRecords()
@@ -303,6 +310,7 @@
                 this.totals = _.sumBy(this.records, (it) => parseFloat(it.item_quantity));
             },
             getRecords() {
+
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.records = response.data.data
                     this.pagination = response.data.meta
@@ -313,12 +321,16 @@
 
             },
             getQueryParameters() {
-                return queryString.stringify({
+
+                let parameters = queryString.stringify({
                     page: this.pagination.current_page,
                     limit: this.limit,
                     ...this.form
                 })
-            }, 
+
+                return `${parameters}&sellers=${JSON.stringify(this.form.sellers)}`
+
+            },
         }
     }
 </script>

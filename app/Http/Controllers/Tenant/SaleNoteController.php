@@ -47,12 +47,21 @@ use Modules\Finance\Traits\FinanceTrait;
 use Modules\Item\Models\ItemLotsGroup;
 use App\Models\Tenant\Configuration;
 use Modules\Inventory\Traits\InventoryTrait;
+use Modules\Document\Traits\SearchTrait;
+use App\Models\Tenant\BankAccount;
+use Modules\Item\Models\Category;
+use Mike42\Escpos\EscposImage;
+use Illuminate\Support\Facades\Storage;
+use Mike42\Escpos\CapabilityProfile;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 
 class SaleNoteController extends Controller
 {
 
-    use StorageDocument, FinanceTrait, InventoryTrait;
+    use StorageDocument, FinanceTrait, InventoryTrait, SearchTrait;
 
     protected $sale_note;
     protected $company;
@@ -122,9 +131,9 @@ class SaleNoteController extends Controller
             $records = $records->where('series', 'like', '%' . $request->series . '%');
         }
 
-        if($request->paid != null)
+        if($request->total_canceled != null)
         {
-            $records = $records->where('paid', $request->paid);
+            $records = $records->where('total_canceled', $request->total_canceled);
         }
 
         return $records;
@@ -171,8 +180,9 @@ class SaleNoteController extends Controller
             ];
         });
         $payment_destinations = $this->getPaymentDestinations();
+        $configuration = Configuration::select('destination_sale')->first();
 
-        return compact('customers', 'establishments','currency_types', 'discount_types',
+        return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
                          'charge_types','company','payment_method_types', 'series', 'payment_destinations');
     }
 
@@ -295,7 +305,7 @@ class SaleNoteController extends Controller
             $this->sale_note->save();
 
         }else{
-            
+
             $this->sale_note->total_canceled = false;
             $this->sale_note->save();
         }
@@ -461,7 +471,7 @@ class SaleNoteController extends Controller
                 }
             }
             $legends = $this->document->legends != '' ? '10' : '0';
-
+            $bank_accounts = BankAccount::count() * 6;
 
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
@@ -479,6 +489,7 @@ class SaleNoteController extends Controller
                     $customer_address +
                     $p_order +
                     $legends +
+                    $bank_accounts +
                     $total_exportation +
                     $total_free +
                     $total_unaffected +
@@ -585,8 +596,18 @@ class SaleNoteController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if(config('tenant.pdf_template_footer')) {
-            $html_footer = $template->pdfFooter($base_template);
-            $pdf->SetHTMLFooter($html_footer);
+            // if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+                if ($base_template != 'full_height') {
+                    $html_footer = $template->pdfFooter($base_template,$this->document);
+                } else {
+                    $html_footer = $template->pdfFooter('default',$this->document);
+                }
+                $html_footer_legend = "";
+                if($this->configuration->legend_footer){
+                    $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
+                }
+                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+            // }
         }
 
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
@@ -624,9 +645,9 @@ class SaleNoteController extends Controller
                 $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
                 $warehouse_id = ($warehouse) ? $warehouse->id:null;
 
-                $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->get();
+                $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
 
-                $items_s = Item::where('unit_type_id','ZZ')->whereIsActive()->orderBy('description')->get();
+                $items_s = Item::where('unit_type_id','ZZ')->whereIsActive()->orderBy('description')->take(10)->get();
 
                 $items = $items_u->merge($items_s);
 
@@ -650,25 +671,27 @@ class SaleNoteController extends Controller
                         'lots_enabled' => (bool) $row->lots_enabled,
                         'series_enabled' => (bool) $row->series_enabled,
                         'is_set' => (bool) $row->is_set,
-                        'warehouses' => collect($row->warehouses)->transform(function($row) {
+                        'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse_id){
                             return [
                                 'warehouse_id' => $row->warehouse->id,
                                 'warehouse_description' => $row->warehouse->description,
                                 'stock' => $row->stock,
+                                'checked' => ($row->warehouse_id == $warehouse_id) ? true : false,
                             ];
                         }),
                         'item_unit_types' => $row->item_unit_types,
-                        'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function($row) {
-                            return [
-                                'id' => $row->id,
-                                'series' => $row->series,
-                                'date' => $row->date,
-                                'item_id' => $row->item_id,
-                                'warehouse_id' => $row->warehouse_id,
-                                'has_sale' => (bool)$row->has_sale,
-                                'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
-                            ];
-                        }),
+                        'lots' => [],
+                        // 'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function($row) {
+                        //     return [
+                        //         'id' => $row->id,
+                        //         'series' => $row->series,
+                        //         'date' => $row->date,
+                        //         'item_id' => $row->item_id,
+                        //         'warehouse_id' => $row->warehouse_id,
+                        //         'has_sale' => (bool)$row->has_sale,
+                        //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                        //     ];
+                        // }),
                         'lots_group' => collect($row->lots_group)->transform(function($row){
                             return [
                                 'id'  => $row->id,
@@ -691,6 +714,131 @@ class SaleNoteController extends Controller
 
                 break;
         }
+    }
+
+
+    public function searchItems(Request $request)
+    {
+
+        // dd($request->all());
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+        $warehouse_id = ($warehouse) ? $warehouse->id:null;
+
+        $items_not_services = $this->getItemsNotServices($request);
+        $items_services = $this->getItemsServices($request);
+        $all_items = $items_not_services->merge($items_services);
+
+        $items = collect($all_items)->transform(function($row) use($warehouse_id, $warehouse){
+
+            $detail = $this->getFullDescription($row, $warehouse);
+
+            return [
+                'id' => $row->id,
+                'full_description' => $detail['full_description'],
+                'brand' => $detail['brand'],
+                'category' => $detail['category'],
+                'stock' => $detail['stock'],
+                'description' => $row->description,
+                'currency_type_id' => $row->currency_type_id,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => round($row->sale_unit_price, 2),
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'has_igv' => (bool) $row->has_igv,
+                'lots_enabled' => (bool) $row->lots_enabled,
+                'series_enabled' => (bool) $row->series_enabled,
+                'is_set' => (bool) $row->is_set,
+                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse_id){
+                    return [
+                        'warehouse_id' => $row->warehouse->id,
+                        'warehouse_description' => $row->warehouse->description,
+                        'stock' => $row->stock,
+                        'checked' => ($row->warehouse_id == $warehouse_id) ? true : false,
+                    ];
+                }),
+                'item_unit_types' => $row->item_unit_types,
+                'lots' => [],
+                'lots_group' => collect($row->lots_group)->transform(function($row){
+                    return [
+                        'id'  => $row->id,
+                        'code' => $row->code,
+                        'quantity' => $row->quantity,
+                        'date_of_due' => $row->date_of_due,
+                        'checked'  => false
+                    ];
+                }),
+                'lot_code' => $row->lot_code,
+                'date_of_due' => $row->date_of_due
+            ];
+        });
+
+        return compact('items');
+
+    }
+
+
+    public function searchItemById($id)
+    {
+
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
+        $search_item = $this->getItemsNotServicesById($id);
+
+        if(count($search_item) == 0){
+            $search_item = $this->getItemsServicesById($id);
+        }
+
+        $items = collect($search_item)->transform(function($row) use($warehouse){
+
+            $detail = $this->getFullDescription($row, $warehouse);
+
+            return [
+                'id' => $row->id,
+                'full_description' => $detail['full_description'],
+                'brand' => $detail['brand'],
+                'category' => $detail['category'],
+                'stock' => $detail['stock'],
+                'description' => $row->description,
+                'currency_type_id' => $row->currency_type_id,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => round($row->sale_unit_price, 2),
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'has_igv' => (bool) $row->has_igv,
+                'lots_enabled' => (bool) $row->lots_enabled,
+                'series_enabled' => (bool) $row->series_enabled,
+                'is_set' => (bool) $row->is_set,
+                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                    return [
+                        'warehouse_id' => $row->warehouse->id,
+                        'warehouse_description' => $row->warehouse->description,
+                        'stock' => $row->stock,
+                        'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
+                    ];
+                }),
+                'item_unit_types' => $row->item_unit_types,
+                'lots' => [],
+                'lots_group' => collect($row->lots_group)->transform(function($row){
+                    return [
+                        'id'  => $row->id,
+                        'code' => $row->code,
+                        'quantity' => $row->quantity,
+                        'date_of_due' => $row->date_of_due,
+                        'checked'  => false
+                    ];
+                }),
+                'lot_code' => $row->lot_code,
+                'date_of_due' => $row->date_of_due
+            ];
+        });
+
+        return compact('items');
     }
 
 
@@ -745,8 +893,10 @@ class SaleNoteController extends Controller
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
         $series = Series::where('establishment_id',$establishment->id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
+        $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
 
-        return compact('series', 'document_types_invoice');
+        return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations');
     }
 
     public function email(Request $request)
@@ -800,8 +950,8 @@ class SaleNoteController extends Controller
             $obj->state_type_id = 11;
             $obj->save();
 
-            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-            $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+            // $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            $warehouse = Warehouse::where('establishment_id',$obj->establishment_id)->first();
 
             foreach ($obj->items as $sale_note_item) {
 
@@ -828,20 +978,24 @@ class SaleNoteController extends Controller
     public function voidedSaleNoteItem($sale_note_item, $warehouse)
     {
 
+        $warehouse_id = ($sale_note_item->warehouse_id) ? $sale_note_item->warehouse_id : $warehouse->id;
+
         if(!$sale_note_item->item->is_set){
+
+            $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
             $sale_note_item->sale_note->inventory_kardex()->create([
                 'date_of_issue' => date('Y-m-d'),
                 'item_id' => $sale_note_item->item_id,
-                'warehouse_id' => $warehouse->id,
-                'quantity' => $sale_note_item->quantity,
+                'warehouse_id' => $warehouse_id,
+                'quantity' => $sale_note_item->quantity * $presentationQuantity,
             ]);
 
-            $wr = ItemWarehouse::where([['item_id', $sale_note_item->item_id],['warehouse_id', $warehouse->id]])->first();
+            $wr = ItemWarehouse::where([['item_id', $sale_note_item->item_id],['warehouse_id', $warehouse_id]])->first();
 
             if($wr)
             {
-                $wr->stock =  $wr->stock + $sale_note_item->quantity;
+                $wr->stock =  $wr->stock + ($sale_note_item->quantity * $presentationQuantity);
                 $wr->save();
             }
 
@@ -852,10 +1006,11 @@ class SaleNoteController extends Controller
             foreach ($item->sets as $it) {
 
                 $ind_item  = $it->individual_item;
+                $item_set_quantity  = ($it->quantity) ? $it->quantity : 1;
                 $presentationQuantity = 1;
                 $warehouse = $this->findWarehouse($sale_note_item->sale_note->establishment_id);
-                $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id, $sale_note_item->id);
-                if(!$sale_note_item->sale_note->order_note_id) $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id, $sale_note_item->id);
+                if(!$sale_note_item->sale_note->order_note_id) $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
             }
 
@@ -997,6 +1152,172 @@ class SaleNoteController extends Controller
             }
         }
 
+    }
+    public function esc(Request $request)
+    {
+        $note_id=$request->id;
+        $data=$this->record($note_id);
+        $observation= '';
+
+        $number=$data->number;
+
+        $cocina=[];
+        $barra=[];
+        $imp_coc='';
+        $imp_bar='';
+        $printerTipoConexion1='';
+        $printerTipoConexion2='';
+        $printerRuta1='';
+        $printerRuta2='';
+        $config = Configuration::get();
+
+        foreach($config as $printers){
+            $imp_coc= $printers['PrinterNombre1'];
+            $imp_bar= $printers['PrinterNombre2'];
+            $printerTipoConexion1= $printers['PrinterTipoConexion1'];
+            $printerTipoConexion2= $printers['PrinterTipoConexion2'];
+            $printerRuta1= $printers['PrinterRuta1'];
+            $printerRuta2= $printers['PrinterRuta2'];
+        }
+
+        foreach ($data['items'] as $row) {
+            $categoria=Category::find($row->item->category_id);
+            if ($imp_coc != '' && $imp_coc != '-' &&  $categoria->printer==$imp_coc) {//COCINA
+                $data =[
+
+                    'quantity'=> $row->quantity,
+                    'printer' =>$row->printer,
+                    'description'=> $row->item->description
+
+                ];
+                array_push($cocina,$data);
+
+            }
+            else if ($imp_bar != '' && $imp_bar != '-' &&  $categoria->printer==$imp_bar) {//BARRA
+                $array=[
+                    'items'=>[
+                        'quantity'=> $row->quantity,
+                        'printer' =>$row->printer,
+                        'description'=> $row->item->description
+                    ]
+                ];
+                array_push($barra,$array);
+            }
+        }
+
+        if(!empty($cocina)){
+            $this->toPrintEsc($cocina,$number,$imp_coc,$printerTipoConexion1,$printerRuta1,$observation);
+        }
+        if(!empty($barra)){
+            $this->toPrintEsc($barra,$number,$imp_bar,$printerTipoConexion2,$printerRuta2,$observation);
+        }
+    }
+    public function toPrintEsc($data,$number,$printer,$tipo,$ruta,$observation)
+    {
+        //$logo = EscposImage::load("resources/rawbtlogo.png", false);
+        //$logo =  Storage::disk('tenant')->get(storage_path('public/uploads/logos/logo_20601411076.png'));
+        //$logo =EscposImage::load(public_path("storage/uploads/logos/aqpfact.jpg"));
+
+        /* Start the printer */
+
+        $connector = null;
+        if($tipo=="USB"){
+            $connector = new WindowsPrintConnector($printer);
+        }
+        else if($tipo=="RED"){
+            $connector = new NetworkPrintConnector($ruta, 9100);
+        }
+        /* Print a "Hello world" receipt" */
+        $printer = new Printer($connector);
+
+        /* Print top logo */
+//        $profile = CapabilityProfile::load("simple");
+//        if ($profile->getSupportsGraphics()) {
+//           $printer->graphics($logo);
+//        }
+//        if ($profile->getSupportsBitImageRaster() && !$profile->getSupportsGraphics()) {
+//            $printer->bitImage($logo);
+//        }
+
+        try {
+
+            $date = date('Y-m-d H:i:s A');
+
+            /* Name of shop */
+            $printer->feed();
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text("Pedido No. ".$number."\n");
+            $printer->feed();
+
+
+            /* Title of receipt */
+            $printer->selectPrintMode();
+            $printer->setEmphasis(true);
+            $printer->text($date."\n");
+            $printer->setEmphasis(false);
+
+            /* Items */
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->setEmphasis(true);
+
+//            foreach ($items as $item) {
+//                $printer->text($item->getAsString(32)); // for 58mm Font A
+//            }
+
+            $printer->feed();
+            $printer->setEmphasis(true);
+            $printer->text("CANT. DESCRIPCION\n");
+            $printer->setEmphasis(false);
+            $printer->text("-------------------------------\n");
+
+
+            foreach ($data as $row) {
+                $printer->text(' '.round($row['quantity'],2).'  '.substr($row['printer'],0,27).' '.$row['description']."\n");
+            }
+            // $printer->text($subtotal->getAsString(32));
+            $printer->feed();
+
+            /* Tax and total */
+            //$printer->text($tax->getAsString(32));
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            // $printer->text($total->getAsString(32));
+            $printer->selectPrintMode();
+
+            /* Footer */
+//            $printer->feed(2);
+//            $printer->setJustification(Printer::JUSTIFY_CENTER);
+//            $printer->text("Gracias campeón shopping\n");
+//            $printer->feed(2);
+            $printer->text("$observation\n");
+            $printer->feed(3);
+
+            /* Barcode Default look */
+
+//            $printer->barcode("ABC", Printer::BARCODE_CODE39);
+//            $printer->feed();
+//            $printer->feed();
+
+
+            // Demo that alignment QRcode is the same as text
+//            $printer2 = new Printer($connector); // dirty printer profile hack !!
+//            $printer2->setJustification(Printer::JUSTIFY_CENTER);
+//            $printer2->qrCode("https://rawbt.ru/mike42", Printer::QR_ECLEVEL_M, 8);
+//            $printer2->text("rawbt.ru/mike42\n");
+//            $printer2->setJustification();
+//            $printer2->feed();
+
+
+            /* Cut the receipt and open the cash drawer */
+            $printer->cut();
+            $printer->pulse();
+
+        } catch (Exception $e) {
+            $printer->close();
+            //echo $e->getMessage();
+        } finally {
+            $printer->close();
+        }
     }
 
 }

@@ -19,23 +19,40 @@
                         <th>#</th>
                         <th>Producto</th>
                         <th >Categoría</th>
+                        <th >Marca</th>
                         <th class="text-center">Unidad</th>
                         <th class="text-center">Unidades físicas vendidas</th>
                         <th class="text-center">Costo unitario</th>
                         <th class="text-center">Valor de ventas</th>
                         <th class="text-center">Costo de producto</th>
                         <th class="text-center">Unidad valorizada</th>
+                        <th>Stock</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td>{{ row.item_description }}</td>
                         <td>{{ row.category_description }}</td>
+                        <td>{{ row.brand_description }}</td>
                         <td  class="text-center">{{ row.unit_type_id }}</td>
                         <td  class="text-center">{{ row.quantity_sale }}</td>
                         <td class="text-center">{{ row.purchase_unit_price }}</td>
                         <td class="text-center">{{ row.total_sales }}</td>
                         <td class="text-center">{{ row.item_cost }}</td>
                         <td class="text-center">{{ row.valued_unit }}</td>
+                        <td>
+
+                            <el-popover
+                                placement="right"
+                                width="330"
+                                trigger="click">
+                                <el-table :data="row.warehouses">
+                                    <el-table-column width="220" property="warehouse_description" label="Almacén"></el-table-column>
+                                    <el-table-column width="90" property="stock" label="Stock"></el-table-column>
+                                </el-table>
+                                <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
+                            </el-popover>
+
+                        </td>
                     </tr>
                 </data-table>
 

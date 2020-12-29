@@ -30,11 +30,32 @@ class DocumentExport implements  FromView, ShouldAutoSize
         return $this;
     }
     
+    public function filters($filters) {
+        $this->filters = $filters;
+
+        return $this;
+    }
+
+    public function categories($categories) {
+        $this->categories = $categories;
+
+        return $this;
+    }
+
+    public function categories_services($categories_services) {
+        $this->categories_services = $categories_services;
+
+        return $this;
+    }
+
     public function view(): View {
         return view('report::documents.report_excel', [
             'records'=> $this->records,
             'company' => $this->company,
-            'establishment'=>$this->establishment
+            'establishment'=>$this->establishment,
+            'filters'=>$this->filters,
+            'categories'=>$this->categories,
+            'categories_services'=>$this->categories_services,
         ]);
     }
 }

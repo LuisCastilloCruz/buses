@@ -35,6 +35,17 @@ class Configuration extends ModelTenant
         'product_only_location',
         'header_image',
         'legend_footer',
+        'default_document_type_03',
+        'destination_sale',
+        'color1',
+        'color2',
+        'fondo',
+        'PrinterNombre1',
+        'PrinterRuta1',
+        'PrinterTipoConexion1',
+        'PrinterNombre2',
+        'PrinterRuta2',
+        'PrinterTipoConexion2'
     ];
 
     public function setPlanAttribute($value)

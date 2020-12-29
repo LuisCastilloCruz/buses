@@ -21,6 +21,7 @@ use App\Http\Requests\Tenant\ServiceRequest;
 use Exception;
 use Modules\Document\Helpers\ConsultCdr;
 use App\CoreFacturalo\Services\Extras\ValidateCpe2;
+use App\CoreFacturalo\Services\Extras\ValidateCpeSunat;
 
 
 class ServiceController extends Controller
@@ -55,7 +56,7 @@ class ServiceController extends Controller
     }
 
     public function validateCpe2(Request $request){
-
+        //var_dump(openssl_get_cert_locations());
             $validate_cpe = new ValidateCpe2();
             $response = $validate_cpe->search($request->company_number,
                                                 $request->document_type_id,
@@ -73,6 +74,40 @@ class ServiceController extends Controller
                         'response_code' => $response['data']['comprobante_estado_codigo'],
                         'response_description' => $response['data']['comprobante_estado_descripcion'],
                         'message' => $request->number.'-'.$request->series.'| Código: '.$response_code.'|Mensaje: '.$response_description,
+                    ]
+                ];
+ 
+            } else {
+                return [
+                    'success' => false,
+                    'message' => $response
+                ];
+                
+            }     
+    }
+    public function validateCpeSunat(Request $request){
+        
+            $validate_cpe = new ValidateCpeSunat();
+                        
+            // $acceso = json_decode($datos,true);
+            // dd($acceso['access_token']);
+
+            $response = $validate_cpe->search($request->company_number,
+                                                $request->document_type_code,
+                                                $request->series,
+                                                $request->number,
+                                                $request->date_of_issue,
+                                                $request->total
+                                            );
+            if ($response['success']) {
+                $response_code = $response['data']['comprobante_estado_codigo'];
+                $response_description = $response['data']['comprobante_estado_descripcion'];
+                return [
+                    'success' => true,
+                    'data' => [
+                        'response_code' => $response['data']['comprobante_estado_codigo'],
+                        'response_description' => $response['data']['comprobante_estado_descripcion'],
+                        'message' => $request->series.'-'.$request->number.'| Código: '.$response_code.'|Mensaje: '.$response_description,
                     ]
                 ];
  

@@ -20,7 +20,7 @@
                   <div v-for="(o, index) in formatos" class="col-md-3 my-2">
                     <el-card :body-style="{ padding: '0px' }" :id="o.formats">
                       <a @click="viewImage(o.formats)"><img :src="path.origin+'/templates/pdf/'+o.formats+'/image.png'" class="image" style="width: 100%"></a>
-                      <div style="padding: 14px;">
+                      <div style="padding: 14px;background:#d4def7;">
                         <span class="text-center">{{o.formats}}</span>
                         <div class="bottom clearfix text-right">
                             <!-- <el-button type="submit" class="button" @change="changeFormat(o.formats)">Activo</el-button> -->
@@ -28,6 +28,44 @@
                                 <span v-if="form.formats == o.formats">Activo</span>
                                 <span v-else>Activar</span>
                             </el-radio>
+
+                        </div>
+                        <div v-if="form.formats == o.formats && form.formats == 'aqpfact_01'" class="row">
+                           <div class="col-md-3">
+                               <label class="control-label float-left">
+                                   <el-tooltip class="item" effect="dark" content="Color primario de la plantilla." placement="top-start">
+                                       <i class="fa fa-info-circle"></i>
+                                   </el-tooltip>
+                                   <input type="color" id="primary_color" class="field-radio" v-bind:value="form.color1"  @change="changeColor1(o.formats,$event)">
+                               </label>
+                           </div>
+                            <div class="col-md-3">
+                                <label class="control-label float-left">
+                                    <el-tooltip class="item" effect="dark" content="Color secundario de la plantilla." placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                    <input type="color" id="secondary_color" class="field-radio"  v-bind:value="form.color2" @change="changeColor2(o.formats,$event)">
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label float-left">
+                                    <el-tooltip class="item" effect="dark" content="Cambiar fondo para cotización. Se recomienda diseñar según el formato por
+                                        defecto, o editar en Photoshop o Corel y sinó descargar de www.aqpfact.pe/recursos" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+
+                                        <el-upload slot="append"
+                                                   :headers="headers"
+                                                   :data="{'type': 'fondo'}"
+                                                   action="/configurations/uploads"
+                                                   :show-file-list="false"
+                                                   :on-success="successUpload">
+                                            <el-button type="primary" icon="el-icon-upload"></el-button>
+                                        </el-upload>
+
+                                </label>
+                            </div>
+
                         </div>
                       </div>
                     </el-card>
@@ -49,7 +87,7 @@
     </div>
 </template>
 
-<script>
+<script type="text/babel">
 
     export default {
         props:['path_image'],
@@ -57,6 +95,7 @@
         data() {
             return {
                 loading_submit: false,
+                headers: headers_token,
                 resource: 'configurations',
                 errors: {},
                 form: {},
@@ -90,6 +129,7 @@
 
                 this.$http.post(`/${this.resource}/changeFormat`, this.formatos).then(response =>{
                     this.$message.success(response.data.message);
+                    alert('El formato se cambió corréctamente, el sitema se recargará para mostrarle las opciones de su plantilla.');
                     location.reload()
                 })
 
@@ -105,6 +145,44 @@
                 this.template = $value
 
                 this.modalImage = true
+            },
+            changeColor1(value,e){
+                this.modalImage = false
+                this.formatos = {
+                    formats: value,
+                    color1: e.target.value
+                }
+
+                this.$http.post(`/${this.resource}/changeColor1`, this.formatos).then(response =>{
+                    this.$message.success(response.data.message);
+                    alert('El color primario fué cambiado corréctamente, el sistema necesita recargarse.');
+                    location.reload()
+                    //alert('El color primario se cambió correctamente: ' +e.target.value);
+                })
+                //alert('cambiando color: '+ ' - otro: '+value+ ' color: ' +e.target.value);
+            },
+            changeColor2(value,e){
+                this.modalImage = false
+                this.formatos = {
+                    formats: value,
+                    color2: e.target.value
+                }
+
+                this.$http.post(`/${this.resource}/changeColor2`, this.formatos).then(response =>{
+                    this.$message.success(response.data.message);
+                    alert('El color secundario fué cambiado corréctamente, el sistema necesita recargarse.');
+                    location.reload()
+                    //alert('El color primario se cambió correctamente: ' +e.target.value);
+                })
+                //alert('cambiando color: '+ ' - otro: '+value+ ' color: ' +e.target.value);
+            },
+            successUpload(response, file, fileList) {
+                if (response.success) {
+                    this.$message.success(response.message)
+                    this.form[response.type] = response.name
+                } else {
+                    this.$message({message:'Error al subir el archivo', type: 'error'})
+                }
             }
         }
     }

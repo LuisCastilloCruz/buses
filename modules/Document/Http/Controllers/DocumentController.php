@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\DocumentItem;
 use Modules\Document\Http\Resources\DocumentNotSentCollection;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
@@ -15,6 +16,7 @@ use Illuminate\Support\Str;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\Catalogs\DetractionType;
+use App\Models\Tenant\Catalogs\Department;
 use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
@@ -22,6 +24,8 @@ use App\Models\Tenant\Item;
 use Modules\Document\Traits\SearchTrait;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Document\Helpers\ConsultCdr;
+use Modules\Item\Models\ItemLot;
+use Modules\Document\Http\Resources\ItemLotCollection;
 
 
 class DocumentController extends Controller
@@ -169,7 +173,35 @@ class DocumentController extends Controller
         $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
         $detraction_types = DetractionType::whereActive()->get();
 
-        return compact( 'detraction_types', 'cat_payment_method_types');
+        $locations = [];
+        $departments = Department::whereActive()->get();
+        foreach ($departments as $department)
+        {
+            $children_provinces = [];
+            foreach ($department->provinces as $province)
+            {
+                $children_districts = [];
+                foreach ($province->districts as $district)
+                {
+                    $children_districts[] = [
+                        'value' => $district->id,
+                        'label' => $district->description
+                    ];
+                }
+                $children_provinces[] = [
+                    'value' => $province->id,
+                    'label' => $province->description,
+                    'children' => $children_districts
+                ];
+            }
+            $locations[] = [
+                'value' => $department->id,
+                'label' => $department->description,
+                'children' => $children_provinces
+            ];
+        }
+
+        return compact( 'detraction_types', 'cat_payment_method_types', 'locations');
 
     }
 
@@ -321,17 +353,18 @@ class DocumentController extends Controller
                             'checked'  => false
                         ];
                     }),
-                    'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'series' => $row->series,
-                            'date' => $row->date,
-                            'item_id' => $row->item_id,
-                            'warehouse_id' => $row->warehouse_id,
-                            'has_sale' => (bool)$row->has_sale,
-                            'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
-                        ];
-                    }),
+                    'lots' => [],
+                    // 'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                    //     return [
+                    //         'id' => $row->id,
+                    //         'series' => $row->series,
+                    //         'date' => $row->date,
+                    //         'item_id' => $row->item_id,
+                    //         'warehouse_id' => $row->warehouse_id,
+                    //         'has_sale' => (bool)$row->has_sale,
+                    //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                    //     ];
+                    // }),
                     'lots_enabled' => (bool) $row->lots_enabled,
                     'series_enabled' => (bool) $row->series_enabled,
 
@@ -340,6 +373,50 @@ class DocumentController extends Controller
             });
 
         return compact('items');
+
+    }
+
+
+    public function searchLots(Request $request)
+    {
+
+        $warehouse = ModuleWarehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
+
+        if($request->document_item_id){
+
+            //proccess credit note
+            $document_item = DocumentItem::findOrFail($request->document_item_id);
+
+            $records = ItemLot::where('series','like', "%{$request->input}%")
+                                ->whereIn('id', collect($document_item->item->lots)->pluck('id')->toArray())
+                                ->where('has_sale', true)
+                                ->latest();
+
+        }else{
+
+            $records = ItemLot::where('series','like', "%{$request->input}%")
+                                    ->where('item_id', $request->item_id)
+                                    ->where('has_sale', false)
+                                    ->where('warehouse_id', $warehouse->id)
+                                    ->latest();
+        }
+
+
+        return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
+
+    }
+
+
+    public function regularizeLots(Request $request)
+    {
+
+        $document_item = DocumentItem::findOrFail($request->document_item_id);
+
+        return ItemLot::where('series','like', "%{$request->input}%")
+                                        ->whereIn('id', collect($document_item->item->lots)->pluck('id')->toArray())
+                                        ->where('has_sale', true)
+                                        ->get();
+
 
     }
 

@@ -32,6 +32,32 @@ if($hostname) {
 
             Route::post('items/import/item-price-lists', 'ItemController@importItemPriceLists');
 
+            Route::prefix('item-lots')->group(function () {
+
+                Route::get('', 'ItemLotController@index')->name('tenant.item-lots.index');
+                Route::get('/records', 'ItemLotController@records');
+                Route::get('/record/{record}', 'ItemLotController@record');
+                Route::post('', 'ItemLotController@store');
+                Route::get('/columns', 'ItemLotController@columns');
+                Route::get('/export', 'ItemLotController@export');
+
+            });
+
+            Route::post('items/import/item-sets', 'ItemSetController@importItemSets');
+            Route::post('items/import/item-sets-individual', 'ItemSetController@importItemSetsIndividual');
+
+
+            Route::prefix('web-platforms')->group(function () {
+
+                Route::get('', 'WebPlatformController@index');
+                Route::get('/records', 'WebPlatformController@records');
+                Route::get('/record/{brand}', 'WebPlatformController@record');
+                Route::post('', 'WebPlatformController@store');
+                Route::delete('/{record}', 'WebPlatformController@destroy');
+
+            });
+
+
         });
     });
 }

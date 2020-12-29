@@ -33,6 +33,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Warehouse;
+use App\Models\Tenant\User;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
@@ -54,6 +55,13 @@ use Carbon\Carbon;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use Modules\Finance\Traits\FinanceTrait;
+
+use Mike42\Escpos\EscposImage;
+use Illuminate\Support\Facades\Storage;
+use Mike42\Escpos\CapabilityProfile;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 class DocumentController extends Controller
 {
@@ -165,6 +173,7 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $user = auth()->user()->type;
+        $sellers = User::whereIn('type', ['seller'])->orWhere('id', auth()->user()->id)->get();
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
@@ -196,7 +205,7 @@ class DocumentController extends Controller
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user','payment_method_types','enabled_discount_global',
+                        'document_types_guide', 'user', 'sellers','payment_method_types','enabled_discount_global',
                         'business_turns','is_client','select_first_document_type_03', 'payment_destinations');
 
     }
@@ -259,9 +268,9 @@ class DocumentController extends Controller
             });
             return $prepayment_documents;
         }
-        
+
         if ($table === 'payment_method_types') {
-            
+
             $payment_method_types = PaymentMethodType::whereNotIn('id', ['05', '08', '09'])->get();
             $end_payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get(); //by requirement
 
@@ -273,7 +282,8 @@ class DocumentController extends Controller
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
 
-            $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
+            // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
+            $items_u = Item::whereWarehouse()->whereIsActive()->orderBy('description')->take(20)->get();
             $items_s = Item::where('unit_type_id','ZZ')->whereIsActive()->orderBy('description')->take(10)->get();
             $items = $items_u->merge($items_s);
 
@@ -289,7 +299,7 @@ class DocumentController extends Controller
                     'description' => $row->description,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
-                    'sale_unit_price' => round($row->sale_unit_price, 2),
+                    'sale_unit_price' => number_format($row->sale_unit_price, 4, ".",""),
                     'purchase_unit_price' => $row->purchase_unit_price,
                     'unit_type_id' => $row->unit_type_id,
                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
@@ -328,17 +338,18 @@ class DocumentController extends Controller
                             'checked'  => false
                         ];
                     }),
-                    'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'series' => $row->series,
-                            'date' => $row->date,
-                            'item_id' => $row->item_id,
-                            'warehouse_id' => $row->warehouse_id,
-                            'has_sale' => (bool)$row->has_sale,
-                            'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
-                        ];
-                    })->values(),
+                    'lots' => [],
+                    // 'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                    //     return [
+                    //         'id' => $row->id,
+                    //         'series' => $row->series,
+                    //         'date' => $row->date,
+                    //         'item_id' => $row->item_id,
+                    //         'warehouse_id' => $row->warehouse_id,
+                    //         'has_sale' => (bool)$row->has_sale,
+                    //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                    //     ];
+                    // })->values(),
                     'lots_enabled' => (bool) $row->lots_enabled,
                     'series_enabled' => (bool) $row->series_enabled,
 
@@ -387,30 +398,54 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
-        $fact = DB::connection('tenant')->transaction(function () use ($request) {
-            $facturalo = new Facturalo();
-            $facturalo->save($request->all());
-            $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
-            $facturalo->updateHash();
-            $facturalo->updateQr();
-            $facturalo->createPdf();
-            $facturalo->senderXmlSignedBill();
+        DB::beginTransaction();
+        try{
+            $response='';
+            $fact = DB::connection('tenant')->transaction(function () use ($request) {
+                $facturalo = new Facturalo();
+                $facturalo->save($request->all());
+                $facturalo->createXmlUnsigned();
+                $facturalo->signXmlUnsigned();
+                $facturalo->updateHash();
+                $facturalo->updateQr();
+                $facturalo->createPdf();
+                $facturalo->senderXmlSignedBill();
 
-            return $facturalo;
-        });
+                return $facturalo;
+            });
 
-        $document = $fact->getDocument();
-        $response = $fact->getResponse();
+            $document = $fact->getDocument();
+            $response = $fact->getResponse();
 
-        return [
-            'success' => true,
-            'data' => [
-                'id' => $document->id,
-                'response' =>$response
+            DB::commit();
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $document->id,
+                    'response' =>$response
 
-            ],
-        ];
+                ],
+            ];
+        }
+        catch (\Exception $e) {
+            DB::rollback();
+            return [
+                'success' => false,
+                'status'=>422,
+                'data' => [
+                    'id' => '',
+                    'message'=>'Ocurrió un error en el registro; falta el certificado, no hay conexión con la SUNAT, o probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el envío automático a la SUNAT, Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
+                    'response' =>[
+                        'code'=> "8",
+                        'description' =>'Ocurrió un error en el registro; falta el certificado, no hay conexión con la SUNAT, o probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el envío automático a la SUNAT, Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
+                        'sent'=> false,
+
+                    ]
+
+                ],
+            ];
+        }
+
     }
 
     public function reStore($document_id)
@@ -589,7 +624,10 @@ class DocumentController extends Controller
 
     public function getIdentityDocumentTypeId($document_type_id, $operation_type_id){
 
-        if($operation_type_id === '0101' || $operation_type_id === '1001') {
+        // if($operation_type_id === '0101' || $operation_type_id === '1001') {
+
+        if(in_array($operation_type_id, ['0101', '1001', '1004'])) {
+
             if($document_type_id == '01'){
                 $identity_document_type_id = [6];
             }else{
@@ -854,13 +892,14 @@ class DocumentController extends Controller
         return $records;
     }
 
-    public function report_payments($month, $anulled)
+    public function report_payments(Request $request)
     {
-        $month_format = Carbon::parse($month)->format('m');
-        if($anulled == 'true') {
-           $records = Document::whereMonth('created_at', $month_format)->get();
+        // $month_format = Carbon::parse($month)->format('m');
+
+        if($request->anulled == 'true') {
+           $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->get();
         } else {
-            $records = Document::whereMonth('created_at', $month_format)->where('state_type_id', '!=', '11')->get();
+            $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->where('state_type_id', '!=', '11')->get();
         }
 
         $source =  $this->transformReportPayment( $records );
@@ -931,6 +970,173 @@ class DocumentController extends Controller
     public function searchExternalId(Request $request)
     {
         return response()->json(Document::where('external_id', $request->external_id)->first());
+    }
+
+    public function esc(Request $request)
+    {
+        $note_id=$request->id;
+        $data=$this->record($note_id);
+        $observation= $data->observation;
+        $number = $data->number;
+
+        $cocina=[];
+        $barra=[];
+        $imp_coc='';
+        $imp_bar='';
+        $printerTipoConexion1='';
+        $printerTipoConexion2='';
+        $printerRuta1='';
+        $printerRuta2='';
+        $config = Configuration::get();
+
+        foreach($config as $printers){
+            $imp_coc= $printers['PrinterNombre1'];
+            $imp_bar= $printers['PrinterNombre2'];
+            $printerTipoConexion1= $printers['PrinterTipoConexion1'];
+            $printerTipoConexion2= $printers['PrinterTipoConexion2'];
+            $printerRuta1= $printers['PrinterRuta1'];
+            $printerRuta2= $printers['PrinterRuta2'];
+        }
+
+        foreach ($data['items'] as $row) {
+            $categoria=Category::find($row->item->category_id);
+            if ($imp_coc != '' && $imp_coc != '-' &&  $categoria->printer==$imp_coc) {//COCINA
+                $data =[
+
+                    'quantity'=> $row->quantity,
+                    'printer' =>$row->printer,
+                    'description'=> $row->item->description
+
+                ];
+                array_push($cocina,$data);
+
+            }
+            else if ($imp_bar != '' && $imp_bar != '-' &&  $categoria->printer==$imp_bar) {//BARRA
+                $array=[
+                    'items'=>[
+                        'quantity'=> $row->quantity,
+                        'printer' =>$row->printer,
+                        'description'=> $row->item->description
+                    ]
+                ];
+                array_push($barra,$array);
+            }
+        }
+
+        if(!empty($cocina)){
+            $this->toPrintEsc($cocina,$number,$imp_coc,$printerTipoConexion1,$printerRuta1,$observation);
+        }
+        if(!empty($barra)){
+            $this->toPrintEsc($barra,$number,$imp_bar,$printerTipoConexion2,$printerRuta2,$observation);
+        }
+    }
+    public function toPrintEsc($data,$number,$printer,$tipo,$ruta,$observation)
+    {
+        //$logo = EscposImage::load("resources/rawbtlogo.png", false);
+        //$logo =  Storage::disk('tenant')->get(storage_path('public/uploads/logos/logo_20601411076.png'));
+        //$logo =EscposImage::load(public_path("storage/uploads/logos/aqpfact.jpg"));
+
+        /* Start the printer */
+
+        $connector = null;
+        if($tipo=="USB"){
+            $connector = new WindowsPrintConnector($printer);
+        }
+        else if($tipo=="RED"){
+            $connector = new NetworkPrintConnector($ruta, 9100);
+        }
+
+        /* Print a "Hello world" receipt" */
+        $printer = new Printer($connector);
+
+        /* Print top logo */
+//        $profile = CapabilityProfile::load("simple");
+//        if ($profile->getSupportsGraphics()) {
+//           $printer->graphics($logo);
+//        }
+//        if ($profile->getSupportsBitImageRaster() && !$profile->getSupportsGraphics()) {
+//            $printer->bitImage($logo);
+//        }
+
+        try {
+
+            $date = date('Y-m-d H:i:s A');
+
+            /* Name of shop */
+            $printer->feed();
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text("Pedido No. ".$number."\n");
+            $printer->feed();
+
+
+            /* Title of receipt */
+            $printer->selectPrintMode();
+            $printer->setEmphasis(true);
+            $printer->text($date."\n");
+            $printer->setEmphasis(false);
+
+            /* Items */
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->setEmphasis(true);
+
+//            foreach ($items as $item) {
+//                $printer->text($item->getAsString(32)); // for 58mm Font A
+//            }
+
+            $printer->feed();
+            $printer->setEmphasis(true);
+            $printer->text("CANT. DESCRIPCION\n");
+            $printer->setEmphasis(false);
+            $printer->text("-------------------------------\n");
+
+
+            foreach ($data as $row) {
+                $printer->text(' '.round($row['quantity'],2).'  '.substr($row['printer'],0,27).' '.$row['description']."\n");
+            }
+            // $printer->text($subtotal->getAsString(32));
+            $printer->feed();
+
+            /* Tax and total */
+            //$printer->text($tax->getAsString(32));
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            // $printer->text($total->getAsString(32));
+            $printer->selectPrintMode();
+
+            /* Footer */
+//            $printer->feed(2);
+//            $printer->setJustification(Printer::JUSTIFY_CENTER);
+//            $printer->text("Gracias campeón shopping\n");
+//            $printer->feed(2);
+            $printer->text("$observation\n");
+            $printer->feed(3);
+
+            /* Barcode Default look */
+
+//            $printer->barcode("ABC", Printer::BARCODE_CODE39);
+//            $printer->feed();
+//            $printer->feed();
+
+
+            // Demo that alignment QRcode is the same as text
+//            $printer2 = new Printer($connector); // dirty printer profile hack !!
+//            $printer2->setJustification(Printer::JUSTIFY_CENTER);
+//            $printer2->qrCode("https://rawbt.ru/mike42", Printer::QR_ECLEVEL_M, 8);
+//            $printer2->text("rawbt.ru/mike42\n");
+//            $printer2->setJustification();
+//            $printer2->feed();
+
+
+            /* Cut the receipt and open the cash drawer */
+            $printer->cut();
+            $printer->pulse();
+
+        } catch (Exception $e) {
+            $printer->close();
+            //echo $e->getMessage();
+        } finally {
+            $printer->close();
+        }
     }
 
 }

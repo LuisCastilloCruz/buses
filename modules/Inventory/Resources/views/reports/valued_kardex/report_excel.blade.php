@@ -50,12 +50,14 @@
                                 <th>#</th>
                                 <th>Producto</th>
                                 <th >Categoría</th>
+                                <th >Marca</th>
                                 <th class="text-center">Unidad</th>
                                 <th class="text-center">Unidades físicas vendidas</th>
                                 <th class="text-center">Costo unitario</th>
                                 <th class="text-center">Valor de ventas</th>
                                 <th class="text-center">Costo de producto</th>
                                 <th class="text-center">Unidad valorizada</th>
+                                <th >Stock</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,12 +66,18 @@
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{ $value['item_description'] }}</td>
                                 <td>{{ $value['category_description'] }}</td>
+                                <td>{{ $value['brand_description'] }}</td>
                                 <td  class="text-center">{{ $value['unit_type_id'] }}</td>
                                 <td  class="text-center">{{ $value['quantity_sale'] }}</td>
                                 <td class="text-center">{{ $value['purchase_unit_price'] }}</td>
                                 <td class="text-center">{{ $value['total_sales'] }}</td>
                                 <td class="text-center">{{ $value['item_cost'] }}</td>
                                 <td class="text-center">{{ $value['valued_unit'] }}</td>
+                                <td>
+                                    @foreach($value['warehouses'] as $item)
+                                    <span>{{$item['description']}}</span><br>
+                                    @endforeach
+                                </td>
 
                             </tr>
                             @endforeach

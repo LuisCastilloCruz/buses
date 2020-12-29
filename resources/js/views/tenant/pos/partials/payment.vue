@@ -299,7 +299,7 @@
 
 </style>
 
-<script>
+<script type="text/babel">
     import Keypress from 'vue-keypress'
 
     import CardBrandsForm from '../../card_brands/form.vue'
@@ -340,16 +340,20 @@
                 form_cash_document:{},
                 statusDocument:{},
                 payment_method_types:[],
-                payments:[]
+                payments:[],
+                business_turns: [],
             }
         },
         async created() {
-
             await this.initLStoPayment()
             await this.getTables()
             this.initFormPayment()
             this.inputAmount()
             this.form.payments = []
+            await this.$http.get(`/documents/tables`)
+                .then(response => {
+                    this.business_turns = response.data.business_turns
+                })
             this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
                 this.reloadDataCardBrands(card_brand_id)
             })
@@ -390,6 +394,8 @@
                 if(this.button_payment){
                     return this.$message.warning("El monto a pagar es menor al total")
                 }
+
+                if(this.locked_submit) return;
 
                 this.clickPayment()
 
@@ -788,6 +794,10 @@
             async clickPayment(){
                 // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
+                if(!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)){
+                   return this.$message.error('La fecha de emisión no coincide con la del día actual');
+                }
+
                 if(!this.form.series_id)
                 {
                    return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
@@ -808,6 +818,8 @@
                 }
 
                 this.loading_submit = true
+                this.locked_submit = true
+
                 await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                     if (response.data.success) {
 
@@ -816,13 +828,25 @@
                             // this.form_payment.sale_note_id = response.data.data.id;
                             this.form_cash_document.sale_note_id = response.data.data.id;
 
+                            if(this.isActiveBussinessTurn('restaurant')){
+                                this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.sale_note_id}`).then((response) => {
+                                    //algo más antes de imprimir en cocina y barra?
+                                })
+                            }
+
                         } else {
 
                             // this.form_payment.document_id = response.data.data.id;
                             this.form_cash_document.document_id = response.data.data.id;
                             this.statusDocument = response.data.data.response
+                            if(this.isActiveBussinessTurn('restaurant')){
+                                this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.document_id}`).then((response) => {
+                                    //algo más antes de imprimir en cocina y barra?
+                                })
+                            }
 
                         }
+
 
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;
@@ -846,6 +870,7 @@
                     }
                 }).then(() => {
                     this.loading_submit = false;
+                    this.locked_submit = false
                 });
             },
             saveCashDocument(){
@@ -887,6 +912,9 @@
                         this.filterSeries()
                     })
 
+            },
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
             },
         }
     }

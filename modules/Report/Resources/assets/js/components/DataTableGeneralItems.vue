@@ -3,20 +3,29 @@
         <div class="row">
 
             <div class="col-md-12 col-lg-12 col-xl-12 ">
-                  
-                <div class="row mt-2"> 
-                     
+
+                <div class="row mt-2">
+
+                        <div class="col-md-2" >
+                            <div class="form-group">
+                                <label class="control-label">Usuario</label>
+                                <el-input placeholder="Buscar"
+                                    v-model="form.user"
+                                    style="width: 100%;">
+                                </el-input>
+                            </div>
+                        </div>
+
                         <div class="col-md-3" >
                             <div class="form-group">
                                 <label class="control-label">Tipo</label>
-                                <el-select v-model="form.type" >
+                                <el-select v-model="form.type" @change="changeType">
                                     <el-option v-for="option in types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                             </div>
                         </div>
-                        
 
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="control-label">Periodo</label>
                             <el-select v-model="form.period" @change="changePeriod">
                                 <el-option key="month" value="month" label="Por mes"></el-option>
@@ -26,7 +35,7 @@
                             </el-select>
                         </div>
                         <template v-if="form.period === 'month' || form.period === 'between_months'">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="control-label">Mes de</label>
                                 <el-date-picker v-model="form.month_start" type="month"
                                                 @change="changeDisabledMonths"
@@ -57,7 +66,7 @@
                                                 value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                             </div>
                         </template>
-                        
+
                         <div class="col-md-3" >
                             <div class="form-group">
                                 <label class="control-label">Tipo de documento</label>
@@ -74,22 +83,65 @@
                                 </el-select>
                             </div>
                         </div> -->
-                        
-                        <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px"> 
+
+
+
+                        <div class="col-lg-5 col-md-5" >
+                            <div class="form-group">
+                                <label class="control-label">
+                                    {{(form.type == 'sale') ? 'Clientes':'Proveedores'}}
+                                </label>
+
+                                <el-select v-model="form.person_id" filterable remote  popper-class="el-select-customers"  clearable
+                                    placeholder="Nombre o número de documento"
+                                    :remote-method="searchRemotePersons"
+                                    :loading="loading_search">
+                                    <el-option v-for="option in persons" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5 col-md-5" >
+                            <div class="form-group">
+                                <label class="control-label">Productos
+                                </label>
+
+                                <el-select v-model="form.item_id" filterable remote  popper-class="el-select-customers"  clearable
+                                    placeholder="Código interno o nombre"
+                                    :remote-method="searchRemoteItems"
+                                    :loading="loading_search_items" >
+                                    <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="control-label">Plataforma</label>
+                                <el-select v-model="form.web_platform_id" clearable>
+                                    <el-option v-for="option in web_platforms" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
-                            
-                            <template v-if="records.length>0"> 
+
+                            <template v-if="records.length>0">
 
                                 <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
+                                <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
 
                             </template>
 
-                        </div>             
-                    
+                        </div>
+
                 </div>
                 <div class="row mt-1 mb-4">
-                    
-                </div> 
+
+                </div>
             </div>
 
 
@@ -101,7 +153,7 @@
                         </thead>
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
-                        </tbody> 
+                        </tbody>
                     </table>
                     <div>
                         <el-pagination
@@ -128,7 +180,7 @@
     import moment from 'moment'
     import queryString from 'query-string'
 
-    export default { 
+    export default {
         props: {
             resource: String,
         },
@@ -142,12 +194,12 @@
                 records: [],
                 headers: headers_token,
                 document_types: [],
-                pagination: {}, 
-                search: {}, 
-                totals: {}, 
+                pagination: {},
+                search: {},
+                totals: {},
                 establishment: null,
-                establishments: [],       
-                types: [{id:'sale', description: 'Venta'},{id:'purchase', description: 'Compra'}],       
+                establishments: [],
+                types: [{id:'sale', description: 'Venta'},{id:'purchase', description: 'Compra'}],
                 form: {},
                 pickerOptionsDates: {
                     disabledDate: (time) => {
@@ -161,6 +213,14 @@
                         return this.form.month_start > time
                     }
                 },
+                persons: [],
+                all_customers: [],
+                all_suppliers: [],
+                loading_search:false,
+                items: [],
+                all_items: [],
+                web_platforms: [],
+                loading_search_items:false,
             }
         },
         computed: {
@@ -171,39 +231,119 @@
                 this.getRecords()
             })
         },
-        async mounted () { 
+        async mounted () {
 
             await this.$http.get(`/${this.resource}/filter`)
-                .then(response => { 
+                .then(response => {
                     this.document_types = response.data.document_types;
+                    this.all_customers = response.data.customers
+                    this.all_suppliers = response.data.suppliers
+                    this.all_items = response.data.items
+                    this.web_platforms = response.data.web_platforms
                 });
 
+
+            await this.filterItems()
+            await this.filterPersons()
+            // await this.getTotals()
+            this.form.type_person = this.form.type == 'sale' ? 'customers':'suppliers'
+
         },
-        methods: {  
-            clickDownload(type) {                 
+        methods: {
+            searchRemoteItems(input) {
+
+                if (input.length > 0) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+
+                    this.$http.get(`/reports/data-table/items/?${parameters}`)
+                            .then(response => {
+                                this.items = response.data.items
+                                this.loading_search = false
+
+                                if(this.items.length == 0){
+                                    this.filterItems()
+                                }
+                            })
+                } else {
+                    this.filterItems()
+                }
+
+            },
+            filterItems() {
+                this.items = this.all_items
+            },
+            changeType(){
+                this.filterPersons()
+                this.$eventHub.$emit('typeTransaction', this.form.type)
+            },
+            searchRemotePersons(input) {
+
+                if (input.length > 0) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+                    this.form.type_person = this.form.type == 'sale' ? 'customers':'suppliers'
+
+                    this.$http.get(`/reports/data-table/persons/${this.form.type_person}?${parameters}`)
+                            .then(response => {
+                                this.persons = response.data.persons
+                                this.loading_search = false
+
+                                if(this.persons.length == 0){
+                                    this.filterPersons()
+                                }
+                            })
+                } else {
+                    this.filterPersons()
+                }
+
+            },
+            filterPersons() {
+                // this.persons = this.all_persons
+                this.form.person_id = null
+
+                if(this.form.type == 'sale'){
+                    this.persons = this.all_customers
+                    this.form.type_person = 'customers'
+                }else{
+                    this.persons = this.all_suppliers
+                    this.form.type_person = 'suppliers'
+                }
+
+            },
+            clickDownload(type) {
                 let query = queryString.stringify({
                     ...this.form
                 });
                 window.open(`/${this.resource}/${type}/?${query}`, '_blank');
             },
             initForm(){
- 
+
                 this.form = {
                     type: 'sale',
                     document_type_id:null,
+                    item_id: null,
                     period: 'month',
+                    user: null,
+                    person_id: null,
+                    web_platform_id: null,
+                    type_person:null,
                     date_start: moment().format('YYYY-MM-DD'),
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),
                     month_end: moment().format('YYYY-MM'),
                 }
 
-            },  
+            },
             customIndex(index) {
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
-            }, 
+            },
             async getRecordsByFilter(){
-                 
+
                 this.loading_submit = await true
                 await this.getRecords()
                 this.loading_submit = await false
@@ -226,7 +366,7 @@
                     ...this.form
                 })
             },
-            
+
             changeDisabledDates() {
                 if (this.form.date_end < this.form.date_start) {
                     this.form.date_end = this.form.date_start

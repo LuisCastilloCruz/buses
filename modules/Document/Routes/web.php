@@ -24,6 +24,9 @@ if($current_hostname) {
                 Route::get('search/item/{item}', 'DocumentController@searchItemById');
                 Route::get('consult_cdr/{document}', 'DocumentController@consultCdr');
 
+                Route::get('item-lots', 'DocumentController@searchLots');
+                Route::get('regularize-lots/{document_item_id}', 'DocumentController@regularizeLots');
+
             });
 
             Route::prefix('series-configurations')->group(function() {
@@ -41,9 +44,16 @@ if($current_hostname) {
                 Route::get('', 'ValidateDocumentController@index')->name('tenant.validate_documents.index')->middleware('tenant.internal.mode');
                 Route::get('records', 'ValidateDocumentController@records');
                 Route::get('data_table', 'ValidateDocumentController@data_table');
+                Route::post('regularize', 'ValidateDocumentController@regularize');
 
             });
 
+            Route::prefix('documents/regularize-shipping')->group(function() {
+                Route::get('', 'DocumentRegularizeShippingController@index')->name('tenant.documents.regularize_shipping');
+                Route::get('records', 'DocumentRegularizeShippingController@records');
+                Route::get('data_table', 'DocumentRegularizeShippingController@data_table');
+
+            });
         });
     });
 }

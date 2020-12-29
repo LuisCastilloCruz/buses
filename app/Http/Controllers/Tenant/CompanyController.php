@@ -71,6 +71,10 @@ class CompanyController extends Controller
 
             $file->storeAs(($type === 'img_firm') ? 'public/uploads/firms' : 'certificates', $name);
 
+            if (($type === 'fondo')) request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
+
+            $file->storeAs(($type === 'fondo') ? 'public/uploads/fondos' : 'certificates', $name);
+
 
             $company->$type = $name;
 

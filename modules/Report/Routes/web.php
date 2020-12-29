@@ -92,6 +92,7 @@ if($current_hostname) {
 
                 Route::get('general-items', 'ReportGeneralItemController@index')->name('tenant.reports.general_items.index');
                 Route::get('general-items/excel', 'ReportGeneralItemController@excel');
+                Route::get('general-items/pdf', 'ReportGeneralItemController@pdf');
                 Route::get('general-items/filter', 'ReportGeneralItemController@filter');
                 Route::get('general-items/records', 'ReportGeneralItemController@records');
 
@@ -103,9 +104,12 @@ if($current_hostname) {
 
                 Route::get('sales-consolidated', 'ReportSaleConsolidatedController@index')->name('tenant.reports.sales_consolidated.index');
                 Route::get('sales-consolidated/pdf', 'ReportSaleConsolidatedController@pdf');
+                Route::get('sales-consolidated/excel', 'ReportSaleConsolidatedController@excel');
                 Route::get('sales-consolidated/filter', 'ReportSaleConsolidatedController@filter');
                 Route::get('sales-consolidated/records', 'ReportSaleConsolidatedController@records');
                 Route::get('sales-consolidated/totals-by-item', 'ReportSaleConsolidatedController@totalsByItem');
+                Route::get('sales-consolidated/pdf-totals', 'ReportSaleConsolidatedController@pdfTotals');
+                Route::get('sales-consolidated/excel-totals', 'ReportSaleConsolidatedController@excelTotals');
 
 
                 Route::prefix('user-commissions')->group(function () {
@@ -115,6 +119,26 @@ if($current_hostname) {
                     Route::get('/excel', 'ReportUserCommissionController@excel')->name('tenant.reports.user_commissions.excel');
                     Route::get('/filter', 'ReportUserCommissionController@filter')->name('tenant.reports.user_commissions.filter');
                     Route::get('/records', 'ReportUserCommissionController@records')->name('tenant.reports.user_commissions.records');
+
+                });
+
+
+                Route::prefix('fixed-asset-purchases')->group(function () {
+
+                    Route::get('', 'ReportFixedAssetPurchaseController@index')->name('tenant.reports.fixed-asset-purchases.index');
+                    Route::get('pdf', 'ReportFixedAssetPurchaseController@pdf');
+                    Route::get('excel', 'ReportFixedAssetPurchaseController@excel');
+                    Route::get('filter', 'ReportFixedAssetPurchaseController@filter');
+                    Route::get('records', 'ReportFixedAssetPurchaseController@records');
+
+                });
+
+                Route::prefix('massive-downloads')->group(function () {
+
+                    Route::get('', 'ReportMassiveDownloadController@index')->name('tenant.reports.massive-downloads.index');
+                    Route::get('filter', 'ReportMassiveDownloadController@filter');
+                    Route::get('pdf', 'ReportMassiveDownloadController@pdf');
+                    Route::get('records', 'ReportMassiveDownloadController@records');
 
                 });
 

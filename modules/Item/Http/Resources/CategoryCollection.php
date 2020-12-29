@@ -19,6 +19,7 @@ class CategoryCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'name' => $row->name,
+                'printer' => $row->printer,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

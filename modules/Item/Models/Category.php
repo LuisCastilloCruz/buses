@@ -10,12 +10,11 @@ class Category extends ModelTenant
 
     protected $fillable = [ 
         'name',
+        'printer'
     ];
  
     public function items()
     {
         return $this->hasMany(Item::class);
     }
- 
-
 }

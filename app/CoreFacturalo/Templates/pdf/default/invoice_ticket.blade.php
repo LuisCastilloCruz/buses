@@ -158,6 +158,51 @@
             <td><p class="desc">{{ $document->detraction->pay_constancy}}</p></td>
         </tr>
         @endif
+
+
+        @if($invoice->operation_type_id == '1004')
+        <tr class="mt-2">
+            <td colspan="2"></td>
+        </tr>
+        <tr class="mt-2">
+            <td colspan="2">DETALLE - SERVICIOS DE TRANSPORTE DE CARGA</td>
+        </tr>
+        <tr>
+            <td class="align-top"><p class="desc">Ubigeo origen:</p></td>
+            <td><p class="desc">{{ $document->detraction->origin_location_id[2] }}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Dirección origen:</td>
+            <td><p class="desc">{{ $document->detraction->origin_address }}</td>
+        </tr>
+        <tr>
+            <td class="align-top"><p class="desc">Ubigeo destino:</p></td>
+            <td><p class="desc">{{ $document->detraction->delivery_location_id[2] }}</p></td>
+        </tr>
+        <tr>
+    
+            <td  class="align-top"><p class="desc">Dirección destino:</p></td>
+            <td><p class="desc">{{ $document->detraction->delivery_address }}</p></td>
+        </tr>
+        <tr>
+            <td class="align-top"><p class="desc">Valor referencial servicio de transporte:</p></td>
+            <td><p class="desc">{{ $document->detraction->reference_value_service }}</p></td>
+        </tr>
+        <tr>
+    
+            <td  class="align-top"><p class="desc">Valor referencia carga efectiva:</p></td>
+            <td><p class="desc">{{ $document->detraction->reference_value_effective_load }}</p></td>
+        </tr>
+        <tr>
+            <td class="align-top"><p class="desc">Valor referencial carga útil:</p></td>
+            <td><p class="desc">{{ $document->detraction->reference_value_payload }}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Detalle del viaje:</p></td>
+            <td><p class="desc">{{ $document->detraction->trip_detail }}</p></td>
+        </tr>
+        @endif
+
     @endif
 
     @if ($document->prepayments)
@@ -293,11 +338,16 @@
 
                  <br>
                  @inject('itemSet', 'App\Services\ItemSetService')
-
-                    {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
-
+                 @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                     {{$item}}<br>
+                 @endforeach
+                 {{-- {{join( "-", $itemSet->getItemsSet($row->item_id) )}} --}}
                 @endif
 
+                @if($document->has_prepayment)
+                    <br>
+                    *** Pago Anticipado ***
+                @endif
             </td>
             <td class="text-right desc-9 align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right desc-9 align-top">{{ number_format($row->total, 2) }}</td>

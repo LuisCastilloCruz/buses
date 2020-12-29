@@ -31,9 +31,11 @@ if($hostname) {
                 Route::get('unpaid', 'UnpaidController@index')->name('tenant.finances.unpaid.index');
                 // Route::post('unpaid', 'UnpaidController@unpaid');
                 Route::get('unpaid/filter', 'UnpaidController@filter');
-                Route::post('unpaid/records', 'UnpaidController@records');
+                // Route::post('unpaid/records', 'UnpaidController@records');
+                Route::get('unpaid/records', 'UnpaidController@records');
                 Route::get('unpaid/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
                 Route::get('unpaid/report-payment-method-days', 'UnpaidController@reportPaymentMethodDays');
+                Route::get('unpaid/pdf', 'UnpaidController@pdf');
 
                 Route::post('payment-file/upload', 'PaymentFileController@uploadAttached');
                 Route::get('payment-file/download-file/{filename}/{type}', 'PaymentFileController@download');
@@ -45,6 +47,7 @@ if($hostname) {
                 Route::get('to-pay/to-pay-all', 'ToPayController@toPayAll')->name('toPayAll');
                 Route::get('to-pay/to-pay', 'ToPayController@toPay');
                 Route::get('to-pay/report-payment-method-days', 'ToPayController@reportPaymentMethodDays');
+                Route::get('to-pay/pdf', 'ToPayController@pdf');
 
                 
                 Route::prefix('income')->group(function () {
@@ -61,6 +64,17 @@ if($hostname) {
                     Route::get('voided/{record}', 'IncomeController@voided');
 
                 });
+
+                
+                Route::prefix('movements')->group(function () {
+
+                    Route::get('', 'MovementController@index')->name('tenant.finances.movements.index');
+                    Route::get('pdf', 'MovementController@pdf');
+                    Route::get('excel', 'MovementController@excel');
+                    Route::get('records', 'MovementController@records');
+
+                });
+
             });
 
 

@@ -152,7 +152,9 @@ class QuotationController extends Controller
         return compact('customers');
     }
 
+
     public function tables() {
+
         $customers = $this->table('customers');
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
         $currency_types = CurrencyType::whereActive()->get();
@@ -163,10 +165,13 @@ class QuotationController extends Controller
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
+        $configuration = Configuration::select('destination_sale')->first();
 
-        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types',
+        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types', 'configuration',
                         'company', 'document_type_03_filter','payment_method_types', 'payment_destinations');
+
     }
+
 
     public function option_tables()
     {
@@ -520,6 +525,7 @@ class QuotationController extends Controller
             $payments     = $document->payments()->count() * 5;
             $discount_global = 0;
             $terms_condition = $document->terms_condition ? 15 : 0;
+            $contact = $document->contact ? 15 : 0;
 
             foreach ($document->items as $it) {
                 if ($it->discounts) {
@@ -548,6 +554,7 @@ class QuotationController extends Controller
                     $payments +
                     $total_exonerated +
                     $terms_condition +
+                    $contact +
                     $total_taxed],
                 'margin_top' => 2,
                 'margin_right' => 5,
@@ -681,10 +688,15 @@ class QuotationController extends Controller
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
 
-                $html_footer = $template->pdfFooter($base_template);
+                $html_footer = $template->pdfFooter($base_template,$this->quotation);
                 $html_footer_term_condition = ($document->terms_condition) ? $template->pdfFooterTermCondition($base_template, $document):"";
 
-                $pdf->SetHTMLFooter($html_footer_term_condition.$html_footer);
+                $html_footer_legend = "";
+                if($configuration->legend_footer){
+                    $html_footer_legend = $template->pdfFooterLegend($base_template, $this->quotation);
+                }
+
+                $pdf->SetHTMLFooter($html_footer_term_condition.$html_footer.$html_footer_legend);
             }
             //$html_footer = $template->pdfFooter();
             //$pdf->SetHTMLFooter($html_footer);

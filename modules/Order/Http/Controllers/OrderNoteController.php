@@ -24,6 +24,7 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Template;
+use Modules\Item\Models\Category;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
@@ -34,11 +35,25 @@ use App\Models\Tenant\PaymentMethodType;
 use Modules\Order\Models\OrderNote;
 use Modules\Order\Models\OrderNoteItem;
 use Modules\Order\Http\Resources\OrderNoteCollection;
+use Modules\Order\Http\Resources\OrderNoteDocumentCollection;
 use Modules\Order\Http\Resources\OrderNoteResource;
 use Modules\Order\Http\Resources\OrderNoteResource2;
 use Modules\Order\Http\Requests\OrderNoteRequest;
 use Modules\Order\Mail\OrderNoteEmail;
 use Modules\Finance\Traits\FinanceTrait;
+use App\Models\Tenant\Configuration;
+use App\Http\Controllers\Tenant\SaleNoteController;
+use App\CoreFacturalo\Requests\Inputs\DocumentInput;
+use App\CoreFacturalo\Requests\Web\Validation\DocumentValidation;
+use App\Http\Requests\Tenant\SaleNoteRequest;
+use App\Http\Requests\Tenant\DocumentRequest;
+use App\Http\Controllers\Tenant\DocumentController;
+use Mike42\Escpos\EscposImage;
+use Illuminate\Support\Facades\Storage;
+use Mike42\Escpos\CapabilityProfile;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 
 class OrderNoteController extends Controller
@@ -105,6 +120,59 @@ class OrderNoteController extends Controller
 
         return $records;
     }
+
+
+    public function documents(Request $request)
+    {
+
+        $records = OrderNote::doesntHave('documents')
+                            ->doesntHave('sale_notes')
+                            ->whereTypeUser()
+                            ->latest();
+
+        return new OrderNoteDocumentCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+
+    public function document_tables()
+    {
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id',$establishment->id)->get();
+        // $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+
+        return compact('series', 'establishment');
+    }
+
+
+    public function generateDocuments(Request $request) {
+
+        DB::connection('tenant')->transaction(function () use ($request) {
+
+            foreach ($request->documents as $row) {
+
+                if($row['document_type_id'] === "80"){
+
+                    app(SaleNoteController::class)->store(new SaleNoteRequest($row));
+
+                }else{
+
+                    $data_val = DocumentValidation::validation($row);
+
+                    app(DocumentController::class)->store(new DocumentRequest(DocumentInput::set($data_val)));
+
+                }
+
+            }
+
+        });
+
+        return [
+            'success' => true,
+            'message' => 'Comprobantes generados'
+        ];
+
+    }
+
 
     public function searchCustomers(Request $request)
     {
@@ -370,11 +438,12 @@ class OrderNoteController extends Controller
                     // ->with(['warehouses' => function($query) use($warehouse){
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
-                    ->get()->transform(function($row) {
+                    ->get()->transform(function($row) use($warehouse){
                     $full_description = $this->getFullDescription($row);
                     // $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
                         'id' => $row->id,
+                        'category_id'=> $row->category_id,
                         'full_description' => $full_description,
                         'description' => $row->description,
                         'currency_type_id' => $row->currency_type_id,
@@ -400,11 +469,12 @@ class OrderNoteController extends Controller
                                 'price_default' => $row->price_default,
                             ];
                         }),
-                        'warehouses' => collect($row->warehouses)->transform(function($row) {
+                        'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
                             return [
                                 'warehouse_id' => $row->warehouse->id,
                                 'warehouse_description' => $row->warehouse->description,
                                 'stock' => $row->stock,
+                                'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                             ];
                         }),
                         'lots' => collect($row->item_lots->where('has_sale', false))->transform(function($row) {
@@ -486,7 +556,8 @@ class OrderNoteController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->order_note->filename;
 
-        $base_template = config('tenant.pdf_template');
+        // $base_template = config('tenant.pdf_template');
+        $base_template = Configuration::first()->formats;
 
         $html = $template->pdf($base_template, "order_note", $company, $document, $format_pdf);
 
@@ -636,7 +707,7 @@ class OrderNoteController extends Controller
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
-                $html_footer = $template->pdfFooter($base_template);
+                $html_footer = $template->pdfFooter($base_template,$this->order_note);
                 $pdf->SetHTMLFooter($html_footer);
             }
             //$html_footer = $template->pdfFooter();
@@ -663,5 +734,168 @@ class OrderNoteController extends Controller
         return [
             'success' => true
         ];
+    }
+    public function esc(Request $request)
+    {
+        $note_id=$request->id;
+        $data=$this->record($note_id);
+        $observation= $data->observation;
+        $cocina=[];
+        $barra=[];
+        $imp_coc='';
+        $imp_bar='';
+        $printerTipoConexion1='';
+        $printerTipoConexion2='';
+        $printerRuta1='';
+        $printerRuta2='';
+        $config = Configuration::get();
+
+        foreach($config as $printers){
+            $imp_coc= $printers['PrinterNombre1'];
+            $imp_bar= $printers['PrinterNombre2'];
+            $printerTipoConexion1= $printers['PrinterTipoConexion1'];
+            $printerTipoConexion2= $printers['PrinterTipoConexion2'];
+            $printerRuta1= $printers['PrinterRuta1'];
+            $printerRuta2= $printers['PrinterRuta2'];
+        }
+
+        foreach ($data['items'] as $row) {
+            $categoria=Category::find($row->item->category_id);
+            if ($imp_coc != '' && $imp_coc != '-' &&  $categoria->printer==$imp_coc) {//COCINA
+                $data =[
+
+                    'quantity'=> $row->quantity,
+                    'printer' =>$row->printer,
+                    'description'=> $row->item->description
+
+                ];
+                array_push($cocina,$data);
+
+            }
+            else if ($imp_bar != '' && $imp_bar != '-' &&  $categoria->printer==$imp_bar) {//BARRA
+                $array=[
+                    'items'=>[
+                        'quantity'=> $row->quantity,
+                        'printer' =>$row->printer,
+                        'description'=> $row->item->description
+                    ]
+                ];
+                array_push($barra,$array);
+            }
+        }
+
+        if(!empty($cocina)){
+            $this->toPrintEsc($cocina,$note_id,$imp_coc,$printerTipoConexion1,$printerRuta1,$observation);
+        }
+        if(!empty($barra)){
+            $this->toPrintEsc($barra,$note_id,$imp_bar,$printerTipoConexion2,$printerRuta2,$observation);
+        }
+    }
+    public function toPrintEsc($data,$note_id,$printer,$tipo,$ruta,$observation)
+    {
+        //$logo = EscposImage::load("resources/rawbtlogo.png", false);
+        //$logo =  Storage::disk('tenant')->get(storage_path('public/uploads/logos/logo_20601411076.png'));
+        //$logo =EscposImage::load(public_path("storage/uploads/logos/aqpfact.jpg"));
+
+        /* Start the printer */
+
+        $connector = null;
+        if($tipo=="USB"){
+            $connector = new WindowsPrintConnector($printer);
+        }
+        else if($tipo=="RED"){
+            $connector = new NetworkPrintConnector($ruta, 9100);
+        }
+        /* Print a "Hello world" receipt" */
+        $printer = new Printer($connector);
+
+        /* Print top logo */
+//        $profile = CapabilityProfile::load("simple");
+//        if ($profile->getSupportsGraphics()) {
+//           $printer->graphics($logo);
+//        }
+//        if ($profile->getSupportsBitImageRaster() && !$profile->getSupportsGraphics()) {
+//            $printer->bitImage($logo);
+//        }
+
+        try {
+
+            $date = date('Y-m-d H:i:s A');
+
+            /* Name of shop */
+            $printer->feed();
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text("Pedido No. PD-".$note_id."\n");
+            $printer->feed();
+
+
+            /* Title of receipt */
+            $printer->selectPrintMode();
+            $printer->setEmphasis(true);
+            $printer->text($date."\n");
+            $printer->setEmphasis(false);
+
+            /* Items */
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->setEmphasis(true);
+
+//            foreach ($items as $item) {
+//                $printer->text($item->getAsString(32)); // for 58mm Font A
+//            }
+
+            $printer->feed();
+            $printer->setEmphasis(true);
+            $printer->text("CANT. DESCRIPCION\n");
+            $printer->setEmphasis(false);
+            $printer->text("-------------------------------\n");
+
+
+            foreach ($data as $row) {
+                $printer->text(' '.round($row['quantity'],2).'  '.substr($row['printer'],0,27).' '.$row['description']."\n");
+            }
+            // $printer->text($subtotal->getAsString(32));
+            $printer->feed();
+
+            /* Tax and total */
+            //$printer->text($tax->getAsString(32));
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            // $printer->text($total->getAsString(32));
+            $printer->selectPrintMode();
+
+            /* Footer */
+//            $printer->feed(2);
+//            $printer->setJustification(Printer::JUSTIFY_CENTER);
+//            $printer->text("Gracias campeón shopping\n");
+//            $printer->feed(2);
+            $printer->text("$observation\n");
+            $printer->feed(3);
+
+            /* Barcode Default look */
+
+//            $printer->barcode("ABC", Printer::BARCODE_CODE39);
+//            $printer->feed();
+//            $printer->feed();
+
+
+            // Demo that alignment QRcode is the same as text
+//            $printer2 = new Printer($connector); // dirty printer profile hack !!
+//            $printer2->setJustification(Printer::JUSTIFY_CENTER);
+//            $printer2->qrCode("https://rawbt.ru/mike42", Printer::QR_ECLEVEL_M, 8);
+//            $printer2->text("rawbt.ru/mike42\n");
+//            $printer2->setJustification();
+//            $printer2->feed();
+
+
+            /* Cut the receipt and open the cash drawer */
+            $printer->cut();
+            $printer->pulse();
+
+        } catch (Exception $e) {
+            $printer->close();
+            //echo $e->getMessage();
+        } finally {
+            $printer->close();
+        }
     }
 }

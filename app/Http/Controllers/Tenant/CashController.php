@@ -21,13 +21,18 @@ use Maatwebsite\Excel\Excel;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\PaymentMethodType;
+use Modules\Pos\Models\CashTransaction;
+use Modules\Finance\Traits\FinanceTrait;
+use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\SaleNoteItem;
-
-
+use App\Exports\CashProductExport;
 
 
 class CashController extends Controller
 {
+
+    use FinanceTrait;
+
     public function index()
     {
         return view('tenant.cash.index');
@@ -101,15 +106,23 @@ class CashController extends Controller
     public function store(CashRequest $request) {
 
         $id = $request->input('id');
-        $cash = Cash::firstOrNew(['id' => $id]);
-        $cash->fill($request->all());
 
-        if(!$id){
-            $cash->date_opening = date('Y-m-d');
-            $cash->time_opening = date('H:i:s');
-        }
+        DB::connection('tenant')->transaction(function () use ($id, $request) {
 
-        $cash->save();
+            $cash = Cash::firstOrNew(['id' => $id]);
+            $cash->fill($request->all());
+
+            if(!$id){
+                $cash->date_opening = date('Y-m-d');
+                $cash->time_opening = date('H:i:s');
+            }
+
+            $cash->save();
+
+            $this->createCashTransaction($cash, $request);
+
+        });
+
 
         return [
             'success' => true,
@@ -117,6 +130,27 @@ class CashController extends Controller
         ];
 
     }
+
+
+    public function createCashTransaction($cash, $request){
+
+        $this->destroyCashTransaction($cash);
+
+        $data = [
+            'date' => date('Y-m-d'),
+            'description' => 'Saldo inicial',
+            'payment_method_type_id' => '01',
+            'payment' => $request->beginning_balance,
+            'payment_destination_id' => 'cash',
+            'user_id' => $request->user_id,
+        ];
+
+        $cash_transaction = $cash->cash_transaction()->create($data);
+
+        $this->createGlobalPaymentTransaction($cash_transaction, $data);
+
+    }
+
 
     public function close($id) {
 
@@ -197,21 +231,41 @@ class CashController extends Controller
 
     public function destroy($id)
     {
-        $cash = Cash::findOrFail($id);
 
-        if($cash->global_destination->count() > 0){
+        $data = DB::connection('tenant')->transaction(function () use ($id) {
+
+            $cash = Cash::findOrFail($id);
+
+            if($cash->global_destination()->where('payment_type', '!=', CashTransaction::class)->count() > 0){
+                return [
+                    'success' => false,
+                    'message' => 'No puede eliminar la caja, tiene transacciones relacionadas'
+                ];
+            }
+
+            $this->destroyCashTransaction($cash);
+            $cash->delete();
+
             return [
-                'success' => false,
-                'message' => 'No puede eliminar la caja, tiene transacciones relacionadas'
+                'success' => true,
+                'message' => 'Caja eliminada con éxito'
             ];
+
+        });
+
+        return $data;
+
+    }
+
+
+    public function destroyCashTransaction($cash){
+
+        $ini_cash_transaction = $cash->cash_transaction;
+
+        if($ini_cash_transaction){
+            CashTransaction::find($ini_cash_transaction->id)->delete();
         }
 
-        $cash->delete();
-
-        return [
-            'success' => true,
-            'message' => 'Caja eliminada con éxito'
-        ];
     }
 
 

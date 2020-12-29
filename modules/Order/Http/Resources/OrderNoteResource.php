@@ -22,7 +22,8 @@ class OrderNoteResource extends JsonResource
             'external_id' => $this->external_id,  
             'identifier' => $this->identifier,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'), 
-            'order_note' => $order_note
+            'order_note' => $order_note,
+            'observation' => $this->observation
         ];
     }
 }

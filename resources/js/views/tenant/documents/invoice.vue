@@ -26,10 +26,10 @@
                                 <!-- <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
                                 <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox> -->
 
-                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeHasPrepayment">¿Es un pago anticipado?</el-checkbox>
-                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
+                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeHasPrepayment" class="full">¿Es un pago anticipado?</el-checkbox>
+                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment" class="full">Deducción de los pagos anticipados</el-checkbox>
 
-                                <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
+                                <!-- <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
                                         @change="changeAffectationTypePrepayment"
                                         active-color="#409EFF"
                                         inactive-color="#409EFF"
@@ -37,7 +37,19 @@
                                         inactive-text="Gravado"
                                         :active-value="20"
                                         :inactive-value="10">
-                                </el-switch>
+                                </el-switch> -->
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <el-select v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment" @change="changeAffectationTypePrepayment" class="border-left rounded-left border-info mb-2">
+                                            <el-option :key="10" :value="10" label="Gravado"></el-option>
+                                            <el-option :key="20" :value="20" label="Exonerado"></el-option>
+                                            <el-option :key="30" :value="30" label="Inafecto"></el-option>
+                                        </el-select>
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                </div>
+
 
                             </template>
                         </div>
@@ -69,7 +81,7 @@
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.operation_type_id}">
                                     <label class="control-label">Tipo Operación
-                                    <template v-if="form.operation_type_id == '1001' && has_data_detraction" >
+                                    <template v-if="(form.operation_type_id == '1001' || form.operation_type_id == '1004') && has_data_detraction" >
                                         <a href="#" @click.prevent="showDialogDocumentDetraction = true" class="text-center font-weight-bold text-info"> [+ Ver datos]</a>
                                     </template>
 
@@ -100,7 +112,7 @@
                             </div>
                         </div>
                         <div class="row mt-1">
-                            <div class="col-lg-6 pb-2">
+                            <div :class="seller_class">
                                 <div class="form-group" :class="{'has-danger': errors.customer_id}">
                                     <label class="control-label font-weight-bold text-info">
                                         Cliente
@@ -123,6 +135,14 @@
                                     <label class="control-label font-weight-bold text-info">Dirección</label>
                                     <el-select v-model="form.customer_address_id">
                                         <el-option v-for="option in customer_addresses" :key="option.id" :value="option.id" :label="option.address"></el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+                            <div v-if="typeUser == 'admin'" class="col-lg-2">
+                                <div class="form-group">
+                                    <label class="control-label">Vendedor</label>
+                                    <el-select v-model="form.seller_id">
+                                        <el-option v-for="option in sellers" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                     </el-select>
                                 </div>
                             </div>
@@ -163,7 +183,6 @@
                             </template>
                         </div>
 
-                        <template v-if="!is_client">
                             <!-- <div class="row mb-3" v-if="form.operation_type_id == '1001'">
                                 <div class="col-lg-4">
                                     <div class="form-group" >
@@ -195,64 +214,69 @@
                                 </div>
                             </div> -->
 
-                            <div class="row" >
-                                <div class="col-lg-8" v-if="!is_receivable">
-                                        <table>
-                                            <thead>
-                                                <tr width="100%">
-                                                    <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
-                                                    <template v-if="enabled_payments">
-                                                        <th v-if="form.payments.length>0" class="pb-2">Destino</th>
-                                                        <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
-                                                        <th v-if="form.payments.length>0" class="pb-2">Monto</th>
-                                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
-                                                    </template>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(row, index) in form.payments" :key="index">
+                        <div class="row" >
+                            <div class="col-lg-8" v-if="!is_receivable">
+                                    <table>
+                                        <thead>
+                                            <tr width="100%">
+                                                <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
+                                                <template v-if="enabled_payments">
+                                                    <th v-if="form.payments.length>0" class="pb-2">Destino
+                                                        <el-tooltip class="item" effect="dark" content="Aperture caja o cuentas bancarias" placement="top-start">
+                                                            <i class="fa fa-info-circle"></i>
+                                                        </el-tooltip>
+                                                    </th>
+                                                    <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
+                                                    <th v-if="form.payments.length>0" class="pb-2">Monto</th>
+                                                    <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                                </template>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(row, index) in form.payments" :key="index">
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(index)">
+                                                            <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <template v-if="enabled_payments">
                                                     <td>
                                                         <div class="form-group mb-2 mr-2">
-                                                            <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(index)">
-                                                                <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                            <el-select v-model="row.payment_destination_id" filterable >
+                                                                <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                <!-- <el-option v-for="option in payment_destinations" @change="changeDestinationSale(index)" :key="option.id" :value="option.id" :label="option.description"></el-option> -->
                                                             </el-select>
                                                         </div>
                                                     </td>
-                                                    <template v-if="enabled_payments">
-                                                        <td>
-                                                            <div class="form-group mb-2 mr-2">
-                                                                <el-select v-model="row.payment_destination_id" filterable >
-                                                                    <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                                </el-select>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group mb-2 mr-2"  >
-                                                                <el-input v-model="row.reference"></el-input>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group mb-2 mr-2" >
-                                                                <el-input v-model="row.payment"></el-input>
-                                                            </div>
-                                                        </td>
-                                                        <td class="series-table-actions text-center">
-                                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                                                <i class="fa fa-trash"></i>
-                                                            </button>
-                                                        </td>
-                                                    </template>
+                                                    <td>
+                                                        <div class="form-group mb-2 mr-2"  >
+                                                            <el-input v-model="row.reference"></el-input>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group mb-2 mr-2" >
+                                                            <el-input v-model="row.payment"></el-input>
+                                                        </div>
+                                                    </td>
+                                                    <td class="series-table-actions text-center">
+                                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </template>
 
-                                                    <br>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    <!-- <template v-else>
-                                        <el-checkbox v-model="enabled_payments" class=" font-weight-bold" @change="changeEnabledPayments">¿Habilitar pagos?</el-checkbox>
-                                    </template> -->
+                                                <br>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                <!-- <template v-else>
+                                    <el-checkbox v-model="enabled_payments" class=" font-weight-bold" @change="changeEnabledPayments">¿Habilitar pagos?</el-checkbox>
+                                </template> -->
 
 
-                                </div>
+                            </div>
                                 <!-- <div class="col-lg-4" v-if="form.operation_type_id == '1001'">
                                     <div class="form-group">
                                         <label class="control-label">N° Constancia de pago - detracción</label>
@@ -261,6 +285,7 @@
                                         </el-input>
                                     </div>
                                 </div> -->
+                            <template v-if="!is_client">
 
                                 <div class="col-lg-4" v-if="prepayment_deduction">
                                     <div class="form-group">
@@ -300,9 +325,9 @@
                                 <div class="col-lg-8 mt-2" v-if="isActiveBussinessTurn('transport')">
                                     <a href="#" @click.prevent="clickAddDocumentTransport" class="text-center font-weight-bold text-info">[+ Datos para transporte de pasajeros]</a>
                                 </div>
-                            </div>
+                            </template>
+                        </div>
 
-                        </template>
 
                         <div class="row mt-2">
                             <div class="col-md-12">
@@ -456,15 +481,16 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
+                                                <th width="5%">#</th>
+                                                <th width="30%" class="font-weight-bold">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
+                                                <th class="text-right font-weight-bold">Valor Unitario</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
                                                 <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -476,6 +502,7 @@
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.quantity"></el-input-number> </td> -->
 
+                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                                 <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_price)}}</td>
                                                 <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.unit_price"></el-input-number> </td> -->
 
@@ -489,7 +516,7 @@
 
                                                 </td>
                                             </tr>
-                                            <tr><td colspan="8"></td></tr>
+                                            <tr><td colspan="9"></td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -634,6 +661,7 @@
         <document-detraction
             :detraction="form.detraction"
             :total="form.total"
+            :operation-type-id="form.operation_type_id"
             :currency-type-id-active="form.currency_type_id"
             :exchange-rate-sale="form.exchange_rate_sale"
             :showDialog.sync="showDialogDocumentDetraction"
@@ -664,7 +692,7 @@
     import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
     import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
     import DocumentDetraction from './partials/detraction.vue'
-import moment from 'moment'
+    import moment from 'moment'
 
     export default {
         props: ['typeUser', 'configuration'],
@@ -703,6 +731,7 @@ import moment from 'moment'
                 form_payment: {},
                 document_types_guide: [],
                 customers: [],
+                sellers: [],
                 company: null,
                 document_type_03_filter: null,
                 operation_types: [],
@@ -732,6 +761,7 @@ import moment from 'moment'
                 form_cash_document: {},
                 enabled_payments: true,
                 readonly_date_of_due: false,
+                seller_class: 'col-lg-6 pb-2',
             }
         },
         async created() {
@@ -746,9 +776,10 @@ import moment from 'moment'
                     this.operation_types = response.data.operation_types
                     this.all_series = response.data.series
                     this.all_customers = response.data.customers
+                    this.sellers = response.data.sellers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
-                   this.payment_method_types = response.data.payment_method_types
+                    this.payment_method_types = response.data.payment_method_types
                     this.enabled_discount_global = response.data.enabled_discount_global
                     this.company = response.data.company;
                     this.user = response.data.user;
@@ -758,17 +789,21 @@ import moment from 'moment'
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
+                    this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
                     // this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
                     // this.all_detraction_types = response.data.detraction_types;
                     this.payment_destinations = response.data.payment_destinations
 
+                    this.seller_class = (this.user == 'admin')?'col-lg-4 pb-2':'col-lg-6 pb-2';
+
                     this.selectDocumentType()
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeDocumentType()
+                    this.changeDestinationSale()
                     this.changeCurrencyType()
                 })
             this.loading_form = true
@@ -784,7 +819,7 @@ import moment from 'moment'
                 return _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
             },
             inputAmountPrepayment(index){
-                
+
                 let prepayment = this.getPrepayment(index)
                 // console.log(prepayment)
 
@@ -792,12 +827,32 @@ import moment from 'moment'
 
                     this.form.prepayments[index].amount = prepayment.amount
                     this.$message.error('El monto debe ser menor o igual al del anticipo');
-                
+
                 }
 
                 this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * 1.18, 2) : this.form.prepayments[index].amount
 
                 this.changeTotalPrepayment()
+
+            },
+            changeDestinationSale() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    if(cash){
+
+                        this.form.payments[0].payment_destination_id = cash.id
+
+                    }else{
+
+                        this.form.payment_destination_id = this.payment_destinations[0].id
+                        this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
+                    }
+                    // console.log('log', this.form.payments[index].payment_destination_id)
+                    // console.log('aqui', this.payment_destinations[0].id)
+                }
 
             },
             changePaymentDestination(index){
@@ -833,7 +888,7 @@ import moment from 'moment'
                     this.enabled_payments = false
 
                 }else{
-                    
+
                     this.form.date_of_due = this.form.date_of_issue
                     this.readonly_date_of_due = false
                     this.form.payment_method_type_id = null
@@ -893,7 +948,21 @@ import moment from 'moment'
                     global_discount += parseFloat(item.amount)
                 })
 
-                let base = (this.form.affectation_type_prepayment == 10) ? parseFloat(this.form.total_taxed):parseFloat(this.form.total_exonerated)
+                // let base = (this.form.affectation_type_prepayment == 10) ? parseFloat(this.form.total_taxed):parseFloat(this.form.total_exonerated)
+                let base = 0
+
+                switch (this.form.affectation_type_prepayment) {
+                    case 10:
+                        base = parseFloat(this.form.total_taxed)
+                        break;
+                    case 20:
+                        base = parseFloat(this.form.total_exonerated)
+                        break;
+                    case 30:
+                        base = parseFloat(this.form.total_unaffected)
+                        break;
+                }
+
                 let amount = _.round(parseFloat(global_discount), 2)
                 let factor = _.round(amount/base, 4)
 
@@ -943,7 +1012,7 @@ import moment from 'moment'
 
                     }
 
-                }else{
+                }else if(this.form.affectation_type_prepayment == 20){
 
                     let exonerated_discount = _.find(this.form.discounts,{'discount_type_id':'05'})
 
@@ -967,6 +1036,40 @@ import moment from 'moment'
                     }else{
 
                         let position = this.form.discounts.indexOf(exonerated_discount);
+
+                        if(position > -1){
+
+                            this.form.discounts[position].base = base
+                            this.form.discounts[position].amount = amount
+                            this.form.discounts[position].factor = factor
+
+                        }
+
+                    }
+
+                }else if(this.form.affectation_type_prepayment == 30){
+
+                    let unaffected_discount = _.find(this.form.discounts,{'discount_type_id':'06'})
+
+                    this.form.total_discount =  _.round(amount,2)
+                    this.form.total_unaffected =  _.round(base - amount,2)
+                    this.form.total_value =  this.form.total_unaffected
+                    this.form.total =  this.form.total_value
+
+                    if(global_discount>0 && !unaffected_discount){
+
+                        // console.log("gl 0")
+                        this.form.discounts.push({
+                                discount_type_id: '06',
+                                description: 'Descuentos globales por anticipos inafectos',
+                                factor: factor,
+                                amount: amount,
+                                base: base
+                            })
+
+                    }else{
+
+                        let position = this.form.discounts.indexOf(unaffected_discount);
 
                         if(position > -1){
 
@@ -1025,12 +1128,12 @@ import moment from 'moment'
                     await this.getDocumentsPrepayment()
 
                 }
-                // else{
+                else{
 
                     // this.form.total_prepayment = 0
                     // await this.deletePrepaymentDiscount()
-
-                // }
+                    this.cleanValueATPrepayment()
+                }
 
             },
             setPendingAmount(){
@@ -1069,10 +1172,10 @@ import moment from 'moment'
 
                 let discount = await _.find(this.form.discounts, {'discount_type_id':'04'})
                 let discount_exonerated = await _.find(this.form.discounts, {'discount_type_id':'05'})
+                let discount_unaffected = await _.find(this.form.discounts, {'discount_type_id':'06'})
 
                 let pos = this.form.discounts.indexOf(discount)
                 if (pos > -1) {
-                    // console.log(' ya existe en la colección de verduras.');
                     this.form.discounts.splice(pos, 1)
                     this.changeTotalPrepayment()
                 }
@@ -1082,6 +1185,13 @@ import moment from 'moment'
                     this.form.discounts.splice(pos_exonerated, 1)
                     this.changeTotalPrepayment()
                 }
+
+                let pos_unaffected = this.form.discounts.indexOf(discount_unaffected)
+                if (pos_unaffected > -1) {
+                    this.form.discounts.splice(pos_unaffected, 1)
+                    this.changeTotalPrepayment()
+                }
+
             },
             getDocumentsPrepayment(){
                 this.$http.get(`/${this.resource}/prepayments/${this.form.affectation_type_prepayment}`).then((response) => {
@@ -1113,16 +1223,30 @@ import moment from 'moment'
 
             },
             clickAddPayment() {
+
                 this.form.payments.push({
                     id: null,
                     document_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:'cash',
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
-
                 });
+
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
@@ -1168,6 +1292,7 @@ import moment from 'moment'
                     establishment_id: null,
                     document_type_id: null,
                     series_id: null,
+                    seller_id: null,
                     number: '#',
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
@@ -1236,7 +1361,7 @@ import moment from 'moment'
                 if(!this.configuration.restrict_receipt_date){
                   this.datEmision = {}
                 }
-                
+
                 this.enabled_payments = true
                 this.readonly_date_of_due = false
             },
@@ -1253,13 +1378,17 @@ import moment from 'moment'
                 this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
                 this.selectDocumentType()
                 this.changeEstablishment()
                 this.changeDocumentType()
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
+                // this.changeDestinationSale()
+
             },
             async changeOperationType() {
+                this.form.customer_id = null
                 await this.filterCustomers();
                 await this.setDataDetraction();
             },
@@ -1276,6 +1405,13 @@ import moment from 'moment'
                     // await this.filterDetractionTypes();
                     let legend = await _.find(this.form.legends,{'code':'2006'})
                     if(!legend) this.form.legends.push({code:'2006', value:'Operación sujeta a detracción'})
+                    this.form.detraction.bank_account = this.company.detraction_account
+
+                }else if(this.form.operation_type_id === '1004'){
+
+                    this.showDialogDocumentDetraction = true
+                    let legend = await _.find(this.form.legends,{'code':'2006'})
+                    if(!legend) this.form.legends.push({code:'2006', value:'Operación Sujeta a Detracción - Servicios de Transporte - Carga'})
                     this.form.detraction.bank_account = this.company.detraction_account
 
                 }else{
@@ -1298,15 +1434,16 @@ import moment from 'moment'
             },
             validateDetraction(){
 
-                if(this.form.operation_type_id === '1001'){
+                if(['1001', '1004'].includes(this.form.operation_type_id)){
 
                     let detraction = this.form.detraction
 
                     let tot = (this.form.currency_type_id == 'PEN') ? this.form.total:(this.form.total * this.form.exchange_rate_sale)
                     // console.log(tot)
+                    let total_restriction = (this.form.operation_type_id == '1001') ? 700 : 400
 
-                    if(tot <= 700)
-                        return {success:false, message:'El importe de la operación debe ser mayor a S/ 700.00 o equivalente en USD'}
+                    if(tot <= total_restriction)
+                        return {success:false, message:`El importe de la operación debe ser mayor a S/ ${total_restriction}.00 o equivalente en USD`}
 
                     if(!detraction.detraction_type_id)
                         return {success:false, message:'El campo bien o servicio sujeto a detracción es obligatorio'}
@@ -1328,6 +1465,21 @@ import moment from 'moment'
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
                 this.filterSeries()
+                this.selectDefaultCustomer()
+            },
+            async selectDefaultCustomer(){
+
+                if(this.establishment.customer_id){
+
+                    await this.$http.get(`/${this.resource}/search/customer/${this.establishment.customer_id}`).then((response) => {
+                        this.all_customers = response.data.customers
+                    })
+
+                    await this.filterCustomers()
+                    this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
+
+                }
+
             },
             changeDocumentType() {
                 this.filterSeries();
@@ -1364,7 +1516,10 @@ import moment from 'moment'
             },
             filterCustomers() {
                 // this.form.customer_id = null
-                if(this.form.operation_type_id === '0101' || this.form.operation_type_id === '1001') {
+                // if(this.form.operation_type_id === '0101' || this.form.operation_type_id === '1001') {
+
+                if (['0101', '1001', '1004'].includes(this.form.operation_type_id)) {
+
                     if(this.form.document_type_id === '01') {
                         this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
                     } else {
@@ -1374,6 +1529,7 @@ import moment from 'moment'
                             this.customers = this.all_customers
                         }
                     }
+
                 } else {
                     this.customers = this.all_customers
                 }
@@ -1459,6 +1615,18 @@ import moment from 'moment'
                     }
                     total_value += parseFloat(row.total_value)
                     total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+
+                    if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
+
+                        let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
+                        let total_value_partial = unit_value * row.quantity
+                        row.total_taxes = row.total_value - total_value_partial
+                        row.total_igv = row.total_value - total_value_partial
+                        row.total_base_igv = total_value_partial
+                        total_value -= row.total_value
+
+                    }
+
                 });
 
                 this.form.total_exportation = _.round(total_exportation, 2)
@@ -1479,7 +1647,7 @@ import moment from 'moment'
                 if(this.prepayment_deduction)
                     this.discountGlobalPrepayment()
 
-                if(this.form.operation_type_id === '1001')
+                if(['1001', '1004'].includes(this.form.operation_type_id))
                     this.changeDetractionType()
 
                 this.setTotalDefaultPayment()
@@ -1577,6 +1745,23 @@ import moment from 'moment'
                     message: 'Los items deben tener tipo de afectación igual al seleccionado en el anticipo'
                 }
             },
+            validatePaymentDestination(){
+
+                let error_by_item = 0
+
+                this.form.payments.forEach((item)=>{
+
+                    if(!['05', '08', '09'].includes(item.payment_method_type_id)){
+                        if(item.payment_destination_id == null) error_by_item++;
+                    }
+
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                }
+
+            },
             async submit() {
 
                 if(this.form.has_prepayment || this.prepayment_deduction){
@@ -1593,6 +1778,13 @@ import moment from 'moment'
                     if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
                         return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                     }
+
+                    let validate_payment_destination = await this.validatePaymentDestination()
+
+                    if(validate_payment_destination.error_by_item > 0) {
+                        return this.$message.error('El destino del pago es obligatorio');
+                    }
+
                 }
 
                 await this.deleteInitGuides()
@@ -1620,6 +1812,8 @@ import moment from 'moment'
                         this.saveCashDocument();
                     }
                     else {
+                        alert("Ocurrió un error en el registro; probablemente no tiene el perfil para enviar a SUNAT o ya no tiene stock en uno o varios de los productos que está intentando vender.  Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.");
+                        this.loading_submit = false;
                         this.$message.error(response.data.message);
                     }
                 }).catch(error => {
