@@ -120,14 +120,14 @@ class PleController extends Controller
        {
             return Purchase::query()
                 ->whereBetween('date_of_issue', [$d_start, $d_end])
-                ->whereIn('document_type_id', ['01', '03','07','08'])
+                ->whereIn('document_type_id', ['01', '03','07','08','04','02','14'])
                 ->whereIn('currency_type_id', ['PEN','USD'])
                 ->orderBy('series')
                 ->orderBy('number')
                 ->get();
 
        }
-       else if($type=='080200') // compras
+       else if($type=='080200') // compras ND
        {
             return Purchase::query()
                 ->whereBetween('date_of_issue', [$d_start, $d_end])
@@ -234,15 +234,15 @@ class PleController extends Controller
                 'col_20' =>($estado =='11') ? '' : $total_no_grabado,
                 'col_21' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '', 
                 'col_22' =>'',
-                'col_23' =>($estado =='11' ) ? '' : $total,
-                'col_24' =>($estado =='11' ) ? '' : $row->currency_type_id,
-                'col_25' =>($tc <1 || $estado =='11' || $row->currency_type_id =='PEN') ? '' : $tc,
-                'col_26' =>$fechaMod,
-                'col_27' =>$tipoMod,
-                'col_28' =>$seriesMod,
-                'col_29' =>'',
-                'col_30' =>$numberMod,
-                'col_31' =>'',
+                'col_23' =>'',
+                'col_24' =>($estado =='11' ) ? '' : $total,
+                'col_25' =>($estado =='11' ) ? '' : $row->currency_type_id,
+                'col_26' =>($tc <1 || $estado =='11' || $row->currency_type_id =='PEN') ? '' : $tc,
+                'col_27' =>$fechaMod,
+                'col_28' =>$tipoMod,
+                'col_29' =>$seriesMod,
+                'col_30' =>'',
+                'col_31' =>$numberMod,
                 'col_32' =>'',
                 'col_33' =>'',
                 'col_34' =>'',
@@ -252,8 +252,9 @@ class PleController extends Controller
                 'col_38' =>'',
                 'col_39' =>'',
                 'col_40' =>'',
-                'col_41' =>($estado=='11') ? '2' : '1',
-                'col_42' =>''
+                'col_41' =>'',
+                'col_42' =>($estado=='11') ? '2' : '1',
+                'col_43' =>''
             ];
 
             
@@ -411,6 +412,7 @@ class PleController extends Controller
                 $tc    = $row->exchange_rate_sale;
                 $total_taxed = $row->total_taxed;
                 $total_igv =$row->total_igv;
+                $total_icbper=$row->total_plastic_bag_taxes;
                 $total_exportation = $row->total_exportation;
                 $total_exonerated  = $row->total_exonerated;
                 $total_unaffected  = $row->total_unaffected;
@@ -471,19 +473,20 @@ class PleController extends Controller
                     'col_20' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '', 
                     'col_21' =>'',
                     'col_22' =>'',
-                    'col_23' =>'',
-                    'col_24' =>($estado =='11' ) ? '' : $total,
-                    'col_25' =>($estado =='11' || $row->currency_type_id =='PEN') ? '' : $row->currency_type_id,
-                    'col_26' =>($tc <1 || $estado =='11' || $row->currency_type_id =='PEN') ? '' : $tc,
-                    'col_27' =>$fechaMod,
-                    'col_28' =>$tipoMod,
-                    'col_29' =>$seriesMod,
-                    'col_30' =>$numberMod,
-                    'col_31' =>'',
+                    'col_23' =>'',//ICBPER total_plastic_bag_taxes  como no es obligatorio, solo s epuso la columna vacío
+                    'col_24' =>'',
+                    'col_25' =>($estado =='11' ) ? '' : $total,
+                    'col_26' =>($estado =='11' || $row->currency_type_id =='PEN') ? '' : $row->currency_type_id,
+                    'col_27' =>($tc <1 || $estado =='11' || $row->currency_type_id =='PEN') ? '' : $tc,
+                    'col_28' =>$fechaMod,
+                    'col_29' =>$tipoMod,
+                    'col_30' =>$seriesMod,
+                    'col_31' =>$numberMod,
                     'col_32' =>'',
                     'col_33' =>'',
-                    'col_34' =>($estado=='11') ? '2' : '1',
-                    'col_35' =>''
+                    'col_34' =>'',
+                    'col_35' =>($estado=='11') ? '2' : '1',
+                    'col_36' =>''
                 ];
 
             }
