@@ -267,7 +267,7 @@ class Facturalo
         $template = new Template();
         $pdf = new Mpdf();
 
-        $format_pdf = $this->actions['format_pdf'];
+        $format_pdf = $this->actions['format_pdf'] ?? null;
 
         $this->document = ($document != null) ? $document : $this->document;
         $format_pdf = ($format != null) ? $format : $format_pdf;
@@ -288,6 +288,12 @@ class Facturalo
             $pdf_margin_right = 5;
             $pdf_margin_bottom = 5;
             $pdf_margin_left = 5;
+        }
+        if ($base_pdf_template === 'blank' && in_array($this->document->document_type_id, ['09'])) {
+            $pdf_margin_top = 15;
+            $pdf_margin_right = 5;
+            $pdf_margin_bottom = 15;
+            $pdf_margin_left = 14;
         }
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
@@ -411,19 +417,19 @@ class Facturalo
 
 
             $height = ($quantity_rows * 8) +
-                    ($discount_global * 3) +
-                    $company_name +
-                    $company_address +
-                    $company_number +
-                    $customer_name +
-                    $customer_address +
-                    $p_order +
-                    $legends +
-                    $total_exportation +
-                    $total_free +
-                    $total_unaffected +
-                    $total_exonerated +
-                    $total_taxed;
+                ($discount_global * 3) +
+                $company_name +
+                $company_address +
+                $company_number +
+                $customer_name +
+                $customer_address +
+                $p_order +
+                $legends +
+                $total_exportation +
+                $total_free +
+                $total_unaffected +
+                $total_exonerated +
+                $total_taxed;
             $diferencia = 148 - (float)$height;
 
             $pdf = new Mpdf([
@@ -431,7 +437,7 @@ class Facturalo
                 'format' => [
                     210,
                     $diferencia + $height
-                    ],
+                ],
                 'margin_top' => 2,
                 'margin_right' => 5,
                 'margin_bottom' => 0,
@@ -444,6 +450,10 @@ class Facturalo
             if ($base_pdf_template === 'brand') {
                 $pdf_margin_top = 93.7;
                 $pdf_margin_bottom = 74;
+            }
+            if ($base_pdf_template === 'blank' && in_array($this->document->document_type_id, ['09'])) {
+                $pdf_margin_top = 110;
+                $pdf_margin_bottom = 125;
             }
 
             $pdf_font_regular = config('tenant.pdf_name_regular');
@@ -459,18 +469,18 @@ class Facturalo
                 $pdf = new Mpdf([
                     'fontDir' => array_merge($fontDirs, [
                         app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                                 DIRECTORY_SEPARATOR.'pdf'.
-                                                 DIRECTORY_SEPARATOR.$base_pdf_template.
-                                                 DIRECTORY_SEPARATOR.'font')
+                            DIRECTORY_SEPARATOR.'pdf'.
+                            DIRECTORY_SEPARATOR.$base_pdf_template.
+                            DIRECTORY_SEPARATOR.'font')
                     ]),
                     'fontdata' => $fontData + [
-                        'custom_bold' => [
-                            'R' => $pdf_font_bold.'.ttf',
+                            'custom_bold' => [
+                                'R' => $pdf_font_bold.'.ttf',
+                            ],
+                            'custom_regular' => [
+                                'R' => $pdf_font_regular.'.ttf',
+                            ],
                         ],
-                        'custom_regular' => [
-                            'R' => $pdf_font_regular.'.ttf',
-                        ],
-                    ],
                     'margin_top' => $pdf_margin_top,
                     'margin_right' => $pdf_margin_right,
                     'margin_bottom' => $pdf_margin_bottom,
@@ -488,9 +498,9 @@ class Facturalo
         }
 
         $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                             DIRECTORY_SEPARATOR.'pdf'.
-                                             DIRECTORY_SEPARATOR.$base_pdf_template.
-                                             DIRECTORY_SEPARATOR.'style.css');
+            DIRECTORY_SEPARATOR.'pdf'.
+            DIRECTORY_SEPARATOR.$base_pdf_template.
+            DIRECTORY_SEPARATOR.'style.css');
 
         $stylesheet = file_get_contents($path_css);
 
@@ -516,6 +526,15 @@ class Facturalo
             }
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);
+        }
+
+        if ($base_pdf_template === 'blank' && in_array($this->document->document_type_id, ['09'])) {
+
+            $html_header = $template->pdfHeader($base_pdf_template, $this->company, $this->document);
+            $pdf->SetHTMLHeader($html_header);
+
+            $html_footer_blank = $template->pdfFooterBlank($base_pdf_template, $this->document);
+            $pdf->SetHTMLFooter($html_footer_blank);
         }
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
@@ -742,7 +761,7 @@ class Facturalo
         $consultCdrService->setClient($this->wsClient);
         $consultCdrService->setCodeProvider(new XmlErrorCodeProvider());
         $res = $consultCdrService->getStatusCdr($this->company->number, $this->document->document_type_id,
-                                                $this->document->series, $this->document->number);
+            $this->document->series, $this->document->number);
 
         if(!$res->isSuccess()) {
             throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
