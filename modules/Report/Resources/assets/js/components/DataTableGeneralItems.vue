@@ -86,7 +86,7 @@
 
 
 
-                        <div class="col-lg-5 col-md-5" >
+                        <div class="col-lg-4 col-md-6" >
                             <div class="form-group">
                                 <label class="control-label">
                                     {{(form.type == 'sale') ? 'Clientes':'Proveedores'}}
@@ -102,7 +102,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-5 col-md-5" >
+                        <div class="col-lg-4 col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Productos
                                 </label>
@@ -112,6 +112,18 @@
                                     :remote-method="searchRemoteItems"
                                     :loading="loading_search_items" >
                                     <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Marca
+                                </label>
+
+                                <el-select v-model="form.brand_id" filterable  popper-class="el-select-customers"  clearable
+                                    placeholder="Nombre de la marca">
+                                    <el-option v-for="option in brands" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                 </el-select>
 
                             </div>
@@ -221,6 +233,7 @@
                 all_items: [],
                 web_platforms: [],
                 loading_search_items:false,
+                brands: []
             }
         },
         computed: {
@@ -240,6 +253,7 @@
                     this.all_suppliers = response.data.suppliers
                     this.all_items = response.data.items
                     this.web_platforms = response.data.web_platforms
+                    this.brands = response.data.brands
                 });
 
 
@@ -331,6 +345,7 @@
                     user: null,
                     person_id: null,
                     web_platform_id: null,
+                    brand_id: null,
                     type_person:null,
                     date_start: moment().format('YYYY-MM-DD'),
                     date_end: moment().format('YYYY-MM-DD'),

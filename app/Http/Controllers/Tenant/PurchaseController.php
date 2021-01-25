@@ -29,6 +29,10 @@ use App\Http\Requests\Tenant\PurchaseImportRequest;
 use Illuminate\Support\Str;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\PaymentMethodType;
+use Modules\Item\Models\Category;
+use Modules\Item\Http\Requests\CategoryRequest;
+use Modules\Item\Http\Requests\BrandRequest;
+use Modules\Item\Models\Brand;
 use Carbon\Carbon;
 use Modules\Inventory\Models\Warehouse;
 use App\Models\Tenant\InventoryKardex;
@@ -545,7 +549,7 @@ class PurchaseController extends Controller
     }
 
 
-
+    
     public function searchItems(Request $request)
     {
 
@@ -597,7 +601,7 @@ class PurchaseController extends Controller
 
     }
 
-
+    
     public function searchItemById($id)
     {
 
@@ -799,6 +803,34 @@ class PurchaseController extends Controller
     }
 
 
+    public function storeCategories(CategoryRequest $request)
+    {
+        $id = $request->input('id');
+        $category = Category::firstOrNew(['id' => $id]);
+        $category->fill($request->all());
+        $category->save();
+
+
+        return [
+            'success' => true,
+            'message' => ($id)?'Categoría editada con éxito':'Categoría registrada con éxito',
+            'data' => $category
+
+        ];
+    }
+    public function storeBrands(BrandRequest $request){
+        $id = $request->input('id');
+        $brand = Brand::firstOrNew(['id' => $id]);
+        $brand->fill($request->all());
+        $brand->save();
+
+
+        return [
+            'success' => true,
+            'message' => ($id)?'Marca editada con éxito':'Marca registrada con éxito',
+            'data' => $brand
+        ];
+    }
     public function getPersons($type){
 
         $persons = Person::whereType($type)->orderBy('name')->take(20)->get()->transform(function($row) {

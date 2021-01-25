@@ -629,6 +629,7 @@ p {
 .encabezado tr th{
   font-size: 11px !important;
   padding: 3px;
+    border: 0;
 }
 .client-aqp tr td{
   font-size: 10px !important;

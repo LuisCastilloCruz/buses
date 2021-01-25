@@ -145,7 +145,9 @@ class QuotationController extends Controller
                                     'name' => $row->name,
                                     'number' => $row->number,
                                     'identity_document_type_id' => $row->identity_document_type_id,
-                                    'identity_document_type_code' => $row->identity_document_type->code
+                                    'identity_document_type_code' => $row->identity_document_type->code,
+                                    'addresses' => $row->addresses,
+                                    'address' =>  $row->address
                                 ];
                             });
 
@@ -224,7 +226,6 @@ class QuotationController extends Controller
     }
 
     public function store(QuotationRequest $request) {
-
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
@@ -258,14 +259,15 @@ class QuotationController extends Controller
          DB::connection('tenant')->transaction(function () use ($request) {
            // $data = $this->mergeData($request);
            // return $request['id'];
-           $configuration = Configuration::select('terms_condition')->first();
-           $request['terms_condition'] = $this->getTermsCondition();
+            $configuration = Configuration::select('terms_condition')->first();
+            $request['terms_condition'] = $this->getTermsCondition();
 
-           $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
-           $this->quotation->fill($request->all());
-           $this->quotation->items()->delete();
+            $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
+            $this->quotation->fill($request->all());
+            $this->quotation->customer = PersonInput::set($request['customer_id'], isset($request['customer_address_id']) ? $request['customer_address_id']: null  );
+            $this->quotation->items()->delete();
 
-           $this->deleteAllPayments($this->quotation->payments);
+            $this->deleteAllPayments($this->quotation->payments);
 
             foreach ($request['items'] as $row) {
 
@@ -345,7 +347,7 @@ class QuotationController extends Controller
         $values = [
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
-            'customer' => PersonInput::set($inputs['customer_id']),
+            'customer' => PersonInput::set($inputs['customer_id'], isset($inputs['customer_address_id']) ? $inputs['customer_address_id']: null  ),
             'establishment' => EstablishmentInput::set($inputs['establishment_id']),
             'soap_type_id' => $this->company->soap_type_id,
             'state_type_id' => '01'
@@ -379,7 +381,9 @@ class QuotationController extends Controller
                         'name' => $row->name,
                         'number' => $row->number,
                         'identity_document_type_id' => $row->identity_document_type_id,
-                        'identity_document_type_code' => $row->identity_document_type->code
+                        'identity_document_type_code' => $row->identity_document_type->code,
+                        'addresses' => $row->addresses,
+                        'address' =>  $row->address
                     ];
                 });
                 return $customers;
@@ -394,13 +398,14 @@ class QuotationController extends Controller
                     // ->with(['warehouses' => function($query) use($warehouse){
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
-                    ->get()->transform(function($row) {
+                    ->take(20)->get()->transform(function($row) {
                     $full_description = $this->getFullDescription($row);
                     // $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
                         'id' => $row->id,
                         'full_description' => $full_description,
                         'description' => $row->description,
+                        'model' => $row->model,
                         'currency_type_id' => $row->currency_type_id,
                         'currency_type_symbol' => $row->currency_type->symbol,
                         'sale_unit_price' => $row->sale_unit_price,
@@ -442,6 +447,121 @@ class QuotationController extends Controller
                 break;
         }
     }
+
+
+
+    public function searchItems(Request $request)
+    {
+
+
+        $items = Item::orderBy('description')
+                        ->where('description','like', "%{$request->input}%")
+                        ->orWhere('internal_id','like', "%{$request->input}%")
+                        ->orWhereHas('category', function($query) use($request) {
+                            $query->where('name', 'like', '%' . $request->input . '%');
+                        })
+                        ->orWhereHas('brand', function($query) use($request) {
+                            $query->where('name', 'like', '%' . $request->input . '%');
+                        })
+                        ->whereIsActive()
+                        ->get()
+                        ->transform(function($row) {
+
+                            $full_description = $this->getFullDescription($row);
+
+                                return [
+                                    'id' => $row->id,
+                                    'full_description' => $full_description,
+                                    'description' => $row->description,
+                                    'currency_type_id' => $row->currency_type_id,
+                                    'currency_type_symbol' => $row->currency_type->symbol,
+                                    'sale_unit_price' => $row->sale_unit_price,
+                                    'purchase_unit_price' => $row->purchase_unit_price,
+                                    'unit_type_id' => $row->unit_type_id,
+                                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                                    'is_set' => (bool) $row->is_set,
+                                    'has_igv' => (bool) $row->has_igv,
+                                    'calculate_quantity' => (bool) $row->calculate_quantity,
+                                    'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                                        return [
+                                            'id' => $row->id,
+                                            'description' => "{$row->description}",
+                                            'item_id' => $row->item_id,
+                                            'unit_type_id' => $row->unit_type_id,
+                                            'quantity_unit' => $row->quantity_unit,
+                                            'price1' => $row->price1,
+                                            'price2' => $row->price2,
+                                            'price3' => $row->price3,
+                                            'price_default' => $row->price_default,
+                                        ];
+                                    }),
+                                    'warehouses' => collect($row->warehouses)->transform(function($row) {
+                                        return [
+                                            'warehouse_id' => $row->warehouse->id,
+                                            'warehouse_description' => $row->warehouse->description,
+                                            'stock' => $row->stock,
+                                        ];
+                                    })
+                                ];
+                        });
+
+        return compact('items');
+
+    }
+
+
+    public function searchItemById($id)
+    {
+
+        $items = Item::where('id', $id)
+                        ->whereIsActive()
+                        ->get()
+                        ->transform(function($row) {
+
+                            $full_description = $this->getFullDescription($row);
+
+                                return [
+                                    'id' => $row->id,
+                                    'full_description' => $full_description,
+                                    'description' => $row->description,
+                                    'currency_type_id' => $row->currency_type_id,
+                                    'currency_type_symbol' => $row->currency_type->symbol,
+                                    'sale_unit_price' => $row->sale_unit_price,
+                                    'purchase_unit_price' => $row->purchase_unit_price,
+                                    'unit_type_id' => $row->unit_type_id,
+                                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                                    'is_set' => (bool) $row->is_set,
+                                    'has_igv' => (bool) $row->has_igv,
+                                    'calculate_quantity' => (bool) $row->calculate_quantity,
+                                    'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                                        return [
+                                            'id' => $row->id,
+                                            'description' => "{$row->description}",
+                                            'item_id' => $row->item_id,
+                                            'unit_type_id' => $row->unit_type_id,
+                                            'quantity_unit' => $row->quantity_unit,
+                                            'price1' => $row->price1,
+                                            'price2' => $row->price2,
+                                            'price3' => $row->price3,
+                                            'price_default' => $row->price_default,
+                                        ];
+                                    }),
+                                    'warehouses' => collect($row->warehouses)->transform(function($row) {
+                                        return [
+                                            'warehouse_id' => $row->warehouse->id,
+                                            'warehouse_description' => $row->warehouse->description,
+                                            'stock' => $row->stock,
+                                        ];
+                                    })
+                                ];
+                        });
+
+        return compact('items');
+
+    }
+
 
     public function searchCustomerById($id)
     {

@@ -117,6 +117,94 @@
             </td>
         </tr>
     @endif
+
+    @if ($document->reference_data)
+        <tr>
+            <td class="align-top"><p class="desc-9">D. Referencia:</p></td>
+            <td>
+                <p class="desc-9">
+                    {{ $document->reference_data }}
+                </p>
+            </td>
+        </tr>
+    @endif
+
+
+    @if ($document->detraction)
+        <tr>
+            <td  class="align-top"><p class="desc">N. Cta Detracciones:</p></td>
+            <td><p class="desc">{{ $document->detraction->bank_account}}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">B/S Sujeto a detracción:</p></td>
+            @inject('detractionType', 'App\Services\DetractionTypeService')
+            <td><p class="desc">{{$document->detraction->detraction_type_id}} - {{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Método de pago:</p></td>
+            <td><p class="desc">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Porcentaje detracción:</p></td>
+            <td><p class="desc">{{ $document->detraction->percentage}}%</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Monto detracción:</p></td>
+            <td><p class="desc">S/ {{ $document->detraction->amount}}</p></td>
+        </tr>
+        @if($document->detraction->pay_constancy)
+        <tr>
+            <td  class="align-top"><p class="desc">Constancia de pago:</p></td>
+            <td><p class="desc">{{ $document->detraction->pay_constancy}}</p></td>
+        </tr>
+        @endif
+
+
+        @if($invoice->operation_type_id == '1004')
+        <tr>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td colspan="2">DETALLE - SERVICIOS DE TRANSPORTE DE CARGA</td>
+        </tr>
+        <tr>
+            <td class="align-top"><p class="desc">Ubigeo origen:</p></td>
+            <td><p class="desc">{{ $document->detraction->origin_location_id[2] }}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Dirección origen:</td>
+            <td><p class="desc">{{ $document->detraction->origin_address }}</td>
+        </tr>
+        <tr>
+            <td class="align-top"><p class="desc">Ubigeo destino:</p></td>
+            <td><p class="desc">{{ $document->detraction->delivery_location_id[2] }}</p></td>
+        </tr>
+        <tr>
+
+            <td  class="align-top"><p class="desc">Dirección destino:</p></td>
+            <td><p class="desc">{{ $document->detraction->delivery_address }}</p></td>
+        </tr>
+        <tr>
+            <td class="align-top"><p class="desc">Valor referencial servicio de transporte:</p></td>
+            <td><p class="desc">{{ $document->detraction->reference_value_service }}</p></td>
+        </tr>
+        <tr>
+
+            <td  class="align-top"><p class="desc">Valor referencia carga efectiva:</p></td>
+            <td><p class="desc">{{ $document->detraction->reference_value_effective_load }}</p></td>
+        </tr>
+        <tr>
+            <td class="align-top"><p class="desc">Valor referencial carga útil:</p></td>
+            <td><p class="desc">{{ $document->detraction->reference_value_payload }}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Detalle del viaje:</p></td>
+            <td><p class="desc">{{ $document->detraction->trip_detail }}</p></td>
+        </tr>
+        @endif
+
+    @endif
+
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc-9"><b>Orden de Compra:</b></p></td>
@@ -204,7 +292,7 @@
     <tbody>
     @foreach($document->items as $row)
         <tr>
-            <td class="text-center desc-9 align-top">
+            <td class="text-center desc-9 align-top font-bold">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
                 @else
@@ -212,7 +300,7 @@
                 @endif
             </td>
             <td class="text-center desc-9 align-top">{{ $row->item->unit_type_id }}</td>
-            <td class="text-left desc-9 align-top">
+            <td class="text-left desc-9 align-top font-bold">
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
@@ -237,9 +325,22 @@
                         <br/><small>{{ $dtos->factor * 100 }}% {{$dtos->description }}</small>
                     @endforeach
                 @endif
+                @if($row->item->is_set == 1)
+
+                 <br>
+                 @inject('itemSet', 'App\Services\ItemSetService')
+                 @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                     {{$item}}<br>
+                 @endforeach
+                 {{-- {{join( "-", $itemSet->getItemsSet($row->item_id) )}} --}}
+                @endif
+                @if($document->has_prepayment)
+                    <br>
+                    *** Pago Anticipado ***
+                @endif
             </td>
             <td class="text-right desc-9 align-top">{{ number_format($row->unit_price, 2) }}</td>
-            <td class="text-right desc-9 align-top">{{ number_format($row->total, 2) }}</td>
+            <td class="text-right desc-9 align-top font-bold">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>
             <td colspan="5" class="border-bottom"></td>
@@ -278,7 +379,7 @@
          @if($document->total_discount > 0)
             <tr>
                 <td colspan="4" class="text-right font-bold desc-9">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
+                <td class="text-right font-bold desc">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         @if($document->total_plastic_bag_taxes > 0)

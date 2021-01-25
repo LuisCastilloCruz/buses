@@ -22,10 +22,10 @@
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
 
-    @if (file_exists(public_path('porto-light/background/fondo-navidad.gif')))
+    @if (file_exists(public_path('porto-light/background/bg2.jpg')))
         <style>
             .app{
-                background: url('{{ asset('porto-light/background/fondo-navidad.gif') }}') center -450px / cover;
+                background: url('{{ asset('porto-light/background/bg2.jpg') }}') center / cover;
             }
         </style>
     @else

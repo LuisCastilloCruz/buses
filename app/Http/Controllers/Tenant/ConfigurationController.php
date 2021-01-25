@@ -254,8 +254,14 @@ class ConfigurationController extends Controller
         return view('tenant.advanced.pdf_templates');
     }
 
+
+    public function pdfGuideTemplates(){
+        return view('tenant.advanced.pdf_guide_templates');
+    }
+
     public function pdfPreprintedTemplates(){
         return view('tenant.advanced.pdf_preprinted_templates');
+
     }
 
     public function record() {

@@ -109,6 +109,10 @@ Migración servidor: [Guía](https://docs.google.com/document/d/1HjAoa2d6mPDVY5l
 Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE08nVjqyKGQ2BiupfQ0yODVBfTfhkSjjZuZLyv38 "Clic")<br>
 Habilitar puertos en Google Cloud: [Manual](https://docs.google.com/document/d/1pbCXJyRyR4VOaQ2BE3aJp-3_vhFIp-b6RXnT_6rtw1o/edit?usp=sharing "clic")<br>
 
+### Funcionalidades
+
+ICBPER en POS: [Guía](https://docs.google.com/document/d/1laSobotFxZy7FlKfALxCoIz7OOT_xiid-QuQP2HD68g/edit?usp=sharing "Clic")<br>
+
 ### Laragon
 Acceso red local - laragon: [Guía](https://docs.google.com/document/d/13kOE5N5LJtCJIr3hswrfNgBYxi9wx07YwUCrAfgyCoQ/edit "Clic")<br>
 
@@ -119,20 +123,33 @@ Procedimiento para solucionar error 1033 SUNAT: [Guía](https://docs.google.com/
 Recreación de documentos: [Guía](https://drive.google.com/open?id=1_ZvNpA3_IyvEiQ2NSaiW_rsBhVNbK7YD-_l1kbrEGwQ "Clic")<br>
 Manual de cambios privados: [Guía](https://drive.google.com/open?id=1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98 "Clic")<br>
 Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
-Proyecto Espejo (Mirror/Fork): [Guía](https://docs.google.com/document/d/1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98/edit "Clic")<br>
-Migracion Jira-Issues(Gitlab): [Guía](https://docs.google.com/document/d/156wEGBlBiM35aFWbbnEi6HTWhag2TWtUMHkz_aoP7Lg/edit?usp=sharing "Clic")<br>
 
-## Soporte - Prueba 
+### APLICATIVO MÓVIL <br>
+### Descargar APK - Android <br><br>
+* Fondo  Green  - Icono SolidFact <br>
+ Descarga comprobantes en modelo ticktet<br>
+* Solid vs1.2 [Descargar](https://solidcompany.pe/descarga/solidfact1.apk "Clic")<br><br>
 
-* Use Issues como sistema de tickets para añadir sus sugerencias, problemas o inquietudes
-* Inconvenientes con facturación serán atendidos con prioridad
-* Una vez que  obtiene acceso al repositorio tendrá vigencia hasta finalizar la contrata pactad, pasado el año debe renovar su contrato
-* Toda instalación es gestionada mediante los canales del administrador.
-* Nuevas instalaciones o actualizaciones deben ser programadas y gestionadas, para ser ejecutada el mismo día debe haber un problema previo
+* Fondo  Green - Icono SolidFact <br>
+ Descarga comprobantes en modelo A4 <br>
+* Solid vs 1.1[Descargar](https://solidcompany.pe/descarga/solidfact.apk "Clic")<br><br>
+
+* Fondo  Rojo - Icono Facturalo <br>
+* Facturalo vs 1.0[Descargar](https://solidcompany.pe/descarga/facturalo.apk "Clic")
+
+* Fondo Azul <br>
+ Tiene configuración de tamaños de impresión, impresión directa a bluetooth<br>
+ Ver funcionamiento [Ver](https://www.youtube.com/watch?v=m-0UDXqrq6g "Clic")<br><br>
+ 
+ Nota<br>
+ 
+ La app solo funciona con la modificación de AQPFACT, si no lo tiene, contactar a los números de cel. +51950360472
+* Aqpfact_app vs 1.0 Google Play [Descargar](https://play.google.com/store/apps/details?id=com.azetasoft.aqpfact&hl=es&gl=es "Clic")
+
 
 ## AQPFACT - Peru
 
-Proyecto BETA - Pronto Lanzamiento Oficial<br>
+Proyecto final<br>
 soporte<br>
 WatsApp: +51950360472<br>
  Sugerencias y/o cambios contactar

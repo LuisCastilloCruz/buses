@@ -146,7 +146,7 @@ class SaleNoteItem extends ModelTenant
                 ->select($db_raw)
                 ->latest('id');
 
-
+        
         $sellers = json_decode($params['sellers']);
 
         if(count($sellers) > 0){

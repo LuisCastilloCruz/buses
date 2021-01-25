@@ -23,7 +23,7 @@ use Modules\Finance\Exports\UnpaidPaymentMethodDayExport;
 use App\Models\Tenant\User;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Http\Resources\UnpaidCollection;
-use Modules\Finance\Traits\UnpaidTrait;
+use Modules\Finance\Traits\UnpaidTrait; 
 
 class UnpaidController extends Controller
 {
@@ -95,13 +95,13 @@ class UnpaidController extends Controller
 
     }
 
-
+    
     public function pdf(Request $request) {
 
         $records = $this->transformRecords((new DashboardView())->getUnpaidFilterUser($request->all())->get());
 
         $company = Company::first();
-
+        
         $pdf = PDF::loadView('finance::unpaid.reports.report_pdf', compact("records", "company"));
 
         $filename = 'Reporte_Cuentas_Por_Cobrar_'.date('YmdHis');

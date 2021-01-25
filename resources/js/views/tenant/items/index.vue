@@ -398,18 +398,18 @@ export default {
             );
         },
         clickBarcode(row) {
-            if (!row.internal_id) {
+            if (!row.barcode) {
                 return this.$message.error(
-                    "Para generar el código de barras debe registrar el código interno."
+                    "Para generar el código de barras debe registrar el código de barras."
                 );
             }
 
             window.open(`/${this.resource}/barcode/${row.id}`);
         },
         clickPrintBarcode(row) {
-            if (!row.internal_id) {
+            if (!row.barcode) {
                 return this.$message.error(
-                    "Para generar el código de barras debe registrar el código interno."
+                    "Para generar el código de barras debe registrar el código de barras."
                 );
             }
 

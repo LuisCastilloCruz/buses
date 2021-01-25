@@ -80,7 +80,6 @@
                 if (this.recordId) {
                     await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                             this.form = response.data;
-                            console.log(this.form)
                     })
                 }
             },

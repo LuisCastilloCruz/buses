@@ -58,7 +58,7 @@ class ReportSaleConsolidatedController extends Controller
 
             return [
                 'item_id' => $key,
-                'item_internal_id' => $row->first()->relation_item->internal_id,
+                'item_internal_id' => $row->first()->relation_item->internal_id,  
                 'item_unit_type_id' => $row->first()->relation_item->unit_type_id,
                 'item_description' => $row->first()->item->description,
                 'quantity' => number_format($row->sum('quantity'), 4, ".", ""),
@@ -172,5 +172,5 @@ class ReportSaleConsolidatedController extends Controller
                 ->download($filename.'.xlsx');
 
     }
-
+    
 }

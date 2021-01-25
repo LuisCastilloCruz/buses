@@ -82,6 +82,7 @@ if ($hostname) {
             Route::get('configurations/visual_defaults', 'Tenant\ConfigurationController@visualDefaults')->name('visual_defaults');
             Route::post('configurations/visual_settings', 'Tenant\ConfigurationController@visualSettings')->name('visual-settings');
             Route::get('configurations/pdf_templates', 'Tenant\ConfigurationController@pdfTemplates')->name('tenant.advanced.pdf_templates');
+            Route::get('configurations/pdf_guide_templates', 'Tenant\ConfigurationController@pdfGuideTemplates')->name('tenant.advanced.pdf_guide_templates');
             Route::get('configurations/pdf_preprinted_templates', 'Tenant\ConfigurationController@pdfPreprintedTemplates')->name('tenant.advanced.pdf_preprinted_templates');
             Route::post('configurations/uploads', 'Tenant\ConfigurationController@uploadFile');
             Route::post('configurations/preprinted/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
@@ -172,7 +173,7 @@ if ($hostname) {
             Route::delete('persons/{person}', 'Tenant\PersonController@destroy');
             Route::post('persons/import', 'Tenant\PersonController@import');
             Route::get('persons/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
-            Route::get('persons/customers/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
+            Route::get('persons/{type}/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
 
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
@@ -365,6 +366,8 @@ if ($hostname) {
             Route::get('purchases/search-items', 'Tenant\PurchaseController@searchItems');
             Route::get('purchases/search/item/{item}', 'Tenant\PurchaseController@searchItemById');
             // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
+            Route::post('purchases/brands', 'Tenant\PurchaseController@storeBrands');
+            Route::post('purchases/categories', 'Tenant\PurchaseController@storeCategories');
 
 
 
@@ -403,6 +406,10 @@ if ($hostname) {
             Route::post('quotations/duplicate', 'Tenant\QuotationController@duplicate');
             Route::get('quotations/record2/{quotation}', 'Tenant\QuotationController@record2');
             Route::get('quotations/changed/{quotation}', 'Tenant\QuotationController@changed');
+
+            Route::get('quotations/search-items', 'Tenant\QuotationController@searchItems');
+            Route::get('quotations/search/item/{item}', 'Tenant\QuotationController@searchItemById');
+
 
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index')->middleware('redirect.level');

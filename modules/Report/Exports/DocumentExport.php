@@ -32,19 +32,19 @@ class DocumentExport implements  FromView, ShouldAutoSize
     
     public function filters($filters) {
         $this->filters = $filters;
-
+        
         return $this;
     }
 
     public function categories($categories) {
         $this->categories = $categories;
-
+        
         return $this;
     }
 
     public function categories_services($categories_services) {
         $this->categories_services = $categories_services;
-
+        
         return $this;
     }
 

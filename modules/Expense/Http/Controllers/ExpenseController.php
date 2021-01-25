@@ -44,7 +44,6 @@ class ExpenseController extends Controller
         return [
             'date_of_issue' => 'Fecha de emisión',
             'number' => 'Número',
-            'date_of_issue' => 'Fecha de emisión',
         ];
     }
 

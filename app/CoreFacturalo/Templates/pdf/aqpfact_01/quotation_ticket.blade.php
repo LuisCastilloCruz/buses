@@ -26,7 +26,7 @@
 @endif
 <table class="full-width">
     <tr>
-        <td class="text-center"><h5>{{ $company->name }}</h5></td>
+        <td class="text-center"><h5><b>{{ $company->name }}</b></h5></td>
     </tr>
     <tr>
         <td class="text-center"><h5>{{ 'RUC '.$company->number }}</h5></td>
@@ -61,7 +61,7 @@
         <td class="text-center pb-3">{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</td>
     </tr>
     <tr>
-        <td class="text-center pt-3 border-top"><h4>COTIZACIÓN</h4></td>
+        <td class="text-center pt-3 border-top"><h4><b>COTIZACIÓN</b></h4></td>
     </tr>
     <tr>
         <td class="text-center pb-3 border-bottom"><h3>{{ $tittle }}</h3></td>
@@ -69,35 +69,35 @@
 </table>
 <table class="full-width">
     <tr>
-        <td width="" class="pt-3"><p class="desc">F. Emisión:</p></td>
+        <td width="" class="pt-3"><p class="desc font-bold">F. EMISIÓN:</p></td>
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
 
     @if($document->date_of_due)
     <tr>
-        <td width="" class=""><p class="desc">T. Validez:</p></td>
+        <td width="" class=""><p class="desc font-bold">T. VALIDEZ:</p></td>
         <td width="" class=""><p class="desc">{{ $document->date_of_due }}</p></td>
     </tr>
     @endif
 
     @if($document->delivery_date)
     <tr>
-        <td width="" class=""><p class="desc">T. Entrega:</p></td>
+        <td width="" class=""><p class="desc font-bold">T. ENTREGA:</p></td>
         <td width="" class=""><p class="desc">{{ $document->delivery_date }}</p></td>
     </tr>
     @endif
 
     <tr>
-        <td class="align-top"><p class="desc">Cliente:</p></td>
+        <td class="align-top"><p class="desc font-bold">CLIENTE:</p></td>
         <td><p class="desc">{{ $customer->name }}</p></td>
     </tr>
     <tr>
-        <td><p class="desc">{{ $customer->identity_document_type->description }}:</p></td>
+        <td><p class="desc font-bold">{{ $customer->identity_document_type->description }}:</p></td>
         <td><p class="desc">{{ $customer->number }}</p></td>
     </tr>
     @if ($customer->address !== '')
         <tr>
-            <td class="align-top"><p class="desc">Dirección:</p></td>
+            <td class="align-top font-bold"><p class="desc">DIRECCIÓN:</p></td>
             <td>
                 <p class="desc">
                     {{ $customer->address }}
@@ -110,7 +110,7 @@
     @endif
     @if ($document->shipping_address)
     <tr>
-        <td class="align-top"><p class="desc">Dir. Envío:</p></td>
+        <td class="align-top"><p class="desc">DIR. ENVÍO:</p></td>
         <td colspan="3">
             <p class="desc">
                 {{ $document->shipping_address }}
@@ -121,7 +121,7 @@
 
     @if ($customer->telephone)
     <tr>
-        <td class="align-top"><p class="desc">Teléfono:</p></td>
+        <td class="align-top"><p class="desc">TELÉFONO:</p></td>
         <td >
             <p class="desc">
                 {{ $customer->telephone }}
@@ -131,7 +131,7 @@
     @endif
     @if ($document->payment_method_type)
     <tr>
-        <td class="align-top"><p class="desc">T. Pago:</p></td>
+        <td class="align-top"><p class="desc font-bold">T. PAGO:</p></td>
         <td >
             <p class="desc">
                 {{ $document->payment_method_type->description }}
@@ -142,7 +142,7 @@
 
     @if ($document->account_number)
     <tr>
-        <td class="align-top"><p class="desc">N° Cuenta:</p></td>
+        <td class="align-top"><p class="desc font-bold">N° CUENTA:</p></td>
         <td colspan="">
             <p class="desc">
                 {{ $document->account_number }}
@@ -152,7 +152,7 @@
     @endif
     @if ($document->sale_opportunity)
     <tr>
-        <td class="align-top"><p class="desc">O. Venta:</p></td>
+        <td class="align-top"><p class="desc font-bold">O. VENTA:</p></td>
         <td >
             <p class="desc">
                 {{ $document->sale_opportunity->number_full }}
@@ -161,7 +161,7 @@
     </tr>
     @endif
     <tr>
-        <td class="align-top"><p class="desc">Vendedor:</p></td>
+        <td class="align-top"><p class="desc font-bold">VENDEDOR:</p></td>
         <td>
             <p class="desc">
                 {{ $document->user->name }}
@@ -171,25 +171,39 @@
     </tr>
     @if ($document->description)
         <tr>
-            <td class="align-top"><p class="desc">Descripción:</p></td>
+            <td class="align-top"><p class="desc font-bold">OBSERVACIÓN:</p></td>
             <td><p class="desc">{{ $document->description }}</p></td>
         </tr>
     @endif
+
+    @if ($document->contact)
+        <tr>
+            <td class="align-top"><p class="desc font-bold">CONTACTO:</p></td>
+            <td><p class="desc">{{ $document->contact }}</p></td>
+        </tr>
+    @endif
+    @if ($document->phone)
+        <tr>
+            <td class="align-top"><p class="desc font-bold">TELF. CONTACTO:</p></td>
+            <td><p class="desc">{{ $document->phone }}</p></td>
+        </tr>
+    @endif
+
     @if ($document->purchase_order)
         <tr>
-            <td><p class="desc">Orden de Compra:</p></td>
+            <td><p class="desc font-bold">ORDEN DE COMPRA:</p></td>
             <td><p class="desc">{{ $document->purchase_order }}</p></td>
         </tr>
     @endif
     @if ($document->quotation_id)
         <tr>
-            <td><p class="desc">Cotización:</p></td>
+            <td><p class="desc font-bold">COTIZACIÓN:</p></td>
             <td><p class="desc">{{ $document->quotation->identifier }}</p></td>
         </tr>
     @endif
 </table>
 
-<table class="full-width mt-10 mb-10">
+<table class="full-width mt-10 mb-10 ticket">
     <thead class="">
     <tr>
         <th class="border-top-bottom desc-9 text-left">CANT.</th>
@@ -211,7 +225,12 @@
             </td>
             <td class="text-center desc-9 align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left desc-9 align-top">
-                {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                @if($row->item->name_product_pdf ?? false)
+                    {!!$row->item->name_product_pdf ?? ''!!}
+                @else
+                    {!!$row->item->description!!}
+                @endif
+                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/>{!! $attr->description !!} : {{ $attr->value }}
@@ -221,6 +240,9 @@
                     @foreach($row->discounts as $dtos)
                         <br/><small>{{ $dtos->factor * 100 }}% {{$dtos->description }}</small>
                     @endforeach
+                @endif
+                @if($row->item->extra_attr_value != '')
+                    <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
                 @endif
             </td>
             <td class="text-right desc-9 align-top">{{ number_format($row->unit_price, 2) }}</td>
@@ -329,7 +351,9 @@
 
     @if($document->terms_condition)
     <tr>
-        <td class="text-center desc pt-5 font-bold">{{$document->terms_condition}}</td>
+        <td class="desc pt-5 ">
+            {!!$document->terms_condition!!}
+        </td>
     </tr>
     @endif
 </table>

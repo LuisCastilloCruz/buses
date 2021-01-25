@@ -1,7 +1,7 @@
 <?php
 
 namespace App\CoreFacturalo;
-
+use Illuminate\Support\Facades\Log;
 class Template
 {
     public function pdf($base_template, $template, $company, $document, $format_pdf)
@@ -11,7 +11,7 @@ class Template
         }
 
         $path_template =  $this->validate_template($base_template, $template, $format_pdf);
-
+        // Log::info($document);
         return self::render($path_template, $company, $document);
     }
 
@@ -103,6 +103,13 @@ class Template
         view()->addLocation(__DIR__.'/Templates');
 
         return view('pdf.'.$base_template.'.partials.footer_legend', compact('document'))->render();
+    }
+
+    public function pdfFooterBlank($base_template, $document)
+    {
+        view()->addLocation(__DIR__.'/Templates');
+
+        return view('pdf.'.$base_template.'.partials.footer_blank', compact('document'))->render();
     }
 
 }

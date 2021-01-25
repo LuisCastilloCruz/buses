@@ -94,7 +94,6 @@ class ReportKardexCollection extends ResourceCollection
                 ];
 
             case $models[3]:{
-
                 $transaction = '';
                 $input = '';
                 $output = '';
@@ -116,21 +115,29 @@ class ReportKardexCollection extends ResourceCollection
                 else{
                     $output = ($transaction->type == 'output') ? $row->quantity : "-";
                 }
-
-                return [
+                $user = auth()->user();
+                $return = [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => '-',
                     'type_transaction' => $row->inventory_kardexable->description,
                     'number' => "-",
-                    'input' => $input,
-                    'output' => $output,
+                    // 'input' => $input,
+                    // 'output' => $output,
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
                     'doc_asoc' => '-'
                 ];
+                if ($row->inventory_kardexable->warehouse_destination_id === $user->establishment_id) {
+                    $return['input'] = $output;
+                    $return['output'] = $input;
+                } else {
+                    $return['input'] = $input;
+                    $return['output'] = $output;
+                }
+                return $return;
             }
 
 

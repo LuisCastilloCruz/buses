@@ -16,7 +16,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{--    <title>{{ config('app.name', 'Facturación Electrónica') }}</title>--}}
-    <title>Facturación Electrónica 2025</title>
+    <title>Facturación Electrónica 2021</title>
 
     <!-- Scripts -->
 

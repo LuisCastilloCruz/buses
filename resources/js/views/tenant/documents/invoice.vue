@@ -603,6 +603,11 @@
                                         <td>:</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ form.total_igv }}</td>
                                     </tr>
+                                    <tr v-if="form.total_plastic_bag_taxes > 0">
+                                        <td>ICBPER</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_plastic_bag_taxes }}</td>
+                                    </tr>
 
                                 </table>
 
@@ -682,7 +687,7 @@
     min-height: 65px !important;
 }
 </style>
-<script>
+<script type="text/babel">
     import DocumentFormItem from './partials/item.vue'
     import PersonForm from '../persons/form.vue'
     import DocumentOptions from '../documents/partials/options.vue'
@@ -1812,22 +1817,14 @@
                         this.saveCashDocument();
                     }
                     else {
-                        alert("Ocurrió un error en el registro; probablemente no tiene el perfil para enviar a SUNAT o ya no tiene stock en uno o varios de los productos que está intentando vender.  Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.");
                         this.loading_submit = false;
-                        this.$message.error(response.data.message);
+                        this.$message.error(response.data.data.message);
                     }
                 }).catch(error => {
-
-                    //alert('sdsd')
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data;
-                    }
-                    else {
-                        this.$message.error(error.response.data.message);
-                    }
-                }).then(() => {
-                    this.loading_submit = false;
+                    //console.log(error)
                 });
+
+
             },
             saveCashDocument(){
                 this.$http.post(`/cash/cash_document`, this.form_cash_document)

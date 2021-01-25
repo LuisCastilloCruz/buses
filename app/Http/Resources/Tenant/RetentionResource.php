@@ -34,7 +34,7 @@ class RetentionResource extends JsonResource
                 } else {
                     $response_type = 'warning';
                 }
-
+ 
             }
 
         }
@@ -48,6 +48,6 @@ class RetentionResource extends JsonResource
             'response_type' => $response_type,
             'download_cdr' => $this->download_external_cdr,
         ];
-
+        
     }
 }

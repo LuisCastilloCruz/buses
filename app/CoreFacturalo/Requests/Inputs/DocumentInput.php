@@ -126,6 +126,7 @@ class DocumentInput
             'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
             'payment_method_type_id' => Functions::valueKeyInArray($inputs, 'payment_method_type_id'),
+            'reference_data' => Functions::valueKeyInArray($inputs, 'reference_data'),
         ];
     }
 
@@ -148,7 +149,8 @@ class DocumentInput
                         'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
                         'is_set' => $item->is_set,
                         'lots' => self::lots($row),
-                        'IdLoteSelected' => ( isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null )
+                        'IdLoteSelected' => ( isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null ),
+                        'model' => $item->model,
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
@@ -176,7 +178,7 @@ class DocumentInput
                     'charges' => self::charges($row),
                     'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
-                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf')
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
                 ];
             }
             return $items;

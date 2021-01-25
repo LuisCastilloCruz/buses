@@ -4,6 +4,12 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $accounts = \App\Models\Tenant\BankAccount::all();
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
+
+    $configuracion = \App\Models\Tenant\Configuration::all();
+     foreach($configuracion as $config){
+        $color1= $config['color1'];
+        $color2= $config['color2'];
+     }
 @endphp
 <html>
 <head>
@@ -11,22 +17,22 @@
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
-<table class="full-width">
+<table class="full-width datos-empresa">
     <tr>
         @if($company->logo)
-            <td width="20%">
+            <td width="30%">
                 <div class="company_logo_box">
                     <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
                 </div>
             </td>
         @else
-            <td width="20%">
+            <td width="30%">
                 {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
             </td>
         @endif
-        <td width="50%" class="pl-3">
-            <div class="text-left">
-                <h4 class="">{{ $company->name }}</h4>
+        <td width="45%" class="pl-3">
+            <div class="empresa-datos">
+                <h4 class=""><b>{{ $company->name }}</b></h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
                 <h6 style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
@@ -50,31 +56,31 @@
                 @endisset
             </div>
         </td>
-        <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">COTIZACIÓN</h5>
-            <h3 class="text-center">{{ $tittle }}</h3>
+        <td width="25%" class="border-box py-4 px-2 text-center" style="border: 2px solid {{$color1}}">
+            <h5 class="text-center"style="background: {{$color1}};color:#ffffff;"><b>COTIZACIÓN</b></h5>
+            <h3 class="text-center"><b>{{ $tittle }}</b></h3>
         </td>
     </tr>
 </table>
-<table class="full-width mt-5">
+<table class="full-width mt-1 client-aqp">
     <tr>
-        <td width="15%">Cliente:</td>
-        <td width="45%">{{ $customer->name }}</td>
-        <td width="25%">Fecha de emisión:</td>
+        <td width="10%" class="font-bold">CLIENTE:</td>
+        <td width="50%">{{ $customer->name }}</td>
+        <td width="20%" class="font-bold">FECHA DE EMISIÓN:</td>
         <td width="15%">{{ $document->date_of_issue->format('Y-m-d') }}</td>
     </tr>
     <tr>
-        <td>{{ $customer->identity_document_type->description }}:</td>
+        <td class="font-bold">{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
 
         @if($document->date_of_due)
-            <td width="25%">Tiempo de Validez:</td>
+            <td width="20%" class="font-bold">TIEMPO DE VALIDEZ:</td>
             <td width="15%">{{ $document->date_of_due }}</td>
         @endif
     </tr>
     @if ($customer->address !== '')
     <tr>
-        <td class="align-top">Dirección:</td>
+        <td class="align-top font-bold">DIRECCIÓN:</td>
         <td>
             {{ $customer->address }}
             {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
@@ -82,7 +88,7 @@
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
         @if($document->delivery_date)
-            <td width="25%">Tiempo de Entrega:</td>
+            <td width="20%" class="font-bold">TIEMPO DE ENTREGA:</td>
             <td width="15%">{{ $document->delivery_date }}</td>
         @endif
     </tr>
@@ -90,12 +96,12 @@
 
     @if ($document->payment_method_type)
     <tr>
-        <td class="align-top">T. Pago:</td>
+        <td class="align-top font-bold">T. PAGO:</td>
         <td colspan="">
             {{ $document->payment_method_type->description }}
         </td>
         @if($document->sale_opportunity)
-            <td width="25%">O. Venta:</td>
+            <td width="20%" class="font-bold">O. VENTA:</td>
             <td width="15%">{{ $document->sale_opportunity->number_full }}</td>
         @endif
     </tr>
@@ -103,7 +109,7 @@
 
     @if ($document->account_number)
     <tr>
-        <td class="align-top">N° Cuenta:</td>
+        <td class="align-top font-bold">N° CUENTA:</td>
         <td colspan="3">
             {{ $document->account_number }}
         </td>
@@ -111,7 +117,7 @@
     @endif
     @if ($document->shipping_address)
     <tr>
-        <td class="align-top">Dir. Envío:</td>
+        <td class="align-top font-bold">DIR. ENVÍO:</td>
         <td colspan="3">
             {{ $document->shipping_address }}
         </td>
@@ -119,7 +125,7 @@
     @endif
     @if ($customer->telephone)
     <tr>
-        <td class="align-top">Teléfono:</td>
+        <td class="align-top font-bold">TELÉFONO:</td>
         <td colspan="3">
             {{ $customer->telephone }}
         </td>
@@ -127,17 +133,33 @@
     @endif
 
     <tr>
-        <td class="align-top">Vendedor:</td>
+        <td class="align-top font-bold">VENDEDOR:</td>
         <td colspan="3">
             {{ $document->user->name }}
         </td>
     </tr>
+    @if ($document->contact)
+    <tr>
+        <td class="align-top font-bold">CONTACTO:</td>
+        <td colspan="3">
+            {{ $document->contact }}
+        </td>
+    </tr>
+    @endif
+    @if ($document->phone)
+    <tr>
+        <td class="align-top font-bold">TELEFONO CONTACTO:</td>
+        <td colspan="3">
+            {{ $document->phone }}
+        </td>
+    </tr>
+    @endif
 </table>
 
 <table class="full-width mt-3">
     @if ($document->description)
         <tr>
-            <td width="15%" class="align-top">Descripción: </td>
+            <td width="15%" class="align-top font-bold">OBSERVACIÓN: </td>
             <td width="85%">{{ $document->description }}</td>
         </tr>
     @endif
@@ -154,7 +176,6 @@
 </table> --}}
 
 @if ($document->guides)
-<br/>
 {{--<strong>Guías:</strong>--}}
 <table>
     @foreach($document->guides as $guide)
@@ -172,29 +193,35 @@
 @endif
 
 <table class="full-width mt-10 mb-10">
-    <thead class="">
-    <tr class="bg-grey">
-        <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
-        <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
-        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
-        <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
-        <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
+    <thead class="encabezado">
+    <tr class="bg-grey-">
+        <th class="border-top-bottom text-center text-white py-2" style="background: {{$color1}}" width="8%">CANT.</th>
+        <th class="border-top-bottom text-center text-white py-2" style="background: {{$color1}}" width="8%">UNIDAD</th>
+        <th class="border-top-bottom text-left text-white py-2" style="background: {{$color1}}">DESCRIPCIÓN</th>
+        <th class="border-top-bottom text-left text-white py-2" style="background: {{$color1}}">MODELO</th>
+        <th class="border-top-bottom text-right text-white py-2" width="12%" style="background: {{$color2}}">P.UNIT</th>
+        <th class="border-top-bottom text-right text-white py-2" width="8%" style="background: {{$color2}}">DTO.</th>
+        <th class="border-top-bottom text-right text-white py-2" width="12%" style="background: {{$color2}}">TOTAL</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody class="items-aqp">
     @foreach($document->items as $row)
         <tr>
-            <td class="text-center align-top">
+            <td class="text-center align-top borde-gris">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
                 @else
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
-            <td class="text-left">
-                {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+            <td class="text-center align-top borde-gris">{{ $row->item->unit_type_id }}</td>
+            <td class="text-left align-top borde-gris">
+                @if($row->item->name_product_pdf ?? false)
+                    {!!$row->item->name_product_pdf ?? ''!!}
+                @else
+                    {!!$row->item->description!!}
+                @endif
+                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -205,9 +232,13 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
+                @if($row->item->extra_attr_value != '')
+                    <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
+                @endif
             </td>
-            <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
-            <td class="text-right align-top">
+            <td class="text-left align-top borde-gris">{{ $row->item->model ?? '' }}</td>
+            <td class="text-right align-top borde-gris">{{ number_format($row->unit_price, 2) }}</td>
+            <td class="text-right align-top borde-gris">
                 @if($row->discounts)
                     @php
                         $total_discount_line = 0;
@@ -220,54 +251,54 @@
                 0
                 @endif
             </td>
-            <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
+            <td class="text-right align-top borde-gris">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="6" class="border-bottom"></td>
+            <td colspan="7" class="border-bottom"></td>
         </tr>
     @endforeach
         @if($document->total_exportation > 0)
             <tr>
-                <td colspan="5" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
+                <td colspan="6" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exportation, 2) }}</td>
             </tr>
         @endif
         @if($document->total_free > 0)
             <tr>
-                <td colspan="5" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="6" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_free, 2) }}</td>
             </tr>
         @endif
         @if($document->total_unaffected > 0)
             <tr>
-                <td colspan="5" class="text-right font-bold">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="6" class="text-right font-bold">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
             </tr>
         @endif
         @if($document->total_exonerated > 0)
             <tr>
-                <td colspan="5" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="6" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
         @if($document->total_taxed > 0)
             <tr>
-                <td colspan="5" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="6" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif
         @if($document->total_discount > 0)
             <tr>
-                <td colspan="5" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
+                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         <tr>
-            <td colspan="5" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
+            <td colspan="6" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+            <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>

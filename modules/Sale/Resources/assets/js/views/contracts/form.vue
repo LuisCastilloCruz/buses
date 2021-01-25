@@ -324,6 +324,7 @@
             }
         },
         async created() {
+            // console.log(this.showPayments)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => { 

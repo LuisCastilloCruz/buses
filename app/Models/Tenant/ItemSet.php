@@ -9,7 +9,7 @@ class ItemSet extends ModelTenant
     protected $fillable = [
         'item_id',
         'individual_item_id',    
-        'quantity',
+        'quantity',    
     ];
 
     public function item()

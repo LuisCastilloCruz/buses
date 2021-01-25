@@ -18,16 +18,19 @@
                             <template  id="select-append">
                                 <el-input id="custom-input">
                                     <el-select
-                                            v-model="form.item_id" @change="changeItem"
-                                            filterable
-                                            placeholder="Buscar"
-                                            popper-class="el-select-items"
-                                            ref="select_item"
-                                            @focus="focusSelectItem"
-                                            slot="prepend"
-                                            id="select-width">
+                                        v-model="form.item_id" @change="changeItem"
+                                        filterable
+                                        placeholder="Buscar"
+                                        remote
+                                        :remote-method="searchRemoteItems"
+                                        :loading="loading_search"
+                                        popper-class="el-select-items"
+                                        ref="select_item"
+                                        @focus="focusSelectItem"
+                                        slot="prepend"
+                                        id="select-width">
 
-                                            <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                        <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                                     </el-select>
                                     <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" >
                                         <el-button @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
@@ -136,6 +139,13 @@
                         <div class="form-group" :class="{'has-danger': errors.extra_attr_value}">
                             <el-input v-model="form.extra_attr_value"></el-input>
                             <small class="form-control-feedback" v-if="errors.extra_attr_value" v-text="errors.extra_attr_value[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-sm-12 mt-2">
+                        <div class="form-group">
+                            <label class="control-label">Nombre producto en PDF</label>
+                            <!-- <el-input v-model="form.name_product_pdf"></el-input> -->
+                            <vue-ckeditor type="classic" v-model="form.name_product_pdf" :editors="editors"></vue-ckeditor>
                         </div>
                     </div>
                     <div class="col-md-12 mt-3">
@@ -274,14 +284,15 @@
 }
 </style>
 <script>
-
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
     import WarehousesDetail from './warehouses.vue'
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+    import VueCkeditor from 'vue-ckeditor5'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-        components: {itemForm, WarehousesDetail},
+        components: {itemForm, WarehousesDetail, 'vue-ckeditor': VueCkeditor.component},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
@@ -290,6 +301,7 @@
                 showWarehousesDetail: false,
                 errors: {},
                 form: {},
+                all_items: [],
                 items: [],
                 aux_items: [],
                 affectation_igv_types: [],
@@ -302,22 +314,17 @@
                 total_item: 0,
                 has_list_prices: false,
                 warehousesDetail:[],
+                loading_search:false,
                 item_unit_types: [],
-                item_unit_type: {}
+                item_unit_type: {},
+                editors: {
+                  classic: ClassicEditor
+                },
             }
         },
         created() {
             this.initForm()
-            this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                this.items = response.data.items
-                this.affectation_igv_types = response.data.affectation_igv_types
-                this.system_isc_types = response.data.system_isc_types
-                this.discount_types = response.data.discount_types
-                this.charge_types = response.data.charge_types
-                this.attribute_types = response.data.attribute_types
-                // this.filterItems()
-
-            })
+            this.getTables()
 
             this.$eventHub.$on('reloadDataItems', (item_id) => {
                 this.reloadDataItems(item_id)
@@ -325,6 +332,46 @@
         },
         methods: {
 
+            getTables(){
+
+                this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                    this.all_items = response.data.items
+                    // this.items = response.data.items
+                    this.affectation_igv_types = response.data.affectation_igv_types
+                    this.system_isc_types = response.data.system_isc_types
+                    this.discount_types = response.data.discount_types
+                    this.charge_types = response.data.charge_types
+                    this.attribute_types = response.data.attribute_types
+                    // this.filterItems()
+                    this.filterItems()
+
+                })
+            },
+            async searchRemoteItems(input) {
+
+                if (input.length > 2) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+                    await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
+                            .then(response => {
+                                // console.log(response)
+                                this.items = response.data.items
+                                this.loading_search = false
+
+                                if(this.items.length == 0){
+                                    this.filterItems()
+                                }
+                            })
+                } else {
+                    await this.filterItems()
+                }
+
+            },
+            filterItems() {
+                this.items = this.all_items
+            },
             clickWarehouseDetail(){
 
                 if(!this.form.item_id){
@@ -335,9 +382,6 @@
 
                 this.warehousesDetail = item.warehouses
                 this.showWarehousesDetail = true
-            },
-            filterItems(){
-                // this.items = this.items.filter(item => item.warehouses.length >0)
             },
             initForm() {
                 this.errors = {};
@@ -486,6 +530,8 @@
                 this.form.unit_price = valor
                 this.form.item.unit_type_id = row.unit_type_id
                 this.form.item_unit_type_id = row.id
+                this.getTables()
+
             },
             clickAddItem() {
                 if (this.validateTotalItem().total_item) return;
@@ -502,15 +548,14 @@
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
-
+                this.row.item.name_product_pdf = this.row.name_product_pdf || '';
+                console.log(this.row.item);
                 this.initForm();
-
                 // this.initializeFields()
                 this.$emit('add', this.row);
                 this.setFocusSelectItem()
             },
             focusSelectItem(){
-                // console.log("foc")
                 this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
             },
             setFocusSelectItem(){
@@ -527,9 +572,9 @@
                 }
             },
             getItems() {
-                this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                    this.items = response.data.items
-                })
+                // this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                //     this.items = response.data.items
+                // })
             },
             validateTotalItem(){
 
@@ -543,13 +588,27 @@
                 return this.errors
             },
             reloadDataItems(item_id) {
-                this.$http.get(`/${this.resource}/table/items`).then((response) => {
-                    this.items = response.data
-                    this.form.item_id = item_id
-                    this.changeItem()
-                    // this.filterItems()
 
-                })
+                if(!item_id){
+
+                    this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                        this.items = response.data
+                        this.form.item_id = item_id
+                        // if(item_id) this.changeItem()
+                        // this.filterItems()
+                    })
+
+                }else{
+
+                    this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
+
+                        this.items = response.data.items
+                        this.form.item_id = item_id
+                        this.changeItem()
+
+                    })
+                }
+
             },
         }
     }

@@ -33,7 +33,7 @@ if($hostname) {
             Route::post('items/import/item-price-lists', 'ItemController@importItemPriceLists');
 
             Route::prefix('item-lots')->group(function () {
-
+                
                 Route::get('', 'ItemLotController@index')->name('tenant.item-lots.index');
                 Route::get('/records', 'ItemLotController@records');
                 Route::get('/record/{record}', 'ItemLotController@record');
@@ -48,7 +48,7 @@ if($hostname) {
 
 
             Route::prefix('web-platforms')->group(function () {
-
+                
                 Route::get('', 'WebPlatformController@index');
                 Route::get('/records', 'WebPlatformController@records');
                 Route::get('/record/{brand}', 'WebPlatformController@record');

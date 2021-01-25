@@ -51,7 +51,7 @@ class ServiceController extends Controller
             'message' => "Documento no encontrado"
         ];
 
-        return (new ConsultCdr)->search($this->document); 
+        return (new ConsultCdr)->search($this->document);
 
     }
 

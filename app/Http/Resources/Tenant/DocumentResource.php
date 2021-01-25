@@ -36,7 +36,7 @@ class DocumentResource extends JsonResource
             }
 
         }else if ($this->regularize_shipping) {
-
+            
             $response_message = "Por regularizar: {$this->response_regularize_shipping->code} - {$this->response_regularize_shipping->description}";
             $code =  (int) $this->response_regularize_shipping->code;
             $response_type = 'error';

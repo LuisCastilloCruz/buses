@@ -120,7 +120,7 @@ class CashController extends Controller
             $cash->save();
 
             $this->createCashTransaction($cash, $request);
-
+            
         });
 
 
@@ -133,16 +133,16 @@ class CashController extends Controller
 
 
     public function createCashTransaction($cash, $request){
-
+ 
         $this->destroyCashTransaction($cash);
 
         $data = [
-            'date' => date('Y-m-d'),
-            'description' => 'Saldo inicial',
-            'payment_method_type_id' => '01',
-            'payment' => $request->beginning_balance,
-            'payment_destination_id' => 'cash',
-            'user_id' => $request->user_id,
+            'date' => date('Y-m-d'),  
+            'description' => 'Saldo inicial',  
+            'payment_method_type_id' => '01',  
+            'payment' => $request->beginning_balance,  
+            'payment_destination_id' => 'cash',  
+            'user_id' => $request->user_id,  
         ];
 
         $cash_transaction = $cash->cash_transaction()->create($data);
@@ -256,12 +256,12 @@ class CashController extends Controller
         return $data;
 
     }
-
+    
 
     public function destroyCashTransaction($cash){
 
         $ini_cash_transaction = $cash->cash_transaction;
-
+                
         if($ini_cash_transaction){
             CashTransaction::find($ini_cash_transaction->id)->delete();
         }
@@ -339,10 +339,64 @@ class CashController extends Controller
 
         return $pdf->stream($filename.'.pdf');
 
+    }
 
+
+    
+    public function report_products_excel($id)
+    { 
+
+        $data = $this->getDataReport($id);
+        $filename = "Reporte_POS_PRODUCTOS - {$data['cash']->user->name} - {$data['cash']->date_opening} {$data['cash']->time_opening}";
+
+        return (new CashProductExport)
+                ->documents($data['documents'])
+                ->company($data['company'])
+                ->cash($data['cash'])
+                ->download($filename.'.xlsx');
 
     }
 
 
+    public function getDataReport($id){
+
+        $cash = Cash::findOrFail($id);
+        $company = Company::first();
+        $cash_documents =  CashDocument::select('document_id')->where('cash_id', $cash->id)->get();
+
+        $source = DocumentItem::with('document')->whereIn('document_id', $cash_documents)->get();
+
+        $documents = collect($source)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->document->number_full,
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+        
+        $documents = $documents->merge($this->getSaleNotesReportProducts($cash));
+
+        return compact("cash", "company", "documents");
+
+    }
+
+
+    public function getSaleNotesReportProducts($cash){
+
+        $cd_sale_notes =  CashDocument::select('sale_note_id')->where('cash_id', $cash->id)->get();
+        
+        $sale_note_items = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cd_sale_notes)->get();
+
+        return collect($sale_note_items)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->sale_note->number_full,
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+
+    }
 
 }

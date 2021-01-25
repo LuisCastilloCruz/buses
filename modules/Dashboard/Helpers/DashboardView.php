@@ -446,7 +446,7 @@ class DashboardView
 
         // return $documents->union($sale_notes);
         return $documents->union($sale_notes)->havingRaw('total_subtraction > 0');
-
+ 
     }
 
 }

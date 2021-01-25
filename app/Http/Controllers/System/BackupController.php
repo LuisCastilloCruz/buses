@@ -119,12 +119,12 @@ class BackupController extends Controller
         }
     }
 
-
+    
     public function download($filename)
     {
 
         return Storage::download('backups'.DIRECTORY_SEPARATOR.'zip'.DIRECTORY_SEPARATOR.$filename);
-
+ 
     }
-
+    
 }

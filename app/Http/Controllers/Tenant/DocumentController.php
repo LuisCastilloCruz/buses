@@ -292,6 +292,7 @@ class DocumentController extends Controller
                 return [
                     'id' => $row->id,
                     'full_description' => $detail['full_description'],
+                    'model' => $row->model,
                     'brand' => $detail['brand'],
                     'category' => $detail['category'],
                     'stock' => $detail['stock'],
@@ -306,6 +307,7 @@ class DocumentController extends Controller
                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                     'calculate_quantity' => (bool) $row->calculate_quantity,
                     'has_igv' => (bool) $row->has_igv,
+                    'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
                     'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
                     'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
                         return [
@@ -429,20 +431,14 @@ class DocumentController extends Controller
         }
         catch (\Exception $e) {
             DB::rollback();
+
             return [
                 'success' => false,
-                'status'=>422,
-                'data' => [
-                    'id' => '',
-                    'message'=>'Ocurrió un error en el registro; falta el certificado, no hay conexión con la SUNAT, o probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el envío automático a la SUNAT, Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
-                    'response' =>[
-                        'code'=> "8",
-                        'description' =>'Ocurrió un error en el registro; falta el certificado, no hay conexión con la SUNAT, o probablemente ya no tiene stock en uno o varios de los productos que está intentando vender. \n Deshabilite el envío automático a la SUNAT, Deshabilite el control de stock en Configuración -> Inventarios o sino agregue stock a los productos.',
-                        'sent'=> false,
-
-                    ]
-
-                ],
+                'data'=>[
+                    'message'=> $e->getMessage(),
+                    'code'=> $e->getCode(),
+                    'sent'=> false
+                ]
             ];
         }
 

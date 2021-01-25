@@ -92,14 +92,14 @@ class GlobalPayment extends ModelTenant
     {
         return $this->belongsTo(CashTransaction::class, 'payment_id')
                     ->wherePaymentType(CashTransaction::class);
-    }
+    } 
 
     public function tec_serv_payment()
     {
         return $this->belongsTo(TechnicalServicePayment::class, 'payment_id')
                     ->wherePaymentType(TechnicalServicePayment::class);
-    }
-
+    }   
+    
     public function getDestinationDescriptionAttribute()
     {
         return $this->destination_type === Cash::class ? 'CAJA GENERAL': "{$this->destination->bank->description} - {$this->destination->currency_type_id} - {$this->destination->description}";
@@ -165,11 +165,11 @@ class GlobalPayment extends ModelTenant
         return $description;
     }
 
-
+    
     public function getTypeMovementAttribute()
     {
         $type = null;
-
+        
         switch ($this->instance_type) {
 
             case 'document':
@@ -185,11 +185,11 @@ class GlobalPayment extends ModelTenant
             case 'expense':
                 $type = 'output';
                 break;
-
-        }
+             
+        } 
 
         return $type;
-
+        
     }
 
 
@@ -218,7 +218,7 @@ class GlobalPayment extends ModelTenant
             case 'cash_transaction':
                 $person['name'] = '-';
                 $person['number'] = '';
-        }
+        } 
 
         return (object) $person;
     }
@@ -307,5 +307,5 @@ class GlobalPayment extends ModelTenant
         return $query->wherePaymentType($payment_type);
 
     }
-
+    
 }

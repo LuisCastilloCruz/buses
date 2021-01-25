@@ -70,14 +70,14 @@ class ItemSetController extends Controller
         $web_platforms = WebPlatform::get();
         // $warehouses = Warehouse::all();
         // $accounts = Account::all();
-        // $tags = Tag::all();
+        // $tags = Tag::all(); 
 
         return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types', 'web_platforms');
     }
 
 
     public function item_tables()
-    {
+    { 
 
         $individual_items = Item::whereWarehouse()->whereTypeUser()->whereNotIsSet()->whereIsActive()->get()->transform(function($row) {
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
@@ -133,14 +133,14 @@ class ItemSetController extends Controller
             $item->sets()->delete();
 
             foreach ($request->individual_items as $row) {
-
+                
                 $item->sets()->create([
                     'individual_item_id' => $row['individual_item_id'],
                     'quantity' => $row['quantity'],
                 ]);
 
             }
-
+            
             $item->update();
 
             return $item;

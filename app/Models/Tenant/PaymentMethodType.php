@@ -56,18 +56,18 @@ class PaymentMethodType extends ModelTenant
     {
         return $this->hasMany(IncomePayment::class,  'payment_method_type_id');
     }
-
+    
     public function cash_transactions()
     {
         return $this->hasMany(CashTransaction::class,  'payment_method_type_id');
     }
-
+    
     public function technical_service_payments()
     {
         return $this->hasMany(TechnicalServicePayment::class,  'payment_method_type_id');
     }
 
-
+    
     public function scopeWhereFilterPayments($query, $params)
     {
 

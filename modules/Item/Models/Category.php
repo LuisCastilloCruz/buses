@@ -17,4 +17,6 @@ class Category extends ModelTenant
     {
         return $this->hasMany(Item::class);
     }
+
+
 }
