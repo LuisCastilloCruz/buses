@@ -1817,14 +1817,20 @@
                         this.saveCashDocument();
                     }
                     else {
-                        this.loading_submit = false;
                         this.$message.error(response.data.data.message);
                     }
                 }).catch(error => {
-                    //console.log(error)
+
+                    //alert('sdsd')
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data.data;
+                    }
+                    else {
+                        this.$message.error(error.response.data.data.message);
+                    }
+                }).then(() => {
+                    this.loading_submit = false;
                 });
-
-
             },
             saveCashDocument(){
                 this.$http.post(`/cash/cash_document`, this.form_cash_document)
