@@ -85,14 +85,6 @@ class PersonController extends Controller
                 ];
             }
         }
-        if($request->identity_document_type_id==6){
-            if($request->addres == ""){
-                return [
-                    'success' => false,
-                    'message' =>'Debe completar la dirección',
-                ];
-            }
-        }
 
         $id = $request->input('id');
         $person = Person::firstOrNew(['id' => $id]);
