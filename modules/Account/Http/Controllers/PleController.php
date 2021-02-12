@@ -34,7 +34,7 @@ class PleController extends Controller
 
         $records = $this->getDocuments($d_start, $d_end,$type);
         $company = Company::active();
-        
+
         switch ($type) {
 
             case '140100': // ventas
@@ -49,15 +49,15 @@ class PleController extends Controller
                     fwrite($file, $line."\r\n");
                 }
                 fclose($file);
-                
+
                 $lineas=($records) ? '1' : '0';
                 $filename = "LE". $company->number.$periodo."00".$type."001". $lineas.$moneda."1";
                 return response()->download($temp, $filename.'.txt');
-                
+
             case '080100': //compras
 
                 $records = $this->getStructureCompras($records);
-                
+
                 //dd($records);
                 $temp = tempnam(sys_get_temp_dir(), 'txt');
                 $file = fopen($temp, 'w+');
@@ -67,15 +67,15 @@ class PleController extends Controller
                     fwrite($file, $line."\r\n");
                 }
                 fclose($file);
-                
+
                 $lineas=($records) ? '1' : '0';
                 $filename = "LE". $company->number.$periodo."00".$type."001". $lineas.$moneda."1";
                 return response()->download($temp, $filename.'.txt');
-            
+
             case '080200': //compras
 
                 $records = $this->getStructureComprasND($records);
-                
+
                 //dd($records);
                 $temp = tempnam(sys_get_temp_dir(), 'txt');
                 $file = fopen($temp, 'w+');
@@ -85,7 +85,7 @@ class PleController extends Controller
                     fwrite($file, $line."\r\n");
                 }
                 fclose($file);
-                
+
                 $lineas=($records) ? '1' : '0';
                 $filename = "LE". $company->number.$periodo."00".$type."001". $lineas.$moneda."1";
                 return response()->download($temp, $filename.'.txt');
@@ -146,18 +146,18 @@ class PleController extends Controller
         $company_account = CompanyAccount::first();
         $rows = [];
         foreach ($documents as $index => $row)
-        {        
+        {
             $date_of_issue = Carbon::parse($row->date_of_issue);
             $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
             $detail = substr($row->supplier->name.',  '.$row->number_full, 0, 60);
 
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
-            $regimen=""; 
+            $regimen="";
 
             if($regimen=='RER'){
                 $number_index="M-RER";
             }
-            
+
             $fechaMod  = '';
             $seriesMod = '';
             $numberMod = '';
@@ -165,7 +165,7 @@ class PleController extends Controller
             if($row->document_type_id=='07' || $row->document_type_id=='08' ){
                 $seriesMod = $row->note->affected_document->series;
                 $numberMod = $row->note->affected_document->number;
-                $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT); 
+                $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT);
                 $tipoMod =  $row->note->affected_document->document_type_id;
             }
 
@@ -210,7 +210,7 @@ class PleController extends Controller
                 $basimp3 = $total_exportation+$total_free+$total_taxed;
                 $igv3    = $total_igv;
             }
-            
+
             $rows[] = [
                 'col_1' => str_pad($row->date_of_issue->format('yym'), 8,'00', STR_PAD_RIGHT),
                 'col_2' =>$number_index,
@@ -232,7 +232,7 @@ class PleController extends Controller
                 'col_18' =>($estado =='11') ? '' : $basimp3, //BI 3 compra destinado a exportación
                 'col_19' =>($estado =='11') ? '' : $igv3,//IGV 3
                 'col_20' =>($estado =='11') ? '' : $total_no_grabado,
-                'col_21' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '', 
+                'col_21' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '',
                 'col_22' =>'0.00',
                 'col_23' =>'',
                 'col_24' =>($estado =='11' ) ? '' : $total,
@@ -257,7 +257,7 @@ class PleController extends Controller
                 'col_43' =>''
             ];
 
-            
+
 
 
         }
@@ -269,14 +269,14 @@ class PleController extends Controller
         $company_account = CompanyAccount::first();
         $rows = [];
         foreach ($documents as $index => $row)
-        {        
-           
+        {
+
             $date_of_issue = Carbon::parse($row->date_of_issue);
             $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
             $detail = substr($row->supplier->name.',  '.$row->number_full, 0, 60);
 
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
-            $regimen=""; 
+            $regimen="";
 
             if($regimen=='RER'){
                 $number_index="M-RER";
@@ -290,7 +290,7 @@ class PleController extends Controller
                 if($row->document_type_id=='07' || $row->document_type_id=='08' ){
                     $seriesMod = $row->note->affected_document->series;
                     $numberMod = $row->note->affected_document->number;
-                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT); 
+                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT);
                     $tipoMod =  $row->note->affected_document->document_type_id;
                 }
 
@@ -335,7 +335,7 @@ class PleController extends Controller
                     $basimp3 = $total_exportation+$total_free+$total_taxed;
                     $igv3    = $total_igv;
                 }
-                
+
                 $rows[] = [
                     'col_1' => str_pad($row->date_of_issue->format('yym'), 8,'00', STR_PAD_RIGHT),
                     'col_2' =>$number_index,
@@ -358,7 +358,7 @@ class PleController extends Controller
                     'col_18' =>($estado =='11') ? '' : $basimp3, //BI 3 compra destinado a exportación
                     'col_19' =>($estado =='11') ? '' : $igv3,//IGV 3
                     'col_20' =>($estado =='11') ? '' : $total_no_grabado,
-                    'col_21' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '', 
+                    'col_21' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '',
                     'col_22' =>'',
                     'col_23' =>($estado =='11' ) ? '' : $total,
                     'col_24' =>($estado =='11' ) ? '' : $row->currency_type_id,
@@ -390,18 +390,16 @@ class PleController extends Controller
     }
     private function getStructureVentas($documents)
     {
-
         $company_account = CompanyAccount::first();
         $rows = [];
         foreach ($documents as $index => $row)
-        {        
-           
+        {
             $date_of_issue = Carbon::parse($row->date_of_issue);
             $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
             $detail = $row->customer->name;
 
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
-            $regimen=""; 
+            $regimen="";
 
             if($regimen=='RER'){
                 $number_index="M-RER";
@@ -421,6 +419,7 @@ class PleController extends Controller
                 if($row->currency_type_id == 'USD'){
                     $total_taxed = $total_taxed*$tc;
                     $total_igv   = $total_igv *$tc;
+                    $total_icbper= $total_icbper*$tc;
                     $total_exportation =$total_exportation*$tc;
                     $total_exonerated  = $total_exonerated *$tc;
                     $total_unaffected  = $total_unaffected *$tc;
@@ -435,8 +434,8 @@ class PleController extends Controller
                 if($row->document_type_id=='07' || $row->document_type_id=='08'){
                     $seriesMod = $row->note->affected_document->series;
                     $numberMod = $row->note->affected_document->number;
-                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT); 
-                    $tipoMod =  $row->note->affected_document->document_type_id;                  
+                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT);
+                    $tipoMod =  $row->note->affected_document->document_type_id;
                 }
 
                  /*================CAMBIO SIGNOS==================*/
@@ -449,7 +448,7 @@ class PleController extends Controller
                     $total             = $total             * -1;
                 }
 
-                
+
                 $rows[] = [
                     'col_1' => str_pad($row->date_of_issue->format('yym'), 8,'00', STR_PAD_RIGHT),
                     'col_2' =>$number_index,
@@ -470,10 +469,10 @@ class PleController extends Controller
                     'col_17' =>'',//para nota revisar
                     'col_18' =>($total_exonerated>0 && $estado !='11') ? $total_exonerated : '',
                     'col_19' =>($total_unaffected>0 && $estado !='11') ? $total_unaffected : '',
-                    'col_20' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '', 
+                    'col_20' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '',
                     'col_21' =>'',
                     'col_22' =>'',
-                    'col_23' =>'0.00',//ICBPER total_plastic_bag_taxes  como no es obligatorio, solo s epuso la columna vacío
+                    'col_23' =>($total_icbper>0 && $estado !='11')? $total_icbper:'0.00',
                     'col_24' =>'',
                     'col_25' =>($estado =='11' ) ? '' : $total,
                     'col_26' =>($estado =='11' || $row->currency_type_id =='PEN') ? '' : $row->currency_type_id,
