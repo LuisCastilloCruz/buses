@@ -768,6 +768,50 @@
                             <span>Contabilidad</span>
                         </a>
                         <ul class="nav nav-children" style="">
+                            <li class="nav-parent
+                            {{ ($path[0] === 'account') ?'nav-active nav-expanded':'' }}
+                                ">
+                                <a class="nav-link" href="#">
+                                    Tablas
+                                </a>
+                                <ul class="nav nav-children">
+                                    <li class="{{ (($path[0] === 'accounting') && ($path[1] === 'plan')) ?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.accounting.index')}}">
+                                            Plan Contable
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'origenes')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.items.index')}}">
+                                            Orígenes
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'origenes')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.items.index')}}">
+                                            Tipos de Documentos
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'origenes')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.items.index')}}">
+                                            Proveedores
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'origenes')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.items.index')}}">
+                                            Tipos de Cambio
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'origenes')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.items.index')}}">
+                                            Medios de Pago
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'origenes')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.items.index')}}">
+                                            Parametros de Cuentas Contables
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
                             <li class="{{(($path[0] === 'account') && ($path[1] === 'format')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{ route('tenant.account_format.index') }}">
                                     Exportar formatos
