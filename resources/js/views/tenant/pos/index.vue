@@ -251,7 +251,7 @@
                                                 "
                                             >
                                                 <span style="font-size:16px;"
-                                                    >&#9998;</span
+                                                >&#9998;</span
                                                 >
                                             </button>
                                             ({{ item.unit_type_id }})
@@ -630,8 +630,8 @@
                                         </td>
                                         <td>
                                             <small>{{
-                                                item.unit_type_id
-                                            }}</small>
+                                                    item.unit_type_id
+                                                }}</small>
                                         </td>
                                         <!-- <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
@@ -692,6 +692,8 @@
                         </div>
                     </div>
                 </div>
+                <p v-if="form.exist_stock" class="p-0 m-0 text-center" style="color: green">{{form.recent_item}}</p>
+                <p class="p-0 m-0 text-center" style="color: red" v-else>{{form.recent_item}}</p>
                 <div class="h-25 bg-light" style="overflow-y: auto">
                     <div
                         class="row border-top bg-light m-0 p-0 h-50 d-flex align-items-right pr-5 pt-2"
@@ -1177,7 +1179,7 @@ export default {
             let item_search = this.items[index];
             this.items[index].sale_unit_price = this.items[
                 index
-            ].edit_sale_unit_price;
+                ].edit_sale_unit_price;
             this.items[index].edit_unit_price = false;
 
             // console.log(item_search)
@@ -1278,7 +1280,7 @@ export default {
             if (this.form.items[index].item.calculate_quantity) {
                 let quantity = _.round(
                     parseFloat(this.form.items[index].total) /
-                        parseFloat(this.form.items[index].unit_price),
+                    parseFloat(this.form.items[index].unit_price),
                     4
                 );
 
@@ -1437,7 +1439,9 @@ export default {
                 actions: {
                     format_pdf: "a4"
                 },
-                reference_data: null
+                reference_data: null,
+                recent_item:null,
+                exist_stock:null
             };
 
             this.initFormItem();
@@ -1500,6 +1504,8 @@ export default {
             this.setFormPosLocalStorage();
         },
         async clickAddItem(item, index, input = false) {
+            this.form.exist_stock=true;
+            this.form.recent_item=item.description;
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
 
@@ -1512,7 +1518,7 @@ export default {
                 unit_type_id: item.unit_type_id
             });
 
-            console.log(exist_item)
+            //console.log(exist_item)
 
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
@@ -1528,6 +1534,7 @@ export default {
                     if (!response.success) {
                         item.item.aux_quantity = item.quantity;
                         this.loading = false;
+                        this.form.exist_stock=false;
                         return this.$message.error(response.message);
                     }
 
@@ -1540,6 +1547,7 @@ export default {
                     );
                     if (!response.success) {
                         this.loading = false;
+                        this.form.exist_stock=false;
                         return this.$message.error(response.message);
                     }
 
@@ -1578,6 +1586,7 @@ export default {
                 this.form.items[pos] = this.row;
             } else {
 
+                //cuando no hay estock porque ya agregó lo que había al carrito
                 response = await this.getStatusStock(
                     item.item_id,
                     item.presentation
@@ -1586,6 +1595,7 @@ export default {
                 );
                 if (!response.success) {
                     this.loading = false;
+                    this.form.exist_stock=false;
                     return this.$message.error(response.message);
                 }
 

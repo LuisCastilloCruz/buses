@@ -1,6 +1,6 @@
 <template >
     <div class="row col-lg-12 m-0 p-0" v-loading="loading_submit">
-      <Keypress key-event="keyup" :key-code="113" @success="handleFn113" />
+        <Keypress key-event="keyup" :key-code="113" @success="handleFn113" />
 
         <div class="col-lg-4 col-md-6 bg-white m-0 p-0" style="height: calc(100vh - 110px)">
             <div class="h-75 bg-light" style="overflow-y: auto">
@@ -11,7 +11,7 @@
                     </div>
                 </div>
 
-                 <template v-for="(item,index) in form.items">
+                <template v-for="(item,index) in form.items">
                     <div class="row py-1 border-bottom m-0 p-0" :key="index">
                         <div class="col-2 p-r-0 m-l-2">
                             <h4 class="font-weight-semibold m-0 text-center">{{item.quantity}}</h4>
@@ -115,7 +115,7 @@
                 </div>
                 <div class="col-lg-2 col-md-2">
 
-                     <button class="btn btn-sm btn-block btn-primary" @click="back"><i class="fas fa-angle-left"></i> Regresar</button>
+                    <button class="btn btn-sm btn-block btn-primary" @click="back"><i class="fas fa-angle-left"></i> Regresar</button>
 
                 </div>
 
@@ -124,42 +124,11 @@
                     <div class="card card-default">
 
                         <div class="card-body text-center">
-                                <p class="my-0"><small>Monto a cobrar</small></p>
-                                <h1 class="mb-2 mt-0">{{currencyTypeActive.symbol}} {{ form.total }}</h1>
+                            <p class="my-0"><small>Monto a cobrar</small></p>
+                            <h1 class="mb-2 mt-0">{{currencyTypeActive.symbol}} {{ form.total }}</h1>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-8">
-                    <div class="card card-default">
-
-                        <div class="card-body text-center">
-
-                            <div class="row col-lg-12">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label class="control-label">Ingrese monto</label>
-                                    <el-input v-model="enter_amount" @keyup.enter.native="keyupEnterAmount()" @input="enterAmount()" ref="enter_amount">
-                                        <template slot="prepend">{{currencyTypeActive.symbol}}</template>
-                                    </el-input>
-
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="form-group" :class="{'has-danger': difference < 0}">
-                                    <label class="control-label" v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
-                                    <!-- <el-input v-model="difference" :disabled="true">
-                                        <template slot="prepend">{{currencyTypeActive.symbol}}</template>
-                                    </el-input> -->
-                                    <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">{{currencyTypeActive.symbol}} {{difference}}</h4>
-                                </div>
-                            </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
                 <div class="col-lg-8">
                     <div class="card card-default">
 
@@ -168,10 +137,48 @@
                             <div class="row col-lg-12">
                                 <div class="col-lg-6">
                                     <div class="form-group">
+                                        <label class="control-label">Ingrese monto</label>
+                                        <el-input v-model="enter_amount" @keyup.enter.native="keyupEnterAmount()" @input="enterAmount()" ref="enter_amount">
+                                            <template slot="prepend">{{currencyTypeActive.symbol}}</template>
+                                        </el-input>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group" :class="{'has-danger': difference < 0}">
+                                        <label class="control-label" v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
+                                        <!-- <el-input v-model="difference" :disabled="true">
+                                            <template slot="prepend">{{currencyTypeActive.symbol}}</template>
+                                        </el-input> -->
+                                        <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">{{currencyTypeActive.symbol}} {{difference}}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card card-default">
+
+                        <div class="card-body text-center">
+
+                            <div class="row col-lg-12">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
                                         <h2><el-switch @change="changeEnabledDiscount" v-model="enabled_discount" class="control-label font-weight-semibold m-0 text-center m-b-0" active-text="Aplicar descuento"></el-switch></h2>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Porcentaje %</label>
+                                        <el-input v-model="discount_percent"  @input="inputDiscountPercent()" :disabled="!enabled_discount">
+                                        </el-input>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="control-label">Monto descuento</label>
                                         <el-input v-model="discount_amount" @input="inputDiscountAmount()" :disabled="!enabled_discount">
@@ -318,14 +325,14 @@
             :recordId="documentNewId"
             :statusDocument="statusDocument"
             :resource="resource_options"
-            ></options-form>
+        ></options-form>
 
         <multiple-payment-form
             :showDialog.sync="showDialogMultiplePayment"
             :payments="payments"
             :total="form.total"
             @add="addRow"
-            ></multiple-payment-form>
+        ></multiple-payment-form>
 
         <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
                           :recordId="saleNotesNewId"
@@ -346,160 +353,219 @@
 </style>
 
 <script type="text/babel">
-    import Keypress from 'vue-keypress'
+import Keypress from 'vue-keypress'
 
-    import CardBrandsForm from '../../card_brands/form.vue'
-    import SaleNotesOptions from '../../sale_notes/partials/options.vue'
-    import OptionsForm from './options.vue'
-    import MultiplePaymentForm from './multiple_payment.vue'
+import CardBrandsForm from '../../card_brands/form.vue'
+import SaleNotesOptions from '../../sale_notes/partials/options.vue'
+import OptionsForm from './options.vue'
+import MultiplePaymentForm from './multiple_payment.vue'
 
-    export default {
-        components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
+export default {
+    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
-        props:['form','customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns'],
-        data() {
-            return {
-                enabled_discount: false,
-                discount_amount:0,
-                loading_submit: false,
-                showDialogOptions:false,
-                showDialogMultiplePayment:false,
-                showDialogSaleNote:false,
-                showDialogNewCardBrand:false,
-                documentNewId:null,
-                saleNotesNewId:null,
-                resource_options:null,
-                has_card: false,
-                resource: 'pos',
-                resource_documents: 'documents',
-                resource_payments: 'document_payments',
-                amount: 0,
-                enter_amount: 0,
-                difference: 0,
-                button_payment: false,
-                input_item: '',
-                form_payment:{},
-                series:[],
-                all_series:[],
-                cards_brand:[],
-                cancel:false,
-                form_cash_document:{},
-                statusDocument:{},
-                payment_method_types:[],
-                payments:[],
-                locked_submit: false,
-                business_turns: [],
+    props:['form','customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns'],
+    data() {
+        return {
+            enabled_discount: false,
+            discount_amount:0,
+            discount_percent:0,
+            loading_submit: false,
+            showDialogOptions:false,
+            showDialogMultiplePayment:false,
+            showDialogSaleNote:false,
+            showDialogNewCardBrand:false,
+            documentNewId:null,
+            saleNotesNewId:null,
+            resource_options:null,
+            has_card: false,
+            resource: 'pos',
+            resource_documents: 'documents',
+            resource_payments: 'document_payments',
+            amount: 0,
+            enter_amount: 0,
+            difference: 0,
+            button_payment: false,
+            input_item: '',
+            form_payment:{},
+            series:[],
+            all_series:[],
+            cards_brand:[],
+            cancel:false,
+            form_cash_document:{},
+            statusDocument:{},
+            payment_method_types:[],
+            payments:[],
+            locked_submit: false,
+            business_turns: [],
+        }
+    },
+    async created() {
+
+        await this.initLStoPayment()
+        await this.getTables()
+        this.initFormPayment()
+        this.inputAmount()
+        this.form.payments = []
+        this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
+            this.reloadDataCardBrands(card_brand_id)
+        })
+
+        this.$eventHub.$on('localSPayments', (payments) => {
+            this.payments = payments
+
+        })
+
+        await this.setInitialAmount()
+
+        await this.getFormPosLocalStorage()
+        // console.log(this.form.payments, this.payments)
+        await this.$http.get(`/documents/tables`)
+            .then(response => {
+                this.business_turns = response.data.business_turns
+            })
+    },
+    mounted(){
+        // console.log(this.currencyTypeActive)
+    },
+    methods: {
+        handleFn113(){
+            const code = this.form.document_type_id
+            if(code == '01')
+            {
+                this.form.document_type_id = '03'
             }
+            else if(code == '03')
+            {
+                this.form.document_type_id = '80'
+            }
+            else if(code == '80')
+            {
+                this.form.document_type_id = '01'
+            }
+
+            this.filterSeries()
         },
-        async created() {
+        keyupEnterAmount(){
 
-            await this.initLStoPayment()
-            await this.getTables()
-            this.initFormPayment()
-            this.inputAmount()
-            this.form.payments = []
-            await this.$http.get(`/documents/tables`)
-                .then(response => {
-                    this.business_turns = response.data.business_turns
-                })
-            this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
-                this.reloadDataCardBrands(card_brand_id)
-            })
+            if(this.button_payment){
+                return this.$message.warning("El monto a pagar es menor al total")
+            }
 
-            this.$eventHub.$on('localSPayments', (payments) => {
-                this.payments = payments
+            if(this.locked_submit) return;
 
-            })
+            this.clickPayment()
 
-            await this.setInitialAmount()
-
-            await this.getFormPosLocalStorage()
-            // console.log(this.form.payments, this.payments)
         },
-        mounted(){
-            // console.log(this.currencyTypeActive)
+        async setInitialAmount(){
+            this.enter_amount = this.form.total
+            // this.form.payments = this.payments
+            // this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
+            await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].focus()
+            await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].select()
+            // console.log(this.$refs.enter_amount.$el.getElementsByTagName('input')[0])
         },
-        methods: {
-            handleFn113(){
-                const code = this.form.document_type_id
-                if(code == '01')
-                {
-                    this.form.document_type_id = '03'
-                }
-                else if(code == '03')
-                {
-                    this.form.document_type_id = '80'
-                }
-                else if(code == '80')
-                {
-                    this.form.document_type_id = '01'
-                }
+        changeEnabledDiscount(){
 
-                this.filterSeries()
-            },
-            keyupEnterAmount(){
+            if(!this.enabled_discount){
 
-                if(this.button_payment){
-                    return this.$message.warning("El monto a pagar es menor al total")
-                }
+                this.discount_amount = 0
+                this.discount_percent= 0
+                this.deleteDiscountGlobal()
+                this.reCalculateTotal()
 
-                if(this.locked_submit) return;
+            }
 
-                this.clickPayment()
+        },
+        inputDiscountAmount(){
 
-            },
-            async setInitialAmount(){
-                this.enter_amount = this.form.total
-                // this.form.payments = this.payments
-                // this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
-                await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].focus()
-                await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].select()
-                // console.log(this.$refs.enter_amount.$el.getElementsByTagName('input')[0])
-            },
-            changeEnabledDiscount(){
+            if(this.enabled_discount){
 
-                if(!this.enabled_discount){
+                if(this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0){
 
-                    this.discount_amount = 0
+                    if(this.discount_amount >= this.form.total)
+                        return this.$message.error("El monto de descuento debe ser menor al total de venta")
+
+                    this.reCalculateTotal()
+
+                }else{
+
+                    // this.discount_amount = 0
                     this.deleteDiscountGlobal()
                     this.reCalculateTotal()
 
                 }
 
-            },
-            inputDiscountAmount(){
+                // console.log(this.discount_amount)
+            }
+        },
+        inputDiscountPercent(){
+            if(parseFloat(this.discount_percent) > 0){
+                this.form.total_discount = 0;
+                this.discount_amount=0;
+                this.reCalculateTotal();
+                let descuento_porc=parseFloat(this.discount_percent);
+                this.discount_amount=(descuento_porc/100)*this.form.total;
+            }
+            else{
+                this.discount_amount = 0;
+                this.form.total_discount = 0;
+                this.reCalculateTotal()
+            }
 
-                if(this.enabled_discount){
+            if(this.enabled_discount){
+                if(this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0){
+                    if(this.discount_amount >= this.form.total)
+                        return this.$message.error("El monto de descuento debe ser menor al total de venta")
 
-                    if(this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0){
+                    this.reCalculateTotal()
 
-                        if(this.discount_amount >= this.form.total)
-                            return this.$message.error("El monto de descuento debe ser menor al total de venta")
+                }else{
 
-                        this.reCalculateTotal()
+                    //this.discount_amount = 0
+                    //this.discount_percent= 0
+                    this.deleteDiscountGlobal()
+                    this.reCalculateTotal()
 
-                    }else{
-
-                        // this.discount_amount = 0
-                        this.deleteDiscountGlobal()
-                        this.reCalculateTotal()
-
-                    }
-
-                    // console.log(this.discount_amount)
                 }
-            },
-            discountGlobal(){
 
-                let global_discount = parseFloat(this.discount_amount)
+                // console.log(this.discount_amount)
+            }
+        },
+        discountGlobal(){
 
-                let base = parseFloat(this.form.total)
-                let amount = parseFloat(global_discount)
-                let factor = _.round(amount/base, 4)
+            let global_discount = parseFloat(this.discount_amount)
 
-                let discount = _.find(this.form.discounts,{'discount_type_id':'03'})
+            let base = parseFloat(this.form.total)
+            let amount = parseFloat(global_discount)
+            let factor = _.round(amount/base, 4)
 
-                if(global_discount>0 && !discount){
+            let discount = _.find(this.form.discounts,{'discount_type_id':'03'})
+
+            if(global_discount>0 && !discount){
+
+                this.form.total_discount =  _.round(amount,2)
+
+                this.form.total =  _.round(this.form.total - amount, 2)
+
+                this.form.total_value =  _.round(this.form.total / 1.18, 2)
+                this.form.total_taxed =  this.form.total_value
+
+                this.form.total_igv =  _.round(this.form.total_value * 0.18, 2)
+                this.form.total_taxes =  this.form.total_igv
+
+                this.form.discounts.push({
+                    discount_type_id: '03',
+                    description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
+                    factor: factor,
+                    amount: amount,
+                    base: base
+                })
+
+            }else{
+
+                let index = this.form.discounts.indexOf(discount);
+
+                if(index > -1){
 
                     this.form.total_discount =  _.round(amount,2)
 
@@ -511,458 +577,434 @@
                     this.form.total_igv =  _.round(this.form.total_value * 0.18, 2)
                     this.form.total_taxes =  this.form.total_igv
 
-                    this.form.discounts.push({
-                            discount_type_id: '03',
-                            description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
-                            factor: factor,
-                            amount: amount,
-                            base: base
+                    this.form.discounts[index].base = base
+                    this.form.discounts[index].amount = amount
+                    this.form.discounts[index].factor = factor
+
+                }
+
+            }
+
+            this.difference = this.enter_amount - this.form.total
+            // console.log(this.form.discounts)
+        },
+        reCalculateTotal() {
+
+            let total_discount = 0
+            let total_charge = 0
+            let total_exportation = 0
+            let total_taxed = 0
+            let total_exonerated = 0
+            let total_unaffected = 0
+            let total_free = 0
+            let total_igv = 0
+            let total_value = 0
+            let total = 0
+            let total_plastic_bag_taxes = 0
+
+            this.form.items.forEach((row) => {
+                total_discount += parseFloat(row.total_discount)
+                total_charge += parseFloat(row.total_charge)
+
+                if (row.affectation_igv_type_id === '10') {
+                    total_taxed += parseFloat(row.total_value)
+                }
+                if (row.affectation_igv_type_id === '20') {
+                    total_exonerated += parseFloat(row.total_value)
+                }
+                if (row.affectation_igv_type_id === '30') {
+                    total_unaffected += parseFloat(row.total_value)
+                }
+                if (row.affectation_igv_type_id === '40') {
+                    total_exportation += parseFloat(row.total_value)
+                }
+                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                    total_free += parseFloat(row.total_value)
+                }
+                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                    total_igv += parseFloat(row.total_igv)
+                    total += parseFloat(row.total)
+                }
+                total_value += parseFloat(row.total_value)
+                total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+            });
+
+            this.form.total_exportation = _.round(total_exportation, 2)
+            this.form.total_taxed = _.round(total_taxed, 2)
+            this.form.total_exonerated = _.round(total_exonerated, 2)
+            this.form.total_unaffected = _.round(total_unaffected, 2)
+            this.form.total_free = _.round(total_free, 2)
+            this.form.total_igv = _.round(total_igv, 2)
+            this.form.total_value = _.round(total_value, 2)
+            this.form.total_taxes = _.round(total_igv, 2)
+            this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+            // this.form.total = _.round(total, 2)
+            this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
+
+            this.discountGlobal()
+
+
+        },
+        deleteDiscountGlobal(){
+
+            let discount = _.find(this.form.discounts, {'discount_type_id':'03'})
+            let index = this.form.discounts.indexOf(discount)
+
+            if (index > -1) {
+                this.form.discounts.splice(index, 1)
+                this.form.total_discount = 0
+            }
+
+        },
+        back()
+        {
+            this.$emit('update:is_payment', false)
+        },
+        async initLStoPayment(){
+
+            this.amount = await this.getLocalStoragePayment('amount', 0)
+            this.enter_amount = await this.getLocalStoragePayment('enter_amount', 0)
+            this.difference = await this.getLocalStoragePayment('difference', 0)
+        },
+        getFormPosLocalStorage(){
+
+            let form_pos = localStorage.getItem('form_pos');
+            form_pos = JSON.parse(form_pos)
+            if (form_pos) {
+                this.form.payments = form_pos.payments
+            }
+
+        },
+        clickAddPayment(){
+            this.showDialogMultiplePayment = true
+        },
+        reloadDataCardBrands(card_brand_id) {
+            this.$http.get(`/${this.resource}/table/card_brands`).then((response) => {
+                this.cards_brand = response.data
+                this.form_payment.card_brand_id = card_brand_id
+                this.changePaymentMethodType()
+            })
+        },
+        getDescriptionPaymentMethodType(id){
+            let payment_method_type = _.find(this.payment_method_types,{'id':id})
+            return (payment_method_type) ? payment_method_type.description:''
+
+        },
+        changePaymentMethodType(){
+            let payment_method_type = _.find(this.payment_method_types,{'id':this.form_payment.payment_method_type_id})
+            this.has_card = payment_method_type.has_card
+            this.form_payment.card_brand_id = (payment_method_type.has_card) ? this.form_payment.card_brand_id:null
+        },
+        addRow(payments) {
+
+            this.form.payments = payments
+            let acum_payment = 0
+
+            this.form.payments.forEach((item)=>{
+                acum_payment += parseFloat(item.payment)
+            })
+
+            // this.amount = acum_payment
+            this.setAmount(acum_payment)
+
+            // console.log(this.form.payments)
+        },
+        setAmount(amount){
+            // this.amount = parseFloat(this.amount) + parseFloat(amount)
+            this.amount =  parseFloat(amount) //+ parseFloat(amount)
+            this.enter_amount =  parseFloat(amount) //+ parseFloat(amount)
+            this.inputAmount()
+        },
+        setAmountCash(amount)
+        {
+            let row = _.last(this.payments, { 'payment_method_type_id' : '01' })
+            row.payment = parseFloat(row.payment) + parseFloat(amount)
+            // console.log(row.payment)
+
+            this.form.payments = this.payments
+            let acum_payment = 0
+
+            this.form.payments.forEach((item)=>{
+                acum_payment += parseFloat(item.payment)
+            })
+
+            this.setAmount(acum_payment)
+
+        },
+        async enterAmount(){
+
+            let r_item = await _.last(this.payments, { 'payment_method_type_id' : '01' })
+            r_item.payment = await parseFloat(this.enter_amount)
+            // console.log(r_item.payment)
+
+            let ind = this.form.payments.length - 1
+            this.form.payments[ind].payment = parseFloat(this.enter_amount)
+            // this.setAmount(item.payment)
+
+            let acum_payment = 0
+
+            await this.form.payments.forEach((item)=>{
+                acum_payment += parseFloat(item.payment)
+            })
+            // console.log(this.form.payments)
+
+            // this.amount = item.payment
+            this.amount = acum_payment
+            // this.amount = this.enter_amount
+            // console.log(this.amount)
+            this.difference = this.amount - this.form.total
+
+            if(isNaN(this.difference)) {
+                this.button_payment = true
+                this.difference = "-"
+            }else if(this.difference >=0){
+                this.button_payment = false
+                this.difference = this.amount - this.form.total
+            }else{
+                this.button_payment = true
+            }
+            this.difference = _.round(this.difference,2)
+
+            this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
+
+            await this.lStoPayment()
+
+        },
+        getLocalStoragePayment(key, re_default = null){
+
+            let ls_obj = localStorage.getItem(key);
+            ls_obj = JSON.parse(ls_obj)
+
+            if (ls_obj) {
+                return ls_obj
+            }
+
+            return re_default
+        },
+        setLocalStoragePayment(key, obj){
+            localStorage.setItem(key, JSON.stringify(obj));
+        },
+        inputAmount(){
+
+            this.difference = this.amount - this.form.total
+
+            if(isNaN(this.difference)) {
+                this.button_payment = true
+                this.difference = "-"
+            }else if(this.difference >=0){
+                this.button_payment = false
+                this.difference = this.amount - this.form.total
+            }else{
+                this.button_payment = true
+            }
+            this.difference = _.round(this.difference,2)
+            // this.form_payment.payment = this.amount
+
+            this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
+            this.lStoPayment()
+
+        },
+        lStoPayment(){
+
+            this.setLocalStoragePayment('enter_amount', this.enter_amount)
+            this.setLocalStoragePayment('amount', this.amount)
+            // console.log(this.amount)
+            this.setLocalStoragePayment('difference', this.difference)
+
+        },
+        initFormPayment() {
+
+            this.difference = -this.form.total
+            this.form_payment = {
+                id: null,
+                date_of_payment: moment().format('YYYY-MM-DD'),
+                payment_method_type_id: '01',
+                reference: null,
+                card_brand_id:null,
+                document_id:null,
+                sale_note_id:null,
+                payment: this.form.total,
+            }
+
+            this.form_cash_document = {
+                document_id:null,
+                sale_note_id:null
+            }
+
+        },
+
+        filterSeries() {
+            this.form.series_id = null
+            this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id });
+            this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+
+            if(!this.form.series_id)
+            {
+                return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
+            }
+        },
+        async clickCancel(){
+
+            this.loading_submit = true
+            await this.sleep(800);
+            this.loading_submit = false
+            this.cleanLocalStoragePayment()
+            this.$eventHub.$emit('cancelSale')
+
+        },
+        cleanLocalStoragePayment(){
+
+            this.setLocalStoragePayment('amount', null)
+            this.setLocalStoragePayment('enter_amount', null)
+            this.setLocalStoragePayment('difference', null)
+        },
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        async asignPlateNumberToItems() {
+            if(this.form.plate_number) {
+
+                await this.form.items.forEach(item => {
+
+                    let at = _.find(item.attributes, {'attribute_type_id': '5010'})
+
+                    if(!at){
+                        item.attributes.push({
+                            attribute_type_id: '7000',
+                            description: "Gastos Art. 37 Renta:  Número de Placa",
+                            value: this.form.plate_number,
+                            start_date: null,
+                            end_date: null,
+                            duration: null,
                         })
-
-                }else{
-
-                    let index = this.form.discounts.indexOf(discount);
-
-                    if(index > -1){
-
-                        this.form.total_discount =  _.round(amount,2)
-
-                        this.form.total =  _.round(this.form.total - amount, 2)
-
-                        this.form.total_value =  _.round(this.form.total / 1.18, 2)
-                        this.form.total_taxed =  this.form.total_value
-
-                        this.form.total_igv =  _.round(this.form.total_value * 0.18, 2)
-                        this.form.total_taxes =  this.form.total_igv
-
-                        this.form.discounts[index].base = base
-                        this.form.discounts[index].amount = amount
-                        this.form.discounts[index].factor = factor
-
                     }
-
-                }
-
-                this.difference = this.enter_amount - this.form.total
-                // console.log(this.form.discounts)
-            },
-            reCalculateTotal() {
-
-                let total_discount = 0
-                let total_charge = 0
-                let total_exportation = 0
-                let total_taxed = 0
-                let total_exonerated = 0
-                let total_unaffected = 0
-                let total_free = 0
-                let total_igv = 0
-                let total_value = 0
-                let total = 0
-                let total_plastic_bag_taxes = 0
-
-                this.form.items.forEach((row) => {
-                    total_discount += parseFloat(row.total_discount)
-                    total_charge += parseFloat(row.total_charge)
-
-                    if (row.affectation_igv_type_id === '10') {
-                        total_taxed += parseFloat(row.total_value)
-                    }
-                    if (row.affectation_igv_type_id === '20') {
-                        total_exonerated += parseFloat(row.total_value)
-                    }
-                    if (row.affectation_igv_type_id === '30') {
-                        total_unaffected += parseFloat(row.total_value)
-                    }
-                    if (row.affectation_igv_type_id === '40') {
-                        total_exportation += parseFloat(row.total_value)
-                    }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
-                        total_free += parseFloat(row.total_value)
-                    }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
-                        total_igv += parseFloat(row.total_igv)
-                        total += parseFloat(row.total)
-                    }
-                    total_value += parseFloat(row.total_value)
-                    total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
                 });
+            }
+        },
+        async clickPayment(){
+            // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
-                this.form.total_exportation = _.round(total_exportation, 2)
-                this.form.total_taxed = _.round(total_taxed, 2)
-                this.form.total_exonerated = _.round(total_exonerated, 2)
-                this.form.total_unaffected = _.round(total_unaffected, 2)
-                this.form.total_free = _.round(total_free, 2)
-                this.form.total_igv = _.round(total_igv, 2)
-                this.form.total_value = _.round(total_value, 2)
-                this.form.total_taxes = _.round(total_igv, 2)
-                this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
-                // this.form.total = _.round(total, 2)
-                this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
+            if(!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)){
+                return this.$message.error('La fecha de emisión no coincide con la del día actual');
+            }
 
-                this.discountGlobal()
-
-
-            },
-            deleteDiscountGlobal(){
-
-                let discount = _.find(this.form.discounts, {'discount_type_id':'03'})
-                let index = this.form.discounts.indexOf(discount)
-
-                if (index > -1) {
-                    this.form.discounts.splice(index, 1)
-                    this.form.total_discount = 0
-                }
-
-            },
-            back()
+            if(!this.form.series_id)
             {
-                this.$emit('update:is_payment', false)
-            },
-            async initLStoPayment(){
+                return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
+            }
 
-                this.amount = await this.getLocalStoragePayment('amount', 0)
-                this.enter_amount = await this.getLocalStoragePayment('enter_amount', 0)
-                this.difference = await this.getLocalStoragePayment('difference', 0)
-            },
-            getFormPosLocalStorage(){
+            if (this.form.document_type_id === "80") {
+                this.form.prefix = "NV";
+                this.form.paid = 1;
+                this.resource_documents = "sale-notes";
+                this.resource_payments = "sale_note_payments";
+                this.resource_options = this.resource_documents;
+            } else {
+                this.form.prefix = null;
+                this.resource_documents = "documents";
+                this.resource_payments = "document_payments";
+                this.resource_options = this.resource_documents;
+                await this.asignPlateNumberToItems()
+            }
 
-                let form_pos = localStorage.getItem('form_pos');
-                form_pos = JSON.parse(form_pos)
-                if (form_pos) {
-                    this.form.payments = form_pos.payments
-                }
+            this.loading_submit = true
+            this.locked_submit = true
 
-            },
-            clickAddPayment(){
-                this.showDialogMultiplePayment = true
-            },
-            reloadDataCardBrands(card_brand_id) {
-                this.$http.get(`/${this.resource}/table/card_brands`).then((response) => {
-                    this.cards_brand = response.data
-                    this.form_payment.card_brand_id = card_brand_id
-                    this.changePaymentMethodType()
-                })
-            },
-            getDescriptionPaymentMethodType(id){
-                let payment_method_type = _.find(this.payment_method_types,{'id':id})
-                return (payment_method_type) ? payment_method_type.description:''
+            await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
+                if (response.data.success) {
 
-            },
-            changePaymentMethodType(){
-                let payment_method_type = _.find(this.payment_method_types,{'id':this.form_payment.payment_method_type_id})
-                this.has_card = payment_method_type.has_card
-                this.form_payment.card_brand_id = (payment_method_type.has_card) ? this.form_payment.card_brand_id:null
-            },
-            addRow(payments) {
+                    if (this.form.document_type_id === "80") {
 
-                this.form.payments = payments
-                let acum_payment = 0
+                        // this.form_payment.sale_note_id = response.data.data.id;
+                        this.form_cash_document.sale_note_id = response.data.data.id;
 
-                this.form.payments.forEach((item)=>{
-                    acum_payment += parseFloat(item.payment)
-                })
-
-               // this.amount = acum_payment
-                this.setAmount(acum_payment)
-
-                // console.log(this.form.payments)
-            },
-            setAmount(amount){
-                // this.amount = parseFloat(this.amount) + parseFloat(amount)
-                this.amount =  parseFloat(amount) //+ parseFloat(amount)
-                this.enter_amount =  parseFloat(amount) //+ parseFloat(amount)
-                this.inputAmount()
-            },
-            setAmountCash(amount)
-            {
-                let row = _.last(this.payments, { 'payment_method_type_id' : '01' })
-                row.payment = parseFloat(row.payment) + parseFloat(amount)
-                // console.log(row.payment)
-
-                this.form.payments = this.payments
-                let acum_payment = 0
-
-                this.form.payments.forEach((item)=>{
-                    acum_payment += parseFloat(item.payment)
-                })
-
-                this.setAmount(acum_payment)
-
-            },
-            async enterAmount(){
-
-                let r_item = await _.last(this.payments, { 'payment_method_type_id' : '01' })
-                r_item.payment = await parseFloat(this.enter_amount)
-                // console.log(r_item.payment)
-
-                let ind = this.form.payments.length - 1
-                this.form.payments[ind].payment = parseFloat(this.enter_amount)
-                // this.setAmount(item.payment)
-
-                let acum_payment = 0
-
-                await this.form.payments.forEach((item)=>{
-                    acum_payment += parseFloat(item.payment)
-                })
-                // console.log(this.form.payments)
-
-                // this.amount = item.payment
-                this.amount = acum_payment
-                // this.amount = this.enter_amount
-                // console.log(this.amount)
-                this.difference = this.amount - this.form.total
-
-                if(isNaN(this.difference)) {
-                    this.button_payment = true
-                    this.difference = "-"
-                }else if(this.difference >=0){
-                    this.button_payment = false
-                    this.difference = this.amount - this.form.total
-                }else{
-                    this.button_payment = true
-                }
-                this.difference = _.round(this.difference,2)
-
-                this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
-
-                await this.lStoPayment()
-
-            },
-            getLocalStoragePayment(key, re_default = null){
-
-                let ls_obj = localStorage.getItem(key);
-                ls_obj = JSON.parse(ls_obj)
-
-                if (ls_obj) {
-                    return ls_obj
-                }
-
-                return re_default
-            },
-            setLocalStoragePayment(key, obj){
-                localStorage.setItem(key, JSON.stringify(obj));
-            },
-            inputAmount(){
-
-                this.difference = this.amount - this.form.total
-
-                if(isNaN(this.difference)) {
-                    this.button_payment = true
-                    this.difference = "-"
-                }else if(this.difference >=0){
-                    this.button_payment = false
-                    this.difference = this.amount - this.form.total
-                }else{
-                    this.button_payment = true
-                }
-                this.difference = _.round(this.difference,2)
-                // this.form_payment.payment = this.amount
-
-                this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
-                this.lStoPayment()
-
-            },
-            lStoPayment(){
-
-                this.setLocalStoragePayment('enter_amount', this.enter_amount)
-                this.setLocalStoragePayment('amount', this.amount)
-                // console.log(this.amount)
-                this.setLocalStoragePayment('difference', this.difference)
-
-            },
-            initFormPayment() {
-
-                this.difference = -this.form.total
-                this.form_payment = {
-                    id: null,
-                    date_of_payment: moment().format('YYYY-MM-DD'),
-                    payment_method_type_id: '01',
-                    reference: null,
-                    card_brand_id:null,
-                    document_id:null,
-                    sale_note_id:null,
-                    payment: this.form.total,
-                }
-
-                this.form_cash_document = {
-                    document_id:null,
-                    sale_note_id:null
-                }
-
-            },
-
-            filterSeries() {
-                this.form.series_id = null
-                this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id });
-                this.form.series_id = (this.series.length > 0)?this.series[0].id:null
-
-                if(!this.form.series_id)
-                {
-                   return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
-                }
-            },
-            async clickCancel(){
-
-                this.loading_submit = true
-                await this.sleep(800);
-                this.loading_submit = false
-                this.cleanLocalStoragePayment()
-                this.$eventHub.$emit('cancelSale')
-
-            },
-            cleanLocalStoragePayment(){
-
-                this.setLocalStoragePayment('amount', null)
-                this.setLocalStoragePayment('enter_amount', null)
-                this.setLocalStoragePayment('difference', null)
-            },
-            sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            },
-            async asignPlateNumberToItems() {
-                if(this.form.plate_number) {
-
-                    await this.form.items.forEach(item => {
-
-                        let at = _.find(item.attributes, {'attribute_type_id': '5010'})
-
-                        if(!at){
-                            item.attributes.push({
-                                attribute_type_id: '7000',
-                                description: "Gastos Art. 37 Renta:  Número de Placa",
-                                value: this.form.plate_number,
-                                start_date: null,
-                                end_date: null,
-                                duration: null,
+                        if(this.isActiveBussinessTurn('restaurant')){
+                            this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.sale_note_id}`).then((response) => {
+                                //algo más antes de imprimir en cocina y barra?
                             })
                         }
-                    });
-                }
-            },
-            async clickPayment(){
-                // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
-                if(!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)){
-                   return this.$message.error('La fecha de emisión no coincide con la del día actual');
-                }
+                    } else {
 
-                if(!this.form.series_id)
-                {
-                   return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
-                }
-
-                if (this.form.document_type_id === "80") {
-                    this.form.prefix = "NV";
-                    this.form.paid = 1;
-                    this.resource_documents = "sale-notes";
-                    this.resource_payments = "sale_note_payments";
-                    this.resource_options = this.resource_documents;
-                } else {
-                    this.form.prefix = null;
-                    this.resource_documents = "documents";
-                    this.resource_payments = "document_payments";
-                    this.resource_options = this.resource_documents;
-                    await this.asignPlateNumberToItems()
-                }
-
-                this.loading_submit = true
-                this.locked_submit = true
-
-                await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
-                    if (response.data.success) {
-
-                        if (this.form.document_type_id === "80") {
-
-                            // this.form_payment.sale_note_id = response.data.data.id;
-                            this.form_cash_document.sale_note_id = response.data.data.id;
-
-                            if(this.isActiveBussinessTurn('restaurant')){
-                                this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.sale_note_id}`).then((response) => {
-                                    //algo más antes de imprimir en cocina y barra?
-                                })
-                            }
-
-                        } else {
-
-                            // this.form_payment.document_id = response.data.data.id;
-                            this.form_cash_document.document_id = response.data.data.id;
-                            this.statusDocument = response.data.data.response
-                            if(this.isActiveBussinessTurn('restaurant')){
-                                this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.document_id}`).then((response) => {
-                                    //algo más antes de imprimir en cocina y barra?
-                                })
-                            }
-
+                        // this.form_payment.document_id = response.data.data.id;
+                        this.form_cash_document.document_id = response.data.data.id;
+                        this.statusDocument = response.data.data.response
+                        if(this.isActiveBussinessTurn('restaurant')){
+                            this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.document_id}`).then((response) => {
+                                //algo más antes de imprimir en cocina y barra?
+                            })
                         }
 
-                        this.documentNewId = response.data.data.id;
-                        this.showDialogOptions = true;
-
-                        // this.savePaymentMethod();
-                        this.saveCashDocument();
-
-                        // this.initFormPayment() ;
-                        this.cleanLocalStoragePayment()
-                        this.$eventHub.$emit('saleSuccess');
                     }
-                    else {
+
+                    this.documentNewId = response.data.data.id;
+                    this.showDialogOptions = true;
+
+                    // this.savePaymentMethod();
+                    this.saveCashDocument();
+
+                    // this.initFormPayment() ;
+                    this.cleanLocalStoragePayment()
+                    this.$eventHub.$emit('saleSuccess');
+                }
+                else {
+                    this.$message.error(response.data.message);
+                }
+            }).catch(error => {
+                if (error.response.status === 422) {
+                    this.errors = error.response.data;
+                }
+                else {
+                    this.$message.error(error.response.data.message);
+                }
+            }).then(() => {
+                this.loading_submit = false;
+                this.locked_submit = false
+            });
+        },
+        saveCashDocument(){
+            this.$http.post(`/cash/cash_document`, this.form_cash_document)
+                .then(response => {
+                    if (response.data.success) {
+                        // console.log(response)
+                    } else {
                         this.$message.error(response.data.message);
                     }
-                }).catch(error => {
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+        savePaymentMethod(){
+            this.$http.post(`/${this.resource_payments}`, this.form_payment)
+                .then(response => {
+                    if (response.data.success) {
+                        // console.log(response)
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                })
+                .catch(error => {
                     if (error.response.status === 422) {
-                        this.errors = error.response.data;
-                    }
-                    else {
-                        this.$message.error(error.response.data.message);
-                    }
-                }).then(() => {
-                    this.loading_submit = false;
-                    this.locked_submit = false
-                });
-            },
-            saveCashDocument(){
-                this.$http.post(`/cash/cash_document`, this.form_cash_document)
-                    .then(response => {
-                        if (response.data.success) {
-                            // console.log(response)
-                        } else {
-                            this.$message.error(response.data.message);
-                        }
-                    })
-                    .catch(error => {
+                        this.records[index].errors = error.response.data;
+                    } else {
                         console.log(error);
-                    })
-            },
-            savePaymentMethod(){
-                this.$http.post(`/${this.resource_payments}`, this.form_payment)
-                    .then(response => {
-                        if (response.data.success) {
-                            // console.log(response)
-                        } else {
-                            this.$message.error(response.data.message);
-                        }
-                    })
-                    .catch(error => {
-                        if (error.response.status === 422) {
-                            this.records[index].errors = error.response.data;
-                        } else {
-                            console.log(error);
-                        }
-                    })
-            },
-            getTables(){
-                this.$http.get(`/${this.resource}/payment_tables`)
-                    .then(response => {
-                        this.all_series = response.data.series
-                        this.payment_method_types = response.data.payment_method_types
-                        this.cards_brand = response.data.cards_brand
-                        this.filterSeries()
-                    })
+                    }
+                })
+        },
+        getTables(){
+            this.$http.get(`/${this.resource}/payment_tables`)
+                .then(response => {
+                    this.all_series = response.data.series
+                    this.payment_method_types = response.data.payment_method_types
+                    this.cards_brand = response.data.cards_brand
+                    this.filterSeries()
+                })
 
-            },
-            isActiveBussinessTurn(value){
-                return (_.find(this.business_turns,{'value':value})) ? true:false
-            },
-        }
+        },
+        isActiveBussinessTurn(value){
+            return (_.find(this.business_turns,{'value':value})) ? true:false
+        },
     }
+}
 </script>
