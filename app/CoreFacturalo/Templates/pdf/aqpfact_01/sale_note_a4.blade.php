@@ -8,6 +8,12 @@
     $payments = $document->payments;
     $accounts = \App\Models\Tenant\BankAccount::all();
 
+    $configuracion = \App\Models\Tenant\Configuration::all();
+     foreach($configuracion as $config){
+        $color1= $config['color1'];
+        $color2= $config['color2'];
+     }
+
 @endphp
 <html>
 <head>
@@ -18,7 +24,7 @@
 <table class="full-width">
     <tr>
         @if($company->logo)
-            <td width="20%">
+            <td width="25%">
                 <div class="company_logo_box">
                     <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
                 </div>
@@ -27,7 +33,7 @@
             <td width="20%">
             </td>
         @endif
-        <td width="50%" class="pl-3">
+        <td width="48%" class="pl-3">
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
@@ -41,8 +47,9 @@
                 <h6>{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</h6>
             </div>
         </td>
-        <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">NOTA DE VENTA</h5>
+        <td width="27%" class="px-2 text-center" style="border: 2px solid {{$color1}}">
+            <h3 class="text-center">{{ 'RUC: '.$company->number }}</h3>
+            <h5 class="text-center" style="background: {{$color1}};color:#fff;">NOTA DE VENTA</h5>
             <h3 class="text-center">{{ $tittle }}</h3>
         </td>
     </tr>
@@ -93,7 +100,7 @@
     </tr>
     @endif
     @if ($document->reference_data)
-        <tr> 
+        <tr>
             <td class="align-top">D. Referencia:</td>
             <td colspan="3">{{ $document->reference_data }}</td>
         </tr>
@@ -118,31 +125,31 @@
 </table>
 @endif
 
-<table class="full-width mt-10 mb-10">
-    <thead class="">
-    <tr class="bg-grey">
-        <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
-        <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
-        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-center py-2" width="8%">LOTE</th>
-        <th class="border-top-bottom text-center py-2" width="8%">SERIE</th>
-        <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
-        <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
-        <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
+<table class="full-width mt-10 mb-10 datos-empresa">
+    <thead class="encabezado">
+    <tr class="bg-grey-">
+        <th class="text-center text-white py-2" width="8%" style="background: {{$color1}}">CANT.</th>
+        <th class="text-center text-white py-2" width="8%" style="background: {{$color1}}">UNIDAD</th>
+        <th class="text-left text-white py-2" style="background: {{$color1}}">DESCRIPCIÓN</th>
+        <th class="text-center text-white py-2" width="8%" style="background: {{$color1}}">LOTE</th>
+        <th class="text-center text-white py-2" width="8%" style="background: {{$color1}}">SERIE</th>
+        <th class="text-right text-white py-2" width="12%" style="background: {{$color2}}">P.UNIT</th>
+        <th class="text-right text-white py-2" width="8%" style="background: {{$color2}}">DTO.</th>
+        <th class="text-right text-white py-2" width="12%" style="background: {{$color2}}">TOTAL</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody class="items-aqp">
     @foreach($document->items as $row)
         <tr>
-            <td class="text-center align-top">
+            <td class="text-center align-top borde-gris">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
                 @else
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
-            <td class="text-left">
+            <td class="text-center align-top borde-gris">{{ $row->item->unit_type_id }}</td>
+            <td class="text-left borde-gris">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
                 @if($row->attributes)
@@ -155,7 +162,7 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
- 
+
                 @if($row->item->is_set == 1)
 
                  <br>
@@ -166,7 +173,7 @@
                 @endif
 
             </td>
-            <td class="text-center align-top">
+            <td class="text-center align-top borde-gris">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 @php
                     $lot_code = isset($row->item->lots_group) ? collect($row->item->lots_group)->first(function($row){ return $row->checked == true;}):null;
@@ -176,7 +183,7 @@
                 }}
 
             </td>
-            <td class="text-center align-top">
+            <td class="text-center align-top borde-gris">
 
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
@@ -186,8 +193,8 @@
                     @endforeach
                 @endisset
             </td>
-            <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
-            <td class="text-right align-top">
+            <td class="text-right align-top borde-gris">{{ number_format($row->unit_price, 2) }}</td>
+            <td class="text-right align-top borde-gris">
                 @if($row->discounts)
                     @php
                         $total_discount_line = 0;
@@ -200,12 +207,16 @@
                 0
                 @endif
             </td>
-            <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
+            <td class="text-right align-top borde-gris">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>
             <td colspan="8" class="border-bottom"></td>
         </tr>
     @endforeach
+        <tr>
+            <td colspan="7" class="text-right font-bold">SUB TOTAL: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold">{{ number_format($document->total+$document->total_discount, 2) }}</td>
+        </tr>
         @if($document->total_exportation > 0)
             <tr>
                 <td colspan="7" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
@@ -234,6 +245,12 @@
              <tr>
                 <td colspan="7" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
+            </tr>
+        @endif
+        @if($document->total_igv > 0)
+            <tr>
+                <td colspan="7" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
             </tr>
         @endif
         @if($document->total_discount > 0)
@@ -267,7 +284,7 @@
                 </p>
             @endforeach
         </td>
-    </tr> 
+    </tr>
 </table>
 <br>
 
@@ -277,7 +294,7 @@
             <td>
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
-        </tr> 
+        </tr>
     </table>
 @endif
 

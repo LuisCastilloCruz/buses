@@ -21,6 +21,11 @@
 
     //$affected_document_number = $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT);
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
+    $configuracion = \App\Models\Tenant\Configuration::all();
+     foreach($configuracion as $config){
+        $color1= $config['color1'];
+        $color2= $config['color2'];
+     }
 @endphp
 <html>
 <head>
@@ -32,17 +37,17 @@
 <table class="full-width">
     <tr>
         @if($company->logo)
-            <td width="20%">
+            <td width="25%">
                 <div class="company_logo_box">
                     <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" alt="{{ $company->name }}" class="company_logo" style="max-width: 150px;">
                 </div>
             </td>
         @else
-            <td width="20%">
+            <td width="25%">
                 <img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">
             </td>
         @endif
-        <td width="50%" class="pl-3">
+        <td width="48%" class="pl-3">
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
@@ -56,8 +61,9 @@
                 <h6>{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</h6>
             </div>
         </td>
-        <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">{{ $document->document_type->description }}</h5>
+        <td width="27%" class="px-2 text-center" style="border: 2px solid {{$color1}}">
+            <h3 class="text-center">{{ 'RUC: '.$company->number }}</h3>
+            <h5 class="text-center" style="background: {{$color1}};color:#fff;"><b>{{ $document->document_type->description }}</b></h5>
             <h3 class="text-center">{{ $document_number }}</h3>
         </td>
     </tr>
@@ -133,15 +139,15 @@
     </tr>
 </table>
 <table class="full-width mt-10 mb-10">
-    <thead class="">
-    <tr class="bg-grey">
-        <th class="border-top-bottom text-left py-2" width="">COD.</th>
-        <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
-        <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
-        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
-        <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
-        <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
+    <thead class="encabezado">
+    <tr class="bg-grey-">
+        <th class="border-top-bottom text-left py-2" width="" style="background: {{$color1}}">COD.</th>
+        <th class="border-top-bottom text-center py-2" width="8%" style="background: {{$color1}}">CANT.</th>
+        <th class="border-top-bottom text-center py-2" width="8%" style="background: {{$color1}}">UNIDAD</th>
+        <th class="border-top-bottom text-left py-2" style="background: {{$color1}}">DESCRIPCIÓN</th>
+        <th class="border-top-bottom text-right py-2" width="12%" style="background: {{$color2}}">P.UNIT</th>
+        <th class="border-top-bottom text-right py-2" width="8%" style="background: {{$color2}}">DTO.</th>
+        <th class="border-top-bottom text-right py-2" width="12%" style="background: {{$color2}}">TOTAL</th>
     </tr>
     </thead>
     <tbody>
