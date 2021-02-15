@@ -27,14 +27,21 @@ if($hostname) {
                 Route::post('', 'CompanyAccountController@store');
             });
 
+            Route::prefix('accounting')->group(function () {
+            //plan contable
+                Route::get('plan', 'AccountingController@index')->name('tenant.accounting.index');
+                Route::get('plan/columns', 'AccountingController@columns');
+                Route::get('plan/records', 'AccountingController@records');
+            });
+
 
         });
     });
-} 
+}
 else {
 
     Route::domain(env('APP_URL_BASE'))->group(function() {
- 
+
         Route::middleware('auth:admin')->group(function() {
 
             Route::prefix('accounting')->group(function () {
@@ -44,7 +51,7 @@ else {
                 Route::get('download', 'System\AccountingController@download');
 
             });
-            
+
 
         });
     });
