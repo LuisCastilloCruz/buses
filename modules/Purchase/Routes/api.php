@@ -18,7 +18,7 @@ if ($hostname) {
                 Route::post('', 'Api\PurchaseController@store');
             });
 
-        }); 
+        });
 
     });
 }

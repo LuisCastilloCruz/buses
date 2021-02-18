@@ -24,14 +24,14 @@
                 <td>{{ $row['series'] }}</td>
                 <td>{{ $row['number'] }}</td>
                 <td>0</td>
-                <td>0</td>
+                <td>0</td> 
                 <td>ANULADA</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
+                <td>0</td> 
+                <td>0</td> 
+                <td>0</td> 
+                <td>0</td> 
+                <td>0</td> 
+                <td>0</td> 
             </tr>
         @else
             <tr>

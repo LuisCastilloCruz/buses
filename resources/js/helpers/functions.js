@@ -1,5 +1,4 @@
 function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
-
     // console.log(currency_type_id_new, exchange_rate_sale)
 
     let currency_type_id_old = row_old.item.currency_type_id
@@ -171,7 +170,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
             }
 
         }
-        
+
         row.discounts.splice(index, discount)
     })
 
@@ -244,7 +243,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     if(row_old.has_plastic_bag_taxes){
         row.total_plastic_bag_taxes = _.round(row.quantity * row.item.amount_plastic_bag_taxes, 1)
     }
-    
+
     // console.log(row)
     return row
 }

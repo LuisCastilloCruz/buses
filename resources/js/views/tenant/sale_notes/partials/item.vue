@@ -517,7 +517,7 @@
                     if(!this.form.IdLoteSelected)
                         return this.$message.error('Debe seleccionar un lote.');
                 }
-                
+
                 let affectation_igv_types_exonerated_unaffected = ['20','21','30','31','32','33','34','35','36','37']
 
                 let unit_price = this.form.unit_price

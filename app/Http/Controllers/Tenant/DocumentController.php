@@ -240,8 +240,7 @@ class DocumentController extends Controller
                     'identity_document_type_code' => $row->identity_document_type->code,
                     'addresses' => $row->addresses,
                     'address' =>  $row->address,
-
-
+                    'internal_code' => $row->internal_code
                 ];
             });
             return $customers;

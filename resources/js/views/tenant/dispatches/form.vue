@@ -441,7 +441,7 @@
 
                     Object.values(element.attributes).forEach(attr => {
                         if(attr.attribute_type_id === '5032'){
-                            total_weight += parseFloat(attr.value) * parseFloat(element.quantity)
+                            total_weight += parseFloat(attr.value) * parseFloat(element.quantity)  
                         }
                     });
                 }

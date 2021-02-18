@@ -21,7 +21,7 @@
                         </td>
                         <td align="center">
                             <p><strong>{{($records[0]->item->internal_id) ? $records[0]->item->internal_id.' -':''}} {{$records[0]->item->description}}</strong></p>
-                        </td> 
+                        </td>
                     </tr>
                 @endif
                 <tr>
@@ -58,7 +58,7 @@
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
                         $acum_total=0;
-                      
+
                         $serie_affec = '';
                         $acum_total_exonerado=0;
                         $acum_total_inafecto=0;
@@ -89,7 +89,7 @@
                             @foreach($records as $key => $value)
                             <tr>
                                 <td class="celda">{{$loop->iteration}}</td>
-                                <td class="celda">{{$value->document->date_of_issue->format('Y-m-d')}}</td> 
+                                <td class="celda">{{$value->document->date_of_issue->format('Y-m-d')}}</td>
                                 <td class="celda">{{$value->document->document_type->description}}</td>
                                 <td class="celda">{{$value->document->series}}</td>
                                 <td class="celda">{{$value->document->number}}</td>
@@ -98,42 +98,42 @@
                                 <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
                                 <td class="celda">{{$value->quantity}}</td>
                                 <td class="celda">{{$value->total}}</td>
-                               
+
                                 @php
                                   $signal = $value->document->document_type_id;
                                   $state = $value->document->state_type_id;
-                                @endphp 
-                                
-                                
-                                
+                                @endphp
+
+
+
                                 @php
                                     $value->total = (in_array($value->document->document_type_id,['01','03']) && in_array($value->document->state_type_id,['09','11'])) ? 0 : $value->total;
                                 @endphp
 
                             @php
-                              
+
                                 $serie_affec =  '';
-                              
+
                             @endphp
- 
+
                             </tr>
                             @php
 
                                 if(($signal == '07' && $state !== '11')){
 
-                                    $acum_total += -$value->total; 
+                                    $acum_total += -$value->total;
 
                                 }elseif($signal != '07' && $state == '11'){
 
-                                    $acum_total += 0; 
+                                    $acum_total += 0;
 
                                 }else{
 
-                                    $acum_total += $value->total; 
+                                    $acum_total += $value->total;
 
                                 }
 
-                                $acum_quantity += $value->quantity; 
+                                $acum_quantity += $value->quantity;
 
                             @endphp
                             @endforeach
@@ -142,7 +142,7 @@
                                 <td >TOTALES</td>
                                 <td>{{$acum_quantity}}</td>
                                 <td>{{$acum_total}}</td>
-                            </tr> 
+                            </tr>
                         </tbody>
                     </table>
                 </div>

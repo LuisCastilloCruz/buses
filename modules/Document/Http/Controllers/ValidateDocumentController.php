@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 
 class ValidateDocumentController extends Controller
 {
-    
+
     public function index()
     {
         return view('document::validate_documents.index');
@@ -26,7 +26,7 @@ class ValidateDocumentController extends Controller
 
     public function records(ValidateDocumentsRequest $request)
     {
-        
+
         $records = $this->getRecords($request);
         $validate_documents = $this->validateDocuments($records);
 
@@ -40,7 +40,7 @@ class ValidateDocumentController extends Controller
         // $documents = $records_paginate->getCollection();
 
         // dd($records_paginate->getCollection());
-        
+
         foreach ($records_paginate->getCollection() as $document)
         {
             reValidate:
@@ -54,16 +54,16 @@ class ValidateDocumentController extends Controller
                                             );
 
             if ($response['success']) {
-                
+
                 $response_code = $response['data']['comprobante_estado_codigo'];
                 $response_description = $response['data']['comprobante_estado_descripcion'];
 
                 $message = $document->number_full.'|Código: '.$response_code.'|Mensaje: '.$response_description;
 
-                $document->message = $message; 
-                $document->state_type_sunat_description = $response_description; 
-                $document->code = $response_code; 
- 
+                $document->message = $message;
+                $document->state_type_sunat_description = $response_description;
+                $document->code = $response_code;
+
             } else {
                 goto reValidate;
             }
@@ -80,7 +80,7 @@ class ValidateDocumentController extends Controller
         $end_number = $request->end_number;
         $document_type_id = $request->document_type_id;
         $series = $request->series;
-        
+
         // dd($request->all());
 
         if($end_number){
@@ -96,7 +96,7 @@ class ValidateDocumentController extends Controller
                             ->where('series',$series)
                             ->where('number',$start_number)
                             ->latest();
-        }        
+        }
 
         return $records;
 
@@ -104,14 +104,14 @@ class ValidateDocumentController extends Controller
 
     public function data_table()
     {
-        
+
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
-                       
+
         return compact('document_types','series');
 
     }
-    
+
     public function regularize(ValidateDocumentsRequest $request)
     {
 

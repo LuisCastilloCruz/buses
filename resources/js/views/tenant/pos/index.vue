@@ -251,7 +251,7 @@
                                                 "
                                             >
                                                 <span style="font-size:16px;"
-                                                >&#9998;</span
+                                                    >&#9998;</span
                                                 >
                                             </button>
                                             ({{ item.unit_type_id }})
@@ -630,8 +630,8 @@
                                         </td>
                                         <td>
                                             <small>{{
-                                                    item.unit_type_id
-                                                }}</small>
+                                                item.unit_type_id
+                                            }}</small>
                                         </td>
                                         <!-- <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
@@ -1179,7 +1179,7 @@ export default {
             let item_search = this.items[index];
             this.items[index].sale_unit_price = this.items[
                 index
-                ].edit_sale_unit_price;
+            ].edit_sale_unit_price;
             this.items[index].edit_unit_price = false;
 
             // console.log(item_search)
@@ -1280,7 +1280,7 @@ export default {
             if (this.form.items[index].item.calculate_quantity) {
                 let quantity = _.round(
                     parseFloat(this.form.items[index].total) /
-                    parseFloat(this.form.items[index].unit_price),
+                        parseFloat(this.form.items[index].unit_price),
                     4
                 );
 
@@ -1518,7 +1518,7 @@ export default {
                 unit_type_id: item.unit_type_id
             });
 
-            //console.log(exist_item)
+            console.log(exist_item)
 
             let pos = this.form.items.indexOf(exist_item);
             let response = null;

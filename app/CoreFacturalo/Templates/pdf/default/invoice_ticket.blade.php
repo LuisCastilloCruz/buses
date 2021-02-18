@@ -4,7 +4,7 @@
     $invoice = $document->invoice;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $accounts = \App\Models\Tenant\BankAccount::all();
+    $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
     $document_base = ($document->note) ? $document->note : null;
     $payments = $document->payments;
 
@@ -134,7 +134,7 @@
             <td class="align-top"><p class="desc">D. Referencia:</p></td>
             <td>
                 <p class="desc">
-                    {{ $document->reference_data }} 
+                    {{ $document->reference_data }}
                 </p>
             </td>
         </tr>
@@ -191,7 +191,7 @@
             <td><p class="desc">{{ $document->detraction->delivery_location_id[2] }}</p></td>
         </tr>
         <tr>
-    
+
             <td  class="align-top"><p class="desc">Dirección destino:</p></td>
             <td><p class="desc">{{ $document->detraction->delivery_address }}</p></td>
         </tr>
@@ -200,7 +200,7 @@
             <td><p class="desc">{{ $document->detraction->reference_value_service }}</p></td>
         </tr>
         <tr>
-    
+
             <td  class="align-top"><p class="desc">Valor referencia carga efectiva:</p></td>
             <td><p class="desc">{{ $document->detraction->reference_value_effective_load }}</p></td>
         </tr>
@@ -478,22 +478,23 @@
                     @if ($loop->first)
                         <strong>Información adicional</strong>
                     @endif
-                    <p>{{ $information }}</p>
+                    <p class="desc">{{ $information }}</p>
                 @endif
             @endforeach
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <p>
-                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
-                    <span class="font-bold">N°:</span> {{$account->number}}
-                    @if($account->cci)
-                    <span class="font-bold">CCI:</span> {{$account->cci}}
-                    @endif
+                    <p class="desc">
+                        <small>
+                            <span class="font-bold desc">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                            <span class="font-bold desc">N°:</span> {{$account->number}}
+                            @if($account->cci)
+                            <span class="font-bold desc">CCI:</span> {{$account->cci}}
+                            @endif
+                        </small>
                     </p>
                 @endforeach
             @endif
-
         </td>
     </tr>
     <tr>
@@ -520,7 +521,7 @@
             <td class="desc pt-5">
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
-        </tr> 
+        </tr>
     @endif
     @if($payments->count())
         <tr>
@@ -536,13 +537,29 @@
     @endif
 
     <tr>
-        <td class="desc pt-2">
-        <strong>Vendedor:</strong> </td></tr>
-                <tr>
-                    <td class="desc">{{ $document->user->name }}</td>
-                </tr>
+        <td class="desc">
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        @if ($document->seller)
+            <td class="desc">{{ $document->seller->name }}</td>
+        @else
+            <td class="desc">{{ $document->user->name }}</td>
+        @endif
+    </tr>
 
+    @if ($document->terms_condition)
+        <tr>
+            <td class="desc">
+                <br>
+                <h6 style="font-size: 10px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
         </tr>
+    @endif
+
+    </tr>
 
     <tr>
         <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>

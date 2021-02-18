@@ -470,6 +470,11 @@
                                                 </div>
                                             </template>
 
+                                            <div class="col-12">
+                                                <br>
+                                                <span class="mr-3">Mostrar términos y condiciones.</span>
+                                                <el-switch v-model="form.show_terms_condition"></el-switch>
+                                            </div>
                                         </div>
                                     </el-collapse-item>
                                 </el-collapse>
@@ -687,7 +692,7 @@
     min-height: 65px !important;
 }
 </style>
-<script type="text/babel">
+<script>
     import DocumentFormItem from './partials/item.vue'
     import PersonForm from '../persons/form.vue'
     import DocumentOptions from '../documents/partials/options.vue'
@@ -1345,6 +1350,8 @@
                     customer_address_id:null,
                     pending_amount_prepayment:0,
                     payment_method_type_id:null,
+                    show_terms_condition: true,
+                    terms_condition: ''
                 }
 
                 this.form_cash_document = {
@@ -1768,7 +1775,9 @@
 
             },
             async submit() {
-
+                if (this.form.show_terms_condition) {
+                    this.form.terms_condition = this.configuration.terms_condition_sale;
+                }
                 if(this.form.has_prepayment || this.prepayment_deduction){
                     let error_prepayment = await this.validateAffectationTypePrepayment()
                     if(!error_prepayment.success)
@@ -1817,7 +1826,7 @@
                         this.saveCashDocument();
                     }
                     else {
-                        this.$message.error(response.data.data.message);
+                        this.$message.error(response.data.message);
                     }
                 }).catch(error => {
 

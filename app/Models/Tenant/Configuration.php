@@ -37,6 +37,7 @@ class Configuration extends ModelTenant
         'legend_footer',
         'default_document_type_03',
         'destination_sale',
+        'terms_condition_sale',
         'color1',
         'color2',
         'fondo',

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Tenant\Api;
 use App\CoreFacturalo\Facturalo;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Controllers\Controller;
-use App\CoreFacturalo\WS\Zip\ZipFly;
 use App\Http\Resources\Tenant\DocumentCollection;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\StateType;

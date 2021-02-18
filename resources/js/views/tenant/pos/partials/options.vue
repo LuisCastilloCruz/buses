@@ -18,27 +18,27 @@
                             <h4 class="title">Envio automático: {{ (configuration.send_auto) ? 'Activado':'Desactivado'}}</h4>
 
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
         </span>
         <div class="form-body el-dialog__body_custom">
             <div class="row">
-                <div class="col-md-12 m-bottom">  
+                <div class="col-md-12 m-bottom">
                     <el-tabs v-model="activeName"  >
                         <el-tab-pane label="Imprimir Ticket" name="first">
-                            <embed id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>                                    
-                        </el-tab-pane> 
-                        <el-tab-pane label="Imprimir A4" name="second">                                    
+                            <embed id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
+                        </el-tab-pane>
+                        <el-tab-pane label="Imprimir A4" name="second">
                             <embed :src="form.print_a4" type="application/pdf" width="100%" height="450px"/>
-                        </el-tab-pane>  
-                        <el-tab-pane label="Imprimir A5" name="third">                                    
+                        </el-tab-pane>
+                        <el-tab-pane label="Imprimir A5" name="third">
                             <embed :src="form.print_a5" type="application/pdf" width="100%" height="450px"/>
-                        </el-tab-pane>                       
+                        </el-tab-pane>
                     </el-tabs>
-                </div> 
-                <div class="row col-md-12"> 
-                    <div class="col-md-6">   
+                </div>
+                <div class="row col-md-12">
+                    <div class="col-md-6">
                         <el-input v-model="form.customer_email" ref="ref_customer_email" @keyup.native="keyupCustomerEmail">
                             <el-button slot="append" icon="el-icon-message"   @click="clickSendEmail" :loading="loading">Enviar</el-button>
                         </el-input>
@@ -60,14 +60,14 @@
                     <div class="col-md-6 mt-4">
                     </div>
                     <div class="col-md-6 mt-4">
-                        <el-button  type="primary"  class="float-right" @click="clickNewSale">Nueva venta</el-button>                             
+                        <el-button  type="primary"  class="float-right" @click="clickNewSale">Nueva venta</el-button>
                     </div>
                 </div>
 
             </div>
         </div>
     </el-dialog>
-</template> 
+</template>
 
 <script>
     import Keypress from 'vue-keypress'
@@ -89,7 +89,7 @@
             }
         },
         async created() {
-            this.initForm() 
+            this.initForm()
         },
         mounted(){
         },
@@ -148,9 +148,9 @@
                 this.$refs.ref_customer_email.$el.getElementsByTagName('input')[0].focus()
             },
             async clickNewSale(){
-                
 
-                
+
+
                 await this.initForm()
                 await this.$eventHub.$emit('cancelSale')
 
@@ -165,15 +165,15 @@
                     print_a5: null,
                     print_ticket: null,
                     external_id: null,
-                    number: null, 
+                    number: null,
                     customer_telephone:null,
                     message_text:null,
                     id: null
-                } 
+                }
             },
             create() {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
-                    this.form = response.data.data; 
+                    this.form = response.data.data;
                     this.titleDialog = 'Comprobante: '+this.form.number;
                 });
 
@@ -181,13 +181,13 @@
                     this.configuration = response.data
                 });
 
-                
-            }, 
+
+            },
             opened(){
                 this.initFocus()
             },
             clickSendEmail() {
-                            
+
                 if(this.form.customer_email == null || this.form.customer_email == '') return this.$message.error('Ingrese el correo')
                 this.loading = true
                 this.$http.post(`/${this.resource}/email`, {

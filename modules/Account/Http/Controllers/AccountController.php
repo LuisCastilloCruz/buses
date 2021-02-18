@@ -1,16 +1,18 @@
 <?php
 namespace Modules\Account\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Tenant\Item;
+use Illuminate\Http\Request;
+use App\Models\Tenant\Document;
+use App\Http\Controllers\Controller;
+use App\Models\Tenant\Configuration;
+use Modules\Account\Models\CompanyAccount;
+use Modules\Account\Exports\ReportAccountingAdsoftExport;
 use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
-use App\Http\Controllers\Controller;
-use App\Models\Tenant\Document;
-use App\Models\Tenant\Item;
-use App\Models\Tenant\Configuration;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Modules\Account\Models\CompanyAccount;
+use Modules\Account\Exports\ReportAccountingSumeriusExport;
 
 class AccountController extends Controller
 {
@@ -31,11 +33,7 @@ class AccountController extends Controller
         $filename = 'Reporte_'.ucfirst($type).'_Ventas_'.date('YmdHis');
 
         switch ($type) {
-
             case 'concar':
-
-                // libxml_use_internal_errors(true);
-
                 $data = [
                     'records' => $this->getStructureConcar($this->getAllDocuments($d_start, $d_end)),
                 ];
@@ -43,8 +41,6 @@ class AccountController extends Controller
                 $report = (new ReportAccountingConcarExport)
                             ->data($data)
                             ->download($filename.'.xlsx');
-
-                // libxml_use_internal_errors(false);
 
                 return $report;
 
@@ -83,9 +79,117 @@ class AccountController extends Controller
                     ->data($data)
                     ->download($filename.'.xlsx');
 
+            case 'adsoft':
 
+                $data = [
+                    'records' => $this->getStructureAdsoft($records),
+                ];
+
+                return (new ReportAccountingAdsoftExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
+            case 'sumerius':
+
+                $data = [
+                    'records' => $this->getStructureSumerius($records),
+                ];
+
+                return (new ReportAccountingSumeriusExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
         }
+    }
 
+    private function getStructureSumerius($documents)
+    {
+        return $documents->transform(function($row) {
+            return [
+                'col_A' => number_format($row->id, 2, ".", ""),
+                'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
+                'document_type_id' => $row->document_type_id,
+		        'state_type_id' => $row->state_type_id,
+                'series' => $row->series,
+                'number' => str_pad($row->number, 7, '0', STR_PAD_LEFT),
+                'col_G' => '',
+                'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
+                'customer_number' => $row->customer->number,
+                'customer_name' => $row->customer->name,
+                'total_isc' => number_format($row->total_isc, 2, ".", ""),
+                'total_exportation' => number_format($row->total_exportation, 2, ".", ""),
+                'total_unaffected' => number_format($row->total_unaffected, 2, ".", ""),
+                'total_taxed' => number_format($row->total_taxed, 2, ".", ""),
+                'total_igv' => number_format($row->total_igv, 2, ".", ""),
+                'total_plastic_bag_taxes' => number_format($row->total_plastic_bag_taxes, 2, ".", ""),
+                'total' => number_format($row->total, 2, ".", ""),
+                'total_exonerated' => number_format($row->total_exonerated, 2, ".", ""),
+                'total_retention' => number_format(0, 2, ".", ""),
+                'col_S' => '',
+                'col_T' => '',
+                'col_U' => '',
+                'col_V' => '70121',
+                'col_W' => '',
+                'col_X' => '',
+                'col_Y' => '401112',
+                'col_Z' => '1212',
+                'col_AA' => 'VENTA NACIONAL',
+            ];
+        });
+    }
+
+    private function getStructureAdsoft($documents)
+    {
+        $rows = [];
+        foreach ($documents as $row)
+        {
+            $document = [
+                'serie' => $row->series,
+                'numero' => $row->number,
+                'fecfac' => Carbon::parse($row->date_of_issue)->format('d/m/Y'),
+                'fecven' => Carbon::parse($row->invoice->date_of_due)->format('d/m/Y'),
+                'nro_ruc' => $row->customer->identity_document_type_id === '6' ? $row->customer->number : '',
+                'nombre' => $row->customer->name,
+                'tipdoc' => $row->document_type_id,
+                'tipmon' => strtoupper($row->currency_type->description),
+                'detrac' => '',
+                'isc' => $row->state_type_id == '11' ? 0 : number_format($row->total_isc, 2, '.', ''),
+                'icbper' => '',
+                'imp_ina' => 0,
+                'imp_exp' => '',
+                'recargo' => '',
+                'st' => $row->state_type_id === '11' ? 'A' : '',
+                'ser_dqm' => '',
+                'nro_dqm' => '',
+                'fec_dqm' => '',
+                'tip_dqm' => '',
+                'serie_fin' => '',
+                'numero_fin' => '',
+                'nro_dni' => $row->customer->identity_document_type_id === '1' ? $row->customer->number : '',
+                'pasaporte' => '',
+                'cta_vta' => '',
+                'tip_cam' => '',
+            ];
+			if ($row->state_type_id === '11') {
+                $document['imp_exo'] = 0;
+                $document['imp_vta'] = 0;
+                $document['imp_tot'] = 0;
+                $document['imp_igv'] = 0;
+            } else {
+                if ($row->total_exonerated == 0) {
+                    $document['imp_exo'] = 0;
+                    $document['imp_vta'] = number_format($row->total_value, 2, '.', '');
+                    $document['imp_tot'] = number_format($row->total, 2, '.', '');
+                    $document['imp_igv'] = number_format($row->total_igv, 2, '.', '');
+                } else {
+                    $document['imp_exo'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_vta'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_tot'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_igv'] = 0;
+                }
+            }
+            array_push($rows, $document);
+        }
+        return $rows;
     }
 
     private function getDocuments($d_start, $d_end)
@@ -145,16 +249,16 @@ class AccountController extends Controller
         $document_type = "";
 
         switch ($document_type_id) {
-            case '01': 
+            case '01':
                 $document_type = 'FT';
                 break;
-            case '03': 
+            case '03':
                 $document_type = 'BV';
                 break;
-            case '07': 
+            case '07':
                 $document_type = 'NA';
                 break;
-            case '08': 
+            case '08':
                 $document_type = 'ND';
                 break;
         }
@@ -226,7 +330,7 @@ class AccountController extends Controller
                         'col_U' => $date_of_due,
                         'col_V' => '',
                         'col_W' => $document_type_id.'-'.$row->number_full,
-                        // 'col_W' => $detail, 
+                        // 'col_W' => $detail,
                         'col_X' => '',
                         'col_Y' => '',
                         'col_Z' => $reference_document_type_id,
@@ -245,7 +349,7 @@ class AccountController extends Controller
                         'col_AM' => '',
                         'col_AN' => '',
                     ];
-    
+
                     $rows[] = [
                         // 'col_A' => '',
                         'col_B' => '05',
@@ -290,7 +394,7 @@ class AccountController extends Controller
                         'col_AM' => '',
                         'col_AN' => '',
                     ];
-    
+
                     $rows[] = [
                         // 'col_A' => '',
                         'col_B' => '05',
@@ -366,7 +470,7 @@ class AccountController extends Controller
                         'col_U' => $date_of_due,
                         'col_V' => '',
                         'col_W' => $document_type_id.'-'.$row->number_full,
-                        // 'col_W' => $detail, 
+                        // 'col_W' => $detail,
                         'col_X' => '',
                         'col_Y' => '',
                         'col_Z' => $reference_document_type_id,
@@ -385,7 +489,7 @@ class AccountController extends Controller
                         'col_AM' => '',
                         'col_AN' => '',
                     ];
-    
+
                     $rows[] = [
                         // 'col_A' => '',
                         'col_B' => '05',
@@ -430,7 +534,7 @@ class AccountController extends Controller
                         'col_AM' => '',
                         'col_AN' => '',
                     ];
-    
+
                     $rows[] = [
                         // 'col_A' => '',
                         'col_B' => '05',
@@ -633,6 +737,8 @@ class AccountController extends Controller
         return $documents->transform(function($row) {
             $company_account = CompanyAccount::first();
             $document_base = ($row->note) ? $row->note : null;
+            $payment_condition = '';
+            $payment_method = '';
 
             if($row->payments->count() > 0){
                 if($row->payments[0]->payment_method_type_id == '01') {
@@ -650,6 +756,7 @@ class AccountController extends Controller
                 'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
                 'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
                 'document_type_id' => $row->document_type_id,
+                'state_type_id' => $row->state_type_id,
                 'series' => '00'.$row->series,
                 'number' => str_pad($row->number, 13, '0', STR_PAD_LEFT),
                 'customer_identity_document_type_id' => $row->customer->identity_document_type_id,

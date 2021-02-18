@@ -19,7 +19,7 @@
                                         <th  class="text-center">Cantidad Total</th>
                                     </tr>
                                 </thead>
-                                <tbody> 
+                                <tbody>
                                     <tr v-for="(row, index) in records" :key="index">
                                         <!-- <td>{{ index+1  }}</td>  -->
                                         <td  class="text-center">{{row.item_internal_id}}</td>
@@ -27,13 +27,13 @@
                                         <td  class="text-center">{{row.item_unit_type_id}}</td>
                                         <td  class="text-center">{{row.quantity}}</td>
                                     </tr>
-                                </tbody>  
-                            </table> 
+                                </tbody>
+                            </table>
                         </div>
 
-                    </div> 
+                    </div>
                 </div>
-  
+
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cerrar</el-button>
@@ -52,19 +52,19 @@
                 loading: false,
                 titleDialog: 'Totales por productos',
                 resource: 'reports/sales-consolidated',
-                records: [], 
+                records: [],
             }
         },
         async created() {
 
-        }, 
-        methods: { 
+        },
+        methods: {
             clickDownload(type) {
                 window.open(`/${this.resource}/${type}-totals/?${this.parameters}`, '_blank');
             },
             close() {
                 this.$emit('update:showDialog', false)
-            }, 
+            },
             create(){
                 this.getRecords()
             },

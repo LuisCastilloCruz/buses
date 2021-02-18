@@ -14,16 +14,16 @@ class OrderNoteConsolidatedCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        
-        return $this->collection->transform(function($row, $key){ 
-             
+
+        return $this->collection->transform(function($row, $key){
+
             return [
                 'id' => $row->id,
                 'user' => $row->order_note->user->name,
                 'customer' => $row->order_note->customer->name,
                 'delivery_date' => $row->order_note->delivery_date,
-                'item_description' => $row->item->description,  
-                'item_quantity' => $row->quantity,  
+                'item_description' => $row->item->description,
+                'item_quantity' => $row->quantity,
                 'total' => number_format(self::calculateTotalCurrencyType($row->order_note, $row->total),2, ".", ""),
             ];
         });

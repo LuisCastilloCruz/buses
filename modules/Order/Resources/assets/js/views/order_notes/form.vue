@@ -242,7 +242,7 @@
                 orderNoteNewId: null,
                 activePanel: 0,
                 loading_search:false,
-                business_turns: [],
+                business_turns: []
             }
         },
         async created() {

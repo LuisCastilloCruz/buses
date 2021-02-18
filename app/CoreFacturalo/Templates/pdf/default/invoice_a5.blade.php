@@ -6,7 +6,7 @@
 
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $accounts = \App\Models\Tenant\BankAccount::all();
+    $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
 
     if($document_base) {
         $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
@@ -110,9 +110,15 @@
 
     @endif
     <tr>
-        <td>CLIENTE:</td>
-        <td>:</td>
-        <td>{{ $customer->name }}</td>
+        <td style="vertical-align: top;">CLIENTE</td>
+        <td style="vertical-align: top;">:</td>
+        <td style="vertical-align: top;">
+            {{ $customer->name }}
+            @if ($customer->internal_code ?? false)
+            <br>
+            <small>{{ $customer->internal_code ?? '' }}</small>
+            @endif
+        </td>
 
         @if ($document->detraction)
             <td width="120px">MÉTODO DE PAGO</td>
@@ -378,17 +384,14 @@
     @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
-            <td class="text-center align-top">
-                1
-            </td>
+            <td class="text-center align-top">1</td>
             <td class="text-center align-top">NIU</td>
             <td class="text-left align-top">
                 ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
             </td>
+            <td class="text-right align-top"></td>
             <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
-            <td class="text-right align-top">
-                0
-            </td>
+            <td class="text-right align-top">0</td>
             <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
         </tr>
         <tr>
@@ -544,11 +547,33 @@
                 </tr>
             @endforeach
         </tr>
-
     </table>
 @endif
-
-
-
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <strong>Vendedor:</strong>
+            </td>
+        </tr>
+        <tr>
+            @if ($document->seller)
+                <td>{{ $document->seller->name }}</td>
+            @else
+                <td>{{ $document->user->name }}</td>
+            @endif
+        </tr>
+    </table>
+@if ($document->terms_condition)
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    </table>
+@endif
 </body>
 </html>

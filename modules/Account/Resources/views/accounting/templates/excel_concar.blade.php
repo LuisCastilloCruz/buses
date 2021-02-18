@@ -40,7 +40,7 @@
             <td>Importe Base Detracción/Percepción Dólares</td>
             <td>Importe Base Detracción/Percepción Soles</td>
             <td>Tipo Cambio para 'F'</td>
-            <td>Importe de IGV sin derecho crédito fiscal</td>
+            <td>Importe de IGV sin derecho crédito fiscal</td> 
         </tr>
         {{-- <tr>
             <td>Restricciones</td>
@@ -129,7 +129,7 @@
         </tr> --}}
     </thead>
 
-    <tbody>
+    <tbody> 
         @foreach($records as $row)
         <tr>
             @foreach ($row as $item)

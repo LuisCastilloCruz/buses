@@ -49,8 +49,8 @@
                                                 :picker-options="pickerOptionsDates"
                                                 value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                             </div>
-                        </template> 
-                    
+                        </template>
+
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Tipo</label>
@@ -97,7 +97,7 @@
                         </thead>
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
-                        </tbody> 
+                        </tbody>
                         <tfoot v-if="resource == 'finances/global-payments'">
                             <tr>
                                 <td colspan="9"></td>
@@ -183,8 +183,8 @@
 
             await this.$http.get(`/${this.resource}/filter`)
                 .then(response => {
-                    this.payment_types = response.data.payment_types; 
-                    this.destination_types = response.data.destination_types; 
+                    this.payment_types = response.data.payment_types;
+                    this.destination_types = response.data.destination_types;
                 });
 
 
@@ -218,7 +218,7 @@
                     month_end: moment().format('YYYY-MM'),
                 }
 
-            }, 
+            },
             customIndex(index) {
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },

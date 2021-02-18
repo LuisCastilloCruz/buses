@@ -12,7 +12,7 @@ use App\CoreFacturalo\Services\Models\Company;
  */
 class Sunat
 {
-    const URL_CONSULT = 'http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias';
+    const URL_CONSULT = 'http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS03Alias';
     const URL_RANDOM = 'http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=random';
 
     /**
@@ -50,7 +50,8 @@ class Sunat
             return false;
         }
         $random = $this->getRandom();
-        $url = self::URL_CONSULT."?accion=consPorRuc&nroRuc=$ruc&numRnd=$random&tipdoc=";
+        $url = self::URL_CONSULT."?accion=consPorRuc&nroRuc=$ruc&numRnd=$random&tipdoc=1";
+        // dd($url);
         $dic = $this->getValuesFromUrl($url);
 
         if ($dic === false) {
@@ -80,6 +81,7 @@ class Sunat
     private function getValuesFromUrl($url)
     {
         $html = $this->client->get($url);
+        // dd($html);
 
         if ($html === false) {
             $this->error = 'Ocurrio un problema conectando a Sunat';
@@ -100,14 +102,14 @@ class Sunat
     private function getCompany(array $items)
     {
         $cp = $this->getHeadCompany($items);
-        //$cp->sistEmsion = $items['Sistema de Emisión de Comprobante:'];
-        //$cp->sistContabilidad = $items['Sistema de Contabilidad:'];
-        //$cp->actExterior = $items['Actividad de Comercio Exterior:'];
+        // $cp->sistEmsion = $items['Sistema de Emisión de Comprobante:'];
+        // $cp->sistContabilidad = $items['Sistema de Contabilidad:'];
+        // $cp->actExterior = $items['Actividad de Comercio Exterior:'];
         $cp->actEconomicas = $items['Actividad(es) Económica(s):'];
         $cp->cpPago = $items['Comprobantes de Pago c/aut. de impresión (F. 806 u 816):'];
         $cp->sistElectronica = $items['Sistema de Emisión Electrónica:'];
-        //$cp->fechaEmisorFe = $this->parseDate($items['Emisor electrónico desde:']);
-        //$cp->cpeElectronico = $this->getCpes($items['Comprobantes Electrónicos:']);
+        // $cp->fechaEmisorFe = $this->parseDate($items['Emisor electrónico desde:']);
+        // $cp->cpeElectronico = $this->getCpes($items['Comprobantes Electrónicos:']);
         $cp->fechaPle = $this->parseDate($items['Afiliado al PLE desde:']);
         $cp->padrones = $items['Padrones :'];
         if ($cp->sistElectronica == '-') {
@@ -121,7 +123,6 @@ class Sunat
 
     private function getHeadCompany(array $items)
     {
-        //dd($items);
         $cp = new Company();
 
         list($cp->ruc, $cp->razonSocial) = $this->getRucRzSocial($items['RUC:']);

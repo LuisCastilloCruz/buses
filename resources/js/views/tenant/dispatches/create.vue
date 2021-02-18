@@ -579,7 +579,6 @@
                 this.$set(this.form.delivery, 'location_id', null);
             },
             addItem(form) {
-                // console.log(form)
                 let exist = this.form.items.find((item) => item.id == form.item.id);
 
                 let attributes = null

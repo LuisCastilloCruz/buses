@@ -151,6 +151,9 @@
                             </div>
                             <div class="col-md-6 mt-4">
                                 <a href="#" @click.prevent="showDialogTermsCondition = true" class="text-center font-weight-bold text-info">[+ Términos y condiciones - Cotización]</a>
+                                <br>
+                                <br>
+                                <a href="#" @click.prevent="showDialogTermsConditionSales = true" class="text-center font-weight-bold text-info">[+ Términos y condiciones - Ventas]</a>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Mostrar cotización en finanzas</label>
@@ -224,6 +227,9 @@
             <terms-condition :showDialog.sync="showDialogTermsCondition"
                             :form="form"
                             :showClose="false"></terms-condition>
+            <terms-condition-sale :showDialog.sync="showDialogTermsConditionSales"
+                            :form="form"
+                            :showClose="false"></terms-condition-sale>
         </div>
     </div>
 </template>
@@ -231,15 +237,17 @@
 <script>
 
     import TermsCondition from '@views/quotations/partials/terms_condition.vue'
+    import TermsConditionSale from '@views/documents/partials/terms_condition.vue'
 
     export default {
         props:['typeUser'],
-        components: {TermsCondition},
+        components: {TermsCondition, TermsConditionSale},
 
         data() {
             return {
                 headers: headers_token,
-                showDialogTermsCondition:false,
+                showDialogTermsCondition: false,
+                showDialogTermsConditionSales: false,
                 loading_submit: false,
                 resource: 'configurations',
                 errors: {},

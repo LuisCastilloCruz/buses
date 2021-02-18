@@ -54,7 +54,7 @@
                         </td>
 
                         <td class="text-right">
-                            
+
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)" >Editar</button>
                             <template v-if="typeUser === 'admin'">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
@@ -67,7 +67,7 @@
 
             <technical-services-form :showDialog.sync="showDialog"
                           :recordId="recordId"></technical-services-form>
- 
+
             <technical-service-payments
                 :showDialog.sync="showDialogPayments"
                 :recordId="recordId"
@@ -112,7 +112,7 @@
             clickCreate(recordId = null) {
                 this.recordId = recordId
                 this.showDialog = true
-            }, 
+            },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')

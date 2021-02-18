@@ -127,6 +127,7 @@ class OrderNoteController extends Controller
 
         $records = OrderNote::doesntHave('documents')
                             ->doesntHave('sale_notes')
+                            ->where('state_type_id', '01')
                             ->whereTypeUser()
                             ->latest();
 

@@ -82,7 +82,7 @@
         @if(!empty($records))
             <div class="">
                 <div class=" ">
-                
+
                     @php
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
@@ -127,7 +127,7 @@
                                     </td>
 
                                     @if($value->state_type_id == '11')
-                                    
+
                                         <td class="celda">0</td>
                                         <td class="celda">0</td>
                                         <td class="celda">0</td>
@@ -147,9 +147,9 @@
                                     @endif
                                 </tr>
 
-                                
+
                                 @php
-                                
+
                                     if($value->currency_type_id == 'PEN'){
 
                                         if($value->state_type_id == '11'){
@@ -162,7 +162,7 @@
 
                                             $acum_total += $value->total;
                                             $acum_total_taxed += $value->total_taxed;
-                                            $acum_total_igv += $value->total_igv; 
+                                            $acum_total_igv += $value->total_igv;
 
                                         }
 

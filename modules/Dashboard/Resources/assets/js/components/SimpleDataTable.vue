@@ -17,7 +17,7 @@
                     :page-size="pagination.per_page">
             </el-pagination>
         </div>
-    </div> 
+    </div>
 </template>
 
 
@@ -31,7 +31,7 @@
             resource: String,
         },
         data () {
-            return { 
+            return {
                 columns: [],
                 records: [],
                 pagination: {},
@@ -46,10 +46,10 @@
 
             this.$eventHub.$on('reloadSimpleDataTable', (establishment_id) => {
                 this.form.establishment_id = establishment_id
-                this.getRecords()                
-            }) 
+                this.getRecords()
+            })
         },
-        async mounted () { 
+        async mounted () {
             await this.getRecords()
 
         },
@@ -80,7 +80,7 @@
                     limit: this.limit,
                     ...this.form
                 })
-            } 
+            }
         }
     }
 </script>

@@ -109,7 +109,7 @@ $establishment = $cash->user->establishment;
 
             </table>
         </div>
-        @if($documents->count() || $sale_notes->count())
+        @if($documents->count())
             <div class="">
                 <div class=" ">
                     <table class="">

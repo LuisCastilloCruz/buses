@@ -74,7 +74,7 @@ class PurchaseController extends Controller
     {
 
         $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id);
-        
+
         $persons = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('suppliers')
@@ -98,11 +98,11 @@ class PurchaseController extends Controller
 
     }
 
-    
+
     public function getIdentityDocumentTypeId($document_type_id){
 
         return ($document_type_id == '01') ? [6] : [1,4,6,7,0];
-        
+
     }
 
 

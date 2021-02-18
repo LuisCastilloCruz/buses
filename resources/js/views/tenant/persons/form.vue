@@ -74,7 +74,14 @@
                 </div> -->
 
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.internal_code}">
+                            <label class="control-label">Código interno</label>
+                            <el-input v-model="form.internal_code"></el-input>
+                            <small class="form-control-feedback" v-if="errors.internal_code" v-text="errors.internal_code[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.country_id}">
                             <label class="control-label">País</label>
                             <el-select v-model="form.country_id" filterable dusk="country_id">
@@ -83,7 +90,7 @@
                             <small class="form-control-feedback" v-if="errors.country_id" v-text="errors.country_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.department_id}">
                             <label class="control-label">Departamento</label>
                             <el-select v-model="form.department_id" filterable @change="filterProvince" popper-class="el-select-departments" dusk="department_id">
@@ -92,7 +99,7 @@
                             <small class="form-control-feedback" v-if="errors.department_id" v-text="errors.department_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.province_id}">
                             <label class="control-label">Provincia</label>
                             <el-select v-model="form.province_id" filterable @change="filterDistrict" popper-class="el-select-provinces" dusk="province_id">
@@ -420,7 +427,7 @@
                 const pattern_number = new RegExp('^[0-9]+$', 'i');
 
                 if (this.form.identity_document_type_id === '6') {
-                    
+
                     if(this.form.number.length !== 11){
                         return {
                             success: false,
@@ -475,12 +482,12 @@
                 }
             },
             async submit() {
-                
+
                 let val_digits = await this.validateDigits()
                 if(!val_digits.success){
                     return this.$message.error(val_digits.message)
                 }
-                
+
                 this.loading_submit = true
 
                 await this.$http.post(`/${this.resource}`, this.form)

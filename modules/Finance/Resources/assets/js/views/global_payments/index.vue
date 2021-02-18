@@ -18,7 +18,7 @@
                             <th class="">Referencia</th>
                             <th class="">Responsable</th>
                             <th class="">Pago</th>
- 
+
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>

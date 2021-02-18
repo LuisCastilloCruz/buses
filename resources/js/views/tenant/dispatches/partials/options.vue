@@ -25,7 +25,7 @@
                         <i class="fa fa-file-download"></i>
                     </button>
                     <p>Descargar CDR</p>
-                </div>
+                </div>  
             </template>
             <template v-else>
                 <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold mt-3">
@@ -130,7 +130,7 @@
             },
             clickDownloadCdr() {
                 window.open(this.form.download_cdr, '_blank');
-            },
+            }, 
             async create() {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                     this.form = response.data.data;

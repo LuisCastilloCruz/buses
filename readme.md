@@ -1,6 +1,4 @@
-<img src="icon_pro3.jpg" width="120">
-
-# **Facturador PRO 3**
+# **AQPFACT 2021**
 
 
 ## Manuales de Instalación
@@ -54,9 +52,9 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 [Documentación](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 
-[Colección para Postman](https://drive.google.com/file/d/18u_2U8z4tADIlZ0DbWg8-wg3JYYnT_t9/view?usp=sharing "Clic")
+[Colección para Postman](https://drive.google.com/file/d/1_gaJTzcq9lc6uX2DN5cSO__ut2BT1_xz/view?usp=sharing "Clic")
 
-## Pruebas online
+## Antes de realizar actualizaciones obligatoriamente debe hacer pruebas online (bajo responsabilidad)
 
 ### Panel de administración
 

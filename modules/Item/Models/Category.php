@@ -8,11 +8,11 @@ use App\Models\Tenant\ModelTenant;
 class Category extends ModelTenant
 {
 
-    protected $fillable = [ 
+    protected $fillable = [
         'name',
         'printer'
     ];
- 
+
     public function items()
     {
         return $this->hasMany(Item::class);
