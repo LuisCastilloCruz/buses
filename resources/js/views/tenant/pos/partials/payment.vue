@@ -174,7 +174,7 @@
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="control-label">Porcentaje %</label>
-                                        <el-input v-model="discount_percent"  @input="inputDiscountPercent()" :disabled="!enabled_discount">
+                                        <el-input v-model="discount_percent"  ref="monto_porc" @input="inputDiscountPercent()" :disabled="!enabled_discount">
                                         </el-input>
                                     </div>
                                 </div>
@@ -472,9 +472,9 @@ import MultiplePaymentForm from './multiple_payment.vue'
                 this.discount_percent= 0
                 this.deleteDiscountGlobal()
                 this.reCalculateTotal()
-
                 }
 
+                this.$nextTick(() => this.$refs.monto_porc.focus())
             },
             inputDiscountAmount(){
 
@@ -585,7 +585,7 @@ import MultiplePaymentForm from './multiple_payment.vue'
 
                 }
 
-                this.difference = this.enter_amount - this.form.total
+                this.difference = _.round((this.enter_amount - this.form.total),2)
                 // console.log(this.form.discounts)
             },
             reCalculateTotal() {
