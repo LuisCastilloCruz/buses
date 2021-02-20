@@ -303,15 +303,14 @@
                     if(row.currency_type_id == 'PEN'){
 
                         if((signal == '07' && state != '11')){
+                            this.totals.acum_total += parseFloat(row.total);
+                            this.totals.acum_total_taxed += parseFloat(row.total_taxed);
+                            this.totals.acum_total_igv += parseFloat(row.total_igv);
 
-                            this.totals.acum_total += parseFloat(-row.total);
-                            this.totals.acum_total_taxed += parseFloat(-row.total_taxed);
-                            this.totals.acum_total_igv += parseFloat(-row.total_igv);
 
-
-                            this.totals.acum_total_exonerated += parseFloat(-row.total_exonerated);
-                            this.totals.acum_total_unaffected += parseFloat(-row.total_unaffected);
-                            this.totals.acum_total_free += parseFloat(-row.total_free);
+                            this.totals.acum_total_exonerated += parseFloat(row.total_exonerated);
+                            this.totals.acum_total_unaffected += parseFloat(row.total_unaffected);
+                            this.totals.acum_total_free += parseFloat(row.total_free);
 
 
                         }else if(signal != '07' && state == '11'){

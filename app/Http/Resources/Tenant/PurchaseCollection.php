@@ -21,6 +21,34 @@ class PurchaseCollection extends ResourceCollection
             {
                 $total += round($row->total_perception, 2);
             }
+            if($row->document_type->id=="07" && $row->document_type->id!="11"){
+                $total_exportation  =-$row->total_exportation;
+                $total_free         =-$row->total_free;
+                $total_unaffected   =-$row->total_unaffected;
+                $total_exonerated   =-$row->total_exonerated;
+                $total_taxed        =-$row->total_taxed;
+                $total_igv          =-$row->total_igv;
+                $total_perception   =-$row->total_perception;
+                $total              =$total*-1;
+            }
+            elseif($row->document_type->id!="07" && $row->document_type->id=="11"){
+                $total_exportation  =0;
+                $total_free         =0;
+                $total_unaffected   =0;
+                $total_exonerated   =0;
+                $total_taxed        =0;
+                $total_igv          =0;
+                $total_perception   =0;
+            }
+            else{
+                $total_exportation  =$row->total_exportation;
+                $total_free         =$row->total_free;
+                $total_unaffected   =$row->total_unaffected;
+                $total_exonerated   =$row->total_exonerated;
+                $total_taxed        =$row->total_taxed;
+                $total_igv          =$row->total_igv;
+                $total_perception   =$row->total_perception;
+            }
             return [
                 'id' => $row->id,
                 'document_type_id' => $row->document_type->id,
@@ -33,13 +61,13 @@ class PurchaseCollection extends ResourceCollection
                 'supplier_name' => $row->supplier->name,
                 'supplier_number' => $row->supplier->number,
                 'currency_type_id' => $row->currency_type_id,
-                'total_exportation' => $row->total_exportation,
-                'total_free' => number_format($row->total_free, 2, ".",""),
-                'total_unaffected' => number_format($row->total_unaffected, 2, ".",""),
-                'total_exonerated' => number_format($row->total_exonerated, 2, ".",""),
-                'total_taxed' => number_format($row->total_taxed, 2, ".",""),
-                'total_igv' => number_format($row->total_igv, 2, ".",""),
-                'total_perception' => number_format($row->total_perception, 2, ".",""),
+                'total_exportation' => $total_exportation,
+                'total_free' => number_format($total_free, 2, ".",""),
+                'total_unaffected' => number_format($total_unaffected, 2, ".",""),
+                'total_exonerated' => number_format($total_exonerated, 2, ".",""),
+                'total_taxed' => number_format($total_taxed, 2, ".",""),
+                'total_igv' => number_format($total_igv, 2, ".",""),
+                'total_perception' => number_format($total_perception, 2, ".",""),
                 'total' => number_format($total, 2, ".",""),
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
