@@ -1808,6 +1808,9 @@
                 if(!val_detraction.success)
                     return this.$message.error(val_detraction.message);
 
+                if(this.form.customer_id==null){
+                    return this.$message.error('Debe seleccionar un cliente.');
+                }
                 if(!this.enabled_payments){
                     this.form.payments = []
                 }
