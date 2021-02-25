@@ -483,7 +483,7 @@ class PleController extends Controller
                     'col_32' =>'',
                     'col_33' =>'',
                     'col_34' =>'',
-                    'col_35' =>($estado=='11') ? '2' : '1',
+                    'col_35' =>($estado=='11' || $estado=='09') ? '2' : '1',
                     'col_36' =>''
                 ];
 
