@@ -233,7 +233,7 @@ class PleController extends Controller
                 'col_19' =>($estado =='11') ? '' : $igv3,//IGV 3
                 'col_20' =>($estado =='11') ? '' : $total_no_grabado,
                 'col_21' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '',
-                'col_22' =>'0.00',
+                'col_22' =>'0.00',//bolsas
                 'col_23' =>'',
                 'col_24' =>($estado =='11' ) ? '' : $total,
                 'col_25' =>($estado =='11' ) ? '' : $row->currency_type_id,
@@ -405,7 +405,6 @@ class PleController extends Controller
                 $number_index="M-RER";
             }
 
-            foreach ($row->items as $item) {
                 $estado=$row->state_type_id;
                 $tc    = $row->exchange_rate_sale;
                 $total_taxed = $row->total_taxed;
@@ -472,7 +471,7 @@ class PleController extends Controller
                     'col_20' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '',
                     'col_21' =>'',
                     'col_22' =>'',
-                    'col_23' =>($total_icbper>0 && $estado !='11')? $total_icbper:'0.00',
+                    'col_23' =>($total_icbper>0 && $estado !='11')? $total_icbper:'0.00',//bolsas
                     'col_24' =>'',
                     'col_25' =>($estado =='11' ) ? '' : $total,
                     'col_26' =>($estado =='11' || $row->currency_type_id =='PEN') ? '' : $row->currency_type_id,
@@ -488,7 +487,6 @@ class PleController extends Controller
                     'col_36' =>''
                 ];
 
-            }
 
 
         }
