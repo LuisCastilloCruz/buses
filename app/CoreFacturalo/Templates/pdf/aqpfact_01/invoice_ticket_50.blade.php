@@ -28,8 +28,8 @@
 <body>
 
 @if($company->logo)
-    <div class="text-center company_logo_box_sm pt-5 desc-9">
-        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo_sm content">
+    <div class="text-center pt-2 desc-9">
+        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class=" content">
     </div>
 {{--@else--}}
     {{--<div class="text-center company_logo_box pt-5">--}}
@@ -460,7 +460,7 @@
             <td class="desc pt-1">
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
-        </tr> 
+        </tr>
     @endif
     @if($payments->count())
         <tr>
