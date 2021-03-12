@@ -746,7 +746,7 @@ export default {
       },
       purchase: {
         totals: {},
-        graph: {}
+          NotePurchasegraph: {}
       },
       utilities: {
         totals: {},
