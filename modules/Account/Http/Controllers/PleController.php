@@ -105,8 +105,8 @@ class PleController extends Controller
 
     private function getDocuments($d_start, $d_end,$type)
     {
-       if($type=='140100') // ventas
-       {
+        if($type=='140100') // ventas
+        {
             return Document::query()
                 ->whereBetween('date_of_issue', [$d_start, $d_end])
                 ->whereIn('document_type_id', ['01', '03','07','08'])
@@ -115,9 +115,9 @@ class PleController extends Controller
                 ->orderBy('number')
                 ->get();
 
-       }
-       else if($type=='080100') // compras
-       {
+        }
+        else if($type=='080100') // compras
+        {
             return Purchase::query()
                 ->whereBetween('date_of_issue', [$d_start, $d_end])
                 ->whereIn('document_type_id', ['01', '03','07','08','04','02','14'])
@@ -126,9 +126,9 @@ class PleController extends Controller
                 ->orderBy('number')
                 ->get();
 
-       }
-       else if($type=='080200') // compras ND
-       {
+        }
+        else if($type=='080200') // compras ND
+        {
             return Purchase::query()
                 ->whereBetween('date_of_issue', [$d_start, $d_end])
                 ->whereIn('document_type_id', ['9999']) // para que me dé vacío
@@ -137,7 +137,7 @@ class PleController extends Controller
                 ->orderBy('number')
                 ->get();
 
-       }
+        }
     }
 
     private function getStructureCompras($documents)
@@ -166,7 +166,7 @@ class PleController extends Controller
             if(($row->document_type_id=='07' || $row->document_type_id=='08') && $row->note_purchase==true ){
                 $seriesMod = $row->note_purchase->affected_purchase->series;
                 $numberMod = $row->note_purchase->affected_purchase->number;
-                $fechaMod= str_pad($row->note_purchase->affected_purchase->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT);
+                $fechaMod= str_pad($row->note_purchase->affected_purchase->date_of_issue->format('d/m/Y'), 8,'00', STR_PAD_RIGHT);
                 $tipoMod =  $row->note_purchase->affected_purchase->document_type_id;
             }
 
@@ -213,10 +213,10 @@ class PleController extends Controller
             }
 
             $rows[] = [
-                'col_1' => str_pad($row->date_of_issue->format('yym'), 8,'00', STR_PAD_RIGHT),
+                'col_1' => str_pad($row->date_of_issue->format('Ym'), 8,'00', STR_PAD_RIGHT),
                 'col_2' =>$number_index,
                 'col_3' =>'M'.$number_index,
-                'col_4' =>$row->date_of_issue->format('d/m/yy'),
+                'col_4' =>$row->date_of_issue->format('d/m/Y'),
                 'col_5' =>'',
                 'col_6' =>$row->document_type_id,
                 'col_7' =>$row->series,
@@ -284,14 +284,14 @@ class PleController extends Controller
             }
 
             foreach ($row->items as $item) {
-               $fechaMod  = '';
-               $seriesMod = '';
-               $numberMod = '';
-               $tipoMod   = '';
+                $fechaMod  = '';
+                $seriesMod = '';
+                $numberMod = '';
+                $tipoMod   = '';
                 if($row->document_type_id=='07' || $row->document_type_id=='08' ){
                     $seriesMod = $row->note->affected_document->series;
                     $numberMod = $row->note->affected_document->number;
-                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT);
+                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/Y'), 8,'00', STR_PAD_RIGHT);
                     $tipoMod =  $row->note->affected_document->document_type_id;
                 }
 
@@ -338,10 +338,10 @@ class PleController extends Controller
                 }
 
                 $rows[] = [
-                    'col_1' => str_pad($row->date_of_issue->format('yym'), 8,'00', STR_PAD_RIGHT),
+                    'col_1' => str_pad($row->date_of_issue->format('Ym'), 8,'00', STR_PAD_RIGHT),
                     'col_2' =>$number_index,
                     'col_3' =>'M'.$number_index,
-                    'col_4' =>$row->date_of_issue->format('d/m/yy'),
+                    'col_4' =>$row->date_of_issue->format('d/m/Y'),
                     'col_5' =>'',
                     'col_6' =>$row->document_type_id,
                     'col_7' =>$row->series,
@@ -406,87 +406,87 @@ class PleController extends Controller
                 $number_index="M-RER";
             }
 
-                $estado=$row->state_type_id;
-                $tc    = $row->exchange_rate_sale;
-                $total_taxed = $row->total_taxed;
-                $total_igv =$row->total_igv;
-                $total_icbper=$row->total_plastic_bag_taxes;
-                $total_exportation = $row->total_exportation;
-                $total_exonerated  = $row->total_exonerated;
-                $total_unaffected  = $row->total_unaffected;
-                $total             = $row->total;
+            $estado=$row->state_type_id;
+            $tc    = $row->exchange_rate_sale;
+            $total_taxed = $row->total_taxed;
+            $total_igv =$row->total_igv;
+            $total_icbper=$row->total_plastic_bag_taxes;
+            $total_exportation = $row->total_exportation;
+            $total_exonerated  = $row->total_exonerated;
+            $total_unaffected  = $row->total_unaffected;
+            $total             = $row->total;
 
-                if($row->currency_type_id == 'USD'){
-                    $total_taxed = $total_taxed*$tc;
-                    $total_igv   = $total_igv *$tc;
-                    $total_icbper= $total_icbper*$tc;
-                    $total_exportation =$total_exportation*$tc;
-                    $total_exonerated  = $total_exonerated *$tc;
-                    $total_unaffected  = $total_unaffected *$tc;
-                    $total             = $total *$tc;
-                }
+            if($row->currency_type_id == 'USD'){
+                $total_taxed = $total_taxed*$tc;
+                $total_igv   = $total_igv *$tc;
+                $total_icbper= $total_icbper*$tc;
+                $total_exportation =$total_exportation*$tc;
+                $total_exonerated  = $total_exonerated *$tc;
+                $total_unaffected  = $total_unaffected *$tc;
+                $total             = $total *$tc;
+            }
 
-                /*================NOTAS DE CRÉDITO DEBITO===============*/
-                $fechaMod  = '';
-                $seriesMod = '';
-                $numberMod = '';
-                $tipoMod   = '';
-                if($row->document_type_id=='07' || $row->document_type_id=='08'){
-                    $seriesMod = $row->note->affected_document->series;
-                    $numberMod = $row->note->affected_document->number;
-                    $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT);
-                    $tipoMod =  $row->note->affected_document->document_type_id;
-                }
+            /*================NOTAS DE CRÉDITO DEBITO===============*/
+            $fechaMod  = '';
+            $seriesMod = '';
+            $numberMod = '';
+            $tipoMod   = '';
+            if($row->document_type_id=='07' || $row->document_type_id=='08'){
+                $seriesMod = $row->note->affected_document->series;
+                $numberMod = $row->note->affected_document->number;
+                $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/Y'), 8,'00', STR_PAD_RIGHT);
+                $tipoMod =  $row->note->affected_document->document_type_id;
+            }
 
-                 /*================CAMBIO SIGNOS==================*/
-                if($row->document_type_id=='07'){ //nota de crédito
-                    $total_taxed       = $total_taxed       * -1;
-                    $total_igv         = $total_igv         * -1;
-                    $total_exportation = $total_exportation * -1;
-                    $total_exonerated  = $total_exonerated  * -1;
-                    $total_unaffected  = $total_unaffected  * -1;
-                    $total             = $total             * -1;
-                }
+            /*================CAMBIO SIGNOS==================*/
+            if($row->document_type_id=='07'){ //nota de crédito
+                $total_taxed       = $total_taxed       * -1;
+                $total_igv         = $total_igv         * -1;
+                $total_exportation = $total_exportation * -1;
+                $total_exonerated  = $total_exonerated  * -1;
+                $total_unaffected  = $total_unaffected  * -1;
+                $total             = $total             * -1;
+            }
 
 
-                $rows[] = [
-                    'col_1' => str_pad($row->date_of_issue->format('yym'), 8,'00', STR_PAD_RIGHT),
-                    'col_2' =>$number_index,
-                    'col_3' =>'M'.$number_index,
-                    'col_4' =>$row->date_of_issue->format('d/m/yy'),
-                    'col_5' =>'',
-                    'col_6' =>$row->document_type_id,
-                    'col_7' =>$row->series,
-                    'col_8' =>$row->number,
-                    'col_9' =>'',
-                    'col_10'=>($estado =='11' || $estado=='09') ? '' : $row->customer->identity_document_type_id,
-                    'col_11'=>($estado =='11' || $estado=='09') ? '' : $row->customer->number,
-                    'col_12'=>($estado =='11' || $estado=='09') ? '' : $detail,
-                    'col_13' =>($total_exportation>0 && $estado !='11') ? $total_exportation : '',
-                    'col_14' =>($estado =='11' || $estado=='09') ? '' : $total_taxed,
-                    'col_15' =>'',//para nota revisar
-                    'col_16' =>($estado =='11' || $estado=='09') ? '' : $total_igv,
-                    'col_17' =>'',//para nota revisar
-                    'col_18' =>($total_exonerated>0 && $estado !='11' || $estado!='09') ? $total_exonerated : '',
-                    'col_19' =>($total_unaffected>0 && $estado !='11' || $estado!='09') ? $total_unaffected : '',
-                    'col_20' =>($row->total_isc>0 && $estado !='11' || $estado!='09') ? $row->total_isc : '',
-                    'col_21' =>'',
-                    'col_22' =>'',
-                    'col_23' =>($total_icbper>0 && $estado !='11' || $estado!='09')? $total_icbper:'0.00',//bolsas
-                    'col_24' =>'',
-                    'col_25' =>($estado =='11' || $estado=='09' ) ? '' : $total,
-                    'col_26' =>($estado =='11' || $estado=='09' || $row->currency_type_id =='PEN') ? '' : $row->currency_type_id,
-                    'col_27' =>($tc <1 || $estado =='11' || $estado=='09' || $row->currency_type_id =='PEN') ? '' : $tc,
-                    'col_28' =>$fechaMod,
-                    'col_29' =>$tipoMod,
-                    'col_30' =>$seriesMod,
-                    'col_31' =>$numberMod,
-                    'col_32' =>'',
-                    'col_33' =>'',
-                    'col_34' =>'',
-                    'col_35' =>($estado=='11' || $estado=='09') ? '2' : '1',
-                    'col_36' =>''
-                ];
+            $rows[] = [
+                'col_1' => str_pad($row->date_of_issue->format('Ym'), 8,'00', STR_PAD_RIGHT),
+                'col_2' =>$number_index,
+                'col_3' =>'M'.$number_index,
+                'col_4' =>$row->date_of_issue->format('d/m/Y'),
+                'col_5' =>'',
+                'col_6' =>$row->document_type_id,
+                'col_7' =>$row->series,
+                'col_8' =>$row->number,
+                'col_9' =>'',
+                'col_10'=>($estado =='11' || $estado=='09') ? '' : $row->customer->identity_document_type_id,
+                'col_11'=>($estado =='11' || $estado=='09') ? '' : $row->customer->number,
+                'col_12'=>($estado =='11' || $estado=='09') ? '' : $detail,
+                'col_13' =>($total_exportation>0 && $estado !='11') ? $total_exportation : '',
+                'col_14' =>($estado =='11' || $estado=='09') ? '' : $total_taxed,
+                'col_15' =>'',//para nota revisar
+                'col_16' =>($estado =='11' || $estado=='09') ? '' : $total_igv,
+                'col_17' =>'',//para nota revisar
+                'col_18' =>($total_exonerated>0 && $estado !='11' || $estado!='09') ? $total_exonerated : '',
+                'col_19' =>($total_unaffected>0 && $estado !='11' || $estado!='09') ? $total_unaffected : '',
+                'col_20' =>($row->total_isc>0 && $estado !='11' || $estado!='09') ? $row->total_isc : '',
+                'col_21' =>'',
+                'col_22' =>'',
+                'col_23' =>($total_icbper>0 && $estado !='11' || $estado!='09')? $total_icbper:'0.00',//bolsas
+                'col_24' =>'',
+                'col_25' =>($estado =='11' || $estado=='09' ) ? '' : $total,
+                'col_26' =>($estado =='11' || $estado=='09' || $row->currency_type_id =='PEN') ? '' : $row->currency_type_id,
+                'col_27' =>($tc <1 || $estado =='11' || $estado=='09' || $row->currency_type_id =='PEN') ? '' : $tc,
+                'col_28' =>$fechaMod,
+                'col_29' =>$tipoMod,
+                'col_30' =>$seriesMod,
+                'col_31' =>$numberMod,
+                'col_32' =>'',
+                'col_33' =>'',
+                'col_34' =>'',
+                'col_35' =>($estado=='11' || $estado=='09') ? '2' : '1',
+                'col_36' =>''
+            ];
 
 
 
