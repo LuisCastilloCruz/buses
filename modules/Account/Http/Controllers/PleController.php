@@ -149,7 +149,7 @@ class PleController extends Controller
         {
             $date_of_issue = Carbon::parse($row->date_of_issue);
             $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
-            $detail = substr($row->supplier->name.',  '.$row->number_full, 0, 60);
+            $detail = $row->supplier->name;
 
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
             $regimen="";
@@ -160,13 +160,14 @@ class PleController extends Controller
 
             $fechaMod  = '';
             $seriesMod = '';
+            $seriesMod = '';
             $numberMod = '';
             $tipoMod   = '';
-            if($row->document_type_id=='07' || $row->document_type_id=='08' ){
-                $seriesMod = $row->note->affected_document->series;
-                $numberMod = $row->note->affected_document->number;
-                $fechaMod= str_pad($row->note->affected_document->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT);
-                $tipoMod =  $row->note->affected_document->document_type_id;
+            if(($row->document_type_id=='07' || $row->document_type_id=='08') && $row->note_purchase==true ){
+                $seriesMod = $row->note_purchase->affected_purchase->series;
+                $numberMod = $row->note_purchase->affected_purchase->number;
+                $fechaMod= str_pad($row->note_purchase->affected_purchase->date_of_issue->format('d/m/yy'), 8,'00', STR_PAD_RIGHT);
+                $tipoMod =  $row->note_purchase->affected_purchase->document_type_id;
             }
 
             $type_basimp= $row->type_basimp;
@@ -273,7 +274,7 @@ class PleController extends Controller
 
             $date_of_issue = Carbon::parse($row->date_of_issue);
             $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
-            $detail = substr($row->supplier->name.',  '.$row->number_full, 0, 60);
+            $detail = $row->supplier->name;
 
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
             $regimen="";

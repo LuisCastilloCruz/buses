@@ -20,7 +20,7 @@ class AccountingPlanResource extends JsonResource
             'nivel'=> $this->nivel,
             'tipo'=> $this->tipo,
             'analisis'=> $this->analisis,
-            'currency_type_id'=> $this->currency_type_id->id,
+            'currency_type_id'=> $this->currency_type_id,
             'balance_comprobacion'=> $this->balance_comprobacion,
             'cuenta_equivalente'=> $this->cuenta_equivalente,
             'amarre_debe'=> $this->amarre_haber,

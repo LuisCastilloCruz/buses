@@ -15,6 +15,7 @@ use Modules\Account\Models\CompanyAccount;
 use Modules\Account\Http\Resources\AccountingPlanResource;
 use Modules\Account\Http\Resources\AccountingPlanCollection;
 use Modules\Account\Http\Requests\AccountingPlanRequest;
+use App\Models\Tenant\Catalogs\CurrencyType;
 
 class AccountingController extends Controller
 {
@@ -37,13 +38,18 @@ class AccountingController extends Controller
     }
     public function records(Request $request)
     {
-//        $records = AccountingPlan::where($request->column, 'like', "%{$request->value}%")
-//                    ->orderBy('cuenta');
-
         $records = AccountingPlan::where($request->column, 'like', "%{$request->value}%")
             ->latest();
 
         return new AccountingPlanCollection($records->paginate(config('tenant.items_per_page')));
+
+    }
+    public function tables()
+    {
+
+        $currency_types = CurrencyType::whereActive()->get();
+
+        return compact(  'currency_types');
 
     }
 }

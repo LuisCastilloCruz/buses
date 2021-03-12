@@ -372,6 +372,8 @@ if ($hostname) {
 			// Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
 
 			Route::delete('purchases/destroy_purchase_item/{purchase_item}', 'PurchaseController@destroy_purchase_item');
+            Route::get('purchases/has-document/{serie}/{numero}', 'Tenant\PurchaseController@hasDocument');
+            Route::get('purchases/has-document-ref/{id}', 'Tenant\PurchaseController@hasDocumentRef');
 
 			//quotations
 			Route::get('quotations', 'Tenant\QuotationController@index')->name('tenant.quotations.index')->middleware('redirect.level');
@@ -535,6 +537,10 @@ if ($hostname) {
 
 			//formats PDF
 			Route::get('templates', 'Tenant\FormatTemplateController@records');
+
+			//contable
+
+            Route::get('accounting/persons/{type}', 'Tenant\PersonController@index')->name('tenant.persons.index');
 		});
 	});
 } else {

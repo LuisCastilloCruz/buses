@@ -29,9 +29,11 @@ if($hostname) {
 
             Route::prefix('accounting')->group(function () {
             //plan contable
+                Route::get('tables', 'AccountingController@tables');
                 Route::get('plan', 'AccountingController@index')->name('tenant.accounting.index');
                 Route::get('plan/columns', 'AccountingController@columns');
                 Route::get('plan/records', 'AccountingController@records');
+                Route::get('plan/record/{id}', 'AccountingController@record');
             });
 
 
