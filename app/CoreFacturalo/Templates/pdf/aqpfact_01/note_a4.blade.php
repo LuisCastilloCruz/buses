@@ -161,7 +161,8 @@
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center">{{ $row->item->unit_type_id }}</td>
+            @inject('unitType', 'App\Services\UnitTypeService')
+            <td class="text-center align-top borde-gris">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left">
                 {!! $row->item->description !!}
                 @if($row->attributes)

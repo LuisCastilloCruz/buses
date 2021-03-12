@@ -81,7 +81,7 @@
             {{ ($supplier->department_id !== '-')? '- '.$supplier->department->description : '' }}
         </td>
     </tr>
-    @endif 
+    @endif
     @if ($supplier->telephone)
     <tr>
         <td class="align-top">Teléfono:</td>
@@ -89,7 +89,7 @@
             {{ $supplier->telephone }}
         </td>
     </tr>
-    @endif 
+    @endif
     <tr>
         <td class="align-top">Usuario:</td>
         <td colspan="3">
@@ -103,7 +103,7 @@
     </tr>
     @endif
 </table>
- 
+
 
 <table class="full-width mt-10 mb-10">
     <thead class="">
@@ -126,7 +126,8 @@
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
+            @inject('unitType', 'App\Services\UnitTypeService')
+            <td class="text-center align-top borde-gris">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)

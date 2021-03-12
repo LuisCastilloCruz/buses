@@ -92,7 +92,7 @@
     </tr>
     @endif
     @if ($document->reference_data)
-        <tr> 
+        <tr>
             <td class="align-top">D. Referencia:</td>
             <td colspan="3">{{ $document->reference_data }}</td>
         </tr>
@@ -138,7 +138,8 @@
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
+            @inject('unitType', 'App\Services\UnitTypeService')
+            <td class="text-center align-top borde-gris">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
@@ -241,7 +242,7 @@
                 </p>
             @endforeach
         </td>
-    </tr> 
+    </tr>
 </table>
 <br>
 @if($document->payment_method_type_id && $payments->count() == 0)
@@ -250,7 +251,7 @@
             <td>
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
-        </tr> 
+        </tr>
     </table>
 @endif
 

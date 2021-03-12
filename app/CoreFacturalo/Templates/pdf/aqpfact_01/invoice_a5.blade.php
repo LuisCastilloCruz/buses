@@ -51,11 +51,11 @@
             <td width="30%">
                 {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 250px">--}}
             </td>
-        @endif                        
+        @endif
         <td width="45%" class="pl-2">
             <table class="empresa-datos">               >
-                <tr><td width="327px" style="text-align:center;"><h4><b>{{ $company->name }}</b></h4></td></tr>                      
-                <tr><td width="327px"><h5>{{ 'RUC: '.$company->number }}</h5></td></tr>  
+                <tr><td width="327px" style="text-align:center;"><h4><b>{{ $company->name }}</b></h4></td></tr>
+                <tr><td width="327px"><h5>{{ 'RUC: '.$company->number }}</h5></td></tr>
                 <tr>
                     <td width="327px">
                         <h6 style="text-transform: uppercase;">
@@ -65,16 +65,16 @@
                         {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                         </h6>
                     </td>
-                </tr> 
+                </tr>
 
                 @isset($establishment->trade_address)
-                <tr><td width="327px"> <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6></td></tr> 
+                <tr><td width="327px"> <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6></td></tr>
                 @endisset
 
-                <tr><td width="327px"><h6>{{ ($establishment->telephone !== '-')? 'Teléfono: '.$establishment->telephone : '' }} {{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6></td></tr> 
+                <tr><td width="327px"><h6>{{ ($establishment->telephone !== '-')? 'Teléfono: '.$establishment->telephone : '' }} {{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6></td></tr>
 
                 @isset($establishment->web_address)
-                <tr><td width="327px"> <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6></td></tr> 
+                <tr><td width="327px"> <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6></td></tr>
                 @endisset
 
                 @isset($establishment->aditional_information)
@@ -231,9 +231,9 @@
 <p class="p-0 m-0"><b>Guias de remisión</b>:
 
     @foreach($document->reference_guides as $guide)
-        
+
            <span class="guias">{{ $guide->series }} : {{ $guide->number }}</span>
-        
+
     @endforeach
 </p>
 @endif
@@ -329,7 +329,8 @@
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top borde-gris">{{ $row->item->unit_type_id }}</td>
+            @inject('unitType', 'App\Services\UnitTypeService')
+            <td class="text-center align-top borde-gris">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left align-top borde-gris">
 
                 @if($row->name_product_pdf)
