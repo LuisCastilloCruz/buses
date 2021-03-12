@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Models\Tenant\NotePurchase;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
@@ -49,6 +50,8 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Catalogs\NoteCreditType;
+use App\Models\Tenant\Catalogs\NoteDebitType;
 
 
 class PurchaseController extends Controller
@@ -135,9 +138,13 @@ class PurchaseController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $customers = $this->getPersons('customers');
         $configuration = Configuration::first();
+        $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
+        $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
+        $note_debit_types = NoteDebitType::whereActive()->orderByDescription()->get();
 
         return compact('suppliers', 'establishment','currency_types', 'discount_types', 'configuration',
-                    'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations', 'customers');
+                    'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations', 'customers',
+                    'document_types_note','note_credit_types','note_debit_types');
     }
 
     public function item_tables()
@@ -176,9 +183,20 @@ class PurchaseController extends Controller
 
         //return 'asd';
         $data = self::convert($request);
-
         $purchase = DB::connection('tenant')->transaction(function () use ($data) {
             $doc = Purchase::create($data);
+
+            if($data['document_type_id']=='07' || $data['document_type_id'] =='08'){
+                $note_purchase= new NotePurchase();
+                $note_purchase->purchase_id=$doc->id;
+                $note_purchase->note_type =$data['note']['note_type'];
+                $note_purchase->note_credit_type_id =$data['note']['note_credit_type_id'];
+                $note_purchase->note_debit_type_id =$data['note']['note_debit_type_id'];
+                $note_purchase->note_description =$data['note']['note_description'];
+                $note_purchase->affected_purchase_id =$data['note']['affected_purchase_id'];
+                $note_purchase->save();
+            }
+
             foreach ($data['items'] as $row)
             {
                 // $doc->items()->create($row);
@@ -283,6 +301,20 @@ class PurchaseController extends Controller
             $doc->group_id = ($request->document_type_id === '01') ? '01':'02';
             $doc->user_id = auth()->id();
             $doc->save();
+
+            if($request->document_type_id==='07' || $request->document_type_id==='08'){
+
+               // NotePurchase::findOrFail($doc->note_purchase->id)->update($request->all());
+
+                $note_purchase = NotePurchase::findOrFail($doc->note_purchase->id);
+                $note_purchase->purchase_id=$request['note']['purchase_id'];
+                $note_purchase->note_type = $request['note']['note_type'];
+                $note_purchase->note_credit_type_id =$request['note']['note_credit_type_id'];
+                $note_purchase->note_debit_type_id =$request['note']['note_debit_type_id'];
+                $note_purchase->note_description =$request['note']['note_description'];
+                $note_purchase->affected_purchase_id =$request['note']['affected_purchase_id'];
+                $note_purchase->save();
+            }
 
             foreach ($doc->items as $it) {
 
@@ -549,7 +581,7 @@ class PurchaseController extends Controller
     }
 
 
-    
+
     public function searchItems(Request $request)
     {
 
@@ -601,7 +633,7 @@ class PurchaseController extends Controller
 
     }
 
-    
+
     public function searchItemById($id)
     {
 
@@ -961,6 +993,57 @@ class PurchaseController extends Controller
 
     public function uploadFile($filename, $file_content, $file_type) {
         $this->uploadStorage($filename, $file_content, $file_type);
+    }
+    public function hasDocument($serie,$numero)
+    {
+
+        //$record = Purchase::where('series','=',$serie)->where('number','=',$numero)->first();
+        $record = Purchase::where([
+            'series' => $serie,
+            'number' => $numero,
+        ])->first();
+
+        if($record){
+
+            return [
+                'success' => true,
+                'data' =>  [
+                        'id'=> $record->id,
+                        'series' => $record->series,
+                        'number' => $record->number
+                    ]
+            ];
+
+        }
+
+        return [
+            'success' => false,
+            'data' => []
+        ];
+
+    }
+
+    public function hasDocumentRef($id)
+    {
+
+        $record = Purchase::where('id','=',$id)->first();
+        if($record){
+            return [
+                'success' => true,
+                'data' =>  [
+                    'id'=> $record->id,
+                    'series' => $record->series,
+                    'number' => $record->number
+                ]
+            ];
+
+        }
+
+        return [
+            'success' => false,
+            'data' => []
+        ];
+
     }
 
 }

@@ -110,7 +110,62 @@
                                 </el-select>
                             </div>
                         </div>
-                        <div class="col-md-8 mt-4">
+
+                        <div class="col-lg-4 mt-4">
+                            <template v-if="form.document_type_id === '08'">
+                                <div class="form-group" :class="{'has-danger': errors['note.note_debit_type_id']}">
+                                    <label class="control-label">Tipo nota de débito</label>
+                                    <el-select v-model="form.note.note_debit_type_id">
+                                        <el-option v-for="option in note_debit_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors['note.note_debit_type_id']" v-text="errors['note.note_debit_type_id'][0]"></small>
+                                </div>
+                            </template>
+                            <template v-if="form.document_type_id === '07'">
+                                <div class="form-group" :class="{'has-danger': errors['note.note_credit_type_id']}">
+                                    <label class="control-label">Tipo nota de crédito</label>
+                                    <el-select v-model="form.note.note_credit_type_id">
+                                        <el-option v-for="option in note_credit_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors['note.note_credit_type_id']" v-text="errors['note.note_credit_type_id'][0]"></small>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="col-lg-4 mt-4">
+                            <div v-if="form.document_type_id === '08' || form.document_type_id === '07'" class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group" :class="{'has-danger': errors.series}">
+                                        <label class="control-label">Serie Relacionado<span class="text-danger">*</span></label>
+                                        <el-input v-model="form.note.series" :maxlength="4"   @input="inputSeries"></el-input>
+
+                                        <small class="form-control-feedback" v-if="errors.series" v-text="errors.series[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group" :class="{'has-danger': errors.number}">
+                                        <label class="control-label">Número Relacionado<span class="text-danger">*</span></label>
+                                        <el-input v-model="form.note.number"></el-input>
+
+                                        <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 mt-4">
+                                    <div class="form-group" :class="{'has-danger': errors.number}">
+                                        <el-button @click="getHasDocument">Validar</el-button>
+                                        <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mt-4" v-if="form.document_type_id === '08' || form.document_type_id === '07'">
+                            <div class="form-group" :class="{'has-danger': errors['note.note_description']}">
+                                <label class="control-label">Descripción</label>
+                                <el-input v-model="form.note.note_description"></el-input>
+                                <small class="form-control-feedback" v-if="errors['note.note_description']" v-text="errors['note.note_description'][0]"></small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
                             <div class="form-group" >
                                 <el-checkbox v-model="form.has_client" @change="changeHasClient">¿Desea agregar el cliente para esta compra?</el-checkbox>
                             </div>
@@ -188,6 +243,7 @@
 
 
                         </div>
+
                         <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
                             <div class="form-group">
                                 <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
@@ -364,7 +420,10 @@
                 loading_search: false,
                 currency_type: {},
                 configuration: {},
-                purchaseNewId: null
+                purchaseNewId: null,
+                note_credit_types: [],
+                note_debit_types: [],
+                affected_documents: [],
             }
         },
         async created() {
@@ -380,6 +439,11 @@
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
                     this.all_customers = response.data.customers
+
+                    this.note_credit_types = response.data.note_credit_types
+                    this.note_debit_types = response.data.note_debit_types
+
+                    this.charges_types = response.data.charges_types
                     this.configuration = response.data.configuration
 
                     this.charges_types = response.data.charges_types
@@ -617,6 +681,16 @@
                     this.form.has_client = (this.form.customer_id) ? true:false
                     this.form.type_basimp= dato.type_basimp
 
+                    if(this.form.document_type_id=='07' || this.document_type_id =='08'){
+                        this.form.note.purchase_id= dato.note_purchase.purchase_id
+                        this.form.note.note_credit_type_id =dato.note_purchase.note_credit_type_id
+                        this.form.note.note_debit_type_id =dato.note_purchase.note_debit_type_id
+                        this.form.note.note_description =dato.note_purchase.note_description
+                        this.form.note.affected_purchase_id =dato.note_purchase.affected_purchase_id
+
+                        this.getPurchaseRef()
+                    }
+
                     this.changeDocumentType()
                     // this.changePaymentMethodType()
                     this.calculateTotal()
@@ -718,7 +792,19 @@
                     customer_id: null,
                     has_client: false,
                     has_payment: false,
-                    type_basimp: null
+                    type_basimp: null,
+                    note: {
+                        id:null,
+                        series:null,
+                        number:null,
+                        purchase_id:null,
+                        note_type: null,
+                        note_credit_type_id :null,
+                        note_debit_type_id : null,
+                        note_description : null,
+                        affected_purchase_id :null
+                    }
+
                 }
 
                 // this.clickAddPayment()
@@ -912,6 +998,54 @@
                     this.filterSuppliers()
 
                 })
+            },
+            getHasDocument(){
+
+                this.$http.get(`/${this.resource}/has-document/${this.form.note.series}/${this.form.note.number}`)
+                    .then(response => {
+
+                        if(response.data.success){
+
+                            this.affected_documents = response.data.data;
+                            this.form.note.affected_purchase_id=this.affected_documents.id;
+
+                            if(this.form.document_type_id === '07'){
+                                this.form.note.note_type='credit';
+                            }
+                            else if(this.form.document_type_id === '08'){
+                                this.form.note.note_type='debit';
+                            }
+
+                            let message = `<strong>El comprobante ${ this.affected_documents.series }-${ this.affected_documents.number } fué encontrado</strong><br/>`
+
+                            this.$notify({
+                                title: "",
+                                dangerouslyUseHTMLString: true,
+                                message: message,
+                                type: "warning",
+                                duration: 6000
+                            })
+                        }
+
+                    })
+
+            },
+            getPurchaseRef(){
+
+                this.$http.get(`/${this.resource}/has-document-ref/${this.form.note.affected_purchase_id}`)
+                    .then(response => {
+                        if(response.data.success){
+                            this.form.note.series=response.data.data.series;
+                            this.form.note.number=response.data.data.number;
+                        }
+
+                    })
+                if(this.form.document_type_id === '07'){
+                    this.form.note.note_type='credit';
+                }
+                else if(this.form.document_type_id === '08'){
+                    this.form.note.note_type='debit';
+                }
             },
         }
     }

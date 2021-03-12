@@ -12,7 +12,7 @@ class Purchase extends ModelTenant
 {
     // use SoftDeletes;
 
-    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'];
+    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments','note_purchase'];
 
     protected $fillable = [
         'user_id',
@@ -71,7 +71,7 @@ class Purchase extends ModelTenant
         'date_of_due' => 'date',
     ];
 
-    
+
     public function establishment()
     {
         return $this->belongsTo(Establishment::class);
@@ -217,6 +217,11 @@ class Purchase extends ModelTenant
         return $this->belongsTo(Person::class, 'supplier_id');
     }
 
+    public function note_purchase()
+    {
+        return $this->hasOne(NotePurchase::class);
+    }
+
     public function items()
     {
         return $this->hasMany(PurchaseItem::class);
@@ -272,6 +277,10 @@ class Purchase extends ModelTenant
 
     public function customer() {
         return $this->belongsTo(Person::class, 'customer_id');
+    }
+    public function affected_purchases()
+    {
+        return $this->hasMany(NotePurchase::class, 'affected_purchase_id');
     }
 
 }
