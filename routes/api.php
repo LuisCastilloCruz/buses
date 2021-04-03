@@ -41,6 +41,9 @@ if ($hostname) {
 
             Route::post('documents_server', 'Tenant\Api\DocumentController@storeServer');
             Route::get('document_check_server/{external_id}', 'Tenant\Api\DocumentController@documentCheckServer');
+
+            Route::get('cash/records', 'Tenant\CashController@recordsMovil');
+            Route::get('cash/record', 'Tenant\CashController@recordMovil');
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 

@@ -10,8 +10,6 @@ $cash_final_balance = 0;
 
 $cash_documents = $cash->cash_documents;
 
-
-
 foreach ($cash_documents as $cash_document) {
 
     //$final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
@@ -110,6 +108,24 @@ foreach ($cash_documents as $cash_document) {
 
                 $cash_egress += $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
                 $final_balance -= $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
+            }
+
+        }
+    }
+    else if($cash_document->income_payment){
+
+        //dd($cash_document->income_payment);
+        if($cash_document->income_payment->income->state_type_id == '05'){
+
+            if($cash_document->income_payment->income->currency_type_id == 'PEN'){
+
+                $cash_income += $cash_document->income_payment->payment;
+                $final_balance += $cash_document->income_payment->payment;
+
+            }else{
+
+                $cash_income += $cash_document->income_payment->payment  * $cash_document->income_payment->income->exchange_rate_sale;
+                $final_balance += $cash_document->income_payment->payment  * $cash_document->income_payment->income->exchange_rate_sale;
             }
 
         }
@@ -298,6 +314,10 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                         if($value->expense_payment->expense->state_type_id == '05'){
                                             $all_documents[] = $value;
                                         }
+                                    }else if($value->income_payment){
+                                        if($value->income_payment->income->state_type_id == '05'){
+                                            $all_documents[] = $value;
+                                        }
                                     }
                                 }
                             @endphp
@@ -359,6 +379,17 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $customer_number = $value->expense_payment->expense->supplier->number;
                                             $total = -$value->expense_payment->payment;
                                             $currency_type_id = $value->expense_payment->expense->currency_type_id;
+
+                                        }
+                                        else if($value->income_payment){
+                                            $type_transaction =  'Ingreso';
+                                            $document_type_description =  $value->income_payment->income->income_type->description;
+                                            $number = $value->income_payment->income->number;
+                                            $date_of_issue = $value->income_payment->income->date_of_issue->format('Y-m-d');
+                                            $customer_name = $value->income_payment->income->customer;
+                                            $customer_number = 'otros';
+                                            $total = $value->income_payment->payment;
+                                            $currency_type_id = $value->income_payment->income->currency_type_id;
 
                                         }
 

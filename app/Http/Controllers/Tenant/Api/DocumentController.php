@@ -51,6 +51,7 @@ class DocumentController extends Controller
                 'number_to_letter' => $document->number_to_letter,
                 'hash' => $document->hash,
                 'qr' => $document->qr,
+                'document'=>$document
             ],
             'links' => [
                 'xml' => $document->download_external_xml,

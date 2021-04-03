@@ -17,6 +17,7 @@ use Modules\Sale\Models\ContractPayment;
 use Modules\Finance\Models\IncomePayment;
 use Modules\Pos\Models\CashTransaction;
 use Modules\Sale\Models\TechnicalServicePayment;
+use App\Models\Tenant\CashDocument;
 
 
 trait FinanceTrait
@@ -94,13 +95,19 @@ trait FinanceTrait
 
         $destination = $this->getDestinationRecord($row);
         $company = Company::active();
-
         $model->global_payment()->create([
             'user_id' => auth()->id(),
             'soap_type_id' => $company->soap_type_id,
             'destination_id' => $destination['destination_id'],
             'destination_type' => $destination['destination_type'],
         ]);
+
+//        if($model->income_id>0){
+//            $regCaja= new CashDocument();
+//            $regCaja->cash_id=$destination['destination_id'];
+//            $regCaja->income_payment_id=$model->income_id;
+//            $regCaja->save();
+//        }
 
     }
 

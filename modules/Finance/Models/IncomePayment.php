@@ -27,6 +27,10 @@ class IncomePayment extends ModelTenant
         'date_of_payment' => 'date',
     ];
 
+    public function income()
+    {
+        return $this->belongsTo(Income::class);
+    }
     public function payment_method_type()
     {
         return $this->belongsTo(PaymentMethodType::class);
@@ -41,7 +45,7 @@ class IncomePayment extends ModelTenant
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
     }
- 
+
     public function associated_record_payment()
     {
         return $this->belongsTo(Income::class, 'income_id');

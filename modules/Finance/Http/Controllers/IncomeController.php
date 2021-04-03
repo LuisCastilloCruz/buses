@@ -2,6 +2,7 @@
 
 namespace Modules\Finance\Http\Controllers;
 
+use App\Models\Tenant\CashDocument;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -22,7 +23,7 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\Establishment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Company;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 
 class IncomeController extends Controller
 {
@@ -98,6 +99,15 @@ class IncomeController extends Controller
                 $record_payment = $doc->payments()->create($row);
                 $this->createGlobalPayment($record_payment, $row);
             }
+//            foreach ($data['payments'] as $row)
+//            {
+//                $record_payment = $doc->payments()->create($row);
+//                if($row['payment_method_type_id'] == '01'){
+//                    $row['payment_destination_id'] = 'cash';
+//                }
+//
+//                $this->createGlobalPayment($record_payment, $row);
+//            }
 
             return $doc;
         });
@@ -172,7 +182,7 @@ class IncomeController extends Controller
         $income->save();
 
         return [
-            'success' => true, 
+            'success' => true,
             'message' => 'Ingreso anulado exitosamente',
         ];
     }
