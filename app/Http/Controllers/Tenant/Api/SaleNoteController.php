@@ -114,6 +114,7 @@ class SaleNoteController extends Controller
                 'id' => $this->sale_note->id,
                 'number' => $this->sale_note->number_full,
                 'external_id' => $this->sale_note->external_id,
+                'document' => $this->sale_note
             ],
         ];
 
