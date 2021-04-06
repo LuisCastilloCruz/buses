@@ -41,6 +41,7 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
+use App\CoreFacturalo\Facturalo;
 
 class SaleNoteController extends Controller
 {
@@ -413,6 +414,27 @@ class SaleNoteController extends Controller
         return [
             'success' => true,
             'message'=> 'Email enviado correctamente.'
+        ];
+    }
+    public function record($id)
+    {
+        $document = SaleNote::find($id);
+
+        $fact = DB::connection('tenant')->transaction(function () use ($document) {
+            $facturalo = new Facturalo();
+            $facturalo->setDocument($document);
+            return $facturalo;
+        });
+
+        $document = $fact->getDocument();
+        //$response = $fact->getResponse();
+
+        return [
+            'data' => [
+                'success' => true,
+                //'message' => $response->getResponse(),
+                'document' =>$document,
+            ]
         ];
     }
 

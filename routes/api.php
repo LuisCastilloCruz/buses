@@ -20,6 +20,7 @@ if ($hostname) {
             Route::get('document/search-items', 'Tenant\Api\MobileController@searchItems');
             Route::get('document/search-customers', 'Tenant\Api\MobileController@searchCustomers');
             Route::post('sale-note/email', 'Tenant\Api\SaleNoteController@email');
+            Route::get('sale-note/record/{id}', 'Tenant\Api\SaleNoteController@record');
 
             Route::get('report', 'Tenant\Api\MobileController@report');
 
@@ -41,6 +42,7 @@ if ($hostname) {
 
             Route::post('documents_server', 'Tenant\Api\DocumentController@storeServer');
             Route::get('document_check_server/{external_id}', 'Tenant\Api\DocumentController@documentCheckServer');
+            Route::get('document/record/{id}', 'Tenant\Api\DocumentController@record');
 
             Route::get('cash/records', 'Tenant\CashController@recordsMovil');
             Route::get('cash/record', 'Tenant\CashController@recordMovil');

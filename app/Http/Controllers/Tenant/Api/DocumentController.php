@@ -11,6 +11,7 @@ use Exception;
 use Facades\App\Http\Controllers\Tenant\DocumentController as DocumentControllerSend;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\Tenant\DocumentResource;
 
 class DocumentController extends Controller
 {
@@ -172,6 +173,27 @@ class DocumentController extends Controller
 
         return [
             'success' => true,
+        ];
+    }
+    public function record($id)
+    {
+        $document = Document::find($id);
+
+        $fact = DB::connection('tenant')->transaction(function () use ($document) {
+            $facturalo = new Facturalo();
+            $facturalo->setDocument($document);
+            return $facturalo;
+        });
+
+        $document = $fact->getDocument();
+        //$response = $fact->getResponse();
+
+        return [
+            'data' => [
+            'success' => true,
+            //'message' => $response->getResponse(),
+            'document' =>$document,
+            ]
         ];
     }
 
