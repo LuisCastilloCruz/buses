@@ -266,6 +266,17 @@ Vue.component('tenant-hotel-rent-add-product', require('@viewsModuleHotel/rooms/
 // Hoteles :: Checkout
 Vue.component('tenant-hotel-rent-checkout', require('@viewsModuleHotel/rooms/Checkout.vue'));
 
+
+// Transporte :: Vehiculos
+Vue.component('tenant-transporte-vehiculos', require('@viewsModuleTransporte/vehiculos/List.vue'));
+// Transporte :: Choferes
+Vue.component('tenant-transporte-choferes', require('@viewsModuleTransporte/choferes/List.vue'));
+// Transporte :: Habitaciones
+Vue.component('tenant-transporte-destinos', require('@viewsModuleTransporte/destinos/List.vue'));
+
+// Transporte :: bus
+Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus/Sales.vue'));
+
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
