@@ -6,7 +6,7 @@
                 <li class="active"><span>{{ title }}</span></li>
             </ol>
             <div v-if="typeUser == 'admin'" class="right-wrapper pull-right">
-                <!--<button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>-->
+                <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate('input')"><i class="fa fa-plus-circle"></i> Ingreso</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickOutput()"><i class="fa fa-minus-circle"></i> Salida</button>
             </div>
@@ -48,6 +48,7 @@
                             :showDialog.sync="showDialogOutput"
                             ></inventories-form-output>
 
+            <inventories-import :showDialog.sync="showImportDialog"></inventories-import>
             <inventories-move :showDialog.sync="showDialogMove"
                               :recordId="recordId"></inventories-move>
             <inventories-remove :showDialog.sync="showDialogRemove"
@@ -63,11 +64,12 @@
 
     import InventoriesMove from './move.vue'
     import InventoriesRemove from './remove.vue'
+    import InventoriesImport from './import.vue'
     import DataTable from '../../../../../../resources/js/components/DataTable.vue'
 
     export default {
         props: ['type', 'typeUser'],
-        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput},
+        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput,InventoriesImport},
         data() {
             return {
                 title: null,
@@ -75,6 +77,7 @@
                 showDialogMove: false,
                 showDialogRemove: false,
                 showDialogOutput: false,
+                showImportDialog: false,
                 resource: 'inventory',
                 recordId: null,
                 typeTransaction:null,
@@ -102,7 +105,10 @@
                 this.recordId = null
                 this.showDialogOutput = true
 
-            }
+            },
+            clickImport() {
+                this.showImportDialog = true;
+            },
 
         }
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 //use App\Models\Tenant\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Excel;
 use Modules\Inventory\Http\Resources\InventoryCollection;
 use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Models\Inventory;
@@ -17,6 +18,7 @@ use Modules\Inventory\Http\Requests\InventoryRequest;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Inventory\Models\InventoryKardex;
+use App\Imports\InventoryImport;
 
 
 class InventoryController extends Controller
@@ -396,6 +398,30 @@ class InventoryController extends Controller
         return [
             'success' => true,
             'message' => 'Stock regularizado'
+        ];
+    }
+    public function import(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new InventoryImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' =>  __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
         ];
     }
 

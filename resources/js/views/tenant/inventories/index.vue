@@ -38,6 +38,7 @@
                 </data-table>
             </div>
 
+            <inventories-import :showDialog.sync="showImportDialog"></inventories-import>
             <inventories-form :showDialog.sync="showDialog"></inventories-form>
             <inventories-move :showDialog.sync="showDialogMove"
                               :recordId="recordId"></inventories-move>
@@ -52,17 +53,19 @@
     import InventoriesForm from './form.vue'
     import InventoriesMove from './move.vue'
     import InventoriesRemove from './remove.vue'
+    import InventoriesImport from "../../../../../modules/Inventory/Resources/assets/js/inventory/import.vue";
     import DataTable from '../../../components/DataTable.vue'
 
     export default {
         props: ['type'],
-        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove},
+        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove,InventoriesImport},
         data() {
             return {
                 title: null,
                 showDialog: false,
                 showDialogMove: false,
                 showDialogRemove: false,
+                showImportDialog: false,
                 resource: 'inventories',
                 recordId: null,
             }
@@ -83,7 +86,10 @@
             clickRemove(recordId) {
                 this.recordId = recordId
                 this.showDialogRemove = true
-            }
+            },
+            clickImport() {
+                this.showImportDialog = true;
+            },
         }
     }
 </script>
