@@ -224,6 +224,7 @@
                 <th class="header2">RUC</th>
                 <th class="header2">Plan</th>
                 <th class="header2">Correo</th>
+                <th class="text-center header2">Soap</th>
                 <th class="text-center header2">Comprobantes</th>
                 <th class="text-center header2">Usuarios</th>
                 <th class="text-center header2">F.Creación</th>
