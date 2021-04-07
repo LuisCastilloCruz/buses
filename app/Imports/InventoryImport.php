@@ -23,6 +23,7 @@ class InventoryImport implements ToCollection
     {
         $total = count($rows);
         $registered = 0;
+        $noexiste="";
         unset($rows[0]);
         foreach ($rows as $row)
         {
@@ -30,20 +31,26 @@ class InventoryImport implements ToCollection
             $warehouse_id =$row[1];
             $quantity     = $row[2];
 
-            if($internal_id) {
+            if($internal_id && $internal_id!="") {
                 $item=Item::where('internal_id','=',$internal_id)
                     ->first();
 
-                $itemInv = Inventory::where('item_id','=', $item->id)
-                    ->Where('type','=',1)
-                    ->Where('warehouse_id','=',$warehouse_id)
-                    ->first();
+                if($item){
+                    $itemInv = Inventory::where('item_id','=', $item->id)
+                        ->Where('type','=',1)
+                        ->Where('warehouse_id','=',$warehouse_id)
+                        ->first();
+                }
+                else{
+                    $noexiste.=' '.$internal_id;
+                }
 
-            } else {
-                $itemInv = null;
+            }
+            else{
+                $noexiste.=' '.$internal_id;
             }
 
-            if(!$itemInv) {   //crea nuevos productos
+            if(!$itemInv && $item && $internal_id!="") {   //crea nuevos productos
 
                 $inventory = new Inventory();
                 $inventory->type = 1;
@@ -55,22 +62,30 @@ class InventoryImport implements ToCollection
 
 
                 if (!$this->checkInventory($item->id, $warehouse_id)) {
-                    $inventory = $this->createInitialInventory($item->id, $quantity, $warehouse_id);
-                }
-
-                $registered += 1;
-
-            }else{ //actualiza stock
-
-                if($this->checkInventory($item->id, $warehouse_id)) {
-                    $this->updateStock($item->id, $quantity, $warehouse_id);
+                    $this->createInitialInventory($item->id, $quantity, $warehouse_id);
                 }
 
                 $registered += 1;
 
             }
+            else if($itemInv && $item && $internal_id!="")
+            { //actualiza stock
+
+                if($this->checkInventory($item->id, $warehouse_id)) {
+                    $this->updateStock($item->id, $quantity, $warehouse_id);
+                }
+                else{
+                    $noexiste.=' '.$internal_id;
+                }
+
+                $registered += 1;
+
+            }
+            else{
+                $noexiste.=' '.$internal_id;
+            }
         }
-        $this->data = compact('total', 'registered');
+        $this->data = compact('total', 'registered','noexiste');
 
     }
 
