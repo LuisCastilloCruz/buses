@@ -7,7 +7,7 @@ use Mpdf\QrCode\Output;
 
 class QrCodeGenerate
 {
-    public function displayPNGBase64($value, $w = 100, $level = 'L', $background = [255, 255, 255], $color = [0, 0, 0], $filename = null, $quality = 0)
+    public function displayPNGBase64($value, $w = 150, $level = 'L', $background = [255, 255, 255], $color = [0, 0, 0], $filename = null, $quality = 0)
     {
         $qrCode = new QrCode($value, $level);
         $output = new Output\Png();
