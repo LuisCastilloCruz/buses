@@ -12,6 +12,7 @@ use Modules\Inventory\Models\Inventory;
 use Modules\Inventory\Models\InventoryKardex;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Traits\InventoryTrait;
+use App\Models\Tenant\Kardex;
 
 class InventoryImport implements ToCollection
 {
@@ -73,6 +74,20 @@ class InventoryImport implements ToCollection
 
                 if($this->checkInventory($item->id, $warehouse_id)) {
                     $this->updateStockInitial($item->id, $quantity, $warehouse_id);
+
+                    $kardex=Kardex::where('item_id','=',$item->id)
+                        ->whereNull('type')
+                        ->whereNull('document_id')
+                        ->whereNull('purchase_id')
+                        ->whereNull('sale_note_id')
+                        ->first();
+
+                    if($kardex){
+                        $kardex = Kardex::findOrFail($kardex->id);
+                        $kardex->quantity =$quantity;
+                        $kardex->save();
+                    }
+
                 }
                 else{
                     $noexiste.=' '.$internal_id;
