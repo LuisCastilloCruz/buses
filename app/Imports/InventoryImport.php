@@ -25,6 +25,7 @@ class InventoryImport implements ToCollection
         $total = count($rows);
         $registered = 0;
         $noexiste="";
+        $itemInv=null;
         unset($rows[0]);
         foreach ($rows as $row)
         {
