@@ -29,7 +29,7 @@
 
 @if($company->logo)
     <div class="text-center pt-2">
-        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="contain">
+        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="contain" style="max-height: 120px">
     </div>
 {{--@else--}}
     {{--<div class="text-center company_logo_box pt-5">--}}
@@ -497,7 +497,7 @@
         </td>
     </tr>
     <tr>
-        <td class="text-center"><img class="qr_code" src="data:image/png;base64, {{ $document->qr }}" /></td>
+        <td class="text-center"><img width="100" class="qr_code" src="data:image/png;base64, {{ $document->qr }}" /></td>
     </tr>
     <tr>
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>

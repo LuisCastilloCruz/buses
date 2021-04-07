@@ -29,7 +29,7 @@
 
 @if($company->logo)
     <div class="text-center pt-2 desc-9">
-        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class=" content">
+        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class=" content" style="max-height: 100px">
     </div>
 {{--@else--}}
     {{--<div class="text-center company_logo_box pt-5">--}}
@@ -38,10 +38,10 @@
 @endif
 <table class="full-width">
     <tr>
-        <td class="text-center"><h4><b>{{ $company->name }}</b></h4></td>
+        <td class="text-center"><h5><b>{{ $company->name }}</b></h5></td>
     </tr>
     <tr>
-        <td class="text-center"><h5>{{ 'RUC '.$company->number }}</h5></td>
+        <td class="text-center"><h4>{{ 'RUC: '.$company->number }}</h4></td>
     </tr>
     <tr>
         <td class="text-center" style="text-transform: uppercase;">
@@ -449,7 +449,7 @@
         </td>
     </tr>
     <tr>
-        <td class="text-center company_logo_box_sm"><img class="content" src="data:image/png;base64, {{ $document->qr }}" /></td>
+        <td class="text-center company_logo_box_sm"><img class="content" width="100" src="data:image/png;base64, {{ $document->qr }}" width="100"/></td>
     </tr>
     <tr>
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
