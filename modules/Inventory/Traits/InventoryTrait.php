@@ -219,6 +219,28 @@ trait InventoryTrait
         }
         $item_warehouse->save();
     }
+    private function updateStockInitial($item_id, $quantity, $warehouse_id) {
+
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
+
+        $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
+        $item_warehouse->stock = $quantity;
+
+        // dd($item_warehouse->item->unit_type_id);
+
+        if($quantity < 0 && $item_warehouse->item->unit_type_id !== 'ZZ'){
+            if (($inventory_configuration->stock_control) && ($item_warehouse->stock < 0)){
+                // return [
+                //     'success' => false,
+                //     'message' => 'El producto {$item_warehouse->item->description} no tiene suficiente stock!'
+                // ];
+                // dd('hasta aqui');
+                // return response()->json(['success' => false, 'message' => El producto {$item_warehouse->item->description} no tiene suficiente stock!]);
+                throw new Exception("El producto {$item_warehouse->item->description} no tiene suficiente stock!");
+            }
+        }
+        $item_warehouse->save();
+    }
 
     public function checkInventory($item_id, $warehouse_id) {
         $inventory = Inventory::where('item_id', $item_id)

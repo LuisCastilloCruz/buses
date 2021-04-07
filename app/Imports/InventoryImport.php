@@ -72,7 +72,8 @@ class InventoryImport implements ToCollection
             { //actualiza stock
 
                 if($this->checkInventory($item->id, $warehouse_id)) {
-                    $this->updateStock($item->id, $quantity, $warehouse_id);
+                    dd("actualizare");
+                    $this->updateStockInitial($item->id, $quantity, $warehouse_id);
                 }
                 else{
                     $noexiste.=' '.$internal_id;
