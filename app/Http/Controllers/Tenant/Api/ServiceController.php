@@ -76,19 +76,19 @@ class ServiceController extends Controller
                         'message' => $request->number.'-'.$request->series.'| Código: '.$response_code.'|Mensaje: '.$response_description,
                     ]
                 ];
- 
+
             } else {
                 return [
                     'success' => false,
                     'message' => $response
                 ];
-                
-            }     
+
+            }
     }
     public function validateCpeSunat(Request $request){
-        
+
             $validate_cpe = new ValidateCpeSunat();
-                        
+
             // $acceso = json_decode($datos,true);
             // dd($acceso['access_token']);
 
@@ -110,14 +110,14 @@ class ServiceController extends Controller
                         'message' => $request->series.'-'.$request->number.'| Código: '.$response_code.'|Mensaje: '.$response_description,
                     ]
                 ];
- 
+
             } else {
                 return [
                     'success' => false,
                     'message' => $response
                 ];
-                
-            }     
+
+            }
     }
 
 
@@ -234,6 +234,14 @@ class ServiceController extends Controller
                 ],
             ];
         }
+    }
+    public function openWhatsapp(Request $request){
+
+        $number = $request->number;
+        $text = $request->text;
+
+        return redirect()->to("https://wa.me/$number?text=$text")->send();
+
     }
 
 }

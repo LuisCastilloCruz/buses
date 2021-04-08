@@ -58,6 +58,8 @@ if ($hostname) {
 
         Route::get('sendserver/{document_id}/{query?}', 'Tenant\DocumentController@sendServer');
         Route::post('configurations/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
+        Route::get('open-whatsapp/{number}/{text}', 'Tenant\Api\ServiceController@openWhatsapp');
+
     });
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
