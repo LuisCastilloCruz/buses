@@ -44,8 +44,11 @@ if ($hostname) {
             Route::get('document_check_server/{external_id}', 'Tenant\Api\DocumentController@documentCheckServer');
             Route::get('document/record/{id}', 'Tenant\Api\DocumentController@record');
 
-            Route::get('cash/records', 'Tenant\CashController@recordsMovil');
-            Route::get('cash/record', 'Tenant\CashController@recordMovil');
+            Route::get('cash/records', 'Tenant\Api\CashController@recordsMovil');
+            Route::get('cash/record', 'Tenant\Api\CashController@recordMovil');
+            Route::post('cash', 'Tenant\Api\CashController@store');
+            Route::get('cash/close/{cash}', 'Tenant\Api\CashController@close');
+
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 

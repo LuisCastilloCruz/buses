@@ -96,7 +96,7 @@ trait FinanceTrait
         $destination = $this->getDestinationRecord($row);
         $company = Company::active();
         $model->global_payment()->create([
-            'user_id' => auth()->id(),
+            'user_id' => (auth()->id()) ? auth()->id(): auth('api')->user()->id,
             'soap_type_id' => $company->soap_type_id,
             'destination_id' => $destination['destination_id'],
             'destination_type' => $destination['destination_type'],
@@ -472,7 +472,7 @@ trait FinanceTrait
         $company = Company::active();
 
         $model->global_payment()->create([
-            'user_id' => auth()->id(),
+            'user_id' => (auth()->id())? auth()->id():auth('api')->user()->id,
             'soap_type_id' => $company->soap_type_id,
             'destination_id' => $destination['destination_id'],
             'destination_type' => $destination['destination_type'],

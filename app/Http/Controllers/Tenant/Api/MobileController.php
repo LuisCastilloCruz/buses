@@ -40,6 +40,7 @@ class MobileController extends Controller
 
         $user = $request->user();
         return [
+            'user_id'=> $user->id,
             'success' => true,
             'name' => $user->name,
             'email' => $user->email,
