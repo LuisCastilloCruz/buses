@@ -437,6 +437,13 @@ class CashController extends Controller
 
     }
     public function getIncomeTotal($cash){
+        $methods_payment = collect(PaymentMethodType::all())->transform(function($row){
+            return (object)[
+                'id' => $row->id,
+                'name' => $row->description,
+                'sum' => 0
+            ];
+        });
 
         //$establishment = $cash->user->establishment;
 
