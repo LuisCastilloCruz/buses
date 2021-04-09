@@ -438,7 +438,7 @@ class CashController extends Controller
     }
     public function getIncomeTotal($cash){
 
-        $establishment = $cash->user->establishment;
+        //$establishment = $cash->user->establishment;
 
         $final_balance = 0;
         $cash_income = 0;
