@@ -186,7 +186,6 @@ class CashController extends Controller
 
         $cash = Cash::findOrFail($id);
 
-        // dd($cash->cash_documents);
 
         $cash->date_closed = date('Y-m-d');
         $cash->time_closed = date('H:i:s');
@@ -437,7 +436,6 @@ class CashController extends Controller
                 'sum' => 0
             ];
         });
-        //$establishment = $cash->user->establishment;
 
         $final_balance = 0;
         $cash_income = 0;

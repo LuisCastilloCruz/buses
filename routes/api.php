@@ -49,6 +49,9 @@ if ($hostname) {
             Route::post('cash', 'Tenant\Api\CashController@store');
             Route::get('cash/close/{cash}', 'Tenant\Api\CashController@close');
 
+            Route::get('expenses/tables', 'Tenant\Api\ExpenseController@tables');
+            Route::post('expenses', 'Tenant\Api\ExpenseController@store');
+
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 

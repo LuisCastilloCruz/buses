@@ -49,6 +49,7 @@ class MobileController extends Controller
             'logo' => $company->logo,
             'razon_social'=> $company->name,
             'trade_name'=> $company->trade_name,
+            'establishment_id'=>$user->establishment->id
         ];
 
     }

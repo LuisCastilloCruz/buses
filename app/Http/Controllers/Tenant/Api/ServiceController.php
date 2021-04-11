@@ -235,13 +235,5 @@ class ServiceController extends Controller
             ];
         }
     }
-    public function openWhatsapp(Request $request){
-
-        $number = $request->number;
-        $text = $request->text;
-
-        return redirect()->to("https://wa.me/$number?text=$text")->send();
-
-    }
 
 }
