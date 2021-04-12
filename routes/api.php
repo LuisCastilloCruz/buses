@@ -52,6 +52,10 @@ if ($hostname) {
             Route::get('expenses/tables', 'Tenant\Api\ExpenseController@tables');
             Route::post('expenses', 'Tenant\Api\ExpenseController@store');
 
+            Route::get('incomes/tables', 'Tenant\Api\IncomeController@tables');
+            Route::get('cash/movimientos/{id}', 'Tenant\Api\CashController@movimientos');
+            Route::post('incomes', 'Tenant\Api\IncomeController@store');
+
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 

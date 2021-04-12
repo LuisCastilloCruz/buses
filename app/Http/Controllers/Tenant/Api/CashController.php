@@ -298,12 +298,14 @@ class CashController extends Controller
     }
 
 
-    public function report($cash) {
+    public function movimientos($id)
+    {
 
-        $cash = Cash::findOrFail($cash);
+        $cash = Cash::findOrFail($id);
+
         $company = Company::first();
 
-        $methods_payment = collect(PaymentMethodType::all())->transform(function($row){
+        $methods_payment = collect(PaymentMethodType::all())->transform(function ($row) {
             return (object)[
                 'id' => $row->id,
                 'name' => $row->description,
@@ -313,11 +315,106 @@ class CashController extends Controller
 
         set_time_limit(0);
 
-        $pdf = PDF::loadView('tenant.cash.report_pdf', compact("cash", "company", "methods_payment"));
+        $cash_documents = $cash->cash_documents;
 
-        $filename = "Reporte_POS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
+        $all_documents = [];
+        foreach ($cash_documents as $key => $value) {
+            if ($value->sale_note) {
+                $all_documents[] = $value;
+            } else if ($value->document) {
+                $all_documents[] = $value;
+            } else if ($value->expense_payment) {
+                if ($value->expense_payment->expense->state_type_id == '05') {
+                    $all_documents[] = $value;
+                }
+            } else if ($value->income_payment) {
+                if ($value->income_payment->income->state_type_id == '05') {
+                    $all_documents[] = $value;
+                }
+            }
+        }
 
-        return $pdf->stream($filename.'.pdf');
+        foreach ($all_documents as $key => $value){
+
+            $type_transaction = null;
+            $document_type_description = null;
+            $number = null;
+            $date_of_issue = null;
+            $customer_name = null;
+            $customer_number = null;
+            $currency_type_id = null;
+            $total = null;
+
+            if ($value->sale_note) {
+
+                $type_transaction = 'Venta';
+                $document_type_description = 'NOTA DE VENTA';
+                $number = $value->sale_note->number_full;
+                $date_of_issue = $value->sale_note->date_of_issue->format('Y-m-d');
+                $customer_name = $value->sale_note->customer->name;
+                $customer_number = $value->sale_note->customer->number;
+
+                $total = $value->sale_note->total;
+
+                if (!in_array($value->sale_note->state_type_id, ['01', '03', '05', '07', '13'])) {
+                    $total = 0;
+                }
+
+                $currency_type_id = $value->sale_note->currency_type_id;
+
+            } else if ($value->document) {
+
+                $type_transaction = 'Venta';
+                $document_type_description = $value->document->document_type->description;
+                $number = $value->document->number_full;
+                $date_of_issue = $value->document->date_of_issue->format('Y-m-d');
+                $customer_name = $value->document->customer->name;
+                $customer_number = $value->document->customer->number;
+                $total = $value->document->total;
+
+                if (!in_array($value->document->state_type_id, ['01', '03', '05', '07', '13'])) {
+                    $total = 0;
+                }
+
+                $currency_type_id = $value->document->currency_type_id;
+
+            } else if ($value->expense_payment) {
+
+                $type_transaction = 'Gasto';
+                $document_type_description = $value->expense_payment->expense->expense_type->description;
+                $number = $value->expense_payment->expense->number;
+                $date_of_issue = $value->expense_payment->expense->date_of_issue->format('Y-m-d');
+                $customer_name = $value->expense_payment->expense->supplier->name;
+                $customer_number = $value->expense_payment->expense->supplier->number;
+                $total = -$value->expense_payment->payment;
+                $currency_type_id = $value->expense_payment->expense->currency_type_id;
+
+            } else if ($value->income_payment) {
+                $type_transaction = 'Ingreso';
+                $document_type_description = $value->income_payment->income->income_type->description;
+                $number = $value->income_payment->income->number;
+                $date_of_issue = $value->income_payment->income->date_of_issue->format('Y-m-d');
+                $customer_name = $value->income_payment->income->customer;
+                $customer_number = 'otros';
+                $total = $value->income_payment->payment;
+                $currency_type_id = $value->income_payment->income->currency_type_id;
+
+            }
+
+            $documents[] = array(
+                'id' =>$key,
+                'type_transaction' => $type_transaction,
+                'document_type_description' => $document_type_description,
+                'number' => $number,
+                'date_of_issue' => $date_of_issue,
+                'customer_name' => $customer_name,
+                'customer_number' => $customer_number,
+                'currency_type_id' => $currency_type_id,
+                'total' => number_format($total, 2, ".", ""),
+            );
+        }
+
+        return $documents;
     }
 
     public function report_general()

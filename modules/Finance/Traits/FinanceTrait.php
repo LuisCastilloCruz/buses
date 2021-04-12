@@ -102,12 +102,12 @@ trait FinanceTrait
             'destination_type' => $destination['destination_type'],
         ]);
 
-//        if($model->income_id>0){
-//            $regCaja= new CashDocument();
-//            $regCaja->cash_id=$destination['destination_id'];
-//            $regCaja->income_payment_id=$model->income_id;
-//            $regCaja->save();
-//        }
+        if($model->income_id>0){
+            $regCaja= new CashDocument();
+            $regCaja->cash_id=$destination['destination_id'];
+            $regCaja->income_payment_id=$model->income_id;
+            $regCaja->save();
+        }
 
     }
 
