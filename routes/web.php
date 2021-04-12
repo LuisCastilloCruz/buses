@@ -279,7 +279,7 @@ if ($hostname) {
 
 			Route::post('options/delete_documents', 'Tenant\OptionController@deleteDocuments');
 
-			Route::get('services/ruc/{number}', 'Tenant\Api\ServiceController@ruc');
+			//Route::get('services/ruc/{number}', 'Tenant\Api\ServiceController@ruc');
 			Route::get('services/dni/{number}', 'Tenant\Api\ServiceController@dni');
 			Route::post('services/exchange_rate', 'Tenant\Api\ServiceController@exchange_rate');
 			Route::post('services/search_exchange_rate', 'Tenant\Api\ServiceController@searchExchangeRateByDate');
