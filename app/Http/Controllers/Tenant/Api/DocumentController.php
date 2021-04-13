@@ -191,8 +191,8 @@ class DocumentController extends Controller
         return [
             'data' => [
             'success' => true,
-            //'message' => $response->getResponse(),
             'document' =>$document,
+            'number_to_letter' => $document->number_to_letter,
             ]
         ];
     }
