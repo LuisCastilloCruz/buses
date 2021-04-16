@@ -65,35 +65,33 @@ class ValidateCpeSunat
     public function __construct()
     {
         $this->client = new Client([
-            'base_uri' => 'https://www.sunat.gob.pe/ol-ti-itconsultaunificadalibre/consultaUnificadaLibre/',
+            'base_uri' => self::URL_CONSULT,
             'defaults' => [
                 'exceptions' => false,
                 'allow_redirects' => false
             ]
         ]);
-//        $this->client = new Client(['cookies' => true]);
+        $this->client = new Client(['cookies' => true]);
     }
 
-    public function search($company_number, $document_type_id, $series, $number, $date_of_issue, $total)
+    public function search($company_number, $document_type_id, $series, $number, $date_of_issue, $total,$token)
     {
-
         try {
-            $token = trim($this->getToken());
-            //dd($token);
+            //$token = trim($this->getToken());
             $response = $this->client->request('POST', self::URL_CONSULT, [
-                'http_errors' => false,
+                'http_errors' => true,
                 'headers' => [
                     'Accept' =>'application/json',
                     'Content-Type' => 'application/json',
                     'Authorization'=> 'Bearer '.$token
                 ],
                 'json' =>[
-                    'numRuc' => $company_number,
-                    'codComp' => $document_type_id,
-                    'numeroSerie' => $series,
-                    'numero' => $number,
-                    'fechaEmision' => Carbon::parse($date_of_issue)->format('d/m/Y'),
-                    'monto' => $total
+                    "numRuc" => $company_number,
+                    "codComp" => $document_type_id,
+                    "numeroSerie" => $series,
+                    "numero" => $number,
+                    "fechaEmision" => $date_of_issue,
+                    "monto" =>$total
                 ]
             ]);
 
@@ -132,18 +130,22 @@ class ValidateCpeSunat
 
         $response = $this->client->request('POST', self::URL_TOKEN, [
             'headers' => [
-                'Content-Type' => 'application/x-www-form-urlencoded',
+                'Content-Type' => 'application/json',
+                'Cookie'=> 'TS019e7fc2=014dc399cb1f1388e01d6630c18c6465440051f1c724bd2d8e5cd962e9c8410958bbbe63aec493f97ce17780f02a6698bc42ca60ed',
+                'Content-Length'=> 178
+                ],
+            'json' =>[
+                'grant_type'=>'client_credentials',
+                'scope'=>'https://api.sunat.gob.pe/v1/contribuyente/contribuyentes',
+                'client_id'=>'11d21fcf-2a30-4e98-bd5b-fb56f1e9096f',
+                'client_secret'=>'OhQ25/Gh55x8CFwsal1FAg==',
             ],
-            'form_params' =>[
-                'grant_type'=> "client_credentials",
-                'scope' => 'https://api.sunat.gob.pe/v1/contribuyente/contribuyentes',
-                'client_id' => '11d21fcf-2a30-4e98-bd5b-fb56f1e9096f',
-                'client_secret' => 'OhQ25/Gh55x8CFwsal1FAg=='
-            ]
         ]);
-    
+        return $response;
         $text =  $response->getBody()->getContents();
         $datos = json_decode($text,true);
+
+
             // dd($acceso['access_token']);
 
         return $datos['access_token'];

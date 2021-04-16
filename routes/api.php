@@ -62,13 +62,12 @@ if ($hostname) {
         Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
         Route::get('services/validate_cpe/{company_number}/{document_type_code}/{series}/{number}/{date_of_issue}/{total}', 'Tenant\Api\ServiceController@validateCpe2');
         Route::get('services/validate_cpe_sunat/{company_number}/{document_type_code}/{series}/{number}/{date_of_issue}/{total}', 'Tenant\Api\ServiceController@validateCpeSunat');
+        Route::post('services/validate_cpe_sunat', 'Tenant\Api\ServiceController@validateCpeSunat');
         Route::get('services/nombre/{nombre}', 'Tenant\Api\ServiceController@nombre');
         Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
         Route::post('documents/status', 'Tenant\Api\ServiceController@documentStatus');
-
         Route::get('sendserver/{document_id}/{query?}', 'Tenant\DocumentController@sendServer');
         Route::post('configurations/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
-        Route::get('open-whatsapp/{number}/{text}', 'Tenant\Api\ServiceController@openWhatsapp');
 
     });
 } else {
