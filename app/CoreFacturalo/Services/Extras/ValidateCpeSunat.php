@@ -74,10 +74,11 @@ class ValidateCpeSunat
         $this->client = new Client(['cookies' => true]);
     }
 
-    public function search($company_number, $document_type_id, $series, $number, $date_of_issue, $total,$token)
+    public function search($company_number, $document_type_id, $series, $number, $date_of_issue, $total)
     {
         try {
-            //$token = trim($this->getToken());
+            $token = trim($this->getToken());
+
             $response = $this->client->request('POST', self::URL_CONSULT, [
                 'http_errors' => true,
                 'headers' => [
@@ -95,7 +96,6 @@ class ValidateCpeSunat
                 ]
             ]);
 
-            //dd($response->getBody()->getContents());
             if($response->getStatusCode() == 200) {
                 $text =  $response->getBody()->getContents();
                 $datos = json_decode($text,true);
@@ -127,28 +127,31 @@ class ValidateCpeSunat
 
     private function getToken()
     {
+        $curl = curl_init();
 
-        $response = $this->client->request('POST', self::URL_TOKEN, [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Cookie'=> 'TS019e7fc2=014dc399cb1f1388e01d6630c18c6465440051f1c724bd2d8e5cd962e9c8410958bbbe63aec493f97ce17780f02a6698bc42ca60ed',
-                'Content-Length'=> 178
-                ],
-            'json' =>[
-                'grant_type'=>'client_credentials',
-                'scope'=>'https://api.sunat.gob.pe/v1/contribuyente/contribuyentes',
-                'client_id'=>'11d21fcf-2a30-4e98-bd5b-fb56f1e9096f',
-                'client_secret'=>'OhQ25/Gh55x8CFwsal1FAg==',
-            ],
-        ]);
-        return $response;
-        $text =  $response->getBody()->getContents();
-        $datos = json_decode($text,true);
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api-seguridad.sunat.gob.pe/v1/clientesextranet/11d21fcf-2a30-4e98-bd5b-fb56f1e9096f/oauth2/token/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.sunat.gob.pe%2Fv1%2Fcontribuyente%2Fcontribuyentes&client_id=11d21fcf-2a30-4e98-bd5b-fb56f1e9096f&client_secret=OhQ25%2FGh55x8CFwsal1FAg%3D%3D',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded',
+                //'Cookie: TS019e7fc2=014dc399cbd5a552b1554969aef7c38dfbc4845c762c261502f754f0a263522b6e67201bea8e5a96586307dbe4057ab8b023e4bbca'
+            ),
+        ));
 
+        $response = curl_exec($curl);
 
-            // dd($acceso['access_token']);
+        curl_close($curl);
 
-        return $datos['access_token'];
+        $data = json_decode($response);
+
+        return $data->access_token;
     }
 
 }

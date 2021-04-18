@@ -88,18 +88,14 @@ class ServiceController extends Controller
     public function validateCpeSunat(Request $request){
 
             $validate_cpe = new ValidateCpeSunat();
-            // $acceso = json_decode($datos,true);
-            // dd($acceso['access_token']);
 
             $response = $validate_cpe->search($request->numero_ruc_emisor,
                                                 $request->codigo_tipo_documento,
                                                 $request->serie_documento,
                                                 $request->numero_documento,
                                                 $request->fecha_de_emision,
-                                                $request->total,
-                                                $request->token
+                                                $request->total
                                             );
-            //return $response;
             if ($response['success']) {
                 $response_code = $response['data']['comprobante_estado_codigo'];
                 $response_description = $response['data']['comprobante_estado_descripcion'];
@@ -120,7 +116,6 @@ class ServiceController extends Controller
 
             }
     }
-
 
     public function ruc($number)
     {
