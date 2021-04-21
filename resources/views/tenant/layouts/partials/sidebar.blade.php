@@ -523,6 +523,7 @@
                         {{ ($path[0] === 'drivers')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'dispatchers')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'order-forms')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'documents_old')?'nav-active nav-expanded':'' }}
 
                         ">
                         <a class="nav-link" href="#">
@@ -530,6 +531,11 @@
                             <span>Comprobantes avanzados</span>
                         </a>
                         <ul class="nav nav-children" style="">
+                            <li class="{{ ($path[0] === 'documents_old'  && $path[1] === 'create_old')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.documents.create_old')}}">
+                                    Facturas pasadas
+                                </a>
+                            </li>
                             <li class="{{ ($path[0] === 'retentions')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.retentions.index')}}">
                                     Retenciones
@@ -988,30 +994,54 @@
                         </ul>
                     </li>
                     @endif
-{{--                    <li class=" nav-parent--}}
-{{--                        {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">--}}
-{{--                        <a class="nav-link" href="#">--}}
-{{--                            <i class="fas fa-building" aria-hidden="true"></i>--}}
-{{--                            <span>Hoteles</span>--}}
-{{--                        </a>--}}
-{{--                        <ul class="nav nav-children">--}}
-{{--                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'reception')) ? 'nav-active' : '' }}">--}}
-{{--                                <a class="nav-link" href="{{ url('hotels/reception') }}">Recepción</a>--}}
-{{--                            </li>--}}
-{{--                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'rates')) ? 'nav-active' : '' }}">--}}
-{{--                                <a class="nav-link" href="{{ url('hotels/rates') }}">Tarifas</a>--}}
-{{--                            </li>--}}
-{{--                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'floors')) ? 'nav-active' : '' }}">--}}
-{{--                                <a class="nav-link" href="{{ url('hotels/floors') }}">Pisos</a>--}}
-{{--                            </li>--}}
-{{--                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'categories')) ? 'nav-active' : '' }}">--}}
-{{--                                <a class="nav-link" href="{{ url('hotels/categories') }}">Categorías</a>--}}
-{{--                            </li>--}}
-{{--                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'rooms')) ? 'nav-active' : '' }}">--}}
-{{--                                <a class="nav-link" href="{{ url('hotels/rooms') }}">Habitaciones</a>--}}
-{{--                            </li>--}}
-{{--                        </ul>--}}
-{{--                    </li>--}}
+                    <li class=" nav-parent
+                        {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-building" aria-hidden="true"></i>
+                            <span>Hoteles</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'reception')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/reception') }}">Recepción</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'rates')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/rates') }}">Tarifas</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'floors')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/floors') }}">Pisos</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'categories')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/categories') }}">Categorías</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'rooms')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/rooms') }}">Habitaciones</a>
+                            </li>
+                        </ul>
+                    </li>
+                        <li class=" nav-parent
+                        {{ ($path[0] === 'transportes') ? 'nav-active nav-expanded' : '' }}">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-building" aria-hidden="true"></i>
+                            <span>Transpotes</span>
+                        </a>
+                            <ul class="nav nav-children">
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'sales')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/sales') }}">Pasajes</a>
+                                </li>
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'rates')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/encomiendas') }}">Encomiendas</a>
+                                </li>
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'choferes')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/choferes') }}">Choferes</a>
+                                </li>
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'vehiculos')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/vehiculos') }}">Vehículos</a>
+                                </li>
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'destinos')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/destinos') }}">Destinos</a>
+                                </li>
+                            </ul>
+                    </li>
                 </ul>
             </nav>
         </div>

@@ -7,6 +7,7 @@ use App\CoreFacturalo\WS\Zip\ZipFly;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\DocumentEmailRequest;
 use App\Http\Requests\Tenant\DocumentRequest;
+use App\Http\Requests\Tenant\DocumentOldRequest;
 use App\Http\Requests\Tenant\DocumentVoidedRequest;
 use App\Http\Resources\Tenant\DocumentCollection;
 use App\Http\Resources\Tenant\DocumentResource;
@@ -136,6 +137,15 @@ class DocumentController extends Controller
         $configuration = Configuration::first();
         $is_contingency = 0;
         return view('tenant.documents.form', compact('is_contingency', 'configuration'));
+    }
+    public function create_old()
+    {
+        if(auth()->user()->type == 'integrator')
+            return redirect('/documents');
+
+        $configuration = Configuration::first();
+        $is_contingency = 0;
+        return view('tenant.documents.form_old', compact('is_contingency', 'configuration'));
     }
 
     public function create_tensu()
@@ -426,6 +436,45 @@ class DocumentController extends Controller
                     'response' =>$response
 
                 ],
+            ];
+        }
+        catch (\Exception $e) {
+            DB::rollback();
+
+            return [
+                'success' => false,
+                'data'=>[
+                    'message'=> $e->getMessage(),
+                    'code'=> $e->getCode(),
+                    'sent'=> false
+                ]
+            ];
+        }
+
+    }
+    public function storeOld(DocumentOldRequest $request)
+    {
+        DB::beginTransaction();
+        try{
+            $response='';
+            $fact = DB::connection('tenant')->transaction(function () use ($request) {
+                $type = 'invoice';
+                $facturalo = new Facturalo();
+                $facturalo->setType($type);
+                $facturalo->save($request->all());
+                $facturalo->updateQr();
+                $facturalo->createPdf();
+
+                return $facturalo;
+            });
+
+//            $document = $fact->getDocument();
+//            $response = $fact->getResponse();
+
+            DB::commit();
+            return [
+                'success' => true,
+                'message' => 'El documento se generó.',
             ];
         }
         catch (\Exception $e) {

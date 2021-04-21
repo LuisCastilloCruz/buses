@@ -182,6 +182,7 @@ if ($hostname) {
 			Route::get('documents/columns', 'Tenant\DocumentController@columns');
 			Route::get('documents/records', 'Tenant\DocumentController@records');
 			Route::get('documents/create', 'Tenant\DocumentController@create')->name('tenant.documents.create')->middleware(['redirect.level', 'tenant.internal.mode']);
+            Route::get('documents_old/create_old', 'Tenant\DocumentController@create_old')->name('tenant.documents.create_old')->middleware(['redirect.level', 'tenant.internal.mode']);
 			Route::get('documents/create_tensu', 'Tenant\DocumentController@create_tensu')->name('tenant.documents.create_tensu');
 
 			Route::get('documents/tables', 'Tenant\DocumentController@tables');
