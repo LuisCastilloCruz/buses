@@ -13,6 +13,7 @@
 
         </div>
         <br>
+
         @if(!empty($records))
             <div class="">
                 <div class=" ">
@@ -34,20 +35,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($records as $key => $value)
+                            @foreach($records as $value)
                             <tr>
                                 <td class="celda">{{$loop->iteration}}</td>
-                                <td class="celda">{{$value->internal_id}}</td>
-                                <td class="celda">{{$value->name}}</td>
-                                <td class="celda">{{$value->second_name }}</td>
-                                <td class="celda">{{$value->description }}</td>
-                                <td class="celda">{{$value->model }}</td>
-                                <td class="celda">{{$value->unit_type_id }}</td>
-                                <td class="celda">{{$value->has_igv }}</td>
-                                <td class="celda">{{$value->category_id }}</td>
-                                <td class="celda">{{$value->brand_id }}</td>
-                                <td class="celda">{{$value->sale_unit_price }}</td>
-                                <td class="celda">{{$value->date_of_due }}</td>
+                                <td class="celda">{{$value['internal_id']}}</td>
+                                <td class="celda">{{$value['name'] }}</td>
+                                <td class="celda">{{$value['second_name']}}</td>
+                                <td class="celda">{{$value['description']}}</td>
+                                <td class="celda">{{$value['model']}}</td>
+                                <td class="celda">{{$value['unit_type_id']}}</td>
+                                <td class="celda">{{$value['has_igv']}}</td>
+                                <td class="celda">{{$value['category_name']}}</td>
+                                <td class="celda">{{$value['brand_name']}}</td>
+                                <td class="celda">{{$value['sale_unit_price']}}</td>
+                                <td class="celda">{{$value['date_of_due']}}</td>
                             </tr>
                             @endforeach
                         </tbody>
