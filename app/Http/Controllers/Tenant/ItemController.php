@@ -568,8 +568,27 @@ class ItemController extends Controller
 
         $records = ($period == 'all') ? $items->get() : $items->whereBetween('created_at', [$d_start, $d_end])->get();
 
+        $datos= array();
+        for($i=0;$i<count($records);$i++){
+
+            array_push($datos,
+                array(
+                    'internal_id' =>$records[$i]->internal_id,
+                    'name'=>$records[$i]->name,
+                    'second_name'=>$records[$i]->second_name,
+                    'description'=>$records[$i]->description,
+                    'model'=>$records[$i]->model,
+                    'unit_type_id'=>$records[$i]->unit_type_id,
+                    'has_igv'=>$records[$i]->has_igv,
+                    'category_name'=>($records[$i]->category)?$records[$i]->category->name: '',
+                    'brand_name'=>($records[$i]->brand)?$records[$i]->brand->name:'',
+                    'sale_unit_price'=>$records[$i]->sale_unit_price,
+                    'date_of_due'=>$records[$i]->date_of_due)
+            );
+        }
+
         return (new ItemExport)
-                ->records($records)
+                ->records($datos)
                 ->download('Reporte_Items_'.Carbon::now().'.xlsx');
 
     }
