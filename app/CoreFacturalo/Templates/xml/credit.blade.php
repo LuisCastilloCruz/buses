@@ -244,7 +244,7 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         @endif
-        @if($document->total_plastic_bag_taxes > 0) 
+        @if($document->total_plastic_bag_taxes > 0)
         <cac:TaxSubtotal>
             <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_plastic_bag_taxes }}</cbc:TaxAmount>
             <cac:TaxCategory>
@@ -268,7 +268,7 @@
     @foreach($document->items as $row)
     <cac:CreditNoteLine>
         <cbc:ID>{{ $loop->iteration }}</cbc:ID>
-        <cbc:CreditedQuantity unitCode="{{ $row->item->unit_type_id }}">{{ $row->quantity }}</cbc:CreditedQuantity>
+        <cbc:CreditedQuantity unitCode="{{ ($row->item->unit_type_id=='ZZ') ?'ZZ': 'NIU' }}">{{ $row->quantity }}</cbc:CreditedQuantity>
         @if($row->total_value > 0)
         <cbc:LineExtensionAmount currencyID="{{ $document->currency_type_id }}">{{ $row->total_value }}</cbc:LineExtensionAmount>
         @endif
