@@ -6,7 +6,43 @@
                 <li class="active"><span>{{ title }}</span></li>
             </ol>
             <div v-if="typeUser == 'admin'" class="right-wrapper pull-right">
-                <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
+
+                <div class="btn-group flex-wrap">
+                        <button
+                            type="button"
+                            class="btn btn-custom btn-sm mt-2 mr-2 dropdown-toggle"
+                            data-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <i class="fa fa-upload"></i> Importar
+                            <span class="caret"></span>
+                        </button>
+                        <div
+                            class="dropdown-menu"
+                            role="menu"
+                            x-placement="bottom-start"
+                            style="
+                                position: absolute;
+                                will-change: transform;
+                                top: 0px;
+                                left: 0px;
+                                transform: translate3d(0px, 42px, 0px);
+                            "
+                        >
+                            <a
+                                class="dropdown-item text-1"
+                                href="#"
+                                @click.prevent="clickImport()"
+                            >Inventario inicial</a
+                            >
+                            <a
+                                class="dropdown-item text-1"
+                                href="#"
+                                @click.prevent="clickImportStock()"
+                            >Importar stock</a
+                            >
+                        </div>
+                    </div>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate('input')"><i class="fa fa-plus-circle"></i> Ingreso</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickOutput()"><i class="fa fa-minus-circle"></i> Salida</button>
             </div>
@@ -49,6 +85,7 @@
                             ></inventories-form-output>
 
             <inventories-import :showDialog.sync="showImportDialog"></inventories-import>
+            <inventories-import-stock :showDialog.sync="showImportStockDialog"></inventories-import-stock>
             <inventories-move :showDialog.sync="showDialogMove"
                               :recordId="recordId"></inventories-move>
             <inventories-remove :showDialog.sync="showDialogRemove"
@@ -65,11 +102,12 @@
     import InventoriesMove from './move.vue'
     import InventoriesRemove from './remove.vue'
     import InventoriesImport from './import.vue'
+    import InventoriesImportStock from './import_stock.vue'
     import DataTable from '../../../../../../resources/js/components/DataTable.vue'
 
     export default {
         props: ['type', 'typeUser'],
-        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput,InventoriesImport},
+        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput,InventoriesImport,InventoriesImportStock},
         data() {
             return {
                 title: null,
@@ -78,6 +116,7 @@
                 showDialogRemove: false,
                 showDialogOutput: false,
                 showImportDialog: false,
+                showImportStockDialog: false,
                 resource: 'inventory',
                 recordId: null,
                 typeTransaction:null,
@@ -108,6 +147,9 @@
             },
             clickImport() {
                 this.showImportDialog = true;
+            },
+            clickImportStock() {
+                this.showImportStockDialog = true;
             },
 
         }

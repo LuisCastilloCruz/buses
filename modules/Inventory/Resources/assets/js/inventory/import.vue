@@ -59,7 +59,7 @@
                 }
             },
             create() {
-                this.titleDialog = 'Importar Stock'
+                this.titleDialog = 'Importar Inventario Inicial'
             },
             async submit() {
                 this.loading_submit = true
@@ -76,6 +76,16 @@
                     this.$eventHub.$emit('reloadData')
                     this.$eventHub.$emit('reloadTables')
                     this.$refs.upload.clearFiles()
+
+                    let message = `<strong>Los siguientes códigos no fueron encontrados: <br></strong>${response.data.noexiste }<br>`
+                    this.$notify({
+                        title: "",
+                        dangerouslyUseHTMLString: true,
+                        message: message,
+                        type: "warning",
+                        duration: 6000
+                    })
+
                     this.close()
                 } else {
                     this.$message({message:response.message, type: 'error'})

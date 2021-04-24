@@ -19,6 +19,7 @@ use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Inventory\Models\InventoryKardex;
 use App\Imports\InventoryImport;
+use App\Imports\InventoryImportStock;
 
 
 class InventoryController extends Controller
@@ -405,6 +406,30 @@ class InventoryController extends Controller
         if ($request->hasFile('file')) {
             try {
                 $import = new InventoryImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' =>  __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+    public function importStock(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new InventoryImportStock();
                 $import->import($request->file('file'), null, Excel::XLSX);
                 $data = $import->getData();
                 return [

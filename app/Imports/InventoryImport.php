@@ -44,12 +44,9 @@ class InventoryImport implements ToCollection
                         ->first();
                 }
                 else{
-                    $noexiste.=' '.$internal_id;
+                    $noexiste.=' '.$internal_id. '<br>';
                 }
 
-            }
-            else{
-                $noexiste.=' '.$internal_id;
             }
 
             if(!$itemInv && $item && $internal_id!="") {   //crea nuevos productos
@@ -91,14 +88,11 @@ class InventoryImport implements ToCollection
 
                 }
                 else{
-                    $noexiste.=' '.$internal_id;
+                    $noexiste.=' '.$internal_id. '<br>';
                 }
 
                 $registered += 1;
 
-            }
-            else{
-                $noexiste.=' '.$internal_id;
             }
         }
         $this->data = compact('total', 'registered','noexiste');

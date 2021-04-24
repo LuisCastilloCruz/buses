@@ -34,6 +34,7 @@ if($hostname) {
                 Route::get('initialize', 'InventoryController@initialize');
                 Route::get('regularize_stock', 'InventoryController@regularize_stock');
                 Route::post('import', 'InventoryController@import');
+                Route::post('import_stock', 'InventoryController@importStock');
             });
 
             Route::prefix('reports')->group(function () {
