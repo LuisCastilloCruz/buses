@@ -1,0 +1,25 @@
+{
+    "name": "nwidart/Transporte",
+    "description": "",
+    "authors": [
+        {
+            "name": "Donal Chacca",
+            "email": "jefelon@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Transporte\\Providers\\TransporteServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Transporte\\": ""
+        }
+    }
+}

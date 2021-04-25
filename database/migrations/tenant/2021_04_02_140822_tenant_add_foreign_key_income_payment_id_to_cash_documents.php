@@ -25,10 +25,9 @@ class TenantAddForeignKeyIncomePaymentIdToCashDocuments extends Migration
      */
     public function down()
     {
+        // drop the keys
         Schema::table('cash_documents', function (Blueprint $table) {
-            //$table->unsignedInteger('income_payment_id')->change();
             $table->dropForeign(['income_payment_id']);
-            $table->dropColumn('income_payment_id');
         });
     }
 }
