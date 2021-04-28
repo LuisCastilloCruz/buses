@@ -29,6 +29,8 @@ if ($hostname) {
 				Route::post('destinos/{id}/change-status', 'TransporteDestinoController@changeRoomStatus');
                 Route::get('destinos/search-districts', 'TransporteDestinoController@searchDistricts');
                 Route::get('destinos/get-districts', 'TransporteDestinoController@getDistritos');
+                // Encomiendas
+                Route::get('encomiendas', 'TransporteEncomiendaController@index');
 			});
 	});
 }

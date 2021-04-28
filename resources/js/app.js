@@ -277,6 +277,8 @@ Vue.component('tenant-transporte-destinos', require('@viewsModuleTransporte/dest
 
 // Transporte :: bus
 Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus/Sales.vue'));
+// Transporte :: encomiendas
+Vue.component('tenant-transporte-encomiendas', require('@viewsModuleTransporte/encomiendas/List.vue'));
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
