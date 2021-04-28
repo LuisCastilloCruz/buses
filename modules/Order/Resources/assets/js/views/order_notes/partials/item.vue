@@ -51,7 +51,10 @@
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
-                            <el-input-number v-model="form.quantity" :min="0.01" :disabled="form.item.calculate_quantity"></el-input-number>
+                            <el-input v-model="form.quantity" :disabled="form.item.calculate_quantity" @blur="validateQuantity" @input.native="changeValidateQuantity" ref="inputQuantity">
+                                <el-button style="padding-right: 5px ;padding-left: 12px" slot="prepend" icon="el-icon-minus" @click="clickDecrease" :disabled="form.quantity < 0.01 || form.item.calculate_quantity"></el-button>
+                                <el-button style="padding-right: 5px ;padding-left: 12px" slot="append" icon="el-icon-plus" @click="clickIncrease"  :disabled="form.item.calculate_quantity"></el-button>
+                            </el-input>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
                     </div>
@@ -241,10 +244,11 @@
                             </section>
                     </div>
                 </div>
+                </div>
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cerrar</el-button>
-                <el-button type="primary" native-type="submit" v-if="form.item_id">Agregar</el-button>
+                <el-button class="add" type="primary" native-type="submit" v-if="form.item_id">{{titleAction}}</el-button>
             </div>
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
@@ -280,11 +284,12 @@
 
 
     export default {
-        props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
+        props: ['recordItem','showDialog', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
         components: {itemForm, WarehousesDetail, SelectLotsForm},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
+                titleAction: '',
                 resource: 'order-notes',
                 showDialogNewItem: false,
                 showWarehousesDetail: false,
@@ -327,6 +332,51 @@
             this.events()
         },
         methods: {
+            validateQuantity(){
+
+                if(!this.form.quantity){
+                    this.setMinQuantity()
+                }
+
+                if (isNaN(Number(this.form.quantity))) {
+                    this.setMinQuantity()
+                }
+
+                if (typeof parseFloat(this.form.quantity) !== 'number'){
+                    this.setMinQuantity()
+                }
+
+                if(this.form.quantity <= this.getMinQuantity()){
+                    this.setMinQuantity()
+                }
+
+                this.calculateTotal()
+            },
+            changeValidateQuantity(event) {
+                this.calculateTotal()
+            },
+            getMinQuantity(){
+                return 0.01
+            },
+            setMinQuantity(){
+                this.form.quantity = this.getMinQuantity()
+            },
+            clickDecrease(){
+
+                this.form.quantity = parseInt(this.form.quantity-1)
+
+                if(this.form.quantity <= this.getMinQuantity()){
+                    this.setMinQuantity()
+                    return
+                }
+
+                this.calculateTotal()
+
+            },
+            clickIncrease(){
+                this.form.quantity = parseInt(this.form.quantity + 1)
+                this.calculateTotal()
+            },
             events(){
 
                 this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
@@ -378,8 +428,42 @@
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
             // },
-            create() {
-            //     this.initializeFields()
+            async create() {
+                this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
+                this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
+                if (this.recordItem) {
+                    await this.reloadDataItems(this.recordItem.item_id)
+                    this.form.item_id = await this.recordItem.item_id
+                    //await this.changeItem()
+                    this.form.quantity = this.recordItem.quantity
+                    this.form.unit_price_value = this.recordItem.input_unit_price_value
+                    this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
+                    this.form.warehouse_id = this.recordItem.warehouse_id
+                    this.isUpdateWarehouseId = this.recordItem.warehouse_id
+
+                    if(this.isEditItemNote){
+                        this.form.item.currency_type_id = this.currencyTypeIdActive
+                        this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
+
+                        if(this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07'){
+
+                            this.form.document_item_id =  this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
+                            this.form.item.lots = this.recordItem.item.lots
+                            await this.regularizeLots()
+                            this.lots = this.form.item.lots
+                        }
+
+                    }
+
+                    if(this.recordItem.name_product_pdf){
+                        this.form.name_product_pdf = this.recordItem.name_product_pdf
+                    }
+
+
+                    this.calculateQuantity()
+                }else{
+                    this.isUpdateWarehouseId = null
+                }
             },
             clickAddDiscount() {
                 this.form.discounts.push({
@@ -449,12 +533,30 @@
                 this.form.has_igv = this.form.item.has_igv;
 
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
-                this.form.quantity = 1;
+                //this.form.quantity = 1;
                 this.item_unit_types = this.form.item.item_unit_types;
 
                 (this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
 
                 this.cleanTotalItem();
+
+                this.showListStock = true
+
+
+                if(this.form.item.attributes.length > 0) {
+                    const contex = this
+                    this.form.item.attributes.forEach((row)=>{
+
+                        contex.form.attributes.push({
+                            attribute_type_id: row.attribute_type_id,
+                            description: row.description,
+                            value: row.value,
+                            start_date: row.start_date,
+                            end_date: row.end_date,
+                            duration: row.duration ,
+                        })
+                    })
+                }
             },
             changePresentation() {
                 let price = 0;
@@ -521,17 +623,30 @@
                 this.initForm();
 
                 // this.initializeFields()
+
+                if (this.recordItem)
+                {
+                    this.row.indexi = this.recordItem.indexi
+                }
                 this.$emit('add', this.row);
                 this.setFocusSelectItem()
+
+                if (this.recordItem)
+                {
+                    this.close()
+                }
             },
             focusSelectItem(){
                 console.log("foc")
                 this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
             },
             setFocusSelectItem(){
-
-                this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
-
+                if(!this.recordItem){
+                    this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
+                }
+            },
+            calculateTotal() {
+                this.readonly_total = _.round((this.form.quantity * this.form.unit_price_value), 4)
             },
             cleanTotalItem(){
                 this.total_item = null;
