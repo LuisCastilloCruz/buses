@@ -121915,3 +121915,7 @@ a.link:focus {
   width: 100%;
 }
 
+.text-transparent {
+  color: transparent;
+}
+

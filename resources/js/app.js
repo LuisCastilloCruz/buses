@@ -11,6 +11,7 @@ require('./bootstrap');
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import Axios from 'axios'
+import movable from 'v-movable';
 
 import lang from 'element-ui/lib/locale/lang/es'
 import locale from 'element-ui/lib/locale'
@@ -23,10 +24,14 @@ ElementUI.Select.computed.readonly = function () {
 
 export default ElementUI;
 
+
 //Vue.use(ElementUI)
 Vue.use(ElementUI, { size: 'small' })
 Vue.prototype.$eventHub = new Vue()
 Vue.prototype.$http = Axios
+
+
+Vue.use(movable);
 
 // import VueCharts from 'vue-charts'
 // Vue.use(VueCharts);
@@ -277,6 +282,7 @@ Vue.component('tenant-transporte-destinos', require('@viewsModuleTransporte/dest
 
 // Transporte :: bus
 Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus/Sales.vue'));
+Vue.component('tenant-transporte-bus-draggable', require('@viewsModuleTransporte/bus/Draggable.vue'));
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));

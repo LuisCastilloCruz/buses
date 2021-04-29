@@ -60,6 +60,7 @@
     <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css') }}" />
+    <link rel="stylesheet" href="{{ asset('jquery-ui/css/base/jquery-ui.css') }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
@@ -185,6 +186,8 @@
     <!-- Theme Initialization Files -->
     <script src="{{asset('porto-light/js/theme.init.js')}}"></script>
     <script src="{{asset('porto-light/js/jquery.xml2json.js')}}"></script>
+    <script src="{{asset('jquery-ui/js/jquery.js')}}"></script>
+    <script src="{{asset('jquery-ui/js/jquery-ui.js')}}"></script>
     <script>
 
         function parseXMLToJSON(source)
@@ -196,7 +199,7 @@
     </script>
     <script defer src="{{ asset('js/app.js') }}"></script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
-
+    @yield('js')
 
 </body>
 </html>
