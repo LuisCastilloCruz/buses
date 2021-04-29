@@ -282,7 +282,12 @@ Vue.component('tenant-transporte-destinos', require('@viewsModuleTransporte/dest
 
 // Transporte :: bus
 Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus/Sales.vue'));
+<<<<<<< HEAD
 Vue.component('tenant-transporte-bus-draggable', require('@viewsModuleTransporte/bus/Draggable.vue'));
+=======
+// Transporte :: encomiendas
+Vue.component('tenant-transporte-encomiendas', require('@viewsModuleTransporte/encomiendas/List.vue'));
+>>>>>>> d231ca33a5ae13aae0896a45d4923853e4a098f9
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));

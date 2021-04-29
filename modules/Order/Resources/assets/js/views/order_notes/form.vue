@@ -147,6 +147,7 @@
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
                                                 <td class="text-right">
+                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                 </td>
                                             </tr>
@@ -157,7 +158,7 @@
                             </div>
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
-                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
+                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="clickAddItemInvoice">+ Agregar Producto</button>
                                 </div>
                             </div>
 
@@ -192,6 +193,8 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :typeUser="typeUser"
+                           :recordItem="recordItem"
+                           :isEditItemNote="false"
                            @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -227,6 +230,7 @@
                 showDialogOptions: false,
                 loading_submit: false,
                 loading_form: false,
+                recordItem: null,
                 errors: {},
                 form: {},
                 currency_types: [],
@@ -382,8 +386,20 @@
             allCustomers() {
                 this.customers = this.all_customers
             },
+            clickAddItemInvoice(){
+                this.recordItem = null
+                this.showDialogAddItem = true
+            },
             addRow(row) {
-                this.form.items.push(JSON.parse(JSON.stringify(row)));
+                if(this.recordItem)
+                {
+                    //this.form.items.$set(this.recordItem.indexi, row)
+                    this.form.items[this.recordItem.indexi] = row
+                    this.recordItem = null
+                }
+                else{
+                    this.form.items.push(JSON.parse(JSON.stringify(row)));
+                }
 
                 this.calculateTotal();
             },
@@ -435,6 +451,17 @@
                         total += parseFloat(row.total)
                     }
                     total_value += parseFloat(row.total_value)
+
+                    if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
+
+                        let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
+                        let total_value_partial = unit_value * row.quantity
+                        row.total_taxes = row.total_value - total_value_partial
+                        row.total_igv = row.total_value - total_value_partial
+                        row.total_base_igv = total_value_partial
+                        total_value -= row.total_value
+
+                    }
                 });
 
                 this.form.total_exportation = _.round(total_exportation, 2)
@@ -486,6 +513,13 @@
             },
             close() {
                 location.href = `/${this.resource}`
+            },
+            ediItem(row, index)
+            {
+                row.indexi = index
+                this.recordItem = row
+                this.showDialogAddItem = true
+
             },
             reloadDataCustomers(customer_id) {
                 this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {

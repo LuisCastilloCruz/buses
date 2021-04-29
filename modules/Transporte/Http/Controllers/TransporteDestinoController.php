@@ -3,7 +3,6 @@
 namespace Modules\Transporte\Http\Controllers;
 
 use Modules\Transporte\Models\District;
-use Modules\Transporte\Traits\SearchTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -17,7 +16,6 @@ use Modules\Transporte\Models\TransporteRate;
 use Modules\Transporte\Models\TransporteRoomRate;
 class TransporteDestinoController extends Controller
 {
-    use SearchTrait;
 	/**
 	 * Display a listing of the resource.
 	 * @return Response
