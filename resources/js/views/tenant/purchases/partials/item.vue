@@ -29,6 +29,7 @@
                             </el-select>
                             <el-checkbox v-model="change_affectation_igv_type_id">Editar</el-checkbox>
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
+                            <el-checkbox v-model="form.purchase_has_igv">Incluye Igv</el-checkbox><br>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -40,7 +41,8 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price}">
-                            <label class="control-label">Precio Unitario</label>
+                            <label class="control-label" v-if="form.purchase_has_igv">Precio Unitario</label>
+                            <label class="control-label" v-else>Valor Unitario</label>
                             <el-input v-model="form.unit_price" class="input-with-select">
                               <el-select v-model="form.item.currency_type_id" slot="prepend" class="el-select-currency">
                                 <el-option label="S/" value="PEN"></el-option>
@@ -467,7 +469,7 @@
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
 
-                this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+                //this.form.purchase_has_igv = this.form.item.purchase_has_igv;
 
             },
             async clickAddItem() {
