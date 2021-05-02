@@ -29,25 +29,30 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th>Dni</th>
-                            <th>Nombre</th>
-                            <th>Licencia</th>
-                            <th>Categoría</th>
+
+                            <th>Remitente</th>
+                            <th>Destinatario</th>
+                            <th>Fecha salida</th>
+                            <th>Hora salida</th>
+                            <th>Estado envio</th>
+                            <!-- <th>Categoría</th> -->
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="item in items" :key="item.id">
-                            <td class="text-right">{{ item.id }}</td>
-                            <td>{{ item.dni }}</td>
-                            <td>{{ item.nombre }}</td>
-                            <td>{{ item.licencia }}</td>
-                            <td>{{ item.categoria }}</td>
+                        <tr v-for="encomienda in listEncomiendas" :key="encomienda.id">
+                            <td class="text-right">{{ encomienda.id }}</td>
+                            <td>{{ encomienda.remitente.name }}</td>
+                            <td>{{ encomienda.destinatario.name }}</td>
+                            <td>{{ encomienda.fecha_salida }}</td>
+                            <td>{{ encomienda.programacion.hora_salida }}</td>
+                            <td>{{ encomienda.estado_envio.nombre }}</td>
+                            <!-- <td>{{ item.categoria }}</td> -->
                             <td class="text-center">
-                                <el-button type="success" @click="onEdit(item)">
+                                <el-button type="success" @click="onEdit(encomienda)">
                                     <i class="fa fa-edit"></i>
                                 </el-button>
-                                <el-button type="danger" @click="onDelete(item)">
+                                <el-button type="danger" @click="onDelete(encomienda)">
                                     <i class="fa fa-trash"></i>
                                 </el-button>
                             </td>
@@ -61,7 +66,10 @@
             :visible.sync="openModalAddEdit"
             @onAddItem="onAddItem"
             @onUpdateItem="onUpdateItem"
-            :chofer="chofer"
+            :item-encomienda="encomienda"
+            :estados-envio="estadosEnvio"
+            :estados-pago="estadosPago"
+            :edit="edit"
         ></ModalAddEdit>
     </div>
 </template>
@@ -71,24 +79,36 @@ import ModalAddEdit from "./AddEdit";
 
 export default {
     props: {
-        choferes: {
-            type: Array,
-            required: true,
+        encomiendas:{
+            type:Array,
+            required:true,
+            default:() => []
         },
+        estadosPago:{
+            type:Array,
+            required:true,
+        },
+        estadosEnvio:{
+            type:Array,
+            required:true,
+        }
     },
     components: {
         ModalAddEdit,
     },
+    created(){
+        this.listEncomiendas = this.encomiendas;
+    },
     data() {
         return {
-            items: [],
-            chofer: null,
+            listEncomiendas: [],
             openModalAddEdit: false,
+            encomienda:null,
             loading: false,
+            edit:false
         };
     },
     mounted() {
-        this.items = this.choferes;
     },
     methods: {
         onDelete(item) {
@@ -108,23 +128,26 @@ export default {
                 });
             }).catch();
         },
-        onEdit(item) {
-            this.chofer = { ...item };
+        onEdit(encomienda) {
+            this.edit = true;
+            this.encomienda = { ...encomienda };
+            this.edit = true;
             this.openModalAddEdit = true;
         },
-        onUpdateItem(data) {
-            this.items = this.items.map((i) => {
-                if (i.id === data.id) {
-                    return data;
+        onUpdateItem(encomienda) {
+            this.items = this.listEncomiendas.map((i) => {
+                if (i.id === encomienda.id) {
+                    return encomienda;
                 }
                 return i;
             });
         },
-        onAddItem(data) {
-            this.items.unshift(data);
+        onAddItem(encomienda) {
+            this.listEncomiendas.unshift(encomienda);
         },
         onCreate() {
-            this.chofer = null;
+            this.edit = false;
+            this.encomienda = null;
             this.openModalAddEdit = true;
         },
     },

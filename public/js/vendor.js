@@ -8,7 +8,7 @@ eval("/* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!\n * Vue.js
 
 /***/ }),
 
-/***/ 1887:
+/***/ 1908:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(15);
@@ -44,4 +44,4 @@ eval("// shim for using process in browser\nvar process = module.exports = {};\n
 
 /***/ })
 
-},[1887]);
+},[1908]);

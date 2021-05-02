@@ -280,6 +280,13 @@ Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus
 // Transporte :: encomiendas
 Vue.component('tenant-transporte-encomiendas', require('@viewsModuleTransporte/encomiendas/List.vue'));
 
+//Transporte :: terminales
+
+Vue.component('tenant-transporte-terminales', require('@viewsModuleTransporte/terminales/List.vue'));
+
+//Transporte :: programaciones
+Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/programaciones/List.vue'));
+
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
