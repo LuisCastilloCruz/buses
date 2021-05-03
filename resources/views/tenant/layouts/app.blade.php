@@ -60,7 +60,6 @@
     <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css') }}" />
-    <link rel="stylesheet" href="{{ asset('jquery-ui/css/base/jquery-ui.css') }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
@@ -109,7 +108,7 @@
         }
 
     </style>
-
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js?ver=3.3.1' id='jquery-js'></script>
 </head>
 <body class="pr-0">
     <section class="body">
@@ -133,8 +132,8 @@
     @endif
 
 
-    <!-- Vendor -->
-    <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>
+    <!-- Vendor 
+    <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>-->
     <script src="{{ asset('porto-light/vendor/jquery-browser-mobile/jquery.browser.mobile.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-cookie/jquery-cookie.js')}}"></script>
     {{-- <script src="{{ asset('porto-light/master/style-switcher/style.switcher.js')}}"></script> --}}
@@ -186,8 +185,6 @@
     <!-- Theme Initialization Files -->
     <script src="{{asset('porto-light/js/theme.init.js')}}"></script>
     <script src="{{asset('porto-light/js/jquery.xml2json.js')}}"></script>
-    <script src="{{asset('jquery-ui/js/jquery.js')}}"></script>
-    <script src="{{asset('jquery-ui/js/jquery-ui.js')}}"></script>
     <script>
 
         function parseXMLToJSON(source)
@@ -199,7 +196,7 @@
     </script>
     <script defer src="{{ asset('js/app.js') }}"></script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
-    @yield('js')
+    @yield('js')   
 
 </body>
 </html>
