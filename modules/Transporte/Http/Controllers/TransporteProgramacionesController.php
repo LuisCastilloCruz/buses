@@ -18,7 +18,11 @@ class TransporteProgramacionesController extends Controller
         $terminales = TransporteTerminales::all();
 
         $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
-        ->get();
+        ->get()
+        ->map(function($programacion){
+            $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
+            return $programacion;
+        });
         $vehiculos = TransporteVehiculo::all();
         return view('transporte::programaciones.index',compact(
             'terminales',
@@ -43,6 +47,7 @@ class TransporteProgramacionesController extends Controller
         $programacion->origen;
         $programacion->vehiculo;
         $programacion->rutas;
+        $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
 
         return response()->json([
             'success' => true,

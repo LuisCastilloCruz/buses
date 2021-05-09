@@ -281,7 +281,7 @@ Vue.component('tenant-transporte-choferes', require('@viewsModuleTransporte/chof
 Vue.component('tenant-transporte-destinos', require('@viewsModuleTransporte/destinos/List.vue'));
 
 // Transporte :: bus
-Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus/Sales.vue'));
+Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus/SalesTest.vue'));
 Vue.component('tenant-transporte-bus-draggable', require('@viewsModuleTransporte/bus/Draggable.vue'));
 
 // Transporte :: encomiendas

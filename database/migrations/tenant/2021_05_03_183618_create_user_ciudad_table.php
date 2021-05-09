@@ -13,12 +13,12 @@ class CreateUserCiudadTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_ciudad', function (Blueprint $table) {
+        Schema::create('user_terminal', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->unsignedInteger('transporte_destino_id');
-            $table->foreign('transporte_destino_id')->references('id')->on('transporte_destinos');
+            $table->unsignedInteger('terminal_id');
+            $table->foreign('terminal_id')->references('id')->on('transporte_terminales');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateUserCiudadTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_ciudad');
+        Schema::dropIfExists('user_terminal');
     }
 }

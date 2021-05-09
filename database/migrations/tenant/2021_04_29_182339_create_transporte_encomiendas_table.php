@@ -21,9 +21,9 @@ class CreateTransporteEncomiendasTable extends Migration
             // $table->double('precio');
             $table->date('fecha_salida');
             $table->unsignedInteger('remitente_id')->index();
-            $table->foreign('remitente_id')->references('id')->on('tenancy.clients');
+            $table->foreign('remitente_id')->references('id')->on('clients');
             $table->unsignedInteger('destinatario_id');
-            $table->foreign('destinatario_id')->references('id')->on('tenancy.clients');
+            $table->foreign('destinatario_id')->references('id')->on('clients');
             $table->unsignedInteger('estado_pago_id');
             $table->foreign('estado_pago_id','te_tep_foreign_id')->references('id')->on('transporte_estado_encomienda');
             $table->unsignedInteger('estado_envio_id');

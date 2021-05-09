@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
@@ -160,6 +161,10 @@ class User extends Authenticatable
     public function user_commission()
     {
         return $this->hasOne(UserCommission::class);
+    }
+
+    public function user_terminal() : HasOne{
+        return $this->hasOne(UserTerminal::class,'user_id','id');
     }
 
 }

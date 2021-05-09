@@ -10,11 +10,15 @@ if ($hostname) {
 			->group(function () {
 			    //Bus
                 Route::get('sales', 'TransporteSalesController@index');
+				Route::get('sales/get-ciudades', 'TransporteSalesController@getCiudades');
+				Route::post('sales/programaciones-disponibles', 'TransporteSalesController@getProgramacionesDisponibles');
+				Route::post('sales/realizar-venta-boleto', 'TransporteSalesController@realizarVenta');
 				// Vehiculos
 				Route::get('vehiculos', 'TransporteVehiculoController@index');
 				Route::post('vehiculos/store', 'TransporteVehiculoController@store');
 				Route::put('vehiculos/{id}/update', 'TransporteVehiculoController@update');
 				Route::delete('vehiculos/{id}/delete', 'TransporteVehiculoController@destroy');
+				Route::put('vehiculos/{vehiculo}/guardar-asientos','TransporteVehiculoController@guardarAsientos');
 				// Choferes
 				Route::get('choferes', 'TransporteChoferController@index');
 				Route::post('choferes/store', 'TransporteChoferController@store');
@@ -45,6 +49,10 @@ if ($hostname) {
 				Route::post('programaciones/store','TransporteProgramacionesController@store');
 				Route::put('programaciones/{programacion}/update','TransporteProgramacionesController@update');
 				Route::put('programaciones/{programacion}/configuracion-rutas','TransporteProgramacionesController@configuracionRutas');
+				
+
+				
+			
 			});
 	});
 }

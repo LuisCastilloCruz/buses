@@ -61,10 +61,6 @@ class TransporteProgramacion extends ModelTenant
         }
     }
 
-    public function getHoraSalidaAttribute($value){ 
-        return date('g:i a',strtotime($value));
-    }
-
 
     
 }

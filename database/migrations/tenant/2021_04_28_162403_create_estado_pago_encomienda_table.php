@@ -27,6 +27,6 @@ class CreateEstadoPagoEncomiendaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('estado_pago_encomienda');
+        Schema::dropIfExists('transporte_estado_pago_encomienda');
     }
 }

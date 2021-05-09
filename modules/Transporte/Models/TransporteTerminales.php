@@ -15,4 +15,9 @@ class TransporteTerminales extends ModelTenant
     public function destino() : BelongsTo{
         return $this->belongsTo(TransporteDestino::class,'destino_id','id');
     }
+
+
+    public function programaciones(){
+        return $this->hasMany(TransporteProgramacion::class,'terminal_origen_id','id');
+    }
 }

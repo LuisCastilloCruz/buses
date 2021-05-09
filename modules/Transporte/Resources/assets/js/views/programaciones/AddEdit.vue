@@ -60,11 +60,14 @@
                 </div>
                 <div class="form-group">
                     <label for="hora_salida">Hora salida</label>
-                    <el-input
+                    <el-time-picker v-model="form.hora_salida" placeholder="Hora Salida" value-format="H:m:s">
+
+                    </el-time-picker>
+                    <!-- <el-input
                         type="time"
-                        placeholder="Hora Salida"
-                        v-model="form.hora_salida"
-                    />
+                        
+                        
+                    /> -->
                 </div>
                 
                 <div class="row text-center">

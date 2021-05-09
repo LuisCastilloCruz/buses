@@ -5,8 +5,11 @@ namespace Modules\Transporte\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Transporte\Models\TransporteVehiculo;
 use Modules\Transporte\Http\Requests\TransporteVehiculoRequest;
+use Modules\Transporte\Models\TransporteAsiento;
+
 class TransporteVehiculoController extends Controller
 {
     /**
@@ -15,7 +18,7 @@ class TransporteVehiculoController extends Controller
      */
     public function index()
     {
-        $vehiculos = TransporteVehiculo::orderBy('id', 'DESC')
+        $vehiculos = TransporteVehiculo::with('seats')->orderBy('id', 'DESC')
             ->get();
 
         return view('transporte::vehiculos.index', compact('vehiculos'));
@@ -104,5 +107,59 @@ class TransporteVehiculoController extends Controller
                 'data'    => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
             ], 500);
         }
+    }
+
+    public function guardarAsientos(Request $request,TransporteVehiculo $vehiculo){
+
+
+        try{
+
+            DB::connection('tenant')->beginTransaction();
+
+            $asientos = $request->input('asientos');
+
+            // return $asientos;
+            foreach($asientos as $asiento){
+                $asiento = (object) $asiento;
+
+                $seat = TransporteAsiento::find($asiento->id);
+
+                if(!is_null($seat)){
+                    $seat->update([
+                        'top' => $asiento->top,
+                        'left' => $asiento->left,
+                        'piso' => 1,
+                        'estado_asiento_id' => 1,
+                    ]);
+                    continue;
+                }
+
+                TransporteAsiento::create([
+                    'vehiculo_id' => $vehiculo->id,
+                    'numero_asiento' => $asiento->numero_asiento,
+                    'type' => $asiento->type ,
+                    'top' => $asiento->top,
+                    'left' => $asiento->left,
+                    'piso' => 1,
+                    'estado_asiento_id' => 1,
+                ]);
+            }
+
+            DB::connection('tenant')->commit();
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se ha guardado'
+            ], 200);
+        }catch(\Throwable $th){
+            DB::connection('tenant')->rollBack();
+            return response()->json([
+                'success' => false,
+                'message'    => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
+            ], 500);
+
+        }
+        
     }
 }

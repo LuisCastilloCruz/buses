@@ -47,7 +47,7 @@
                             <td>{{ programacion.origen.nombre }}</td>
                             <td>{{ programacion.destino.nombre }}</td>
                             <td>{{ programacion.vehiculo.placa }}</td>
-                            <td>{{ programacion.hora_salida }}</td>
+                            <td>{{ programacion.hora_view }}</td>
                             <td>{{ programacion.tiempo_aproximado }} hr</td>
                             <!-- <td>{{ item.licencia }}</td>
                             <td>{{ item.categoria }}</td> -->

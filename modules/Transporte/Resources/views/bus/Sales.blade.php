@@ -1,15 +1,22 @@
 @extends('tenant.layouts.app')
 
 @section('content')
-    <!--  <tenant-transporte-bus-sales :plantilla="'{{$plantilla}}'"></tenant-transporte-bus-sales>-->
 
-    <div class="draggable-area" style="background:#ddd;width:200px;height:200px;">
+{{-- <div class="draggable-area" style="background:#ddd;width:200px;height:200px;">
 		<div id="dragit-contained" style="background: red; width: 50px; height: 50px; cursor: move; position: relative; top: 55px; left: 46px;" class=""></div>
-	</div>
+	</div> --}}
+
+
+
+    <tenant-transporte-bus-sales :estado-asientos="{{ $estadosAsientos }}" :terminal="{{ $terminal }}" :list-programaciones="{{ $programaciones }}" ></tenant-transporte-bus-sales>
+
+    {{-- <div class="draggable-area" style="background:#ddd;width:200px;height:200px;">
+		<div id="dragit-contained" style="background: red; width: 50px; height: 50px; cursor: move; position: relative; top: 55px; left: 46px;" class=""></div>
+	</div> --}}
     
 @endsection
 
-@section('js')
+{{-- @section('js')
 <script>
     $(function() {
         var draggable = $('#dragit-contained'); //element 
@@ -42,4 +49,4 @@
             });
     });
     </script>
-@endsection
+@endsection --}}

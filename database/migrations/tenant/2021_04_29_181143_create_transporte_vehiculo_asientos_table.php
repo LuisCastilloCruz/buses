@@ -20,8 +20,11 @@ class CreateTransporteVehiculoAsientosTable extends Migration
             $table->unsignedInteger('vehiculo_id');
             $table->foreign('vehiculo_id','tva_tv_foreign_id')->references('id')->on('transporte_vehiculos');
             $table->dateTime('fecha_desocupado');
-            $table->unsignedInteger('estado_asiento_id');
-            $table->foreign('estado_asiento_id','tva_tea_foreign_id')->references('id')->on('transporte_estado_asientos');
+            // $table->unsignedInteger('estado_asiento_id');
+            // $table->foreign('estado_asiento_id','tva_tea_foreign_id')->references('id')->on('transporte_estado_asientos');
+            $table->string('left')->default('50px');
+            $table->string('top')->default('50px');
+            $table->string('tipo');
             $table->timestamps();
         });
     }
