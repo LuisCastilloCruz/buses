@@ -28,6 +28,10 @@ docker-compose exec -T fpm$SERVICE_NUMBER chmod -R 777 vendor/mpdf/mpdf
 
 # si dá error al compilar ejecutar npm install
 
+# ejecutar
+npm i vuedraggable
+npm i --save v-movable
+
 
 
 
