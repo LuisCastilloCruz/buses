@@ -129,6 +129,7 @@ class TransporteVehiculoController extends Controller
                         'top' => $asiento->top,
                         'left' => $asiento->left,
                         'piso' => 1,
+                        // 'estado_asiento_id' => 1,
                     ]);
                     continue;
                 }
@@ -139,7 +140,8 @@ class TransporteVehiculoController extends Controller
                     'tipo' => $asiento->type ,
                     'top' => $asiento->top,
                     'left' => $asiento->left,
-                    'piso' => 1
+                    'piso' => 1,
+                    // 'estado_asiento_id' => 1,
                 ]);
             }
 
