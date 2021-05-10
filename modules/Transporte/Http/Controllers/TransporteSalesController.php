@@ -43,6 +43,12 @@ class TransporteSalesController extends Controller
 
         $terminal = $user_terminal->terminal;
 
+        if(is_null($terminal)){
+            //redirigirlo
+            Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
+            return redirect()->back();  
+        }
+
 
         $programaciones = TransporteProgramacion::with('origen','destino')
         ->where('terminal_origen_id',$terminal->id)
