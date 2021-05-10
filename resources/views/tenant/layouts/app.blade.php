@@ -116,6 +116,11 @@
         @include('tenant.layouts.partials.header')
         <!-- end: header -->
         <div class="inner-wrapper">
+            @if( Session::has( 'message' ))
+                <div class="alert alert-warning text-center">
+                    {{ Session::get( 'message' ) }}
+                </div>
+            @endif
             <!-- start: sidebar -->
             @include('tenant.layouts.partials.sidebar')
             <!-- end: sidebar -->

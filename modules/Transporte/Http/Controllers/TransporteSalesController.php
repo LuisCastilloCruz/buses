@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Modules\Transporte\Http\Requests\ProgramacionesDisponiblesRequest;
 use Modules\Transporte\Http\Requests\RealizarVentaRequest;
 use Modules\Transporte\Models\TransporteCategory;
@@ -34,7 +35,11 @@ class TransporteSalesController extends Controller
 
         $user_terminal = $user->user_terminal;
 
-        if(!is_null($user_terminal)){  }
+        if(is_null($user_terminal)){ 
+            //redirigirlo
+            Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
+            return redirect()->back();  
+        }
 
         $terminal = $user_terminal->terminal;
 

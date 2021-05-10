@@ -17,7 +17,7 @@ class CreateTransporteProgramacionesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('terminal_origen_id');
             $table->foreign('terminal_origen_id','tp_tt_foreign_id')->references('id')->on('transporte_terminales');
-            $table->date('fecha_salida');
+            // $table->date('fecha_salida');
             $table->time('hora_salida');
             $table->unsignedInteger('vehiculo_id');
             $table->foreign('vehiculo_id','tp_tv_foreign_id')->references('id')->on('transporte_vehiculos');
