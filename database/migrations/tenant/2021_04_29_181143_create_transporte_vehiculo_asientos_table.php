@@ -23,7 +23,7 @@ class CreateTransporteVehiculoAsientosTable extends Migration
             // $table->foreign('estado_asiento_id','tva_tea_foreign_id')->references('id')->on('transporte_estado_asientos');
             $table->string('left')->default('50px');
             $table->string('top')->default('50px');
-            $table->string('tipo');
+            $table->string('type');
             $table->timestamps();
         });
     }

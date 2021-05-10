@@ -137,7 +137,7 @@ class TransporteVehiculoController extends Controller
                 TransporteAsiento::create([
                     'vehiculo_id' => $vehiculo->id,
                     'numero_asiento' => $asiento->numero_asiento,
-                    'tipo' => $asiento->type ,
+                    'type' => $asiento->type ,
                     'top' => $asiento->top,
                     'left' => $asiento->left,
                     'piso' => 1,
