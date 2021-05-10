@@ -33,15 +33,7 @@ class TransporteSalesController extends Controller
 
         $user = Auth::user();
 
-        $user_terminal = $user->user_terminal;
-
-        if(is_null($user_terminal)){ 
-            //redirigirlo
-            Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
-            return redirect()->back();  
-        }
-
-        $terminal = $user_terminal->terminal;
+        $terminal = $user->terminal;
 
         if(is_null($terminal)){
             //redirigirlo
