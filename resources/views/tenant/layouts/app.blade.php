@@ -108,7 +108,6 @@
         }
 
     </style>
-<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js?ver=3.3.1' id='jquery-js'></script>
 </head>
 <body class="pr-0">
     <section class="body">
@@ -132,8 +131,8 @@
     @endif
 
 
-    <!-- Vendor 
-    <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>-->
+    <!-- Vendor -->
+    <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-browser-mobile/jquery.browser.mobile.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-cookie/jquery-cookie.js')}}"></script>
     {{-- <script src="{{ asset('porto-light/master/style-switcher/style.switcher.js')}}"></script> --}}
