@@ -120,7 +120,7 @@
                                 <tbody>
                                     <tr v-for="programacion in programaciones" :key="programacion.id">
                                         
-                                        <td>{{ programacion.vehiculo.placa }}</td>
+                                        <td>{{ programacion.transporte.placa }}</td>
                                         <td>{{ programacion.hora_salida }}</td>
                                         <td>
                                             <template v-if="!selectProgramacion">
@@ -379,6 +379,12 @@ export default {
 
         dbClick(asiento){
             // asiento.estado_asiento_id = 1;
+            if(!this.serie || this.serie == ''){
+                return this.$message({
+                    type: 'info',
+                    message: 'Por favor coloque la serie'
+                });
+            }
             if(asiento.type != 'ss') return;
             this.asiento = asiento;
             this.visible = true;
@@ -451,14 +457,14 @@ export default {
         },
         seleccionar(programacion){
             this.selectProgramacion = programacion;
-            this.asientos = programacion.vehiculo.seats;
+            this.asientos = programacion.transporte.asientos;
         },
         async onUpdateItem(){
             let program = this.selectProgramacion;
             await this.getProgramaciones();
             this.selectProgramacion = this.programaciones
             .find(  programacion => programacion.id == program.id );
-            this.asientos = this.selectProgramacion.vehiculo.seats;
+            this.asientos = this.selectProgramacion.transporte.asientos;
         }
 
         

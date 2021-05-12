@@ -132,20 +132,24 @@ export default {
     },
     methods: {
         onDelete(item) {
-            this.$confirm(`¿estás seguro de eliminar al elemento ${item.nombre}?`, 'Atención', {
+            this.$confirm(`¿Estás seguro de eliminar la programación ?`, 'Atención', {
                 confirmButtonText: 'Si, continuar',
                 cancelButtonText: 'No, cerrar',
                 type: 'warning'
             }).then(() => {
-                this.$http.delete(`/transportes/choferes/${item.id}/delete`).then(response => {
-                    this.$message({
-                        type: 'success',
-                        message: response.data.message
-                    });
-                    this.items = this.items.filter(i => i.id !== item.id);
-                }).catch(error => {
-                    this.axiosError(error)
+                this.$http.delete(`/transportes/programaciones/${item.id}/delete`).then(response => {
+                this.$message({
+                    type: 'success',
+                    message: response.data.message
                 });
+                this.items = this.items.filter(i => i.id !== item.id);
+            }).catch(error => {
+                let response = error.response;
+                this.$message({
+                    type: 'error',
+                    message: response.data.message
+                });
+            });
             }).catch();
         },
         onEdit(programacion) {

@@ -126,29 +126,39 @@ class TransporteEncomiendaController extends Controller
     public function store(TransporteEncomiendaRequest $request)
     {
         //
-        $encomienda = TransporteEncomienda::create(
-            $request->only(
-                'descripcion',
-                'remitente_id',
-                'destinatario_id',
-                'fecha_salida',
-                'programacion_id',
-                'estado_pago_id',
-                'estado_envio_id'
-            )
-        );
+        try{
 
-        $encomienda->remitente;
-        $encomienda->destinatario;
-        $encomienda->programacion;
-        $encomienda->estadoEnvio;
-        $encomienda->estadoPago;
+            $encomienda = TransporteEncomienda::create(
+                $request->only(
+                    'descripcion',
+                    'remitente_id',
+                    'destinatario_id',
+                    'fecha_salida',
+                    'programacion_id',
+                    'estado_pago_id',
+                    'estado_envio_id'
+                )
+            );
+    
+            $encomienda->remitente;
+            $encomienda->destinatario;
+            $encomienda->programacion;
+            $encomienda->estadoEnvio;
+            $encomienda->estadoPago;
+    
+    
+            return response()->json([
+                'success' => true,
+                'encomienda' => $encomienda,
+            ]);
 
-
-        return response()->json([
-            'success' => true,
-            'encomienda' => $encomienda,
-        ]);
+        }catch(\Throwable $th){
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al procesar su petición'
+            ]);
+        }
+        
         
 
     }

@@ -2,7 +2,7 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
-
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Transporte\Http\Requests\TransporteProgramacionesRequest;
@@ -74,6 +74,38 @@ class TransporteProgramacionesController extends Controller
             'success' => true,
             'data'    => $programacion
         ]);
+    }
+
+    public function destroy(TransporteProgramacion $programacion){
+        try {
+
+            if(count($programacion->encomiendas) > 0){
+                throw new Exception('Lo sentimos no se puede eliminar la programación, tiene encomiendas',888);
+            }
+
+            if(count($programacion->pasajes) > 0){
+                throw new Exception('Lo sentimos no se puede eliminar la programación, tiene pasajes',888);
+            }
+
+            if(count($programacion->manifiestos) > 0){
+                throw new Exception('Lo sentimos no se puede eliminar la programación, tiene manifiestos',888);
+            }
+            
+            $programacion->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Información actualizada'
+            ],200);
+
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $th->getCode() == 888 ? $th->getMessage() : 'Ocurrió un error al procesar su petición'
+            ],500);
+            
+        }
     }
 
 

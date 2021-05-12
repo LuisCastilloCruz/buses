@@ -43,12 +43,14 @@ if ($hostname) {
 				Route::get('terminales','TransporteTerminalesController@index');
 				Route::post('terminales/store','TransporteTerminalesController@store');
 				Route::put('terminales/{terminal}/update','TransporteTerminalesController@update');
+				Route::delete('terminales/{terminal}/delete','TransporteTerminalesController@destroy');
 
 				//programaciones
 				Route::get('programaciones','TransporteProgramacionesController@index');
 				Route::post('programaciones/store','TransporteProgramacionesController@store');
 				Route::put('programaciones/{programacion}/update','TransporteProgramacionesController@update');
 				Route::put('programaciones/{programacion}/configuracion-rutas','TransporteProgramacionesController@configuracionRutas');
+				Route::delete('programaciones/{programacion}/delete','TransporteProgramacionesController@destroy');
 				
 
 				

@@ -2,6 +2,7 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Transporte\Models\TransporteVehiculo;
 use Modules\Transporte\Http\Requests\TransporteVehiculoRequest;
 use Modules\Transporte\Models\TransporteAsiento;
+use Modules\Transporte\Models\TransporteProgramacion;
 
 class TransporteVehiculoController extends Controller
 {
@@ -94,17 +96,27 @@ class TransporteVehiculoController extends Controller
     public function destroy($id)
     {
         try {
+
+
+            $programaciones = TransporteProgramacion::where('vehiculo_id',$id)
+            ->get();
+
+            if( count($programaciones) > 1){
+                throw new Exception('Lo sentimos, no podemos eliminar el vehículo porque tiene programaciones',888);
+            }
+
+
             TransporteVehiculo::where('id', $id)
-                ->delete();
+            ->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Vehículo eliminado'
+                'message' => 'Información actualizada'
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'data'    => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
+                'message'    =>  ($th->getCode() === 888) ? $th->getMessage() : 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
             ], 500);
         }
     }

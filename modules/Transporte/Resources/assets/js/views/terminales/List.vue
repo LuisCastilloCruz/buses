@@ -110,14 +110,18 @@ export default {
                 cancelButtonText: 'No, cerrar',
                 type: 'warning'
             }).then(() => {
-                this.$http.delete(`/transportes/choferes/${item.id}/delete`).then(response => {
+                this.$http.delete(`/transportes/terminales/${item.id}/delete`).then(response => {
                     this.$message({
                         type: 'success',
                         message: response.data.message
                     });
                     this.items = this.items.filter(i => i.id !== item.id);
                 }).catch(error => {
-                    this.axiosError(error)
+                    let response = error.response;
+                    this.$message({
+                        type: 'error',
+                        message: response.data.message
+                    });
                 });
             }).catch();
         },

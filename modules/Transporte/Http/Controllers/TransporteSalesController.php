@@ -83,7 +83,7 @@ class TransporteSalesController extends Controller
 
     public function getProgramacionesDisponibles(ProgramacionesDisponiblesRequest $request){
 
-        $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
+        $programaciones = TransporteProgramacion::with('origen','destino')
         ->where('terminal_origen_id',$request->origen_id)
         ->where('terminal_destino_id',$request->destino_id)
         ->WhereEqualsOrBiggerDate($request->fecha_salida);
@@ -97,29 +97,41 @@ class TransporteSalesController extends Controller
             $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%h:%i:%s') >= '{$time}'");
         }
 
-        // return $programaciones->toSql();
 
-        return response()->json([
-            'programaciones' => $programaciones->get()->map(function($programacion) use($request){
-                $programacion->vehiculo->seats->map(function($seat)  use($request,$programacion){
-                    $seconds = $this->convertToSeconds($programacion->tiempo_aproximado) / 3600; //convierto a horas
-                    $fechaSalida = "{$request->fecha_salida} {$programacion->hora_salida}";
-                    $horaAproximada = Carbon::parse($fechaSalida)->addHours($seconds);
 
-                    $isState = TransportePasaje::whereDate('fecha_salida',$request->fecha_salida)
-                    ->whereTime('fecha_salida','>=',$programacion->hora_salida)
-                    ->whereTime('fecha_llegada','<=',$horaAproximada->format('H:i:s'))
-                    ->where('asiento_id',$seat->id)
-                    ->first();
+        $listProgramaciones = $programaciones->get();
+        foreach($listProgramaciones as $programacion){
 
-                    $seat->estado_asiento_id = !is_null($isState) ? $isState->estado_asiento_id : 1;
+            $programacion->transporte = TransporteVehiculo::find($programacion->vehiculo_id);
 
-                    return $seat;
-                });
+            $listSeats = TransporteAsiento::where('vehiculo_id',$programacion->vehiculo_id)->get();
 
-                return $programacion;
-            })
+          
+            foreach($listSeats as $seat){
+                $hours = $this->convertToSeconds($programacion->tiempo_aproximado) / 3600; //convierto a horas
+                $fechaSalida = "{$request->fecha_salida} {$programacion->hora_salida}";
+                $horaAproximada = Carbon::parse($fechaSalida)->addHours($hours);
+
+                $isState = TransportePasaje::whereRaw(DB::raw('DATE(fecha_salida) = ?'))
+                // ->whereRaw(DB::raw('TIME(fecha_salida) >= ?'))
+                ->whereRaw(DB::raw('TIME(fecha_llegada) <= ?'))
+                ->whereRaw('asiento_id = ?')
+                ->setBindings([
+                    $request->fecha_salida,
+                    // $programacion->hora_salida,
+                    $horaAproximada->format('H:i:s'),
+                    $seat->id
+                ])
+                ->first();
+                $seat->estado_asiento_id = !is_null($isState) ? $isState->estado_asiento_id : 1;
+            }
+            $programacion->transporte->asientos = $listSeats;
+        }
+
+        return response()->json( [
+            'programaciones' => $listProgramaciones
         ]);
+
     }
 
     public function realizarVenta(RealizarVentaRequest $request){
@@ -155,23 +167,18 @@ class TransporteSalesController extends Controller
                 ])
             );
     
-            // $asiento->update([
-            //     'estado_asiendo_id' => 'estado_asiento_id', 
-            //     'fecha_desocupado' => $fecha_desocupado->format('Y-m-d h:m:i'),
-            // ]);
-    
             DB::connection('tenant')->commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Éxito!!'
-            ]);
+            ],200);
 
 
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'message' => 'Lo sentimos ocurrio un error',
+                'message' => 'Ocurrió un error al procesar su petición',
             ],500);
         }
 

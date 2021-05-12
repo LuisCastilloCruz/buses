@@ -112,7 +112,7 @@ export default {
   },
   methods: {
     onDelete(item) {
-      this.$confirm(`¿estás seguro de eliminar al elemento ${item.description}?`, 'Atención', {
+      this.$confirm(`¿Estás seguro de eliminar el vehiculo ${item.placa}?`, 'Atención', {
           confirmButtonText: 'Si, continuar',
           cancelButtonText: 'No, cerrar',
           type: 'warning'
@@ -124,7 +124,11 @@ export default {
             });
             this.items = this.items.filter(i => i.id !== item.id);
           }).catch(error => {
-            this.axiosError(error)
+            let response = error.response;
+            this.$message({
+              type: 'error',
+              message: response.data.message
+            });
           });
         }).catch();
     },

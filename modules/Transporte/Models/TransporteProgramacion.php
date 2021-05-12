@@ -37,6 +37,18 @@ class TransporteProgramacion extends ModelTenant
         return $this->hasMany(TransporteRuta::class,'programacion_id','id');
     }
 
+    public function encomiendas() : HasMany{
+        return $this->hasMany(TransporteEncomienda::class,'programacion_id','id');
+    }
+
+    public function pasajes() : HasMany{
+        return $this->hasMany(TransportePasaje::class,'programacion_id','id');
+    }
+
+    public function manifiestos() : HasMany{
+        return $this->hasMany(TransporteManifiesto::class,'programacion_id','id');
+    }
+
     /*
         esta funcion la uso para traer todas las programaciones que sean iguales 
         o mayores a la fecha aca
