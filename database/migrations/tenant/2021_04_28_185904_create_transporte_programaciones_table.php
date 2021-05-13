@@ -23,7 +23,7 @@ class CreateTransporteProgramacionesTable extends Migration
             $table->foreign('vehiculo_id','tp_tv_foreign_id')->references('id')->on('transporte_vehiculos');
             $table->unsignedInteger('terminal_destino_id');
             $table->foreign('terminal_destino_id','tp_td_foreign_id')->references('id')->on('transporte_terminales');
-            $table->time('tiempo_aproximado');
+            // $table->time('tiempo_aproximado');
             $table->timestamps();
         });
     }

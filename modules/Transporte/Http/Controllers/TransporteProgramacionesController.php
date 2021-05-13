@@ -40,7 +40,7 @@ class TransporteProgramacionesController extends Controller
             'terminal_origen_id',
             'vehiculo_id',
             'hora_salida',
-            'tiempo_aproximado'
+            // 'tiempo_aproximado'
         ));
 
         $programacion->destino;
@@ -64,12 +64,13 @@ class TransporteProgramacionesController extends Controller
             'terminal_origen_id',
             'vehiculo_id',
             'hora_salida',
-            'tiempo_aproximado'
+            // 'tiempo_aproximado'
         ]));
         $programacion->destino;
         $programacion->origen;
         $programacion->vehiculo;
         $programacion->rutas;
+        $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
         return response()->json([
             'success' => true,
             'data'    => $programacion

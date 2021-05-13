@@ -27,7 +27,7 @@ class TransporteProgramacionesRequest extends FormRequest
         return [
             'terminal_origen_id' => ['required','exists:tenant.transporte_terminales,id'],
             'terminal_destino_id' => ['required','exists:tenant.transporte_terminales,id'],
-            'tiempo_aproximado' => ['required'],
+            // 'tiempo_aproximado' => ['required'],
             'vehiculo_id' => ['required','exists:tenant.transporte_vehiculos,id'],
             'hora_salida' => ['required']
             

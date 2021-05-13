@@ -10,16 +10,7 @@
     >
         <form v-loading="load" autocomplete="off" @submit.prevent="onSubmit">
             <div class="form-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <label for="descripcion">Descripción de la encomienda</label>
-                            <el-input rows="5" type="textarea" v-model="encomienda.descripcion" :class="{'is-invalid': errors.descripcion}" />
-                            <div v-if="errors.descripcion" class="invalid-feedback">{{ errors.descripcion[0] }}</div>
-                        </div>
-                        
-                    </div>
-                </div>
+               
                 <div class="row">
                     <div class="col-6">
                         <div class="form-group">
@@ -126,7 +117,58 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <h3>Lista de productos</h3>
+                    </div>
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-3">
+                                <el-input v-model="producto.nombre" placeholder="Nombre"></el-input>
+                            </div>
+                            <div class="col-3">
+                                <el-input v-model="producto.descripcion" placeholder="Descripción"></el-input>
+                            </div>
+                            <div class="col-3">
+                                <el-input type="number" v-model="producto.precio" placeholder="Precio"></el-input>
+                            </div>
+                            <el-button type="primary" @click="agregarProducto">Agregar</el-button>
+                        </div>
+
+                    </div>
+                    <div class="col-12 mt-2">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripcion</th>
+                                    <th>Precio</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr v-for="(producto,index) in productos" :key="index">
+                                    <td>{{ producto.nombre }}</td>
+                                    <td>{{ producto.descripcion }}</td>
+                                    <td>{{ producto.precio }}</td>
+                                    <th> 
+                                        <el-button type="danger" @click="eliminarProducto(index)">
+                                            <i class="fa fa-trash"></i>
+                                        </el-button> 
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
                 <div class="row mt-3 mb-3">
+                    <div class="col-12">
+                        <h3>Programaciones</h3>
+                    </div>
                     <div class="col-12 table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -253,6 +295,8 @@ export default {
             programaciones:[],
             programacion:null,
             load:false,
+            productos:[],
+            producto:{}
         };
     },
     watch:{
@@ -377,6 +421,15 @@ export default {
                 }
 
             });
+        },
+        agregarProducto(evt){
+            if(this.producto.nombre && this.producto.descripcion && this.producto.precio){
+                this.productos.push(this.producto);
+                this.producto = {};
+            }
+        },
+        eliminarProducto(index){
+            this.productos.splice(index,1);
         },
         async onCreate() {
             this.load = true;

@@ -7,8 +7,20 @@
                 <el-button type="info" @click="agregarItem('ses')">Scalera</el-button>
                 <el-button type="info" @click="agregarItem('sv')">Televisión</el-button>
             </div>
+            <div class="col-12 d-flex justify-content-center">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="">Piso</label>
+                        <el-select v-model="piso" placeholder="Piso">
+                            <el-option v-for="floor in vehiculo.pisos" :label="floor" :key="floor" :value="floor" >
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+            </div>
         </div>
-        <bus :seats.sync="asientos" drag />
+        <bus v-if="piso == 1" :seats.sync="asientosPisoUno" drag />
+        <bus v-if="piso == 2" :seats.sync="asientosPisoDos" drag />
 
         <div class="row mt-2">
             <div class="col-12 d-flex justify-content-center">
@@ -39,16 +51,30 @@ export default {
     },
     created(){
         this.asientos = this.seats;
+        this.piso = 1;
     },
     data(){
         return({
             asientos:[],
             loading:false,
+            piso:null,
+            transporte:this.vehiculo
         });
     },
     watch:{
         asientos(newVal){
             this.$emit('input',newVal);
+        },
+        transporte(newVal){
+            this.$emit('input-transporte',newVal);
+        }
+    },
+    computed:{
+        asientosPisoUno:function(){
+            return this.asientos.filter(  asiento => asiento.piso == 1);
+        },
+        asientosPisoDos:function(){
+            return this.asientos.filter(  asiento => asiento.piso == 2);
         }
     },
     methods:{
@@ -61,13 +87,14 @@ export default {
             switch(type){
                 case 'ss':
                     /** Obtengo solo los que son asientos normales */
-                    let posicion = this.asientos.filter( asiento => asiento.type == 'ss' );
+                    let posicion = this.asientos.filter( asiento => asiento.type == 'ss');
                     this.asientos.push({
                         id:null,
                         top:'50px',
                         left:'50px',
                         type:'ss',
                         estado_asiento_id:1,
+                        piso:this.piso,
                         numero_asiento:(posicion.length + 1)
                     });
                     break;
@@ -77,6 +104,7 @@ export default {
                         top:'50px',
                         left:'50px',
                         type:'sb',
+                        piso:this.piso,
                         estado_asiento_id:1,
                         numero_asiento:0
                     });
@@ -87,6 +115,7 @@ export default {
                         top:'50px',
                         left:'50px',
                         type:'ses',
+                        piso:this.piso,
                         estado_asiento_id:1,
                         numero_asiento:0
                     });
@@ -97,6 +126,7 @@ export default {
                         top:'50px',
                         left:'50px',
                         type:'sv',
+                        piso:this.piso,
                         estado_asiento_id:1,
                         numero_asiento:0
                     });
@@ -108,6 +138,7 @@ export default {
             this.$http.put(`/transportes/vehiculos/${this.vehiculo.id}/guardar-asientos`,{
                 asientos:this.asientos,
             }).then( response => {
+                this.transporte = response.data.vehiculo;
                 this.$message({
                     type: 'success',
                     message: response.data.message

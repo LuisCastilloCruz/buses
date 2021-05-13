@@ -140,7 +140,7 @@ class TransporteVehiculoController extends Controller
                     $seat->update([
                         'top' => $asiento->top,
                         'left' => $asiento->left,
-                        'piso' => 1,
+                        // 'piso' => $asiento->piso,
                         // 'estado_asiento_id' => 1,
                     ]);
                     continue;
@@ -152,16 +152,24 @@ class TransporteVehiculoController extends Controller
                     'type' => $asiento->type ,
                     'top' => $asiento->top,
                     'left' => $asiento->left,
-                    'piso' => 1,
+                    'piso' => $asiento->piso,
                     // 'estado_asiento_id' => 1,
                 ]);
             }
+
+            $vehiculo->update([
+                'asientos' => TransporteAsiento::where([
+                    'vehiculo_id' => $vehiculo->id,
+                    'type'=> 'ss'
+                ])->count()
+            ]);
 
             DB::connection('tenant')->commit();
 
 
             return response()->json([
                 'success' => true,
+                'vehiculo' => $vehiculo,
                 'message' => 'Se ha guardado'
             ], 200);
         }catch(\Throwable $th){

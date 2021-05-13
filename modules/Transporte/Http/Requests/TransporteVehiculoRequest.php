@@ -17,7 +17,7 @@ class TransporteVehiculoRequest extends FormRequest
         return [
             'placa'    => ['required', 'max:7', Rule::unique('tenant.transporte_vehiculos', 'placa')->ignore($this->id)],
             'nombre'   => ['required', 'string'],
-            'asientos' => ['required', 'numeric'],
+            // 'asientos' => ['required', 'numeric'],
             'pisos'    => 'integer|max:2',
         ];
     }

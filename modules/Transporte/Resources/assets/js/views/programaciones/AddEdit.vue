@@ -50,19 +50,20 @@
                     </el-select>
                     <div v-if="errors.vehiculo_id" class="invalid-feedback">{{ errors.vehiculo_id[0] }}</div>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="tiempo_aproximado">Tiempo aproximado</label>
                     <el-input
                         type="time"
                         placeholder="Tiempo aproximado"
                         v-model="form.tiempo_aproximado"
                     />
-                </div>
+                </div> -->
                 <div class="form-group">
                     <label for="hora_salida">Hora salida</label>
-                    <el-time-picker v-model="form.hora_salida" placeholder="Hora Salida" value-format="H:m:s">
+                    <el-input type="time" v-model="form.hora_salida" placeholder="Hora Salida" ></el-input>
+                    <!-- <el-time-picker v-model="form.hora_salida" placeholder="Hora Salida" value-format="H:m:s">
 
-                    </el-time-picker>
+                    </el-time-picker> -->
                     <!-- <el-input
                         type="time"
                         
@@ -117,7 +118,7 @@ export default {
             form: {
                 terminal_origen_id:null,
                 terminal_destino_id:null,
-                tiempo_aproximado:null,
+                // tiempo_aproximado:null,
                 hora_salida:null,
                 vehiculo_id:null
             },

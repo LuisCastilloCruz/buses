@@ -1,6 +1,8 @@
 <?php
 
 namespace Modules\Transporte\Models;
+
+use App\Models\System\Client;
 use App\Models\Tenant\ModelTenant;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,7 +18,7 @@ class TransportePasaje extends ModelTenant
         'asiento_id',
         'precio',
         'fecha_salida',
-        'fecha_llegada',
+        // 'fecha_llegada',
         'programacion_id',
         'estado_asiento_id'
 
@@ -29,5 +31,9 @@ class TransportePasaje extends ModelTenant
 
     public function asiento() : BelongsTo{
         return $this->belongsTo(TransporteAsiento::class,'asiento_id','id');
+    }
+
+    public function pasajero() : BelongsTo{
+        return $this->belongsTo(Client::class,'pasajero_id','id');
     }
 }

@@ -9,6 +9,7 @@
                         placeholder="Buscar remitente"
                         :remote-method="searchPasajero"
                         :loading="loadingPasajero"
+                        :disabled=" (transportePasaje) ? true : false"
                         >
                         <el-option v-for="pasaje in pasajeros" :key="pasaje.id" :value="pasaje.id" :label="pasaje.name">
 
@@ -35,7 +36,7 @@
                     <label for="dni">Estado de asiento</label>
                     <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
                         placeholder="Estado asiento"
-                        
+                        :disabled=" (transportePasaje) ? true : false"
                         >
                         <el-option v-for="estado in estadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
 
@@ -46,14 +47,14 @@
             <div class="col-3">
                 <div class="form-group">
                     <label for="dni">Precio</label>
-                    <el-input v-model="precio" type="number"></el-input>
+                    <el-input v-model="precio" type="number" :disabled=" (transportePasaje) ? true : false"></el-input>
                 </div>
             </div>
         </div>
 
         <div class="row mt-2">
             <div class="col-12 d-flex justify-content-center">
-                <el-button :loading="loading" type="primary" @click="realizarVenta">Guardar</el-button>
+                <el-button :disabled=" (transportePasaje) ? true : false" :loading="loading" type="primary" @click="realizarVenta">Guardar</el-button>
                 <el-button type="secondary" @click="onClose">Cancelar</el-button>
             </div>
         </div>
@@ -95,6 +96,9 @@ export default {
 
         }
     },
+    created(){
+        
+    },
     data(){
         return ({
             pasajeros:[],
@@ -107,6 +111,7 @@ export default {
             precio:null,
 
             loading:false,
+            transportePasaje:null,
 
         });
     },
@@ -124,8 +129,16 @@ export default {
             this.loadingPasajero = false;
             this.pasajeros = data.clientes;
         },
-        onCreate(){
-            this.searchPasajero();
+        async onCreate(){
+            this.estadoAsiento = 2;
+            this.transportePasaje = this.asiento.transporte_pasaje || null;
+            await this.searchPasajero();
+            if(this.transportePasaje){
+                this.pasajero = this.transportePasaje.pasajero;
+                this.precio = this.transportePasaje.precio;
+                this.pasajeroId = this.pasajero.id;
+                this.estadoAsiento = this.transportePasaje.estado_asiento_id;
+            }
         },
         realizarVenta(){
             let data = {

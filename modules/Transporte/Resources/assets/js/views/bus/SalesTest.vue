@@ -1,9 +1,6 @@
 <template>
 
     <div v-loading="loadingProgramaciones">        
-       
-
-        <!-- <bus :seats.sync="asientos" @dbclick="dbClick" /> -->
 
         <div class="row">
             <div class="col-12">
@@ -24,7 +21,13 @@
                                     :key="lProgramacion.id"
                                     :label="`${lProgramacion.origen.nombre}-${lProgramacion.destino.nombre}`"
                                     :value="lProgramacion">
-                                    <!-- {{ lProgramacion.origen.nombre }} - {{ lProgramacion.destino.nombre }} -->
+                                        <el-tag type="success">
+                                            {{lProgramacion.origen.nombre}}
+                                        </el-tag>
+                                        -
+                                        <el-tag type="warning">
+                                            {{ lProgramacion.destino.nombre }}
+                                        </el-tag>
                                     </el-option>
                                 </el-select>
                             </div>
@@ -46,64 +49,6 @@
                                 <el-input v-model="serie"></el-input>
                             </div>
                         </div>
-                        <!-- <div class="col-3">
-                            <div class="form-group">
-                                <label for="">Ciudad</label>
-                                <el-select filterable v-model="ciudad" value-key="id" remote  popper-class="el-select-customers"
-                                :remote-method="searchCiudad"
-                                :loading="loadingCiudades"
-                                @change=" terminal = null ">
-
-                                <el-option
-                                v-for="destino in ciudades"
-                                :key="destino.id"
-                                :label="destino.nombre"
-                                
-                                :value="destino"></el-option>
-                                </el-select>
-                            </div>
-                        </div> -->
-                        <!-- <div v-if="ciudad" class="col-3">
-                            <div class="form-group">
-                                <label for="">Origen</label>
-                                <el-select v-model="terminal" value-key="id"   popper-class="el-select-customers"
-                                >
-                                <el-option
-                                v-for="terminal in terminales"
-                                :key="terminal.id"
-                                :label="terminal.nombre"
-                                
-                                :value="terminal"></el-option>
-                                </el-select>
-                            </div>
-                        </div>
-
-
-                        <div v-if="terminal" class="col-3">
-                            <div class="form-group">
-                                <label for="">Destino</label>
-                                <el-select v-model="destino" value-key="id"   popper-class="el-select-customers"
-                                >
-                                <el-option
-                                v-for="destino in destinos"
-                                :key="destino.destino.id"
-                                :label="destino.destino.nombre"
-                                :value="destino.destino.id"></el-option>
-                                </el-select>
-                            </div>
-                        </div>
-
-                        <div v-if="destino" class="col-3">
-                            <div  class="form-group">
-                                <label for="">Fecha salida</label>
-                                <el-date-picker
-                                v-model="fecha_salida"
-                                type="date"
-                                value-format="yyyy-MM-dd"
-                                placeholder="Fecha salida" @change="getProgramaciones">
-                                </el-date-picker>
-                            </div>
-                        </div> -->
                         
                     </div>
                     <div v-if="programaciones.length > 0" class="row mt-2">
@@ -214,12 +159,21 @@
                                     </svg>
                                 </div>
                             </div>
-                            
-                            
-                            
+                        </div>
+                        <div v-if="vehiculo" class="row justify-content-center">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="">Piso</label>
+                                    <el-select v-model="piso" placeholder="Piso" :disabled="vehiculo.pisos == 1">
+                                        <el-option v-for="floor in vehiculo.pisos" :label="floor" :key="floor" :value="floor" >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
-                            <bus :seats.sync="asientos" @dbclick="dbClick"  />
+                            <bus v-if="piso == 1" :seats.sync="asientosPisoUno" @dbclick="dbClick"  />
+                            <bus v-if="piso == 2" :seats.sync="asientosPisoDos" @dbclick="dbClick"  />
                         </div>
                         
                     </template>
@@ -293,6 +247,7 @@ export default {
             loadingProgramaciones:false,
             programaciones:[],
             selectProgramacion:{},
+            piso:1,
 
             visible:false,
             asiento:{},
@@ -301,6 +256,13 @@ export default {
         });
     },
     computed:{
+
+        asientosPisoUno:function(){
+            return this.asientos.filter(  asiento => asiento.piso == 1);
+        },
+        asientosPisoDos:function(){
+            return this.asientos.filter(  asiento => asiento.piso == 2);
+        }
         
     },
     watch:{
@@ -390,59 +352,6 @@ export default {
             this.visible = true;
         },
 
-        agregarItem(type){
-            //ss = asiento
-            //sb = baño
-            //ses = escalera
-            //sv = televisión       
-
-            switch(type){
-                case 'ss':
-                    /** Obtengo solo los que son asientos normales */
-                    let posicion = this.asientos.filter( asiento => asiento.type == 'ss' );
-                    this.asientos.push({
-                        id:null,
-                        top:'50px',
-                        left:'50px',
-                        type:'ss',
-                        estado_asiento_id:1,
-                        numero_asiento:(posicion.length + 1)
-                    });
-                    break;
-                case 'sb':
-                    this.asientos.push({
-                        id:null,
-                        top:'50px',
-                        left:'50px',
-                        type:'sb',
-                        estado_asiento_id:1,
-                        numero_asiento:0
-                    });
-                    break;
-                case 'ses':
-                    this.asientos.push({
-                        id:null,
-                        top:'50px',
-                        left:'50px',
-                        type:'ses',
-                        estado_asiento_id:1,
-                        numero_asiento:0
-                    });
-                    break;
-                case 'sv':
-                    this.asientos.push({
-                        id:null,
-                        top:'50px',
-                        left:'50px',
-                        type:'sv',
-                        estado_asiento_id:1,
-                        numero_asiento:0
-                    });
-                    break;
-            }
-
-        },
-
         searchCiudad(value= ''){
             this.loadingCiudades = true;
             this.$http.get(`/transportes/sales/get-ciudades?search=${value}`)
@@ -457,6 +366,7 @@ export default {
         },
         seleccionar(programacion){
             this.selectProgramacion = programacion;
+            this.vehiculo = programacion.transporte;
             this.asientos = programacion.transporte.asientos;
         },
         async onUpdateItem(){
@@ -465,6 +375,7 @@ export default {
             this.selectProgramacion = this.programaciones
             .find(  programacion => programacion.id == program.id );
             this.asientos = this.selectProgramacion.transporte.asientos;
+            this.vehiculo = this.selectProgramacion.transporte;
         }
 
         

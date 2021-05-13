@@ -28,7 +28,7 @@ class CreateTransportePasajesTable extends Migration
             $table->unsignedInteger('estado_asiento_id');
             $table->foreign('estado_asiento_id')->references('id')->on('transporte_estado_asientos');
             $table->dateTime('fecha_salida');
-            $table->dateTime('fecha_llegada');
+            // $table->dateTime('fecha_llegada');
             $table->timestamps();
         });
     }

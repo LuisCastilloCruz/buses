@@ -34,7 +34,7 @@
                             <th>Vehiculo</th>
                             <!-- <th>Fecha Salida</th> -->
                             <th>Hora Salida</th>
-                            <th>Tiempo aproximado</th>
+                            <!-- <th>Tiempo aproximado</th> -->
                             <!-- <th>Ciudad</th> -->
                             <th></th>
                             <!-- <th>Licencia</th>
@@ -48,7 +48,7 @@
                             <td>{{ programacion.destino.nombre }}</td>
                             <td>{{ programacion.vehiculo.placa }}</td>
                             <td>{{ programacion.hora_view }}</td>
-                            <td>{{ programacion.tiempo_aproximado }} hr</td>
+                            <!-- <td>{{ programacion.tiempo_aproximado }} hr</td> -->
                             <!-- <td>{{ item.licencia }}</td>
                             <td>{{ item.categoria }}</td> -->
                             <td class="text-center">

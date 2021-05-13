@@ -69,7 +69,7 @@
       </div>
       <div class="card-body">
 
-        <config-vehiculo :seats.sync="asientos" :vehiculo="vehiculo" />
+        <config-vehiculo :seats.sync="asientos" :vehiculo.sync="vehiculo" @input-transporte="onUpdateItem" />
         
       </div>
     </div>

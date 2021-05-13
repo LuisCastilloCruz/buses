@@ -46,7 +46,8 @@ class TransporteSalesController extends Controller
         ->where('terminal_origen_id',$terminal->id)
         ->get();
 
-        $estadosAsientos = TransporteEstadoAsiento::all();
+        $estadosAsientos = TransporteEstadoAsiento::where('id','!=',1)
+        ->get();
 
         return view('transporte::bus.Sales',compact('programaciones','terminal','estadosAsientos'));
     }
@@ -94,7 +95,7 @@ class TransporteSalesController extends Controller
         if($date->isSameDay($today)){
             /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
             $time = date('h:i:s');
-            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%h:%i:%s') >= '{$time}'");
+            $programaciones->whereTime('hora_salida','>=',$time);
         }
 
 
@@ -106,24 +107,47 @@ class TransporteSalesController extends Controller
 
             $listSeats = TransporteAsiento::where('vehiculo_id',$programacion->vehiculo_id)->get();
 
-          
-            foreach($listSeats as $seat){
-                $hours = $this->convertToSeconds($programacion->tiempo_aproximado) / 3600; //convierto a horas
-                $fechaSalida = "{$request->fecha_salida} {$programacion->hora_salida}";
-                $horaAproximada = Carbon::parse($fechaSalida)->addHours($hours);
+            // $tempProgramaciones = TransporteProgramacion::all();
 
-                $isState = TransportePasaje::whereRaw(DB::raw('DATE(fecha_salida) = ?'))
-                // ->whereRaw(DB::raw('TIME(fecha_salida) >= ?'))
-                ->whereRaw(DB::raw('TIME(fecha_llegada) <= ?'))
-                ->whereRaw('asiento_id = ?')
-                ->setBindings([
-                    $request->fecha_salida,
-                    // $programacion->hora_salida,
-                    $horaAproximada->format('H:i:s'),
-                    $seat->id
-                ])
+            foreach($listSeats as $seat){
+
+                // foreach($tempProgramaciones as $tempProgramacion){
+                //     $hours = $this->convertToSeconds($tempProgramacion->tiempo_aproximado) / 3600; //convierto a horas
+                //     $fechaSalida = "{$request->fecha_salida} {$tempProgramacion->hora_salida}";
+                //     $horaAproximada = Carbon::parse($fechaSalida)->addHours($hours);
+
+                //     $isState = TransportePasaje::whereRaw(DB::raw('DATE(fecha_salida) = ?'))
+                //     ->whereRaw(DB::raw('TIME(fecha_salida) >= ?'))
+                //     ->whereRaw(DB::raw('TIME(fecha_llegada) < ?'))
+                //     ->whereRaw('asiento_id = ?')
+                //     ->setBindings([
+                //         $request->fecha_salida,
+                //         $programacion->hora_salida,
+                //         $horaAproximada->format('H:i:s'),
+                //         $seat->id
+                //     ])
+                //     ->first();
+                //     if($isState){
+                //         $seat->estado_asiento_id = $isState->estado_asiento_id;
+                //         break;
+                //     }else {
+                //         $seat->estado_asiento_id = 1;
+                //     }
+                // }
+
+                $isState = TransportePasaje::with('pasajero')
+                ->whereDate('fecha_salida',$request->fecha_salida)
+                ->where('asiento_id',$seat->id)
+                ->where('programacion_id',$programacion->id)
                 ->first();
-                $seat->estado_asiento_id = !is_null($isState) ? $isState->estado_asiento_id : 1;
+
+                if(!is_null($isState)){
+                    $seat->estado_asiento_id = $isState->estado_asiento_id;
+                    $seat->transporte_pasaje = $isState;
+                }else {
+                    $seat->estado_asiento_id = 1;
+                    $seat->pasajero = null;
+                } 
             }
             $programacion->transporte->asientos = $listSeats;
         }
@@ -143,11 +167,12 @@ class TransporteSalesController extends Controller
             // $asiento = TransporteAsiento::find($request->asiento_id);
             $programacion = TransporteProgramacion::find($request->programacion_id);
     
-            $hours = $this->convertToSeconds($programacion->tiempo_aproximado) / 3600; //convierto a horas
+            // $hours = $this->convertToSeconds($programacion->tiempo_aproximado) / 3600; //convierto a horas
 
             $fechaSalida = "{$request->fecha_salida} {$programacion->hora_salida}";
     
-            $fechaLLegada = Carbon::parse($fechaSalida)->addHours($hours);
+            // $fechaLLegada = Carbon::parse($fechaSalida)->addHours($hours)
+            // ->subMinute();
 
             $attributes = $request->only([
                 'serie',
@@ -163,7 +188,7 @@ class TransporteSalesController extends Controller
                 array_merge($attributes,[
                     'estado_asiento_id' => $request->estado_asiento_id,
                     'fecha_salida' => Carbon::parse($fechaSalida)->format('Y-m-d H:i:s'),
-                    'fecha_llegada' => $fechaLLegada
+                    // 'fecha_llegada' => $fechaLLegada
                 ])
             );
     
@@ -179,6 +204,7 @@ class TransporteSalesController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Ocurrió un error al procesar su petición',
+                'error' => $th->getMessage()
             ],500);
         }
 

@@ -1,6 +1,6 @@
 <template>
     <div class="mt-2" :style="{overflowX:'auto'}">
-        <div id="bus" class="bus" >
+        <div :id="idElement" class="bus" >
             <div class="element" v-for="(asiento,index) in asientos" :key="'el-'+index"
             :id="'seat-'+index"
             :style="{left:asiento.left,top:asiento.top,cursor: drag ? 'move' : 'pointer'}"
@@ -190,6 +190,7 @@ export default {
     },
     data(){
         return ({
+            idElement:+ new Date(),
             initX:0, 
             initY:0, 
             firstX:0, 
@@ -202,7 +203,7 @@ export default {
         });
     },
     mounted(){
-        this.targetBus = document.getElementById('bus');
+        this.targetBus = document.getElementById(this.idElement);
         window.addEventListener('mouseup',this.onMouseUp,false);
     },
     methods:{
