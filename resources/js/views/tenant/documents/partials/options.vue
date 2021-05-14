@@ -1,6 +1,6 @@
 <template>
     <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false" append-to-body>
-            
+
         <div class="row mb-4" v-if="form.response_message">
             <div class="col-md-12">
                 <el-alert
@@ -16,7 +16,7 @@
             <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold" v-if="!locked_emission.success">
                 <el-alert    :title="locked_emission.message"    type="warning"    show-icon>  </el-alert>
             </div>
-            
+
             <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('a4')">
                     <i class="fa fa-file-alt"></i>
@@ -24,7 +24,7 @@
                 <p>Imprimir A4</p>
             </div>
              <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
-               
+
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket')">
                     <i class="fa fa-receipt"></i>
                 </button>
@@ -32,7 +32,7 @@
             </div>
 
              <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
-                
+
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket_50')">
                     <i class="fa fa-receipt"></i>
                 </button>
@@ -40,7 +40,7 @@
             </div>
 
             <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
-                
+
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('a5')">
                     <i class="fa fa-receipt"></i>
                 </button>
@@ -83,7 +83,7 @@
                 <small class="form-control-feedback" v-if="errors.customer_telephone" v-text="errors.customer_telephone[0]"></small>
             </div>
         </div>
-        <div class="row mt-4" v-if="company.soap_type_id == '02' && form.group_id == '01'">
+        <div class="row mt-4" v-if="company.soap_type_id == '02' && form.group_id == '01' || form.group_id == '02'">
             <div class="col-md-12 text-center">
                 <button type="button" class="btn waves-effect waves-light btn-outline-primary"
                         @click.prevent="clickConsultCdr(form.id)">Consultar CDR</button>
@@ -120,13 +120,13 @@
         },
         methods: {
             clickSendWhatsapp() {
-                
+
                 if(!this.form.customer_telephone){
                     return this.$message.error('El número es obligatorio')
                 }
 
                 window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
-            
+
             },
             initForm() {
                 this.errors = {};
@@ -152,7 +152,7 @@
                 }
             },
             async create() {
-                
+
                 await this.getCompany()
                 await this.getRecord()
 
@@ -162,7 +162,7 @@
                 });
             },
             async getCompany(){
-                
+
                 await this.$http.get(`/companies/record`)
                     .then(response => {
                         if (response.data !== '') {
