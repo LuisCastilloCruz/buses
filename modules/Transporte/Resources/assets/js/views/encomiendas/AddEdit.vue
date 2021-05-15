@@ -6,11 +6,11 @@
         @open="onCreate"
         width="800px"
         :close-on-click-modal="false"
-        
+
     >
-        <form v-loading="load" autocomplete="off" @submit.prevent="onSubmit">
+        <form v-loading="load" autocomplete="off">
             <div class="form-body">
-               
+
                 <div class="row">
                     <div class="col-6">
                         <div class="form-group">
@@ -153,10 +153,10 @@
                                     <td>{{ producto.nombre }}</td>
                                     <td>{{ producto.descripcion }}</td>
                                     <td>{{ producto.precio }}</td>
-                                    <th> 
+                                    <th>
                                         <el-button type="danger" @click="eliminarProducto(index)">
                                             <i class="fa fa-trash"></i>
-                                        </el-button> 
+                                        </el-button>
                                     </th>
                                 </tr>
                             </tbody>
@@ -195,20 +195,20 @@
                                     <td>{{ programacion.destino.nombre }}</td>
                                     <td>{{ programacion.hora_salida }}</td>
                                     <td>{{ programacion.tiempo_aproximado }} h</td>
-                                    <!-- <td >
-                                        <div v-if="edit" class="text-center">
-                                            <el-button type="primary" @click="guardarEncomienda(programacion)">
-                                                Seleccionar
-                                            </el-button>
-                                        </div>
-                                    </td> -->
+<!--                                    <td >-->
+<!--                                        <div v-if="edit" class="text-center">-->
+<!--                                            <el-button type="primary" @click="guardarEncomienda(programacion)">-->
+<!--                                                Seleccionar-->
+<!--                                            </el-button>-->
+<!--                                        </div>-->
+<!--                                    </td>-->
                                 </tr>
                             </tbody>
 
                         </table>
                     </div>
                 </div>
-               
+
                 <!-- <div class="form-group">
                     <label for="licencia">Terminal</label>
                     <input type="text" id="licencia" class="form-control" v-model="form.licencia" :class="{ 'is-invalid': errors.licencia }"/>
@@ -220,27 +220,29 @@
                     <div v-if="errors.categoria" class="invalid-feedback">{{ errors.categoria[0] }}</div>
                 </div> -->
 
-                <!-- <div class="row text-center mt-2">
+                <div class="row text-center mt-2">
                     <div class="col-6">
                         <el-button
-                            native-type="submit"
                             :disabled="loading"
                             type="primary"
                             class="btn-block"
                             :loading="loading"
+                            @click="onGoToInvoice"
                         >Guardar</el-button
                         >
                     </div>
                     <div class="col-6">
                         <el-button class="btn-block" @click="onClose">Cancelar</el-button>
                     </div>
-                </div> -->
+                </div>
             </div>
         </form>
     </el-dialog>
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
     props: {
         visible: {
@@ -269,18 +271,23 @@ export default {
     },
     data() {
         return {
-            encomienda: {
-                descripcion:null,
-                remitente_id:null,
-                destinatatio_id:null,
-                estado_pago_id:null,
-                estado_envio_id:null,
-                programacion_id:null,
-                fecha_salida:null,
-            },
             title: "Encomienda",
-            errors: {},
+            total: 0,
             loading: false,
+            totalPaid: 0,
+            totalDebt: 0,
+            response: {},
+            document: {
+                payments: [],
+            },
+            errors: {},
+            series: [],
+            document_types: [],
+            all_document_types: [],
+            resource_documents: "documents",
+            showDialogDocumentOptions: false,
+            documentNewId: null,
+            form_cash_document: {},
             loadingRemitente:false,
             loadingDestinatario:false,
             loadingTerminales:false,
@@ -296,17 +303,101 @@ export default {
             programacion:null,
             load:false,
             productos:[],
-            producto:{}
+            producto:{},
+            encomienda: {
+                document_id:null,
+                descripcion:null,
+                remitente_id:null,
+                destinatatio_id:null,
+                estado_pago_id:null,
+                estado_envio_id:null,
+                programacion_id:null,
+                fecha_salida:null,
+            },
         };
+    },
+    async mounted() {
+        this.initForm();
+        this.initDocument();
+        this.all_document_types = this.documentTypesInvoice;
+        this.total = this.room.item.total;
+        this.document.items = this.rent.items.map((i) => i.item);
+        this.onCalculateTotals();
+        this.onCalculatePaidAndDebts();
+        this.clickAddPayment();
+        this.validateIdentityDocumentType();
+        const date = moment().format("YYYY-MM-DD");
+        await this.searchExchangeRateByDate(date).then((res) => {
+            this.document.exchange_rate_sale = res;
+        });
     },
     watch:{
         terminalId(newVal){
             if(newVal)this.searchDestinos();
-            
+
         },
     },
     methods: {
+        validateIdentityDocumentType() {
+            let identity_document_types = ["0", "1"];
+            let customer = this.document.customer;
+            if (
+                identity_document_types.includes(customer.identity_document_type_id)
+            ) {
+                this.document_types = _.filter(this.all_document_types, { id: "03" });
+            } else {
+                this.document_types = this.all_document_types;
+            }
 
+      this.document.document_type_id =
+        this.document_types.length > 0 ? this.document_types[0].id : null;
+      this.changeDocumentType();
+    },
+    changeDateOfIssue() {
+      this.document.date_of_due = this.document.date_of_issue;
+    },
+    changeDocumentType() {
+      this.document.series_id = null;
+      this.series = _.filter(this.allSeries, {
+        document_type_id: this.document.document_type_id,
+      });
+      this.document.series_id =
+        this.series.length > 0 ? this.series[0].id : null;
+    },
+    clickAddPayment() {
+      const payment =
+        this.document.payments.length == 0 ? this.document.total : 0;
+
+      this.document.payments.push({
+        id: null,
+        document_id: null,
+        date_of_payment: moment().format("YYYY-MM-DD"),
+        payment_method_type_id: "01",
+        payment_destination_id: null,
+        reference: null,
+        payment: payment,
+      });
+    },
+    onExitPage() {
+      window.location.href = "/hotels/reception";
+    },
+    validatePaymentDestination() {
+      let error_by_item = 0;
+
+      this.document.payments.forEach((item) => {
+        if (item.payment_destination_id == null) error_by_item++;
+      });
+
+      return {
+        error_by_item: error_by_item,
+      };
+    },
+    initForm() {
+      this.form_cash_document = {
+        document_id: null,
+        sale_note_id: null,
+      };
+    },
         async seleccionarFecha(){
             // console.log(this.encomienda.fecha_salida);
             this.loadingTable = true;
@@ -319,7 +410,7 @@ export default {
             const { data:programaciones } = await this.$http.post(`/transportes/encomiendas/programaciones-disponibles`,data);
             this.loadingTable = false;
             this.programaciones = programaciones.programaciones;
-            
+
         },
 
         async initializeSelects(){
@@ -385,7 +476,7 @@ export default {
                 this.errors = {};
             }).catch((error) => {
                 this.axiosError(error);
-            });    
+            });
         },
         onSubmit() {
             if (this.chofer) {
@@ -437,7 +528,7 @@ export default {
             await this.searchTerminales();
             this.load = false;
 
-           
+
             if(this.edit){
                 this.encomienda = {...this.itemEncomienda};
                 this.terminalId = this.encomienda.programacion.terminal_origen_id;
@@ -445,6 +536,7 @@ export default {
                 this.programaciones.push(this.encomienda.programacion);
             }else {
                 this.encomienda = {
+                    document_id: null,
                     descripcion:null,
                     remitente_id:null,
                     destinatatio_id:null,
@@ -464,6 +556,182 @@ export default {
             //     };
             // }
         },
+        async onGoToInvoice() {
+            this.onUpdateItemsWithExtras();
+            this.onCalculateTotals();
+            let validate_payment_destination = this.validatePaymentDestination();
+
+            if (validate_payment_destination.error_by_item > 0) {
+                return this.$message.error("El destino del pago es obligatorio");
+            }
+            this.loading = true;
+            this.$http
+                .post(`/${this.resource_documents}`, this.document)
+                .then((response) => {
+                    if (response.data.success) {
+                        this.documentNewId = response.data.data.id;
+                        this.encomienda.document_id=this.documentNewId;
+                        this.form_cash_document.document_id = response.data.data.id;
+                        this.showDialogDocumentOptions = true;
+                        this.$emit("update:showDialog", false);
+                        this.onSubmit();// guardando pasajes
+                        this.saveCashDocument();
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data;
+                    } else {
+                        this.$message.error(error.response.data.message);
+                    }
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
+        },
+        saveCashDocument() {
+            this.$http
+                .post(`/cash/cash_document`, this.form_cash_document)
+                .then((response) => {
+                    if (!response.data.success) {
+                        this.$message.error(response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    this.axiosError(error);
+                });
+        },
+        onCalculatePaidAndDebts() {
+            this.totalPaid = this.rent.items
+                .map((i) => {
+                    if (i.payment_status === "PAID") {
+                        return i.item.total;
+                    }
+                    return 0;
+                })
+                .reduce((a, b) => a + b, 0);
+            const totalDebt = this.rent.items
+                .map((i) => {
+                    if (i.payment_status === "DEBT") {
+                        return i.item.total;
+                    }
+                    return 0;
+                })
+                .reduce((a, b) => a + b, 0);
+            this.totalDebt = totalDebt + parseFloat(this.arrears);
+        },
+        initDocument() {
+            this.document = {
+                customer_id: this.rent.customer_id,
+                customer: this.rent.customer,
+                document_type_id: null,
+                series_id: null,
+                establishment_id: this.warehouseId,
+                number: "#",
+                date_of_issue: moment().format("YYYY-MM-DD"),
+                time_of_issue: moment().format("HH:mm:ss"),
+                currency_type_id: "PEN",
+                purchase_order: null,
+                exchange_rate_sale: 0,
+                total_prepayment: 0,
+                total_charge: 0,
+                total_discount: 0,
+                total_exportation: 0,
+                total_free: 0,
+                total_taxed: 0,
+                total_unaffected: 0,
+                total_exonerated: 0,
+                total_igv: 0,
+                total_base_isc: 0,
+                total_isc: 0,
+                total_base_other_taxes: 0,
+                total_other_taxes: 0,
+                total_taxes: 0,
+                total_value: 0,
+                total: 0,
+                operation_type_id: "0101",
+                date_of_due: moment().format("YYYY-MM-DD"),
+                delivery_date: moment().format("YYYY-MM-DD"),
+                items: [],
+                charges: [],
+                discounts: [],
+                attributes: [],
+                guides: [],
+                additional_information: null,
+                actions: {
+                    format_pdf: "a4",
+                },
+                dispatch_id: null,
+                dispatch: null,
+                is_receivable: false,
+                payments: [],
+                hotel: {},
+            };
+        },
+        onGotoBack() {
+            window.location.href = "/hotels/reception";
+        },
+        onCalculateTotals() {
+            let total_exportation = 0;
+            let total_taxed = 0;
+            let total_exonerated = 0;
+            let total_unaffected = 0;
+            let total_free = 0;
+            let total_igv = 0;
+            let total_value = 0;
+            let total = 0;
+            let total_plastic_bag_taxes = 0;
+            let total_discount = 0;
+            let total_charge = 0;
+            this.document.items.forEach((row) => {
+                total_discount += parseFloat(row.total_discount);
+                total_charge += parseFloat(row.total_charge);
+
+        if (row.affectation_igv_type_id === "10") {
+          total_taxed += parseFloat(row.total_value);
+        }
+        if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
+          total_free += parseFloat(row.total_value);
+        }
+        if (
+          ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
+        ) {
+          total_igv += parseFloat(row.total_igv);
+          total += parseFloat(row.total);
+        }
+        total_value += parseFloat(row.total_value);
+        total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes);
+
+        if (["13", "14", "15"].includes(row.affectation_igv_type_id)) {
+          let unit_value =
+            row.total_value / row.quantity / (1 + row.percentage_igv / 100);
+          let total_value_partial = unit_value * row.quantity;
+          row.total_taxes = row.total_value - total_value_partial;
+          row.total_igv = row.total_value - total_value_partial;
+          row.total_base_igv = total_value_partial;
+          total_value -= row.total_value;
+        }
+      });
+
+      this.document.total_exportation = _.round(total_exportation, 2);
+      this.document.total_taxed = _.round(total_taxed, 2);
+      this.document.total_exonerated = _.round(total_exonerated, 2);
+      this.document.total_unaffected = _.round(total_unaffected, 2);
+      this.document.total_free = _.round(total_free, 2);
+      this.document.total_igv = _.round(total_igv, 2);
+      this.document.total_value = _.round(total_value, 2);
+      this.document.total_taxes = _.round(total_igv, 2);
+      this.document.total_plastic_bag_taxes = _.round(
+        total_plastic_bag_taxes,
+        2
+      );
+      this.document.total = _.round(
+        total + this.document.total_plastic_bag_taxes,
+        2
+      );
     },
+  },
 };
 </script>
