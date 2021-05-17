@@ -34,9 +34,9 @@ class ActionInput
     {
         $send_xml_signed = Functions::valueKeyInArray($actions, 'send_xml_signed', true);
         if(in_array($inputs['type'], ['invoice', 'credit', 'debit'])) {
-            if($inputs['group_id'] === '02') {
+            /* if($inputs['group_id'] === '02') {
                 return false;
-            }
+            } */
             return $configuration->send_auto && $send_xml_signed;
         }
 
