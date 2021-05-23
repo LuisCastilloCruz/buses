@@ -41,6 +41,7 @@ use Modules\Order\Http\Resources\OrderNoteResource2;
 use Modules\Order\Http\Requests\OrderNoteRequest;
 use Modules\Order\Mail\OrderNoteEmail;
 use Modules\Finance\Traits\FinanceTrait;
+use App\Traits\OfflineTrait;
 use App\Models\Tenant\Configuration;
 use App\Http\Controllers\Tenant\SaleNoteController;
 use App\CoreFacturalo\Requests\Inputs\DocumentInput;
@@ -59,7 +60,7 @@ use Mike42\Escpos\Printer;
 class OrderNoteController extends Controller
 {
 
-    use StorageDocument, FinanceTrait;
+    use StorageDocument, FinanceTrait,OfflineTrait;
 
     protected $order_note;
     protected $company;
@@ -72,7 +73,90 @@ class OrderNoteController extends Controller
         return view('order::order_notes.index', compact('soap_company'));
     }
 
+    public function index_not_sent()
+    {
 
+        $is_client = $this->getIsClient();
+
+        return view('order::order_notes.not_sent', compact('is_client'));
+    }
+    public function record_not_sent(Request $request)
+    {
+
+        $records = $this->getRecordsNotSent($request);
+
+        return new OrderNoteCollection($records->paginate(config('tenant.items_per_page')));
+
+    }
+
+    public function getRecordsNotSent($request){
+
+
+        $d_end = $request->d_end;
+        $d_start = $request->d_start;
+        $date_of_issue = $request->date_of_issue;
+        $document_type_id = $request->document_type_id;
+        $number = $request->number;
+        $series = $request->series;
+        $state_type_id = $request->state_type_id;
+        $pending_payment = ($request->pending_payment == "true") ? true:false;
+        $customer_id = $request->customer_id;
+
+
+        if($d_start && $d_end){
+
+            $records = OrderNote::where('series', 'like', '%' . $series . '%')
+                ->where('number', 'like', '%' . $number . '%')
+                ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+                ->whereBetween('date_of_issue', [$d_start , $d_end])
+                ->whereNotSent()
+                ->whereTypeUser()
+                ->latest();
+
+        }else{
+
+            $records = OrderNote::where('date_of_issue', 'like', '%' . $date_of_issue . '%')
+                ->where('document_type_id', 'like', '%' . $document_type_id . '%')
+                ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+                ->where('series', 'like', '%' . $series . '%')
+                ->where('number', 'like', '%' . $number . '%')
+                ->whereNotSent()
+                ->whereTypeUser()
+                ->latest();
+        }
+
+        if($pending_payment){
+            $records = $records->where('total_canceled', false);
+        }
+
+        if($customer_id){
+            $records = $records->where('customer_id', $customer_id);
+        }
+
+        return $records;
+
+    }
+    public function data_table()
+    {
+
+        $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+            ];
+        });
+
+        $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
+        $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
+        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
+        $state_types = StateType::get();
+
+        return compact( 'customers', 'document_types','series','establishments', 'state_types');
+
+    }
     public function create()
     {
         return view('order::order_notes.form');
