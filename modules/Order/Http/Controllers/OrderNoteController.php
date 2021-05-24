@@ -25,6 +25,7 @@ use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Template;
 use Modules\Item\Models\Category;
+use Modules\Order\Http\Resources\OrderNoteNotSentCollection;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
@@ -85,19 +86,18 @@ class OrderNoteController extends Controller
 
         $records = $this->getRecordsNotSent($request);
 
-        return new OrderNoteCollection($records->paginate(config('tenant.items_per_page')));
+        return new OrderNoteNotSentCollection($records->paginate(config('tenant.items_per_page')));
 
     }
 
     public function getRecordsNotSent($request){
 
-
         $d_end = $request->d_end;
         $d_start = $request->d_start;
         $date_of_issue = $request->date_of_issue;
-        $document_type_id = $request->document_type_id;
-        $number = $request->number;
-        $series = $request->series;
+//        $document_type_id = $request->document_type_id;
+//        $number = $request->number;
+//        $series = $request->series;
         $state_type_id = $request->state_type_id;
         $pending_payment = ($request->pending_payment == "true") ? true:false;
         $customer_id = $request->customer_id;
@@ -106,7 +106,7 @@ class OrderNoteController extends Controller
         if($d_start && $d_end){
 
             $records = OrderNote::where('series', 'like', '%' . $series . '%')
-                ->where('number', 'like', '%' . $number . '%')
+//                ->where('number', 'like', '%' . $number . '%')
                 ->where('state_type_id', 'like', '%' . $state_type_id . '%')
                 ->whereBetween('date_of_issue', [$d_start , $d_end])
                 ->whereNotSent()
@@ -115,13 +115,18 @@ class OrderNoteController extends Controller
 
         }else{
 
-            $records = OrderNote::where('date_of_issue', 'like', '%' . $date_of_issue . '%')
-                ->where('document_type_id', 'like', '%' . $document_type_id . '%')
-                ->where('state_type_id', 'like', '%' . $state_type_id . '%')
-                ->where('series', 'like', '%' . $series . '%')
-                ->where('number', 'like', '%' . $number . '%')
+//            $records = OrderNote::where('date_of_issue', 'like', '%' . $date_of_issue . '%')
+//                ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+////                ->where('series', 'like', '%' . $series . '%')
+////                ->where('number', 'like', '%' . $number . '%')
+//                //->whereNotSent()
+//                    \App\Models\Plate::with('project')->has('project')->get();
+//                ->whereTypeUser()
+//                ->latest();
+
+            $records = OrderNote::with('documents')->doesnthave('documents')
+                ->where('date_of_issue', 'like', '%' . $date_of_issue . '%')
                 ->whereNotSent()
-                ->whereTypeUser()
                 ->latest();
         }
 

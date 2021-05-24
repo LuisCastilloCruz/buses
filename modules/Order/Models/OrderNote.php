@@ -301,7 +301,7 @@ class OrderNote extends ModelTenant
     }
     public function scopeWhereNotSent($query)
     {
-        return  $query->whereIn('state_type_id', ['01'])->where('date_of_issue','<=',date('Y-m-d'));
+        return  $query->whereNotIn('state_type_id', ['11'])->where('date_of_issue','<=',date('Y-m-d'));
     }
 
 }

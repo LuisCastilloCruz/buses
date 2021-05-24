@@ -8,65 +8,59 @@
         </div>
         <div class="card mb-0" v-loading="loading_submit">
             <div class="card-body ">
-                <data-table :resource="resource">
+                <data-table :resource="resource" :typeUser="typeUser">
                     <tr slot="heading">
                         <th>#</th>
-                        <th>Entorno</th>
                         <th class="text-center">Usuario</th>
                         <th class="text-center">F. Emisión</th>
+                        <th class="text-center">Numero</th>
                         <th>Cliente</th>
-                        <th>Comprobante</th>
-                        <th class="text-center">Días para enviar</th>
+                        <th class="text-center">Estado</th>
                         <th class="text-center">Enviar</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
-                        <td>{{ row.soap_type_description }}</td>
                         <td class="text-center">{{ row.user_name }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                    <td class="text-center">{{ row.identifier }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
-                        <td>{{ row.number }}<br/>
-                            <small v-text="row.document_type_description"></small><br/>
-                            <small v-if="row.affected_document" v-text="row.affected_document"></small>
-                        </td>
                         <td class="text-center">
-                            <template v-if="row.is_expiration">
-                                <span class="badge bg-danger text-white" >{{row.expiration_days}}</span>
-                            </template>
-                            <template v-else>
-                                {{row.expiration_days}}
-                            </template>
+                            {{row.state_description}}
                         </td>
 
                         <td class="text-center">
-                            <template v-if="row.btn_resend">
-                                <el-button type="primary"  class="btn btn-sm"
-                                           @click.prevent="clickResend(row.id)"
-                                           v-if="!isClient"  ><i class="el-icon-upload2"></i></el-button>
-                            </template>
-                            <template v-else>
-                                <el-tooltip class="item" effect="dark" :content="row.text_tooltip" placement="top">
-                                    <el-button type="info"  class="btn btn-sm" ><i class="el-icon-upload2"></i></el-button>
-                                </el-tooltip>
-                            </template>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptionsPdf(row.id)">Ver PDF</button>
+                            <button v-if="row.state_type_id != '11' && typeUser == 'admin'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptions(row.id)" >Generar comprobante</button>
 
+                            <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/order-notes/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <a :href="`/dispatches/create/${row.id}/on`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
 
                         </td>
                     </tr>
                 </data-table>
             </div>
+            <quotation-options :showDialog.sync="showDialogOptions"
+                               :recordId="recordId"
+                               :showGenerate="true"
+                               :showClose="true"></quotation-options>
 
+            <quotation-options-pdf :showDialog.sync="showDialogOptionsPdf"
+                                   :recordId="recordId"
+                                   :showClose="true"></quotation-options-pdf>
         </div>
     </div>
 </template>
 
 <script>
-
+import QuotationOptions from './partials/options.vue'
+import QuotationOptionsPdf from './partials/options_pdf.vue'
 import DataTable from '../../components/DataTable.vue'
 
 export default {
-    props: ['isClient'],
-    components: {DataTable},
+    props:['typeUser', 'isClient'],
+    components: {DataTable,QuotationOptions, QuotationOptionsPdf},
     data() {
         return {
             showDialogVoided: false,
@@ -74,6 +68,7 @@ export default {
             resource: 'order-notes/not-sent',
             recordId: null,
             showDialogOptions: false,
+            showDialogOptionsPdf:false,
             showDialogPayments: false,
             loading_submit: false,
 
@@ -82,27 +77,19 @@ export default {
     created() {
     },
     methods: {
-        clickResend(document_id) {
-            this.loading_submit = true
-            this.$http.get(`/documents/send/${document_id}`)
-                .then(response => {
-                    if (response.data.success) {
-                        this.$message.success(response.data.message)
-                        this.$eventHub.$emit('reloadData')
-                        // location.reload()
-                    } else {
-                        this.$message.error(response.data.message)
-                    }
-                })
-                .catch(error => {
-                    this.$message.error(error.response.data.message)
-                }).then(()=>{
-                this.loading_submit = false
-            })
-        },
         clickOptions(recordId = null) {
             this.recordId = recordId
             this.showDialogOptions = true
+        },
+        clickOptionsPdf(recordId = null) {
+            this.recordId = recordId
+            this.showDialogOptionsPdf = true
+        },
+        clickAnulate(id)
+        {
+            this.voided(`order-notes/voided/${id}`).then(() =>
+                this.$eventHub.$emit('reloadData')
+            )
         }
     }
 }
