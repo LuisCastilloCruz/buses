@@ -60,7 +60,7 @@
             <li class="open">
 
                 <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-bell text-secondary"></i>
+                    <i class="fas fa-truck text-secondary"></i>
                     <span class="badge badge-red">{{ $vc_order }}</span>
                 </a>
                 <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
