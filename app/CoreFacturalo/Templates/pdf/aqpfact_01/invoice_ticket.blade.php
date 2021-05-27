@@ -537,12 +537,16 @@
 
     <tr>
         <td class="desc pt-2">
-        <strong>Vendedor:</strong> </td></tr>
-                <tr>
-                    <td class="desc">{{ $document->user->name }}</td>
-                </tr>
-
-        </tr>
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        @if ($document->seller)
+            <td class="desc">{{ $document->seller->name }}</td>
+        @else
+            <td class="desc">{{ $document->user->name }}</td>
+        @endif
+    </tr>
 
     <tr>
         <td class="text-center desc pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
