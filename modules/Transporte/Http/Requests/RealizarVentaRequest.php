@@ -25,6 +25,7 @@ class RealizarVentaRequest extends FormRequest
     {
         return [
             //
+            'document_id' => ['required'],
             'asiento_id' => ['required'],
             'estado_asiento_id' => ['required'],
             'fecha_salida' => ['required'],

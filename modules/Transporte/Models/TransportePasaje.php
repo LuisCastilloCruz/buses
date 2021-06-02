@@ -3,7 +3,9 @@
 namespace Modules\Transporte\Models;
 
 use App\Models\System\Client;
+use App\Models\Tenant\Document;
 use App\Models\Tenant\ModelTenant;
+use App\Models\Tenant\Person;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransportePasaje extends ModelTenant
@@ -34,6 +36,10 @@ class TransportePasaje extends ModelTenant
     }
 
     public function pasajero() : BelongsTo{
-        return $this->belongsTo(Client::class,'pasajero_id','id');
+        return $this->belongsTo(Person::class,'pasajero_id','id');
+    }
+
+    public function document() : BelongsTo{
+        return $this->belongsTo(Document::class,'document_id','id');
     }
 }

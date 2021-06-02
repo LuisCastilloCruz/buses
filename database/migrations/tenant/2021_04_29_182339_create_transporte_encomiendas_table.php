@@ -19,7 +19,7 @@ class CreateTransporteEncomiendasTable extends Migration
             $table->foreign('document_id')->references('id')->on('documents');
             $table->string('descripcion');
             // $table->double('precio');
-            $table->date('fecha_salida');
+            $table->date('fecha_salida')->nullable();
             $table->unsignedInteger('remitente_id')->index();
             $table->foreign('remitente_id')->references('id')->on('persons');
             $table->unsignedInteger('destinatario_id');
@@ -28,7 +28,7 @@ class CreateTransporteEncomiendasTable extends Migration
             $table->foreign('estado_pago_id','te_tep_foreign_id')->references('id')->on('transporte_estado_encomienda');
             $table->unsignedInteger('estado_envio_id');
             $table->foreign('estado_pago_id','te_tepe_foreign_id')->references('id')->on('transporte_estado_pago_encomienda');
-            $table->unsignedInteger('programacion_id');
+            $table->unsignedInteger('programacion_id')->nullable();
             $table->foreign('programacion_id')->references('id')->on('transporte_programaciones');
             $table->timestamps();
         });

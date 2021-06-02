@@ -45,16 +45,21 @@
                             <td>{{ encomienda.remitente.name }}</td>
                             <td>{{ encomienda.destinatario.name }}</td>
                             <td>{{ encomienda.fecha_salida }}</td>
-                            <td>{{ encomienda.programacion.hora_salida }}</td>
+                            <td>{{ encomienda.programacion ? encomienda.programacion.hora_salida : 'Sin programación' }}</td>
                             <td>{{ encomienda.estado_envio.nombre }}</td>
                             <!-- <td>{{ item.categoria }}</td> -->
                             <td class="text-center">
                                 <el-button type="success" @click="onEdit(encomienda)">
                                     <i class="fa fa-edit"></i>
                                 </el-button>
+                                <el-button type="primary" @click="verComprobante(encomienda)">
+                                    <i class="fa fa-file-alt"></i>
+                                </el-button>
                                 <el-button type="danger" @click="onDelete(encomienda)">
                                     <i class="fa fa-trash"></i>
                                 </el-button>
+
+                                
                             </td>
                         </tr>
                         </tbody>
@@ -69,13 +74,26 @@
             :item-encomienda="encomienda"
             :estados-envio="estadosEnvio"
             :estados-pago="estadosPago"
+            :establishment="establishment"
+            :all-series="series"
+            :document-types-invoice="documentTypesInvoice"
+            :payment-method-types="paymentMethodTypes"
+            :payment-destinations="paymentDestinations"
             :edit="edit"
+            :user-terminal="userTerminal"
         ></ModalAddEdit>
+        <document-options
+        :showDialog.sync="showDialogDocumentOptions"
+        :recordId="documentNewId"
+        :isContingency="false"
+        :showClose="true"
+        ></document-options>
     </div>
 </template>
 
 <script>
 import ModalAddEdit from "./AddEdit";
+import DocumentOptions from "@views/documents/partials/options.vue";
 
 export default {
     props: {
@@ -91,10 +109,35 @@ export default {
         estadosEnvio:{
             type:Array,
             required:true,
+        },
+        establishment:{
+            type:Object,
+            required:true
+        },
+        series:{
+            type:Array,
+            default:() => []
+        },
+        documentTypesInvoice:{
+            type:Array,
+            default:() => []
+        },
+        paymentMethodTypes: {
+            type: Array,
+            required: true,
+        },
+        paymentDestinations: {
+            type: Array,
+            required: true,
+        },
+        userTerminal:{
+            type:Object,
+            default:{}
         }
     },
     components: {
         ModalAddEdit,
+        DocumentOptions
     },
     created(){
         this.listEncomiendas = this.encomiendas;
@@ -105,7 +148,9 @@ export default {
             openModalAddEdit: false,
             encomienda:null,
             loading: false,
-            edit:false
+            edit:false,
+            documentNewId:null,
+            showDialogDocumentOptions:false,
         };
     },
     mounted() {
@@ -131,18 +176,21 @@ export default {
         onEdit(encomienda) {
             this.edit = true;
             this.encomienda = { ...encomienda };
-            this.edit = true;
             this.openModalAddEdit = true;
         },
         onUpdateItem(encomienda) {
+            // console.log(encomienda);
             this.items = this.listEncomiendas.map((i) => {
                 if (i.id === encomienda.id) {
                     return encomienda;
                 }
                 return i;
             });
+            this.edit = false;
         },
         onAddItem(encomienda) {
+            this.documentNewId = encomienda.document_id;
+            this.showDialogDocumentOptions = true;
             this.listEncomiendas.unshift(encomienda);
         },
         onCreate() {
@@ -150,6 +198,10 @@ export default {
             this.encomienda = null;
             this.openModalAddEdit = true;
         },
+        verComprobante(encomienda){
+            this.documentNewId = encomienda.document_id;
+            this.showDialogDocumentOptions = true;
+        }
     },
 };
 </script>

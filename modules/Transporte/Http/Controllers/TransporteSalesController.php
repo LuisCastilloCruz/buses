@@ -19,6 +19,11 @@ use Modules\Transporte\Models\TransporteEstadoAsiento;
 use Modules\Transporte\Models\TransportePasaje;
 use Modules\Transporte\Models\TransporteProgramacion;
 use Modules\Transporte\Models\TransporteVehiculo;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Series;
+use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\PaymentMethodType;
+use Modules\Finance\Traits\FinanceTrait;
 
 class TransporteSalesController extends Controller
 {
@@ -26,6 +31,8 @@ class TransporteSalesController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
+
+    use FinanceTrait;
     public function index()
     {
         $plantilla='<table class="mx-auto bus"><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr> <tr><td>7</td><td>8</td><td>9</td></tr></table>';
@@ -33,13 +40,15 @@ class TransporteSalesController extends Controller
 
         $user = Auth::user();
 
-        $terminal = $user->terminal;
+        $user_terminal = $user->user_terminal;
 
-        if(is_null($terminal)){
+        if(is_null($user_terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();  
         }
+
+        $terminal = $user_terminal->terminal;
 
 
         $programaciones = TransporteProgramacion::with('origen','destino')
@@ -49,7 +58,22 @@ class TransporteSalesController extends Controller
         $estadosAsientos = TransporteEstadoAsiento::where('id','!=',1)
         ->get();
 
-        return view('transporte::bus.Sales',compact('programaciones','terminal','estadosAsientos'));
+        $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id', $establishment->id)->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
+
+        return view('transporte::bus.Sales',compact(
+            'programaciones',
+            'terminal',
+            'estadosAsientos',
+            'series',
+            'establishment',
+            'document_types_invoice',
+            'payment_method_types',
+            'payment_destinations'
+        ));
     }
 
 
@@ -176,7 +200,7 @@ class TransporteSalesController extends Controller
 
             $attributes = $request->only([
                 'serie',
-                // 'document_id',
+                'document_id',
                 'pasajero_id',
                 'asiento_id',
                 'precio',

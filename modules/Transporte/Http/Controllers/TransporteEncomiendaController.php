@@ -3,6 +3,10 @@
 namespace Modules\Transporte\Http\Controllers;
 
 use App\Models\System\Client;
+use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Series;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,6 +18,11 @@ use Modules\Transporte\Models\TransporteEstadoEnvio;
 use Modules\Transporte\Models\TransporteEstadoPagoEncomienda;
 use Modules\Transporte\Models\TransporteProgramacion;
 use Modules\Transporte\Models\TransporteTerminales;
+use App\Models\Tenant\PaymentMethodType;
+use Exception;
+use Illuminate\Support\Facades\Auth;
+use Modules\Finance\Traits\FinanceTrait;
+use Illuminate\Support\Facades\Session;
 
 class TransporteEncomiendaController extends Controller
 {
@@ -21,20 +30,33 @@ class TransporteEncomiendaController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
+
+    use FinanceTrait;
     public function index()
     {
 
         $estadosPagos = TransporteEstadoPagoEncomienda::all();
 
+        $user = Auth::user();
+
+        $user_terminal = $user->user_terminal;
+
+        if(is_null($user_terminal)) {
+            //redirigirlo
+            Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
+            return redirect()->back();
+        } 
+
         
         $estadosEnvios = TransporteEstadoEnvio::all();
         
         $encomiendas = TransporteEncomienda::with([
+            'document.items',
             'programacion' => function($progamacion){
                 return $progamacion->with([
                     'vehiculo:id,placa',
                     'origen:id,nombre',
-                    'destino:id,nombre'
+                    'destino:id,nombre',
                 ]);
             },
             'remitente:id,name',
@@ -43,10 +65,24 @@ class TransporteEncomiendaController extends Controller
             'estadoEnvio'
         ])->orderBy('id', 'DESC')
         ->get();
+
+        $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id', $establishment->id)->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
+        
+
         return view('transporte::encomiendas.index', compact(
             'encomiendas',
             'estadosPagos',
-            'estadosEnvios'
+            'estadosEnvios',
+            'establishment',
+            'series',
+            'document_types_invoice',
+            'payment_method_types',
+            'payment_destinations',
+            'user_terminal'
         ));
     }
 
@@ -62,7 +98,7 @@ class TransporteEncomiendaController extends Controller
 
     public function getClientes(Request $request){
         extract($request->only(['search']));
-        $clientes = Client::select()
+        $clientes = Person::select()
         ->orderBy('name');
         if(!empty($search)){
             $clientes->where('name','like',"%{$search}%");
@@ -111,8 +147,6 @@ class TransporteEncomiendaController extends Controller
             $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%h:%i:%s') >= '{$time}'");
         }
 
-        // return $programaciones->toSql();
-
         return response()->json([
             'programaciones' => $programaciones->get()
         ]);
@@ -130,7 +164,7 @@ class TransporteEncomiendaController extends Controller
 
             $encomienda = TransporteEncomienda::create(
                 $request->only(
-                    'descripcion',
+                    'document_id',
                     'remitente_id',
                     'destinatario_id',
                     'fecha_salida',
@@ -145,6 +179,7 @@ class TransporteEncomiendaController extends Controller
             $encomienda->programacion;
             $encomienda->estadoEnvio;
             $encomienda->estadoPago;
+            $encomienda->document;
     
     
             return response()->json([
@@ -155,6 +190,7 @@ class TransporteEncomiendaController extends Controller
         }catch(\Throwable $th){
             return response()->json([
                 'success' => false,
+                'error' => $th->getMessage(),
                 'message' => 'Ocurrió un error al procesar su petición'
             ]);
         }
@@ -189,9 +225,43 @@ class TransporteEncomiendaController extends Controller
      * @param int $id
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(TransporteEncomiendaRequest $request, TransporteEncomienda $encomienda)
     {
         //
+        try{
+
+            $encomienda->update(
+                $request->only(
+                    'document_id',
+                    'remitente_id',
+                    'destinatario_id',
+                    'fecha_salida',
+                    'programacion_id',
+                    'estado_pago_id',
+                    'estado_envio_id'
+                )
+            );
+    
+            $encomienda->remitente;
+            $encomienda->destinatario;
+            $encomienda->programacion;
+            $encomienda->estadoEnvio;
+            $encomienda->estadoPago;
+            $encomienda->document;
+
+
+            return response()->json([
+                'success' => true,
+                'encomienda' => $encomienda,
+            ]);
+
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al procesar su petición',
+            ]);
+        }
+
     }
 
     /**

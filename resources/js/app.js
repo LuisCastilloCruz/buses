@@ -294,6 +294,16 @@ Vue.component('tenant-transporte-terminales', require('@viewsModuleTransporte/te
 //Transporte :: programaciones
 Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/programaciones/List.vue'));
 
+// //Transporte :: manifiesto pasajeros
+// Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/manifiestos/ManifiestoEncomiendas.vue'));
+
+// //Transporte :: manifiesto encomiendas
+// Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/manifiestos/ManifiestoPasajes.vue'));
+
+//Transporte :: manifiestos
+Vue.component('tenant-transporte-manifiestos',require('@viewsModuleTransporte/manifiestos/Manifiestos.vue'));
+
+
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 

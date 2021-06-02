@@ -9,31 +9,53 @@ use Modules\Transporte\Http\Requests\TransporteProgramacionesRequest;
 use Modules\Transporte\Models\TransporteProgramacion;
 use Modules\Transporte\Models\TransporteTerminales;
 use Modules\Transporte\Models\TransporteVehiculo;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Series;
+use Modules\Transporte\Models\TransporteChofer;
+use Illuminate\Support\Facades\Session;
 
 class TransporteProgramacionesController extends Controller
 {
     //
 
-    public function index(){
+    public function index(Request $request){
         $terminales = TransporteTerminales::all();
+        $user = $request->user();
+
+        $user_terminal = $user->user_terminal;
+
+        if(is_null($user_terminal)) {
+            //redirigirlo
+            Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
+            return redirect()->back();
+        } 
+        
 
         $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
+        ->where('terminal_origen_id',$user_terminal->terminal_id)
         ->get()
         ->map(function($programacion){
             $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
             return $programacion;
         });
         $vehiculos = TransporteVehiculo::all();
+
+        $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id', $establishment->id)->get();
+
+        $choferes = TransporteChofer::all();
+
         return view('transporte::programaciones.index',compact(
             'terminales',
             'programaciones',
-            'vehiculos'
+            'vehiculos',
+            'series',
+            'choferes',
+            'user_terminal'
         ));
     }
 
     public function store(TransporteProgramacionesRequest $request){
-
-        // return $request->only('terminal_destino_id');
 
         $programacion = TransporteProgramacion::create($request->only(
             'terminal_destino_id',

@@ -39,6 +39,7 @@ if ($hostname) {
 				Route::get('encomiendas/get-terminales','TransporteEncomiendaController@getTerminales');
 				Route::get('encomiendas/{terminal}/get-destinos','TransporteEncomiendaController@getDestinos');
 				Route::post('encomiendas/programaciones-disponibles','TransporteEncomiendaController@getProgramacionesDisponibles');
+				Route::put('encomiendas/{encomienda}/update','TransporteEncomiendaController@update');
 				//terminales
 				Route::get('terminales','TransporteTerminalesController@index');
 				Route::post('terminales/store','TransporteTerminalesController@store');
@@ -53,7 +54,11 @@ if ($hostname) {
 				Route::delete('programaciones/{programacion}/delete','TransporteProgramacionesController@destroy');
 				
 
-				
+				//Manifiestos
+				Route::get('manifiestos/','TransporteManifiestosController@index');
+				Route::post('manifiestos/get-programaciones','TransporteManifiestosController@getProgramaciones');
+				Route::post('manifiestos/guardar-manifiesto','TransporteManifiestosController@store');
+				Route::get('manifiestos/{manifiesto}/imprimir-manifiesto','TransporteManifiestosController@imprimirManifiesto');
 			
 			});
 	});

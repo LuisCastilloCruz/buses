@@ -24,8 +24,9 @@ class CreateTransporteManifiestoTable extends Migration
             $table->foreign('copiloto_id')->references('id')->on('transporte_choferes');
             $table->date('fecha');
             $table->time('hora');
-            $table->string('observaciones');
-            $table->unsignedInteger('programacion_id')->references('id')->on('transporte_programaciones');
+            $table->string('observaciones')->nullable();
+            $table->unsignedInteger('programacion_id');
+            $table->foreign('programacion_id')->references('id')->on('transporte_programaciones');
             $table->timestamps();
         });
     }

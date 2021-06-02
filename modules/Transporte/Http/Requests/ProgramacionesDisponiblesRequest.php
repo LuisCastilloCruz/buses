@@ -25,7 +25,7 @@ class ProgramacionesDisponiblesRequest extends FormRequest
     {
         return [
             'origen_id' => ['required'],
-            'destino_id' => ['required'],
+            // 'destino_id' => ['required'],
             'fecha_salida' => ['required']
             //
         ];

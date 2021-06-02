@@ -19,7 +19,7 @@ class CreateTransportePasajesTable extends Migration
             $table->unsignedInteger('document_id');
             $table->foreign('document_id')->references('id')->on('documents');
             $table->unsignedInteger('pasajero_id');
-            $table->foreign('pasajero_id')->references('id')->on('tenancy.clients');
+            $table->foreign('pasajero_id')->references('id')->on('persons');
             $table->double('precio');
             $table->unsignedInteger('asiento_id');
             $table->foreign('asiento_id','tp_tva_foreign_id')->references('id')->on('transporte_vehiculo_asientos');

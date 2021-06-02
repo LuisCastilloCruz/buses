@@ -1022,9 +1022,12 @@
                         {{ ($path[0] === 'transportes') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-building" aria-hidden="true"></i>
-                            <span>Transpotes</span>
+                            <span>Transportes</span>
                         </a>
                             <ul class="nav nav-children">
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'manifiestos')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/manifiestos') }}">Manifiestos</a>
+                                </li>
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'sales')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/sales') }}">Pasajes</a>
                                 </li>

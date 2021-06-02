@@ -10,7 +10,7 @@
             <div class="form-body">
                 <div class="form-group">
                     <label for="nombre">Origen</label>
-                    <el-select placeholder="Seleccionar origen" v-model="form.terminal_origen_id" :class="{ 'is-invalid': errors.destino_id}">
+                    <el-select placeholder="Seleccionar origen" v-model="form.terminal_origen_id" :class="{ 'is-invalid': errors.destino_id}" disabled>
                         <el-option
                             v-for="terminal in terminales"
                             :key="terminal.id"
@@ -62,7 +62,6 @@
                     <label for="hora_salida">Hora salida</label>
                     <el-input type="time" v-model="form.hora_salida" placeholder="Hora Salida" ></el-input>
                     <!-- <el-time-picker v-model="form.hora_salida" placeholder="Hora Salida" value-format="H:m:s">
-
                     </el-time-picker> -->
                     <!-- <el-input
                         type="time"
@@ -112,6 +111,13 @@ export default {
             type:Array,
             default:() => []
         },
+        userTerminal:{
+            type:Object,
+            default:{}
+        }
+    },
+    created(){
+        this.form.terminal_origen_id = this.userTerminal.terminal_id;
     },
     data() {
         return {
@@ -201,7 +207,7 @@ export default {
             } else {
                 this.title = "Crear programación";
                 this.form = {
-                    terminal_origen_id:null,
+                    terminal_origen_id:this.userTerminal.terminal_id,
                     terminal_destino_id:null,
                     tiempo_aproximado:null,
                     hora_salida:null,

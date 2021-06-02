@@ -46,7 +46,14 @@
                         <div class="col-3">
                             <div  class="form-group">
                                 <label for="">Serie</label>
-                                <el-input v-model="serie"></el-input>
+                                <el-select v-model="serie"  popper-class="el-select-customers"
+                                placeholder="Serie"
+                                >
+                                    <el-option v-for="ser in series" :key="ser.id" :value="ser.id" :label="ser.number">
+
+                                    </el-option>
+                                </el-select>
+                                <!-- <el-input v-model="serie"></el-input> -->
                             </div>
                         </div>
                         
@@ -191,7 +198,20 @@
         :fecha-salida="fecha_salida"
         @onUpdateItem="onUpdateItem"
         :serie="serie"
+        :establishment="establishment"
+        :series="series"
+        :document-types-invoice="documentTypesInvoice"
+        :payment-method-types="paymentMethodTypes"
+        :payment-destinations="paymentDestinations"
+        @onSuccessVenta="onSuccessVenta"
          />
+
+        <document-options
+        :showDialog.sync="showDialogDocumentOptions"
+        :recordId="documentId"
+        :isContingency="false"
+        :showClose="true"
+        ></document-options>
     </div>
     
     
@@ -199,6 +219,7 @@
 <script>
 import Bus from './Bus';
 import VentaAsiento from './VentaAsiento.vue';
+import DocumentOptions from "@views/documents/partials/options.vue";
 export default {
 
     props:{
@@ -217,12 +238,33 @@ export default {
             type:Array,
             required:true,
             default:() => []
-        }
+        },
+        establishment:{
+            type:Object,
+            required:true
+        },
+        series:{
+            type:Array,
+            default:() => []
+        },
+        documentTypesInvoice:{
+            type:Array,
+            default:() => []
+        },
+        paymentMethodTypes: {
+            type: Array,
+            required: true,
+        },
+        paymentDestinations: {
+            type: Array,
+            required: true,
+        },
         
     },
     components:{
         Bus,
-        VentaAsiento
+        VentaAsiento,
+        DocumentOptions
     },
     created(){
         this.searchCiudad();
@@ -251,7 +293,11 @@ export default {
 
             visible:false,
             asiento:{},
-            serie:null
+            serie:null,
+
+            //document
+            showDialogDocumentOptions:false,
+            documentId:null,
 
         });
     },
@@ -275,6 +321,11 @@ export default {
     },
     methods:{
 
+        async onSuccessVenta(documentId){
+            await this.onUpdateItem()
+            this.documentId = documentId;
+            this.showDialogDocumentOptions = true;
+        },
         stateAsiento(estado,config={}){
 
             /** Manejo de los estados del asiento */
@@ -341,10 +392,10 @@ export default {
 
         dbClick(asiento){
             // asiento.estado_asiento_id = 1;
-            if(!this.serie || this.serie == ''){
+            if(!this.serie){
                 return this.$message({
                     type: 'info',
-                    message: 'Por favor coloque la serie'
+                    message: 'Debe seleccionar la serie'
                 });
             }
             if(asiento.type != 'ss') return;
@@ -376,7 +427,9 @@ export default {
             .find(  programacion => programacion.id == program.id );
             this.asientos = this.selectProgramacion.transporte.asientos;
             this.vehiculo = this.selectProgramacion.transporte;
-        }
+        },
+
+        
 
         
     }

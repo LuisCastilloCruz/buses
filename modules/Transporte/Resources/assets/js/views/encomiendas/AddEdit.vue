@@ -10,7 +10,6 @@
     >
         <form v-loading="load" autocomplete="off">
             <div class="form-body">
-
                 <div class="row">
                     <div class="col-6">
                         <div class="form-group">
@@ -19,12 +18,13 @@
                                 placeholder="Buscar remitente"
                                 :remote-method="searchRemitente"
                                 :loading="loadingRemitente"
+                                @change="selectCustomer"
                                 >
                                 <el-option v-for="remitente in remitentes" :key="remitente.id" :value="remitente.id" :label="remitente.name">
 
                                 </el-option>
                             </el-select>
-                            <div v-if="errors.remitente_id" class="invalid-feedback">{{ errors.remitente_id[0] }}</div>
+                            <span v-if="errors.remitente_id" class="text-danger">{{ errors.remitente_id[0] }}</span>
                         </div>
                     </div>
                     <div class="col-6">
@@ -38,8 +38,8 @@
                                 <el-option v-for="destinatario in destinatarios" :key="destinatario.id" :value="destinatario.id" :label="destinatario.name">
                                 </el-option>
                             </el-select>
-                            <!-- <input type="text" id="nombre" class="form-control" v-model="form.nombre" :class="{ 'is-invalid': errors.nombre }"/> -->
-                            <div v-if="errors.nombre" class="invalid-feedback">{{ errors.nombre[0] }}</div>
+                            <span v-if="errors.destinatario_id" class="text-danger">{{ errors.destinatario_id[0] }}</span>
+                            
                         </div>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                     <div class="col-4">
                         <div class="form-group">
                             <label for="">Origen</label>
-                            <el-select v-model="terminalId" filterable remote  popper-class="el-select-customers"
+                            <el-select v-model="terminalId" filterable remote disabled  popper-class="el-select-customers"
                                 placeholder="Buscar origen"
                                 :remote-method="searchTerminales"
                                 :loading="loadingTerminales"
@@ -118,118 +118,258 @@
                     </div>
                 </div>
 
-                <div class="row">
+               
+                <!-- <el-divider></el-divider> -->
+
+                <div class="row mt-3">
                     <div class="col-12">
-                        <h3>Lista de productos</h3>
-                    </div>
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-3">
-                                <el-input v-model="producto.nombre" placeholder="Nombre"></el-input>
+                        <div class="card">
+                            <div class="card-header bg-info">
+                                Programaciones
                             </div>
-                            <div class="col-3">
-                                <el-input v-model="producto.descripcion" placeholder="Descripción"></el-input>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Vehículo</th>
+                                                    <th>Origen</th>
+                                                    <th>Destino</th>
+                                                    <th>Hr. Salida</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-loading="loadingTable">
+                                                <tr v-for="programacion in programaciones" :key="programacion.id">
+                                                    <td>{{ programacion.vehiculo.placa }}</td>
+                                                    <td>{{ programacion.origen.nombre }}</td>
+                                                    <td>{{ programacion.destino.nombre }}</td>
+                                                    <td>{{ programacion.hora_salida }}</td>
+                                                    <td >
+                                                        <div class="text-center">
+                                                            
+                                                            <el-button v-if="encomienda.programacion_id == programacion.id" type="danger" @click="encomienda.programacion = null">
+                                                                <i class="fa fa-trash"></i>
+                                                            </el-button>
+                                                            <el-button v-else type="success" @click="guardarEncomienda(programacion)">
+                                                                <i class="fa fa-check"></i>
+                                                            </el-button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-3">
-                                <el-input type="number" v-model="producto.precio" placeholder="Precio"></el-input>
-                            </div>
-                            <el-button type="primary" @click="agregarProducto">Agregar</el-button>
                         </div>
-
-                    </div>
-                    <div class="col-12 mt-2">
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Descripcion</th>
-                                    <th>Precio</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <tr v-for="(producto,index) in productos" :key="index">
-                                    <td>{{ producto.nombre }}</td>
-                                    <td>{{ producto.descripcion }}</td>
-                                    <td>{{ producto.precio }}</td>
-                                    <th>
-                                        <el-button type="danger" @click="eliminarProducto(index)">
-                                            <i class="fa fa-trash"></i>
-                                        </el-button>
-                                    </th>
-                                </tr>
-                            </tbody>
-                        </table>
-
+                        
                     </div>
                 </div>
-
-                <div class="row mt-3 mb-3">
+                <div class="row mt-2">
                     <div class="col-12">
-                        <h3>Programaciones</h3>
+                        <div class="card">
+                            <div class="card-header bg-info text-center">
+                                Lista de productos
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                   
+                                    <div class="col-3">
+                                        <el-input v-model="producto.description" placeholder="Descripción"></el-input>
+                                    </div>
+                                    <div class="col-3">
+                                        <el-input type="number" v-model="producto.unit_price" placeholder="Precio"></el-input>
+                                    </div>
+                                    <el-button type="primary" @click="agregarProducto">Agregar</el-button>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <table class="table table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Descripcion</th>
+                                                    <th>Precio</th>
+                                                    <th>Cantidad</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                <tr v-for="(producto,index) in document.items" :key="index">
+                                                    <td>{{ producto.description }}</td>
+                                                    <td>{{ producto.unit_price | toDecimals }}</td>
+                                                    <td>{{ producto.quantity }}</td>
+                                                    <th>
+                                                        <el-button type="danger" @click="eliminarProducto(index)">
+                                                            <i class="fa fa-trash"></i>
+                                                        </el-button>
+                                                    </th>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><strong>Total: </strong></td>
+                                                    <td class="text-right" colspan="3"> {{ total | toDecimals }} </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
-                    <div class="col-12 table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Vehículo</th>
-                                    <th>Origen</th>
-                                    <th>Destino</th>
-                                    <th>Hr. Salida</th>
-                                    <th>Tiempo aproximado</th>
-                                    <th></th>
-                                </tr>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-info">
+                                Pago
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label for="">Tipo de comprobante</label>
+                                            <el-select
+                                                v-model="document.document_type_id"
+                                                @change="changeDocumentType"
+                                                popper-class="el-select-document_type"
+                                                dusk="document_type_id"
+                                                class="border-left rounded-left border-info"
+                                            >
+                                                <el-option
+                                                v-for="option in documentTypesInvoice"
+                                                :key="option.id"
+                                                :value="option.id"
+                                                :label="option.description"
+                                                ></el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label for="">Serie</label>
+                                            <el-select v-model="document.series_id">
+                                                <el-option
+                                                v-for="option in series"
+                                                :key="option.id"
+                                                :value="option.id"
+                                                :label="option.number"
+                                                ></el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-3">
+                                         <div class="form-group">
+                                            <label for="">Fecha emisión</label>
+                                            <el-date-picker
+                                            v-model="document.date_of_issue"
+                                            type="date"
+                                            value-format="yyyy-MM-dd"
+                                            placeholder="Fecha de vencimiento">
+                                            </el-date-picker>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                         <div class="form-group">
+                                            <label for="">Fecha de vencimiento</label>
+                                            <el-date-picker
+                                            
+                                            v-model="document.date_of_due"
+                                            type="date"
+                                            value-format="yyyy-MM-dd"
+                                            placeholder="Fecha de vencimiento">
+                                            </el-date-picker>
+                                        </div>
+                                    </div> -->
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <table class="table table-bordered table-stripped">
+                                            <thead>
+                                                <th>M. Pago</th>
+                                                <th>Destino</th>
+                                                <th>Referencia</th>
+                                                <!-- <th>Monto</th> -->
+                                            </thead>
+                                            <tbody>
 
-                            </thead>
-                            <tbody v-loading="loadingTable">
-                                <tr v-for="programacion in programaciones" :key="programacion.id">
-                                    <th>
-                                        <el-checkbox v-model="encomienda.programacion_id">
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-group mb-2 mr-2">
+                                                            <el-select v-model="payment.payment_method_type_id">
+                                                                <el-option
+                                                                v-for="option in paymentMethodTypes"
+                                                                :key="option.id"
+                                                                :value="option.id"
+                                                                :label="option.description"
+                                                                ></el-option>
+                                                            </el-select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group mb-2 mr-2">
+                                                            <el-select
+                                                                v-model="payment.payment_destination_id"
+                                                                filterable
+                                                                :disabled="payment.payment_destination_disabled"
+                                                            >
+                                                                <el-option
+                                                                v-for="option in paymentDestinations"
+                                                                :key="option.id"
+                                                                :value="option.id"
+                                                                :label="option.description"
+                                                                ></el-option>
+                                                            </el-select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group mb-2 mr-2">
+                                                            <el-input v-model="payment.reference"></el-input>
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td>
+                                                        <div class="form-group mb-2 mr-2">
+                                                            <el-input v-model="row.payment"></el-input>
+                                                        </div>
+                                                    </td> -->
+                                                </tr>
 
-                                        </el-checkbox>
-                                    </th>
-                                    <td>{{ programacion.vehiculo.placa }}</td>
-                                    <td>{{ programacion.origen.nombre }}</td>
-                                    <td>{{ programacion.destino.nombre }}</td>
-                                    <td>{{ programacion.hora_salida }}</td>
-                                    <td>{{ programacion.tiempo_aproximado }} h</td>
-<!--                                    <td >-->
-<!--                                        <div v-if="edit" class="text-center">-->
-<!--                                            <el-button type="primary" @click="guardarEncomienda(programacion)">-->
-<!--                                                Seleccionar-->
-<!--                                            </el-button>-->
-<!--                                        </div>-->
-<!--                                    </td>-->
-                                </tr>
-                            </tbody>
+                                            </tbody>
 
-                        </table>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- <div class="form-group">
-                    <label for="licencia">Terminal</label>
-                    <input type="text" id="licencia" class="form-control" v-model="form.licencia" :class="{ 'is-invalid': errors.licencia }"/>
-                    <div v-if="errors.licencia" class="invalid-feedback">{{ errors.licencia[0] }}</div>
-                </div>
-                <div class="form-group">
-                    <label for="categoria">Categoria</label>
-                    <input type="text" id="categoria" class="form-control" v-model="form.categoria" :class="{ 'is-invalid': errors.categoria }"/>
-                    <div v-if="errors.categoria" class="invalid-feedback">{{ errors.categoria[0] }}</div>
-                </div> -->
+                
 
                 <div class="row text-center mt-2">
                     <div class="col-6">
-                        <el-button
+                        <el-button 
+                            v-if="!edit"
                             :disabled="loading"
                             type="primary"
                             class="btn-block"
                             :loading="loading"
                             @click="onGoToInvoice"
-                        >Guardar</el-button
-                        >
+                        >Guardar</el-button>
+                        <el-button 
+                            v-else
+                            :disabled="loading"
+                            type="primary"
+                            class="btn-block"
+                            :loading="loading"
+                            @click="updateEncomienda"
+                        >Guardar</el-button>
                     </div>
                     <div class="col-6">
                         <el-button class="btn-block" @click="onClose">Cancelar</el-button>
@@ -242,6 +382,7 @@
 
 <script>
 import moment from "moment";
+import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 
 export default {
     props: {
@@ -267,7 +408,37 @@ export default {
             type:Boolean,
             required:true,
             default:false,
+        },
+        allSeries:{
+            type:Array,
+            default:() => []
+        },
+        establishment:{
+            type:Object,
+            required:true
+        },
+        documentTypesInvoice:{
+            type:Array,
+            default:() => []
+        },
+        paymentMethodTypes: {
+            type: Array,
+            required: true,
+        },
+        paymentDestinations: {
+            type: Array,
+            required: true,
+        },
+        userTerminal:{
+            type:Object,
+            default:{}
         }
+    },
+    mixins: [exchangeRate],
+    created(){
+        this.all_document_types = this.documentTypesInvoice;
+        this.series = this.allSeries;
+        
     },
     data() {
         return {
@@ -281,8 +452,6 @@ export default {
                 payments: [],
             },
             errors: {},
-            series: [],
-            document_types: [],
             all_document_types: [],
             resource_documents: "documents",
             showDialogDocumentOptions: false,
@@ -303,10 +472,58 @@ export default {
             programacion:null,
             load:false,
             productos:[],
-            producto:{},
+            producto:{
+                item_id:1,
+                codigo_interno: '',
+                description: '',
+                codigo_producto_sunat: '',
+                unidad_de_medida: 'ZZ',
+                quantity: 1,
+                unit_value: 0,
+                price_type_id: "01",
+                unit_price: 0,
+                affectation_igv_type_id: "10",
+                total_base_igv: 20,
+                percentage_igv: 18,
+                total_igv: 3.6,
+                system_isc_type_id:null,
+                total_taxes:0,
+                total_value:0,
+                total:0,
+                total_plastic_bag_taxes: 0,
+                // total_impuestos: 3.6,
+                // total_valor_item: 0,
+                // total_item: 0,
+                discounts:[],
+                total_discount:0,
+                total_charge:0,
+                charges:[],
+                item:{
+                    id:1,
+                    full_description:"Encomienda item" ,
+                    brand:null,
+                    category:null,
+                    stock:null,
+                    internal_id:null,
+                    description:"Encomienda item",
+                    currency_type_id:"PEN",
+                    currency_type_symbol:"S/",
+                    sale_unit_price:20,
+                    purchase_unit_price:0.000000,
+                    unit_type_id:"ZZ",
+                    sale_affectation_igv_type_id:10,
+                    purchase_affectation_igv_type_id:10,
+                    calculate_quantity:false,
+                    has_igv:true,
+                    amount_plastic_bag_taxes:0.10,
+                    item_unit_types:[],
+                    warehouses:[
+
+                    ]
+                }
+            },
             encomienda: {
                 document_id:null,
-                descripcion:null,
                 remitente_id:null,
                 destinatatio_id:null,
                 estado_pago_id:null,
@@ -314,30 +531,44 @@ export default {
                 programacion_id:null,
                 fecha_salida:null,
             },
+            payment:{},
+            document_types: [],
+            series:[],
+            total:0,
+            
+            
+            
         };
     },
     async mounted() {
-        this.initForm();
-        this.initDocument();
-        this.all_document_types = this.documentTypesInvoice;
-        this.total = this.room.item.total;
-        this.document.items = this.rent.items.map((i) => i.item);
-        this.onCalculateTotals();
-        this.onCalculatePaidAndDebts();
-        this.clickAddPayment();
-        this.validateIdentityDocumentType();
-        const date = moment().format("YYYY-MM-DD");
-        await this.searchExchangeRateByDate(date).then((res) => {
-            this.document.exchange_rate_sale = res;
-        });
+        // this.initForm();
+        // this.initDocument();
+        // // this.all_document_types = this.documentTypesInvoice;
+        // // this.total = this.room.item.total;
+        // // this.document.items = this.rent.items.map((i) => i.item);
+        // this.onCalculateTotals();
+        // // this.onCalculatePaidAndDebts();
+        // this.clickAddPayment();
+        // this.validateIdentityDocumentType();
+        // const date = moment().format("YYYY-MM-DD");
+        // await this.searchExchangeRateByDate(date).then((res) => {
+        //     this.document.exchange_rate_sale = res;
+        // });
     },
     watch:{
         terminalId(newVal){
             if(newVal)this.searchDestinos();
-
         },
+        total(newVal){
+            if(newVal) this.payment.payment = parseFloat(newVal);
+        }
     },
     methods: {
+        selectCustomer(){
+            this.document.customer_id = this.encomienda.remitente_id;
+            this.document.customer = this.remitentes.find( remitente => remitente.id == this.encomienda.remitente_id );
+            this.validateIdentityDocumentType();
+        },
         validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
             let customer = this.document.customer;
@@ -368,15 +599,27 @@ export default {
       const payment =
         this.document.payments.length == 0 ? this.document.total : 0;
 
-      this.document.payments.push({
-        id: null,
-        document_id: null,
-        date_of_payment: moment().format("YYYY-MM-DD"),
-        payment_method_type_id: "01",
-        payment_destination_id: null,
-        reference: null,
-        payment: payment,
-      });
+        this.payment = {
+            id: null,
+            document_id: null,
+            date_of_payment: moment().format("YYYY-MM-DD"),
+            payment_method_type_id: "01",
+            payment_destination_id: null,
+            reference: null,
+            payment: payment,
+        }
+
+        this.payment.payment_destination_id = this.paymentDestinations.length > 0 ? this.paymentDestinations[0].id : null;;
+
+        // this.document.payments.push({
+        //     id: null,
+        //     document_id: null,
+        //     date_of_payment: moment().format("YYYY-MM-DD"),
+        //     payment_method_type_id: "01",
+        //     payment_destination_id: null,
+        //     reference: null,
+        //     payment: payment,
+        // });
     },
     onExitPage() {
       window.location.href = "/hotels/reception";
@@ -402,6 +645,7 @@ export default {
             // console.log(this.encomienda.fecha_salida);
             this.loadingTable = true;
             this.programaciones = [];
+            this.encomienda.programacion_id = null;
             let data = {
                 origen_id:this.terminalId,
                 destino_id:this.destinoId,
@@ -468,15 +712,16 @@ export default {
                 });
         },
         async onStore() {
-            await this.$http.post(`/transportes/encomiendas/store`,this.encomienda)
-            .then(({ data }) => {
+
+            this.errors = {};
+
+            try{
+                await this.$http.post(`/transportes/encomiendas/store`,this.encomienda);
                 this.$emit('onAddItem',data.encomienda);
                 this.onClose();
-            }).finally(() => {
-                this.errors = {};
-            }).catch((error) => {
+            }catch(error){
                 this.axiosError(error);
-            });
+            }
         },
         onSubmit() {
             if (this.chofer) {
@@ -494,31 +739,64 @@ export default {
         },
         guardarEncomienda(programacion){
             this.encomienda.programacion_id = programacion.id;
-            this.$msgbox({
-                title:'¿Desea guardar la encomienda?',
-                showCancelButton: true,
-                confirmButtonText: 'OK',
-                cancelButtonText: 'Cancel',
-                beforeClose:async(action,instance,done) => {
-                    if(action === 'confirm'){
-                        instance.confirmButtonLoading = true;
-                        instance.confirmButtonText = 'Guardando...';
-                        await this.onStore();
-                        instance.confirmButtonLoading = false;
-                        done();
-                    }else {
-                        done();
-                    }
-                }
-
-            });
         },
         agregarProducto(evt){
-            if(this.producto.nombre && this.producto.descripcion && this.producto.precio){
-                this.productos.push(this.producto);
-                this.producto = {};
+            if(this.producto.description && this.producto.unit_price){
+                this.producto.total = this.producto.total_value = this.producto.unit_price = parseFloat(this.producto.unit_price);
+                this.document.items.push(Object.assign({},this.producto));
+                this.total += parseFloat(this.producto.unit_price);
+                if(this.document.payments.length > 0){
+                    this.document.payments[0].payment = this.total;
+                }
+                this.producto =  {
+                    item_id:1,
+                    codigo_interno: '',
+                    description: '',
+                    codigo_producto_sunat: '',
+                    unidad_de_medida: 'ZZ',
+                    quantity: 1,
+                    unit_value: 0,
+                    price_type_id: "01",
+                    unit_price: 0,
+                    affectation_igv_type_id: "10",
+                    total_base_igv: 20,
+                    percentage_igv: 18,
+                    total_igv: 3.6,
+                    system_isc_type_id:null,
+                    total_taxes:0,
+                    total_value:0,
+                    total:0,
+                    total_plastic_bag_taxes: 0,
+                    // total_impuestos: 3.6,
+                    // total_valor_item: 0,
+                    // total_item: 0,
+                    item:{
+                        id:1,
+                        full_description:"Encomienda item" ,
+                        brand:null,
+                        category:null,
+                        stock:null,
+                        internal_id:null,
+                        description:"Encomienda item",
+                        currency_type_id:"PEN",
+                        currency_type_symbol:"S/",
+                        sale_unit_price:20,
+                        purchase_unit_price:0.000000,
+                        unit_type_id:"ZZ",
+                        sale_affectation_igv_type_id:10,
+                        purchase_affectation_igv_type_id:10,
+                        calculate_quantity:false,
+                        has_igv:true,
+                        amount_plastic_bag_taxes:0.10,
+                        item_unit_types:[],
+                        warehouses:[
+
+                        ]
+                    }
+                }
             }
         },
+       
         eliminarProducto(index){
             this.productos.splice(index,1);
         },
@@ -527,14 +805,27 @@ export default {
             await this.initializeSelects();
             await this.searchTerminales();
             this.load = false;
+            this.total = 0;
 
-
+            this.terminalId = this.userTerminal.terminal_id;
             if(this.edit){
                 this.encomienda = {...this.itemEncomienda};
-                this.terminalId = this.encomienda.programacion.terminal_origen_id;
-                this.destinoId = this.encomienda.programacion.terminal_destino_id;
-                this.programaciones.push(this.encomienda.programacion);
+                let programacion = this.encomienda.programacion;
+                
+                this.destinoId = programacion  ?  programacion.terminal_destino_id : null;
+                if(programacion){
+                    this.programaciones.push(this.encomienda.programacion);
+                } 
+                this.document = this.encomienda.document;
+                console.log(this.encomienda.programacion_id);
+                this.document.items.forEach( item => {
+                    this.total += parseFloat(item.total);
+                });
+
+
+
             }else {
+                this.comprobante = null;
                 this.encomienda = {
                     document_id: null,
                     descripcion:null,
@@ -545,7 +836,26 @@ export default {
                     programacion_id:null,
                     fecha_salida:null,
                 }
+                this.initForm();
+                this.initDocument();
+                this.clickAddPayment();
+                
+                // this.initDocument();
             }
+
+            this.onCalculateTotals();
+            this.validateIdentityDocumentType();
+            // this.all_document_types = this.documentTypesInvoice;
+            // this.total = this.room.item.total;
+            // this.document.items = this.rent.items.map((i) => i.item);
+            
+            // this.onCalculatePaidAndDebts();
+            
+            
+            const date = moment().format("YYYY-MM-DD");
+            await this.searchExchangeRateByDate(date).then((res) => {
+                this.document.exchange_rate_sale = res;
+            });
             // if (this.chofer) {
             //     this.form = this.chofer;
             //     this.title = "Editar chofer";
@@ -556,26 +866,43 @@ export default {
             //     };
             // }
         },
+        onUpdateItemsWithExtras(){
+            this.document.items = this.document.items.map((it) => {
+                // it.item.description = name;
+                // it.item.full_description = name;
+                // it.name_product_pdf = name;
+                it.quantity = 1;
+                const newTotal =
+                    parseFloat(it.total) + parseFloat(this.arrears);
+                it.input_unit_price_value = parseFloat(newTotal);
+                it.item.unit_price = parseFloat(newTotal);
+                it.unit_value = parseFloat(newTotal);
+                const newItem = this.calculateRowItem(it, "PEN", 3);
+                return newItem;
+                // return it;
+            });
+        },
         async onGoToInvoice() {
-            this.onUpdateItemsWithExtras();
+            // this.onUpdateItemsWithExtras();
             this.onCalculateTotals();
             let validate_payment_destination = this.validatePaymentDestination();
 
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error("El destino del pago es obligatorio");
             }
+            // console.log(this.document);
+            // return;
             this.loading = true;
             this.$http
                 .post(`/${this.resource_documents}`, this.document)
-                .then((response) => {
+                .then(async (response) => {
                     if (response.data.success) {
-                        this.documentNewId = response.data.data.id;
-                        this.encomienda.document_id=this.documentNewId;
+                        this.encomienda.document_id = response.data.data.id;
                         this.form_cash_document.document_id = response.data.data.id;
                         this.showDialogDocumentOptions = true;
                         this.$emit("update:showDialog", false);
-                        this.onSubmit();// guardando pasajes
-                        this.saveCashDocument();
+                        await this.onStore();// guardando pasajes
+                        await this.saveCashDocument();
                     } else {
                         this.$message.error(response.data.message);
                     }
@@ -624,11 +951,11 @@ export default {
         },
         initDocument() {
             this.document = {
-                customer_id: this.rent.customer_id,
-                customer: this.rent.customer,
+                customer_id: 1,
+                customer: {},
                 document_type_id: null,
-                series_id: null,
-                establishment_id: this.warehouseId,
+                series_id: 1,
+                establishment_id: 1,
                 number: "#",
                 date_of_issue: moment().format("YYYY-MM-DD"),
                 time_of_issue: moment().format("HH:mm:ss"),
@@ -689,49 +1016,60 @@ export default {
                 total_discount += parseFloat(row.total_discount);
                 total_charge += parseFloat(row.total_charge);
 
-        if (row.affectation_igv_type_id === "10") {
-          total_taxed += parseFloat(row.total_value);
-        }
-        if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
-          total_free += parseFloat(row.total_value);
-        }
-        if (
-          ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
-        ) {
-          total_igv += parseFloat(row.total_igv);
-          total += parseFloat(row.total);
-        }
-        total_value += parseFloat(row.total_value);
-        total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes);
+                if (row.affectation_igv_type_id === "10") {
+                    total_taxed += parseFloat(row.total_value);
+                }
+                if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
+                    total_free += parseFloat(row.total_value);
+                }
+                if (
+                ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
+                ) {
+                    total_igv += parseFloat(row.total_igv);
+                    total += parseFloat(row.total);
+                }
+                total_value += parseFloat(row.total_value);
+                total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes);
 
-        if (["13", "14", "15"].includes(row.affectation_igv_type_id)) {
-          let unit_value =
-            row.total_value / row.quantity / (1 + row.percentage_igv / 100);
-          let total_value_partial = unit_value * row.quantity;
-          row.total_taxes = row.total_value - total_value_partial;
-          row.total_igv = row.total_value - total_value_partial;
-          row.total_base_igv = total_value_partial;
-          total_value -= row.total_value;
-        }
-      });
+                if (["13", "14", "15"].includes(row.affectation_igv_type_id)) {
+                    let unit_value =
+                        row.total_value / row.quantity / (1 + row.percentage_igv / 100);
+                    let total_value_partial = unit_value * row.quantity;
+                    row.total_taxes = row.total_value - total_value_partial;
+                    row.total_igv = row.total_value - total_value_partial;
+                    row.total_base_igv = total_value_partial;
+                    total_value -= row.total_value;
+                }
+            });
 
-      this.document.total_exportation = _.round(total_exportation, 2);
-      this.document.total_taxed = _.round(total_taxed, 2);
-      this.document.total_exonerated = _.round(total_exonerated, 2);
-      this.document.total_unaffected = _.round(total_unaffected, 2);
-      this.document.total_free = _.round(total_free, 2);
-      this.document.total_igv = _.round(total_igv, 2);
-      this.document.total_value = _.round(total_value, 2);
-      this.document.total_taxes = _.round(total_igv, 2);
-      this.document.total_plastic_bag_taxes = _.round(
-        total_plastic_bag_taxes,
-        2
-      );
-      this.document.total = _.round(
-        total + this.document.total_plastic_bag_taxes,
-        2
-      );
+            this.document.total_exportation = _.round(total_exportation, 2);
+            this.document.total_taxed = _.round(total_taxed, 2);
+            this.document.total_exonerated = _.round(total_exonerated, 2);
+            this.document.total_unaffected = _.round(total_unaffected, 2);
+            this.document.total_free = _.round(total_free, 2);
+            this.document.total_igv = _.round(total_igv, 2);
+            this.document.total_value = _.round(total_value, 2);
+            this.document.total_taxes = _.round(total_igv, 2);
+            this.document.total_plastic_bag_taxes = _.round(
+                total_plastic_bag_taxes,
+                2
+            );
+            this.document.total = _.round(
+                total + this.document.total_plastic_bag_taxes,
+                2
+            );
+        },
+        async updateEncomienda(evt){
+            await this.$http.put(`/transportes/encomiendas/${this.encomienda.id}/update`,this.encomienda)
+            .then(({ data }) => {
+                this.$emit('onUpdateItem',data.encomienda);
+                this.onClose();
+            }).finally(() => {
+                this.errors = {};
+            }).catch((error) => {
+                this.axiosError(error);
+            });
+        }
     },
-  },
 };
 </script>

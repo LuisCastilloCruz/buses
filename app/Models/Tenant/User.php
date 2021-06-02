@@ -6,10 +6,11 @@ use Hyn\Tenancy\Traits\UsesTenantConnection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
-use Modules\Transporte\Models\TransporteTerminales;
+use Modules\Transporte\Models\UserTerminal;
 
 class User extends Authenticatable
 {
@@ -163,8 +164,8 @@ class User extends Authenticatable
         return $this->hasOne(UserCommission::class);
     }
 
-    public function terminal() : BelongsTo{
-        return $this->belongsTo(TransporteTerminales::class,'terminal_id','id');
+    public function user_terminal() : HasOne{
+        return $this->hasOne(UserTerminal::class,'user_id','id');
     }
 
 }

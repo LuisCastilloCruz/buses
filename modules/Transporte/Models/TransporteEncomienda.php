@@ -2,14 +2,16 @@
 
 namespace Modules\Transporte\Models;
 
-use App\Models\System\Client;
+use App\Models\Tenant\Document;
 use App\Models\Tenant\ModelTenant;
+use App\Models\Tenant\Person;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransporteEncomienda extends ModelTenant
 {
     protected $table = 'transporte_encomiendas';
     protected $fillable = [
+        'document_id',
         'descripcion',
         'remitente_id',
         'destinatario_id',
@@ -25,11 +27,15 @@ class TransporteEncomienda extends ModelTenant
     }
 
     public function destinatario(){
-        return $this->belongsTo(Client::class,'destinatario_id','id');
+        return $this->belongsTo(Person::class,'destinatario_id','id');
     }
 
     public function remitente(){
-        return $this->belongsTo(Client::class,'remitente_id','id');
+        return $this->belongsTo(Person::class,'remitente_id','id');
+    }
+
+    public function document() : BelongsTo{
+        return $this->belongsTo(Document::class,'document_id','id');
     }
 
     // public function getFechaSalidaAttribute($value){ 

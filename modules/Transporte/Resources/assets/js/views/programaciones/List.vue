@@ -52,10 +52,15 @@
                             <!-- <td>{{ item.licencia }}</td>
                             <td>{{ item.categoria }}</td> -->
                             <td class="text-center">
-
                                 <el-button type="primary" @click="onConfigRutas(programacion)">
                                     <i class="fa fa-cogs"></i>
                                 </el-button>
+                                <el-tooltip class="item" effect="dark" content="Generar manifiesto" placement="top-start">
+                                    <el-button type="secondary" @click="openModalGenerarManifiesto(programacion)">
+                                        <i class="fa fa-file"></i>
+                                    </el-button>
+                                </el-tooltip>
+                                
                                 <el-button type="success" @click="onEdit(programacion)">
                                     <i class="fa fa-edit"></i>
                                 </el-button>
@@ -79,6 +84,7 @@
             :programacion="programacion"
             :terminales="terminales"
             :vehiculos="vehiculos"
+            :user-terminal="userTerminal"
         ></ModalAddEdit>
         <!-- Modal para la configuracion de rutas de cada terminal -->
         <configuracion-rutas 
@@ -86,12 +92,20 @@
         :programacion="programacion" 
         :visible.sync="openModalConfigRutas" 
         @onUpdateItem="onUpdateItem" />
+        
+        <generar-manifiesto 
+        :visible.sync="visible" 
+        :series="series" 
+        :programacion="programacion"
+        :choferes="choferes"
+        />
     </div>
 </template>
 
 <script>
 import ModalAddEdit from "./AddEdit";
 import ConfiguracionRutas from './ConfiguracionRutas';
+import GenerarManifiesto from './GenerarManifiesto.vue';
 
 
 export default {
@@ -107,11 +121,24 @@ export default {
         vehiculos:{
             type:Array,
             required:true
+        },
+        series:{
+            type:Array,
+            default:() => []
+        },
+        choferes:{
+            type:Array,
+            default:() => []
+        },
+        userTerminal:{
+            type:Object,
+            default:{}
         }
     },
     components: {
         ModalAddEdit,
-        ConfiguracionRutas
+        ConfiguracionRutas,
+        GenerarManifiesto
     },
     created(){
         this.listProgramaciones = this.programaciones;
@@ -125,6 +152,7 @@ export default {
             openModalAddEdit: false,
             openModalConfigRutas:false,
             loading: false,
+            visible:false,
         };
     },
     mounted() {
@@ -174,7 +202,10 @@ export default {
         onConfigRutas(programacion){
             this.programacion = programacion;
             this.openModalConfigRutas = true;
-            
+        },
+        openModalGenerarManifiesto(programacion){
+            this.programacion = programacion;
+            this.visible = true;
         }
     },
 };

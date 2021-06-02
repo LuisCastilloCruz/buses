@@ -25,13 +25,11 @@ class TransporteEncomiendaRequest extends FormRequest
     {
         return [
             //
-            'descripcion' => ['required'],
             'remitente_id' => ['required'],
             'destinatario_id' => ['required'],
             'estado_pago_id' => ['required'],
             'estado_envio_id' => ['required'],
-            'descripcion' => ['required','max:255'],
-            'programacion_id' => ['required','exists:tenant.transporte_programaciones,id']
+            // 'programacion_id' => ['required','exists:tenant.transporte_programaciones,id']
         ];
     }
 }

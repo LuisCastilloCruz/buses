@@ -8,7 +8,16 @@
 
 
 
-    <tenant-transporte-bus-sales :estado-asientos="{{ $estadosAsientos }}" :terminal="{{ $terminal }}" :list-programaciones="{{ $programaciones }}" ></tenant-transporte-bus-sales>
+    <tenant-transporte-bus-sales 
+    :estado-asientos="{{ $estadosAsientos }}" 
+    :terminal="{{ $terminal }}" 
+    :list-programaciones="{{ $programaciones }}" 
+    :establishment='@json($establishment)'
+    :series='@json($series)'
+    :document-types-invoice='@json($document_types_invoice)'
+    :payment-method-types='@json($payment_method_types)'
+    :payment-destinations='@json($payment_destinations)'
+    ></tenant-transporte-bus-sales>
 
     {{-- <div class="draggable-area" style="background:#ddd;width:200px;height:200px;">
 		<div id="dragit-contained" style="background: red; width: 50px; height: 50px; cursor: move; position: relative; top: 55px; left: 46px;" class=""></div>
