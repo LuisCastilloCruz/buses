@@ -653,6 +653,7 @@
         <document-options :showDialog.sync="showDialogOptions"
                           :recordId="documentNewId"
                           :isContingency="is_contingency"
+                          :configuration="configuration"
                           :showClose="false"></document-options>
 
 

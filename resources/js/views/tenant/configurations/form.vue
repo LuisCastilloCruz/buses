@@ -162,6 +162,13 @@
                                     <small class="form-control-feedback" v-if="errors.cotizaction_finance" v-text="errors.cotizaction_finance[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Imprimir Ticket en forma silenciosa</label>
+                                <div class="form-group" :class="{'has-danger': errors.print_silent}">
+                                    <el-switch v-model="form.print_silent" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.print_silent" v-text="errors.print_silent[0]"></small>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mt-4">
@@ -322,6 +329,7 @@
                     legend_footer: false,
                     default_document_type_03: false,
                     destination_sale: false,
+                    print_silent:false
                 };
             },
             submit() {

@@ -197,6 +197,7 @@
 
             <document-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
+                              :configuration="configuration"
                               :showClose="true"></document-options>
 
             <document-payments :showDialog.sync="showDialogPayments"
@@ -228,7 +229,7 @@
 
     export default {
         mixins: [deletable],
-        props: ['isClient','typeUser','import_documents','import_documents_second'],
+        props: ['isClient','typeUser','import_documents','import_documents_second','configuration'],
         components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable, DocumentConstancyDetraction, ReportPayment, ReportPaymentComplete },
         data() {
             return {
