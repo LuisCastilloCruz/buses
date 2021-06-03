@@ -189,7 +189,7 @@
                 window.open(`/print/document/${this.form.external_id}/${format}`, '_blank');
             },
             clickPrintSilent(format){
-                const urlPdf = `http://demo.facturador-mayo.local/print/document/${this.form.external_id}/${format}`;
+                const urlPdf = `${window.location.origin}/print/document/${this.form.external_id}/${format}`;
                 const nombreImpresora = "XP-80C";
                 const url = `http://localhost:8080/url?urlPdf=${urlPdf}&impresora=${nombreImpresora}`;
                 // Elemento DOM, solo es para depurar
