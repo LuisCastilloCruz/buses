@@ -98,7 +98,11 @@
                         });
                         this.items = this.items.filter(i => i.id !== item.id);
                     }).catch(error => {
-                        this.axiosError(error)
+                        let response = error.response;
+                        this.$message({
+                            type: 'error',
+                            message: response.data.message
+                        });
                     });
                 }).catch();
             },

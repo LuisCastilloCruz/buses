@@ -2,6 +2,7 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
+use Exception;
 use Modules\Transporte\Models\District;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -70,6 +71,14 @@ class TransporteDestinoController extends Controller
 	public function destroy($id)
 	{
 		try {
+
+			$transporteDestino = TransporteDestino::find($id);
+
+			if( count($transporteDestino->terminales) > 0 ){
+				throw new Exception('No se puede eliminar el destino porque tiene terminales',888);
+			}
+
+
 			TransporteDestino::where('id', $id)
 				->delete();
 
@@ -80,7 +89,7 @@ class TransporteDestinoController extends Controller
 		} catch (\Throwable $th) {
 			return response()->json([
 				'success' => false,
-				'data'    => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
+				'message'    => $th->getCode() == 888 ? $th->getMessage() : 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
 			], 500);
 		}
 	}

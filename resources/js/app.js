@@ -282,11 +282,28 @@ Vue.component('tenant-transporte-choferes', require('@viewsModuleTransporte/chof
 Vue.component('tenant-transporte-destinos', require('@viewsModuleTransporte/destinos/List.vue'));
 
 // Transporte :: bus
-Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus/Sales.vue'));
+Vue.component('tenant-transporte-bus-sales', require('@viewsModuleTransporte/bus/SalesTest.vue'));
 Vue.component('tenant-transporte-bus-draggable', require('@viewsModuleTransporte/bus/Draggable.vue'));
 
 // Transporte :: encomiendas
 Vue.component('tenant-transporte-encomiendas', require('@viewsModuleTransporte/encomiendas/List.vue'));
+
+//Transporte :: terminales
+
+Vue.component('tenant-transporte-terminales', require('@viewsModuleTransporte/terminales/List.vue'));
+
+//Transporte :: programaciones
+Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/programaciones/List.vue'));
+
+// //Transporte :: manifiesto pasajeros
+// Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/manifiestos/ManifiestoEncomiendas.vue'));
+
+// //Transporte :: manifiesto encomiendas
+// Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/manifiestos/ManifiestoPasajes.vue'));
+
+//Transporte :: manifiestos
+Vue.component('tenant-transporte-manifiestos',require('@viewsModuleTransporte/manifiestos/Manifiestos.vue'));
+
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));

@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <div class="card mb-0">
+    <div class="card mb-0" v-if="!vehiculoConfig">
       <div class="card-header bg-info">
         <h3 class="my-0">Listado de vehiculos</h3>
       </div>
@@ -50,11 +50,27 @@
                   <el-button type="danger" @click="onDelete(item)">
                     <i class="fa fa-trash"></i>
                   </el-button>
+                  <el-button type="primary" @click="onEditSeats(item)">
+                     <i class="fa fa-cogs"></i>
+                  </el-button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+    <div v-else>
+      <div class="card-header bg-info" :style="{justifyContent:'unset'}">
+        <el-button type="primary" @click="onBack">
+          <i class="fa fa-arrow-left"></i>
+        </el-button>
+        <h3 class="my-0 m-auto">Configuración de asientos {{ vehiculo.placa }}</h3>
+      </div>
+      <div class="card-body">
+
+        <config-vehiculo :seats.sync="asientos" :vehiculo.sync="vehiculo" @input-transporte="onUpdateItem" />
+        
       </div>
     </div>
     <ModalAddEdit
@@ -68,6 +84,7 @@
 
 <script>
 import ModalAddEdit from "./AddEdit";
+import ConfigVehiculo from './ConfigVehiculo';
 
 export default {
   props: {
@@ -78,6 +95,7 @@ export default {
   },
   components: {
     ModalAddEdit,
+    ConfigVehiculo
   },
   data() {
     return {
@@ -85,6 +103,8 @@ export default {
       vehiculo: null,
       openModalAddEdit: false,
       loading: false,
+      vehiculoConfig:false,
+      asientos:[]
     };
   },
   mounted() {
@@ -92,7 +112,7 @@ export default {
   },
   methods: {
     onDelete(item) {
-      this.$confirm(`¿estás seguro de eliminar al elemento ${item.description}?`, 'Atención', {
+      this.$confirm(`¿Estás seguro de eliminar el vehiculo ${item.placa}?`, 'Atención', {
           confirmButtonText: 'Si, continuar',
           cancelButtonText: 'No, cerrar',
           type: 'warning'
@@ -104,7 +124,11 @@ export default {
             });
             this.items = this.items.filter(i => i.id !== item.id);
           }).catch(error => {
-            this.axiosError(error)
+            let response = error.response;
+            this.$message({
+              type: 'error',
+              message: response.data.message
+            });
           });
         }).catch();
     },
@@ -127,6 +151,17 @@ export default {
       this.vehiculo = null;
       this.openModalAddEdit = true;
     },
+    onEditSeats(vehiculo){
+      this.vehiculo = vehiculo;
+      this.asientos = this.vehiculo.seats;
+      this.vehiculoConfig = true;
+    },
+    onBack(evt){
+      this.vehiculoConfig = false;
+      this.vehiculo = null;
+      this.asientos = [];
+
+    }
   },
 };
 </script>

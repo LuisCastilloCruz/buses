@@ -2,11 +2,16 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Transporte\Models\TransporteVehiculo;
 use Modules\Transporte\Http\Requests\TransporteVehiculoRequest;
+use Modules\Transporte\Models\TransporteAsiento;
+use Modules\Transporte\Models\TransporteProgramacion;
+
 class TransporteVehiculoController extends Controller
 {
     /**
@@ -15,7 +20,7 @@ class TransporteVehiculoController extends Controller
      */
     public function index()
     {
-        $vehiculos = TransporteVehiculo::orderBy('id', 'DESC')
+        $vehiculos = TransporteVehiculo::with('seats')->orderBy('id', 'DESC')
             ->get();
 
         return view('transporte::vehiculos.index', compact('vehiculos'));
@@ -91,18 +96,90 @@ class TransporteVehiculoController extends Controller
     public function destroy($id)
     {
         try {
+
+
+            $programaciones = TransporteProgramacion::where('vehiculo_id',$id)
+            ->get();
+
+            if( count($programaciones) > 1){
+                throw new Exception('Lo sentimos, no podemos eliminar el vehículo porque tiene programaciones',888);
+            }
+
+
             TransporteVehiculo::where('id', $id)
-                ->delete();
+            ->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Vehículo eliminado'
+                'message' => 'Información actualizada'
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'data'    => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
+                'message'    =>  ($th->getCode() === 888) ? $th->getMessage() : 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
             ], 500);
         }
+    }
+
+    public function guardarAsientos(Request $request,TransporteVehiculo $vehiculo){
+
+
+        try{
+
+            DB::connection('tenant')->beginTransaction();
+
+            $asientos = $request->input('asientos');
+
+            // return $asientos;
+            foreach($asientos as $asiento){
+                $asiento = (object) $asiento;
+
+                $seat = TransporteAsiento::find($asiento->id);
+
+                if(!is_null($seat)){
+                    $seat->update([
+                        'top' => $asiento->top,
+                        'left' => $asiento->left,
+                        // 'piso' => $asiento->piso,
+                        // 'estado_asiento_id' => 1,
+                    ]);
+                    continue;
+                }
+
+                TransporteAsiento::create([
+                    'vehiculo_id' => $vehiculo->id,
+                    'numero_asiento' => $asiento->numero_asiento,
+                    'type' => $asiento->type ,
+                    'top' => $asiento->top,
+                    'left' => $asiento->left,
+                    'piso' => $asiento->piso,
+                    // 'estado_asiento_id' => 1,
+                ]);
+            }
+
+            $vehiculo->update([
+                'asientos' => TransporteAsiento::where([
+                    'vehiculo_id' => $vehiculo->id,
+                    'type'=> 'ss'
+                ])->count()
+            ]);
+
+            DB::connection('tenant')->commit();
+
+
+            return response()->json([
+                'success' => true,
+                'vehiculo' => $vehiculo,
+                'message' => 'Se ha guardado'
+            ], 200);
+        }catch(\Throwable $th){
+            DB::connection('tenant')->rollBack();
+            return response()->json([
+                'success' => false,
+                'message'    => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
+            ], 500);
+
+        }
+        
     }
 }
