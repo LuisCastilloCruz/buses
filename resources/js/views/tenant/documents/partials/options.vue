@@ -190,24 +190,13 @@
             },
             clickPrintSilent(format){
                 const urlPdf = `${window.location.origin}/print/document/${this.form.external_id}/${format}`;
-                const nombreImpresora = "XP-80C";
+                if(localStorage.printer_silent==""){
+                    this.$message.error("Configure el nombre de la impresora corréctamente en Configuración, avanzado, Imprimir Ticket en forma silenciosa...");
+                    return null;
+                }
                 const url = `http://localhost:8080/url?urlPdf=${urlPdf}&impresora=${nombreImpresora}`;
                 // Elemento DOM, solo es para depurar
                 const $estado = "Imprimiendo...";
-
-                // Hacer petición...
-                // this.$http.get(`${url}`)
-                //     .then(response => {
-                //         if (response.status===200) {
-                //             this.$message.success("Impreso ok")
-                //             this.showDialogOptions = false;
-                //         } else {
-                //             this.$message.error("Ocurrió un error al imprimir, revice si la impresora está encendida o llame a soporte.")
-                //         }
-                //     })
-                //     .catch(error => {
-                //         this.$message.error(error.toString())
-                //     })
 
                 fetch(url)
                     .then(respuesta => {

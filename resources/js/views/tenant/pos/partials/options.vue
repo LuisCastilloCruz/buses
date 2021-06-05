@@ -12,6 +12,9 @@
                     <div class="summary row">
                         <div class="col-md-6">
                             <h4 class="title">Venta exitosa : comprobante {{form.number}}</h4>
+                            <button  v-if="this.activeName== 'first'" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket')">
+                            <i class="fa fa-receipt"></i> IMPRIMIR
+                            </button>
                         </div>
                         <div class="col-md-6">
                             <h4 class="title">Estado de comprobante: {{ (statusDocument.sent) ? 'Enviado a Sunat':'No enviado a Sunat'}}</h4>
@@ -57,9 +60,9 @@
                         </el-input>
                     </div>
 
-                    <div class="col-md-6 mt-4">
+                    <div class="col-md-6 mt-2">
                     </div>
-                    <div class="col-md-6 mt-4">
+                    <div class="col-md-6 mt-2">
                         <el-button  type="primary"  class="float-right" @click="clickNewSale">Nueva venta</el-button>
                     </div>
                 </div>
@@ -236,6 +239,31 @@
             //     this.$emit('update:showDialog', false)
             //     this.initForm()
             // },
+            clickPrintSilent(format){
+                const urlPdf = `${window.location.origin}/print/document/${this.form.external_id}/${format}`;
+                if(localStorage.printer_silent==""){
+                    this.$message.error("Configure el nombre de la impresora corréctamente en Configuración, avanzado, Imprimir Ticket en forma silenciosa...");
+                    return null;
+                }
+
+                const nombreImpresora = localStorage.printer_silent;
+                const url = `http://localhost:8080/url?urlPdf=${urlPdf}&impresora=${nombreImpresora}`;
+                // Elemento DOM, solo es para depurar
+                this.$message.success( "Imprimiendo...");
+                fetch(url)
+                    .then(respuesta => {
+                        // Si la respuesta es OK, entonces todo fue bien
+                        if (respuesta.status === 200) {
+                            this.$message.success("Se imprimió...")
+                        } else {
+                            // Si no, decodificamos el mensaje para ver el error
+                            respuesta.json()
+                                .then(mensaje => {
+                                    this.$message.error("Error imprimiendo: " + mensaje);
+                                });
+                        }
+                    });
+            },
         }
     }
 </script>
