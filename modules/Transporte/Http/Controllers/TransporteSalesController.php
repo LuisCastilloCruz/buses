@@ -20,7 +20,7 @@ use Modules\Transporte\Models\TransporteEstadoAsiento;
 use Modules\Transporte\Models\TransportePasaje;
 use Modules\Transporte\Models\TransporteProgramacion;
 use Modules\Transporte\Models\TransporteVehiculo;
-use Modules\Transporte\Models\UserTerminal;
+use Modules\Transporte\Models\TransporteUserTerminal;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Catalogs\DocumentType;
@@ -37,7 +37,7 @@ class TransporteSalesController extends Controller
     use FinanceTrait;
     public function index()
     {
-        $user_terminal = UserTerminal::where('user_id',auth()->user()->id)->first();
+        $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
 
         if(is_null($user_terminal)){
             //redirigirlo

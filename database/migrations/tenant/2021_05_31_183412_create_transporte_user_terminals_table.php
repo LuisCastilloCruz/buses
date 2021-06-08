@@ -13,7 +13,7 @@ class CreateUserTerminalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_terminal', function (Blueprint $table) {
+        Schema::create('transporte_user_terminal', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('terminal_id');
             $table->foreign('terminal_id')->references('id')->on('transporte_terminales');
@@ -30,6 +30,6 @@ class CreateUserTerminalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_terminals');
+        Schema::dropIfExists('transporte_user_terminal');
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
-use Modules\Transporte\Models\UserTerminal;
+use Modules\Transporte\Models\TransporteUserTerminal;
 
 class User extends Authenticatable
 {
@@ -158,14 +158,14 @@ class User extends Authenticatable
         }
         return false;
     }
-    
+
     public function user_commission()
     {
         return $this->hasOne(UserCommission::class);
     }
 
-    public function user_terminal() : HasOne{
-        return $this->hasOne(UserTerminal::class,'user_id','id');
+    public function transporte_user_terminal() : HasOne{
+        return $this->hasOne(TransporteUserTerminal::class,'user_id','id');
     }
 
 }

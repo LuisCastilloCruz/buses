@@ -6,11 +6,11 @@ use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class UserTerminal extends ModelTenant
+class TransporteUserTerminal extends ModelTenant
 {
     //
 
-    protected $table = 'user_terminal';
+    protected $table = 'transporte_user_terminal';
 
     protected $with=['terminal'];
 
@@ -19,7 +19,7 @@ class UserTerminal extends ModelTenant
     }
 
     public function user() : BelongsTo{
-        return $this->belongsTo(User::class,'terminal_id','id');
+        return $this->belongsTo(User::class,'user_id','id');
     }
 
 }

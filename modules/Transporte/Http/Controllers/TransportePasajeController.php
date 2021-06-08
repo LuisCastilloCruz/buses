@@ -22,6 +22,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Modules\Finance\Traits\FinanceTrait;
 use Illuminate\Support\Facades\Session;
+use Modules\Transporte\Models\TransporteUserTerminal;
 
 class TransportePasajeController extends Controller
 {
@@ -34,17 +35,17 @@ class TransportePasajeController extends Controller
     public function index()
     {
 
-        $user = Auth::user();
+        $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
 
-        $user_terminal = $user->user_terminal;
-
-        if(is_null($user_terminal)) {
+        if(is_null($user_terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
         }
 
-        $pasajes = TransportePasaje::with('document')->all();
+        $terminal = $user_terminal->terminal;
+
+        $pasajes = TransportePasaje::with('document')->get();
 
         //dd($pasajes->document->series);
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
