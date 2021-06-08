@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Transporte\Http\Requests\TransporteProgramacionesRequest;
 use Modules\Transporte\Models\TransporteProgramacion;
 use Modules\Transporte\Models\TransporteTerminales;
+use Modules\Transporte\Models\TransporteUserTerminal;
 use Modules\Transporte\Models\TransporteVehiculo;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
@@ -20,17 +21,14 @@ class TransporteProgramacionesController extends Controller
 
     public function index(Request $request){
         $terminales = TransporteTerminales::all();
-        $user = $request->user();
+        $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
 
-        $user_terminal = $user->user_terminal;
-
-        if(is_null($user_terminal)) {
+        if(is_null($user_terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
         }
-
-
+        
         $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
         ->where('terminal_origen_id',$user_terminal->terminal_id)
         ->get()
