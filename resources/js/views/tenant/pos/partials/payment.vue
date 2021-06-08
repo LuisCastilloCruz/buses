@@ -918,22 +918,22 @@ import MultiplePaymentForm from './multiple_payment.vue'
                             // this.form_payment.sale_note_id = response.data.data.id;
                             this.form_cash_document.sale_note_id = response.data.data.id;
 
-                        if(this.isActiveBussinessTurn('restaurant')){
-                            this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.sale_note_id}`).then((response) => {
-                                //algo más antes de imprimir en cocina y barra?
-                            })
-                        }
+                            if(this.isActiveBussinessTurn('restaurant')){
+                                this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.sale_note_id}`).then((response) => {
+                                    //algo más antes de imprimir en cocina y barra?
+                                })
+                            }
 
-                    } else {
+                        } else {
 
-                        // this.form_payment.document_id = response.data.data.id;
-                        this.form_cash_document.document_id = response.data.data.id;
-                        this.statusDocument = response.data.data.response
-                        if(this.isActiveBussinessTurn('restaurant')){
-                            this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.document_id}`).then((response) => {
-                                //algo más antes de imprimir en cocina y barra?
-                            })
-                        }
+                            // this.form_payment.document_id = response.data.data.id;
+                            this.form_cash_document.document_id = response.data.data.id;
+                            this.statusDocument = response.data.data.response
+                            if(this.isActiveBussinessTurn('restaurant')){
+                                this.$http.get(`/${this.resource_documents}/esc-print/${this.form_cash_document.document_id}`).then((response) => {
+                                    //algo más antes de imprimir en cocina y barra?
+                                })
+                            }
 
                         }
 
@@ -951,10 +951,7 @@ import MultiplePaymentForm from './multiple_payment.vue'
                         this.$message.error(response.data.message);
                     }
                 }).catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data;
-                    }
-                    else {
+                    if (error.response) {
                         this.$message.error(error.response.data.message);
                     }
                 }).then(() => {

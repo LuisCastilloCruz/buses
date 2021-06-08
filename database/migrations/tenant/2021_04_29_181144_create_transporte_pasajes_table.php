@@ -15,7 +15,6 @@ class CreateTransportePasajesTable extends Migration
     {
         Schema::create('transporte_pasajes', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('serie');
             $table->unsignedInteger('document_id');
             $table->foreign('document_id')->references('id')->on('documents');
             $table->unsignedInteger('pasajero_id');
@@ -28,7 +27,6 @@ class CreateTransportePasajesTable extends Migration
             $table->unsignedInteger('estado_asiento_id');
             $table->foreign('estado_asiento_id')->references('id')->on('transporte_estado_asientos');
             $table->dateTime('fecha_salida');
-            // $table->dateTime('fecha_llegada');
             $table->timestamps();
         });
     }

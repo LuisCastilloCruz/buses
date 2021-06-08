@@ -8,27 +8,28 @@
 
 
 
-    <tenant-transporte-bus-sales 
-    :estado-asientos="{{ $estadosAsientos }}" 
-    :terminal="{{ $terminal }}" 
-    :list-programaciones="{{ $programaciones }}" 
+    <tenant-transporte-bus-sales
+    :estado-asientos="{{ $estadosAsientos }}"
+    :terminal="{{ $terminal }}"
+    :list-programaciones="{{ $programaciones }}"
     :establishment='@json($establishment)'
     :series='@json($series)'
     :document-types-invoice='@json($document_types_invoice)'
     :payment-method-types='@json($payment_method_types)'
     :payment-destinations='@json($payment_destinations)'
+    :configuration='@json($configuration)'
     ></tenant-transporte-bus-sales>
 
     {{-- <div class="draggable-area" style="background:#ddd;width:200px;height:200px;">
 		<div id="dragit-contained" style="background: red; width: 50px; height: 50px; cursor: move; position: relative; top: 55px; left: 46px;" class=""></div>
 	</div> --}}
-    
+
 @endsection
 
 {{-- @section('js')
 <script>
     $(function() {
-        var draggable = $('#dragit-contained'); //element 
+        var draggable = $('#dragit-contained'); //element
 
             draggable.on('mousedown', function(e){
                 var dr = $(this).addClass("drag").css("cursor","move");
@@ -44,7 +45,7 @@
                 $(document.body).on('mousemove', function(e){
                     var itop = e.pageY + ypos - height;
                     var ileft = e.pageX + xpos - width;
-                    
+
                     if(dr.hasClass("drag")){
                         if(itop <= min_top ) { itop = min_top; }
                         if(ileft <= min_left ) { ileft = min_left; }

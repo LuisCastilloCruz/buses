@@ -59,7 +59,7 @@
                                     <i class="fa fa-trash"></i>
                                 </el-button>
 
-                                
+
                             </td>
                         </tr>
                         </tbody>
@@ -81,12 +81,14 @@
             :payment-destinations="paymentDestinations"
             :edit="edit"
             :user-terminal="userTerminal"
+            :configuration="configuration"
         ></ModalAddEdit>
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
         :recordId="documentNewId"
         :isContingency="false"
         :showClose="true"
+        :configuration="configuration"
         ></document-options>
     </div>
 </template>
@@ -133,6 +135,10 @@ export default {
         userTerminal:{
             type:Object,
             default:{}
+        },
+        configuration:{
+            type: Object,
+            required: true,
         }
     },
     components: {

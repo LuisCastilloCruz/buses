@@ -122,8 +122,6 @@
         },
         async created() {
             this.initForm();
-            console.log('hulas')
-            console.log(this.configuration)
         },
         methods: {
             clickSendWhatsapp() {

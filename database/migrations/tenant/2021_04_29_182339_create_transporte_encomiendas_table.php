@@ -17,7 +17,6 @@ class CreateTransporteEncomiendasTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('document_id');
             $table->foreign('document_id')->references('id')->on('documents');
-            $table->string('descripcion');
             // $table->double('precio');
             $table->date('fecha_salida')->nullable();
             $table->unsignedInteger('remitente_id')->index();

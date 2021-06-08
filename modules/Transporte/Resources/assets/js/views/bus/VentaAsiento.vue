@@ -1,11 +1,59 @@
 <template>
     <el-dialog title="Venta" :visible="visible" @close="onClose" @open="onCreate" :close-on-click-modal="false" width="800px">
         <div class="row">
+            <div class="col-5">
+                <div class="form-group">
+                    <label for="">Tipo de comprobante</label>
+                    <el-select
+                        v-model="document.document_type_id"
+                        @change="changeDocumentType"
+                        popper-class="el-select-document_type"
+                        dusk="document_type_id"
+                        class="border-left rounded-left border-info"
+                    >
+                        <el-option
+                            v-for="option in documentTypesInvoice"
+                            :key="option.id"
+                            :value="option.id"
+                            :label="option.description"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="">Serie</label>
+                    <!-- <el-input v-model="document.serie" disabled></el-input> -->
+                    <el-select v-model="document.series_id">
+                        <el-option
+                            v-for="option in allSeries"
+                            :key="option.id"
+                            :value="option.id"
+                            :label="option.number"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="dni">Estado de asiento</label>
+                    <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
+                               placeholder="Estado asiento"
+                               :disabled=" (transportePasaje) ? true : false"
+                    >
+                        <el-option v-for="estado in estadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
 
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-2">
             <div class="col-5">
                 <div class="form-group">
                     <label for="dni">Pasajero</label>
                     <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
+                        dusk="pasajeroId"
                         placeholder="Buscar remitente"
                         :remote-method="searchPasajero"
                         :loading="loadingPasajero"
@@ -17,12 +65,16 @@
                     </el-select>
                 </div>
             </div>
-            <!-- <div class="col-3">
+            <div class="col-3">
                 <div class="form-group">
-                    <label for="dni">Serie</label>
-                    <el-input v-model="serie"></el-input>
+                    <label for="dni">Precio</label>
+                    <el-input v-model="precio" type="number" :disabled=" (transportePasaje) ? true : false"></el-input>
                 </div>
-            </div> -->
+                <el-button v-if="transportePasaje" type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
+                    Comprobante
+                    <i class="fa fa-file-alt"></i>
+                </el-button>
+            </div>
             <div class="col-3">
                 <div class="form-group">
                     <label for="dni">Asiento</label>
@@ -30,158 +82,77 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-3">
-                <div class="form-group">
-                    <label for="dni">Estado de asiento</label>
-                    <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
-                        placeholder="Estado asiento"
-                        :disabled=" (transportePasaje) ? true : false"
-                        >
-                        <el-option v-for="estado in estadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
-
-                        </el-option>
-                    </el-select>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="form-group">
-                    <label for="dni">Precio</label>
-                    <el-input v-model="precio" type="number" :disabled=" (transportePasaje) ? true : false"></el-input>
-                </div>
-            </div>
-            <div v-if="transportePasaje" class="col-3">
-                <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
-                    Comprobante
-                    <i class="fa fa-file-alt"></i>
-                </el-button>
-            </div>
-        </div>
-        <div v-if="!transportePasaje" class="row mt-2">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-info">
-                        Pago
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-3">
-                                <div class="form-group">
-                                    <label for="">Tipo de comprobante</label>
-                                    <el-select
-                                        v-model="document.document_type_id"
-                                        @change="changeDocumentType"
-                                        popper-class="el-select-document_type"
-                                        dusk="document_type_id"
-                                        class="border-left rounded-left border-info"
-                                    >
-                                        <el-option
-                                        v-for="option in documentTypesInvoice"
-                                        :key="option.id"
-                                        :value="option.id"
-                                        :label="option.description"
-                                        ></el-option>
-                                    </el-select>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="form-group">
-                                    <label for="">Serie</label>
-                                    <!-- <el-input v-model="document.serie" disabled></el-input> -->
-                                    <el-select v-model="document.series_id">
-                                        <el-option
-                                        v-for="option in allSeries"
-                                        :key="option.id"
-                                        :value="option.id"
-                                        :label="option.number"
-                                        ></el-option>
-                                    </el-select>
-                                </div>
-                            </div>
-                            <!-- <div class="col-3">
-                                    <div class="form-group">
-                                    <label for="">Fecha emisión</label>
-                                    <el-date-picker
-                                    v-model="document.date_of_issue"
-                                    type="date"
-                                    value-format="yyyy-MM-dd"
-                                    placeholder="Fecha de vencimiento">
-                                    </el-date-picker>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                    <div class="form-group">
-                                    <label for="">Fecha de vencimiento</label>
-                                    <el-date-picker
-                                    
-                                    v-model="document.date_of_due"
-                                    type="date"
-                                    value-format="yyyy-MM-dd"
-                                    placeholder="Fecha de vencimiento">
-                                    </el-date-picker>
-                                </div>
-                            </div> -->
-                        </div>
-                        <div class="row mt-2">
+        <div class="row mt-2">
+            <div class="col-md-12">
+                <el-collapse v-model="activePanel" accordion>
+                    <el-collapse-item name="1" >
+                        <template slot="title">
+                            <i class="fa fa-plus text-info"></i> &nbsp;Pagos<i class="header-icon el-icon-information"></i>
+                        </template>
+                        <div v-if="!transportePasaje" class="row mt-2">
                             <div class="col-12">
-                                <table class="table table-bordered table-stripped">
-                                    <thead>
-                                        <th>M. Pago</th>
-                                        <th>Destino</th>
-                                        <th>Referencia</th>
-                                        <!-- <th>Monto</th> -->
-                                    </thead>
-                                    <tbody>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <table class="table table-bordered table-stripped">
+                                            <thead>
+                                            <th>M. Pago</th>
+                                            <th>Destino</th>
+                                            <th>Referencia</th>
+                                            <!-- <th>Monto</th> -->
+                                            </thead>
+                                            <tbody>
 
-                                        <tr>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-select v-model="payment.payment_method_type_id">
-                                                        <el-option
-                                                        v-for="option in paymentMethodTypes"
-                                                        :key="option.id"
-                                                        :value="option.id"
-                                                        :label="option.description"
-                                                        ></el-option>
-                                                    </el-select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-select
-                                                        v-model="payment.payment_destination_id"
-                                                        filterable
-                                                        :disabled="payment.payment_destination_disabled"
-                                                    >
-                                                        <el-option
-                                                        v-for="option in paymentDestinations"
-                                                        :key="option.id"
-                                                        :value="option.id"
-                                                        :label="option.description"
-                                                        ></el-option>
-                                                    </el-select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-input v-model="payment.reference"></el-input>
-                                                </div>
-                                            </td>
-                                            <!-- <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-input disabled v-model="payment.payment"></el-input>
-                                                </div>
-                                            </td> -->
-                                        </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="payment.payment_method_type_id">
+                                                            <el-option
+                                                                v-for="option in paymentMethodTypes"
+                                                                :key="option.id"
+                                                                :value="option.id"
+                                                                :label="option.description"
+                                                            ></el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select
+                                                            v-model="payment.payment_destination_id"
+                                                            filterable
+                                                            :disabled="payment.payment_destination_disabled"
+                                                        >
+                                                            <el-option
+                                                                v-for="option in paymentDestinations"
+                                                                :key="option.id"
+                                                                :value="option.id"
+                                                                :label="option.description"
+                                                            ></el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-input v-model="payment.reference"></el-input>
+                                                    </div>
+                                                </td>
+                                                <!-- <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-input disabled v-model="payment.payment"></el-input>
+                                                    </div>
+                                                </td> -->
+                                            </tr>
 
-                                    </tbody>
+                                            </tbody>
 
-                                </table>
+                                        </table>
+                                    </div>
+
+                                </div>
                             </div>
-
                         </div>
-                    </div>
-                </div>
+                    </el-collapse-item>
+                </el-collapse>
             </div>
         </div>
 
@@ -190,14 +161,12 @@
         :recordId="documentId"
         :isContingency="false"
         :showClose="true"
+        :configuration="configuration"
         ></document-options>
-        
 
-        
-
-        <div class="row mt-2">
+        <div class="row mt-4">
             <div class="col-12 d-flex justify-content-center">
-                <el-button :disabled=" (transportePasaje) ? true : false" :loading="loading" type="primary" @click="realizarVenta">Guardar</el-button>
+                <el-button :disabled=" (transportePasaje) ? true : false" :loading="loading" type="primary" @click="saveDocument">Guardar</el-button>
                 <el-button type="secondary" @click="onClose">Cancelar</el-button>
             </div>
         </div>
@@ -257,14 +226,19 @@ export default {
             type: Array,
             required: true,
         },
-        serie:{
-            type:Number | null,
-            required:true
+        configuration:{
+            type: Object,
+            required: true,
         }
     },
     created(){
+        this.initDocument();
+        this.initForm();
         this.all_document_types = this.documentTypesInvoice;
+        this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
         this.allSeries = this.series;
+        this.document.establishment_id = this.establishment.id;
+        this.changeDocumentType();
     },
     watch:{
         precio:function(newVal){
@@ -278,7 +252,6 @@ export default {
             pasajeros:[],
             pasajero:null,
             loadingPasajero:false,
-            
 
             estadoAsiento:null,
             pasajeroId:null,
@@ -302,14 +275,16 @@ export default {
                 payment_destination_id:null,
                 reference:null,
                 payment:null
-            }
+            },
+            is_contingency: 0,
+            activePanel: 0,
 
         });
     },
     methods:{
         onClose(){
             this.$emit("update:visible", false);
-            
+
             this.pasajeroId = null;
             this.estadoAsiento = null;
             this.precio = null;
@@ -324,17 +299,16 @@ export default {
             this.estadoAsiento = 2;
             this.transportePasaje = this.asiento.transporte_pasaje || null;
             await this.searchPasajero();
-            this.initForm();
             this.initProducto();
-            this.initDocument();
+            //this.initDocument();
             this.clickAddPayment();
             this.onCalculateTotals();
-            this.validateIdentityDocumentType();
+            //this.validateIdentityDocumentType();
             const date = moment().format("YYYY-MM-DD");
             await this.searchExchangeRateByDate(date).then((res) => {
                 this.document.exchange_rate_sale = res;
             });
-            
+
             if(this.transportePasaje){
                 this.pasajero = this.transportePasaje.pasajero;
                 this.precio = this.transportePasaje.precio;
@@ -345,10 +319,22 @@ export default {
         },
 
         async saveDocument(){
-            if(!this.precio) return;
-            this.producto.total = this.producto.total_value = this.producto.unit_price = parseFloat(this.precio);
+            this.document.items.length=0;
+            let precio = parseFloat(this.precio);
+
+            if(!precio) return;
+
+            this.producto.input_unit_price_value=precio;
+            this.producto.item.unit_price=precio;
+            this.producto.total=precio;
+            this.producto.total_base_igv=precio;
+            this.producto.total_value=precio;
+            this.producto.unit_price=precio;
+            this.producto.unit_value=precio;
+
             this.document.items.push(this.producto);
             this.document.payments.push(this.payment);
+            this.document.customer_id=this.pasajeroId;
             this.onCalculateTotals();
 
             let validate_payment_destination = this.validatePaymentDestination();
@@ -362,37 +348,34 @@ export default {
                     if (response.data.success) {
                         this.documentId = response.data.data.id;
                         this.form_cash_document.document_id = response.data.data.id;
+                        await this.saveCashDocument();
+                        await this.guardarPasaje();
                     } else {
                         this.$message.error(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data;
-                    } else {
+                    if (error.response) {
                         this.$message.error(error.response.data.message);
                     }
-                })
-                .finally(() => {
+
+                }).then(() => {
+                    this.loading_submit = false;
                 });
 
-            await this.saveCashDocument();
-
         },
-        async realizarVenta(){
+        async guardarPasaje(){
             this.loading = true;
-            await this.saveDocument();
             let data = {
                 document_id:this.documentId,
                 pasajero_id:this.pasajeroId,
                 asiento_id:this.asiento.id,
                 estado_asiento_id:this.estadoAsiento,
-                serie:this.serie,
                 programacion_id:this.programacion.id,
                 fecha_salida:this.fechaSalida,
                 precio:this.precio
             };
-            
+
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
             .then( ({data}) => {
                 this.loading = false;
@@ -411,63 +394,81 @@ export default {
         //document and payment
         initProducto(){
             this.producto = {
-                item_id:1,
-                codigo_interno: '',
-                description: '',
-                codigo_producto_sunat: '',
-                unidad_de_medida: 'ZZ',
-                quantity: 1,
-                unit_value: 0,
-                price_type_id: "01",
-                unit_price: 0,
-                affectation_igv_type_id: "10",
-                total_base_igv: 20,
+                IdLoteSelected: null,
+                affectation_igv_type: {
+                    active: 1,
+                    description: "Exonerado - Operación Onerosa",
+                    exportation: 0,
+                    free: 0,
+                    id: "20"
+                },
+                affectation_igv_type_id: "20",
+                attributes: [],
+                charges: [],
+                currency_type_id: "PEN",
+                discounts: [],
+                document_item_id: null,
+                input_unit_price_value: "100",//cambiado
+                item: {
+                    amount_plastic_bag_taxes: "0.10",
+                    attributes: [],
+                    barcode: "",
+                    brand: "",
+                    calculate_quantity: false,
+                    category: "",
+                    currency_type_id: "PEN",
+                    currency_type_symbol: "S/",
+                    description: "PASAJE AREQUIPA CUSCO",
+                    full_description: "",
+                    has_igv: false,
+                    has_plastic_bag_taxes: false,
+                    id: 44,
+                    internal_id: null,
+                    item_unit_types: [],
+                    lots: [],
+                    lots_enabled: false,
+                    lots_group: [],
+                    presentation: [],
+                    purchase_affectation_igv_type_id: "20",
+                    purchase_unit_price: "0.000000",
+                    sale_affectation_igv_type_id: "20",
+                    sale_unit_price: 35,
+                    series_enabled: false,
+                    stock: "",
+                    unit_price: "100", //cambiado
+                    unit_type_id: "ZZ",
+                },
+                item_id: 44,
                 percentage_igv: 18,
-                total_igv: 3.6,
-                system_isc_type_id:null,
-                total_taxes:0,
-                total_value:0,
-                total:0,
+                percentage_isc: 0,
+                percentage_other_taxes: 0,
+                price_type_id: "01",
+                quantity: 1,
+                system_isc_type_id: null,
+                total: 100,//cambiado
+                total_base_igv: 100,//cambiado
+                total_base_isc: 0,
+                total_base_other_taxes: 0,
+                total_charge: 0,
+                total_discount: 0,
+                total_igv: 0,
+                total_isc: 0,
+                total_other_taxes: 0,
                 total_plastic_bag_taxes: 0,
-                // total_impuestos: 3.6,
-                // total_valor_item: 0,
-                // total_item: 0,
-                discounts:[],
-                total_discount:0,
-                total_charge:0,
-                charges:[],
-                item:{
-                    id:1,
-                    full_description:"Pasaje item" ,
-                    brand:null,
-                    category:null,
-                    stock:null,
-                    internal_id:null,
-                    description:"Pasaje item",
-                    currency_type_id:"PEN",
-                    currency_type_symbol:"S/",
-                    sale_unit_price:20,
-                    purchase_unit_price:0.000000,
-                    unit_type_id:"ZZ",
-                    sale_affectation_igv_type_id:10,
-                    purchase_affectation_igv_type_id:10,
-                    calculate_quantity:false,
-                    has_igv:true,
-                    amount_plastic_bag_taxes:0.10,
-                    item_unit_types:[],
-                    warehouses:[
-
-                    ]
-                }
+                total_taxes: 0,
+                total_value: 100,//cambiado
+                unit_price: 100,//cambiado
+                unit_value: 100,//cambiado
+                warehouse_id: null
             };
         },
         initDocument() {
             this.document = {
-                customer_id: 1,
+                establishment_id:null,
+                customer_id: null,
                 customer: {},
                 document_type_id: null,
-                series_id: this.series,
-                establishment_id: 1,
+                series_id: null,
                 number: "#",
                 date_of_issue: moment().format("YYYY-MM-DD"),
                 time_of_issue: moment().format("HH:mm:ss"),
@@ -510,63 +511,78 @@ export default {
             };
         },
         onCalculateTotals() {
-            let total_exportation = 0;
-            let total_taxed = 0;
-            let total_exonerated = 0;
-            let total_unaffected = 0;
-            let total_free = 0;
-            let total_igv = 0;
-            let total_value = 0;
-            let total = 0;
-            let total_plastic_bag_taxes = 0;
-            let total_discount = 0;
-            let total_charge = 0;
+            let total_discount = 0
+            let total_charge = 0
+            let total_exportation = 0
+            let total_taxed = 0
+            let total_exonerated = 0
+            let total_unaffected = 0
+            let total_free = 0
+            let total_igv = 0
+            let total_value = 0
+            let total = 0
+            let total_plastic_bag_taxes = 0
             this.document.items.forEach((row) => {
-                total_discount += parseFloat(row.total_discount);
-                total_charge += parseFloat(row.total_charge);
+                total_discount += parseFloat(row.total_discount)
+                total_charge += parseFloat(row.total_charge)
 
-                if (row.affectation_igv_type_id === "10") {
-                    total_taxed += parseFloat(row.total_value);
+                if (row.affectation_igv_type_id === '10') {
+                    total_taxed += parseFloat(row.total_value)
                 }
-                if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
-                    total_free += parseFloat(row.total_value);
+                if (row.affectation_igv_type_id === '20') {
+                    total_exonerated += parseFloat(row.total_value)
                 }
-                if (
-                ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
-                ) {
-                    total_igv += parseFloat(row.total_igv);
-                    total += parseFloat(row.total);
+                if (row.affectation_igv_type_id === '30') {
+                    total_unaffected += parseFloat(row.total_value)
                 }
-                total_value += parseFloat(row.total_value);
-                total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes);
+                if (row.affectation_igv_type_id === '40') {
+                    total_exportation += parseFloat(row.total_value)
+                }
+                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                    total_free += parseFloat(row.total_value)
+                }
+                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                    total_igv += parseFloat(row.total_igv)
+                    total += parseFloat(row.total)
+                }
+                total_value += parseFloat(row.total_value)
+                total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
-                if (["13", "14", "15"].includes(row.affectation_igv_type_id)) {
-                    let unit_value =
-                        row.total_value / row.quantity / (1 + row.percentage_igv / 100);
-                    let total_value_partial = unit_value * row.quantity;
-                    row.total_taxes = row.total_value - total_value_partial;
-                    row.total_igv = row.total_value - total_value_partial;
-                    row.total_base_igv = total_value_partial;
-                    total_value -= row.total_value;
+                if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
+
+                    let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
+                    let total_value_partial = unit_value * row.quantity
+                    row.total_taxes = row.total_value - total_value_partial
+                    row.total_igv = row.total_value - total_value_partial
+                    row.total_base_igv = total_value_partial
+                    total_value -= row.total_value
+
                 }
             });
 
-            this.document.total_exportation = _.round(total_exportation, 2);
-            this.document.total_taxed = _.round(total_taxed, 2);
-            this.document.total_exonerated = _.round(total_exonerated, 2);
-            this.document.total_unaffected = _.round(total_unaffected, 2);
-            this.document.total_free = _.round(total_free, 2);
-            this.document.total_igv = _.round(total_igv, 2);
-            this.document.total_value = _.round(total_value, 2);
-            this.document.total_taxes = _.round(total_igv, 2);
-            this.document.total_plastic_bag_taxes = _.round(
-                total_plastic_bag_taxes,
-                2
-            );
-            this.document.total = _.round(
-                total + this.document.total_plastic_bag_taxes,
-                2
-            );
+            this.document.total_exportation = _.round(total_exportation, 2)
+            this.document.total_taxed = _.round(total_taxed, 2)
+            this.document.total_exonerated = _.round(total_exonerated, 2)
+            this.document.total_unaffected = _.round(total_unaffected, 2)
+            this.document.total_free = _.round(total_free, 2)
+            this.document.total_igv = _.round(total_igv, 2)
+            this.document.total_value = _.round(total_value, 2)
+            this.document.total_taxes = _.round(total_igv, 2)
+            this.document.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+            // this.form.total = _.round(total, 2)
+            this.document.total = _.round(total + this.document.total_plastic_bag_taxes, 2)
+
+            if(this.enabled_discount_global)
+                this.discountGlobal()
+
+            if(this.prepayment_deduction)
+                this.discountGlobalPrepayment()
+
+            if(['1001', '1004'].includes(this.document.operation_type_id))
+                this.changeDetractionType()
+
+            //this.setTotalDefaultPayment()
+            //this.setPendingAmount()
         },
         validatePaymentDestination() {
             let error_by_item = 0;
@@ -585,42 +601,6 @@ export default {
                 sale_note_id: null,
             };
         },
-        async onGoToInvoice() {
-            // this.onUpdateItemsWithExtras();
-            this.onCalculateTotals();
-            let validate_payment_destination = this.validatePaymentDestination();
-
-            if (validate_payment_destination.error_by_item > 0) {
-                return this.$message.error("El destino del pago es obligatorio");
-            }
-            // console.log(this.document);
-            // return;
-            this.loading = true;
-            this.$http
-                .post(`/${this.resource_documents}`, this.document)
-                .then(async (response) => {
-                    if (response.data.success) {
-                        this.encomienda.document_id = response.data.data.id;
-                        this.form_cash_document.document_id = response.data.data.id;
-                        this.showDialogDocumentOptions = true;
-                        this.$emit("update:showDialog", false);
-                        await this.onStore();// guardando pasajes
-                        await this.saveCashDocument();
-                    } else {
-                        this.$message.error(response.data.message);
-                    }
-                })
-                .catch((error) => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data;
-                    } else {
-                        this.$message.error(error.response.data.message);
-                    }
-                })
-                .finally(() => {
-                    this.loading = false;
-                });
-        },
         saveCashDocument() {
             this.$http
                 .post(`/cash/cash_document`, this.form_cash_document)
@@ -634,11 +614,13 @@ export default {
                 });
         },
         changeDocumentType() {
-            this.document.series_id = null;
-            this.allSeries = _.filter(this.series, {
-                document_type_id: this.document.document_type_id,
-            });
-            this.document.series_id = this.allSeries.length > 0 ? this.allSeries[0].id : null;
+            this.filterSeries();
+            this.cleanCustomer();
+            this.filterCustomers();
+        },
+        cleanCustomer(){
+            this.document.customer_id = null
+            this.pasajeros = []
         },
         clickAddPayment() {
             const payment = this.document.payments.length == 0 ? this.document.total : 0;
@@ -665,22 +647,46 @@ export default {
         },
         validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
-            let customer = this.document.customer;
+            let pasajeros = this.pasajeros;
             if (
-                identity_document_types.includes(customer.identity_document_type_id)
+                identity_document_types.includes(pasajeros.identity_document_type_id)
             ) {
                 this.document_types = _.filter(this.all_document_types, { id: "03" });
             } else {
                 this.document_types = this.all_document_types;
             }
 
-            this.document.document_type_id =
-                this.document_types.length > 0 ? this.document_types[0].id : null;
+            this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
             this.changeDocumentType();
         },
         viewComprobante(){
             this.showDialogDocumentOptions = true;
-        }
+        },
+        filterSeries() {
+            this.document.series_id = null
+            this.allSeries = _.filter(this.series, {
+                'establishment_id': this.document.establishment_id,
+                'document_type_id': this.document.document_type_id,
+                'contingency': this.is_contingency});
+            this.document.series_id = (this.allSeries.length > 0)?this.allSeries[0].id:null
+        },
+        filterCustomers() {
+            if (['0101', '1001', '1004'].includes(this.document.operation_type_id)) {
+
+                if(this.document.document_type_id === '01') {
+                    this.pasajeros = _.filter(this.pasajeros, {'identity_document_type_id': '6'})
+                } else {
+                    if(this.document_type_03_filter) {
+                        this.pasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
+                    } else {
+                        this.pasajeros = this.pasajeros
+                    }
+                }
+
+            } else {
+                this.pasajeros = this.pasajeros
+            }
+        },
 
     }
 }
