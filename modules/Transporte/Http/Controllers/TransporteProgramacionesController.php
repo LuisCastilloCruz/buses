@@ -28,8 +28,8 @@ class TransporteProgramacionesController extends Controller
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
-        } 
-        
+        }
+
 
         $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
         ->where('terminal_origen_id',$user_terminal->terminal_id)
@@ -61,7 +61,7 @@ class TransporteProgramacionesController extends Controller
             'terminal_destino_id',
             'terminal_origen_id',
             'vehiculo_id',
-            'hora_salida',
+            'hora_salida'
             // 'tiempo_aproximado'
         ));
 
@@ -113,7 +113,7 @@ class TransporteProgramacionesController extends Controller
             if(count($programacion->manifiestos) > 0){
                 throw new Exception('Lo sentimos no se puede eliminar la programación, tiene manifiestos',888);
             }
-            
+
             $programacion->delete();
 
             return response()->json([
@@ -127,7 +127,7 @@ class TransporteProgramacionesController extends Controller
                 'success' => false,
                 'message' => $th->getCode() == 888 ? $th->getMessage() : 'Ocurrió un error al procesar su petición'
             ],500);
-            
+
         }
     }
 
