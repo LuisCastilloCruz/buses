@@ -20,11 +20,11 @@
             <div v-if="errors.nombre" class="invalid-feedback">{{ errors.nombre[0] }}</div>
         </div>
 
-        <!-- <div class="form-group">
+        <div class="form-group">
             <label for="asientos">Asientos</label>
             <input type="text" id="asientos" class="form-control" v-model="form.asientos" :class="{ 'is-invalid': errors.asientos }"/>
             <div v-if="errors.asientos" class="invalid-feedback">{{ errors.asientos[0] }}</div>
-        </div> -->
+        </div>
 
         <div class="form-group">
             <label for="pisos">Pisos</label>

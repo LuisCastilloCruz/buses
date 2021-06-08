@@ -8,7 +8,7 @@ class TransporteVehiculo extends ModelTenant
 {
     protected $table = 'transporte_vehiculos';
 
-    protected $fillable = ['description','placa','nombre','asientos','pisos'];
+    protected $fillable = ['placa','nombre','asientos','pisos'];
 
     public function seats() : HasMany{
         //traigo solo
