@@ -62,7 +62,7 @@
                                     </el-button> -->
                                 </td>
                             </tr>
-                        
+
                         </tbody>
                         </template>
                         <template v-else>
@@ -77,7 +77,7 @@
                                 </td>
                             </tr>
                         </template>
-                        
+
                     </table>
                 </div>
             </div>
@@ -109,12 +109,12 @@ export default {
     },
     methods:{
         onCreate(){
-            this.visible = true;
+            this.visible = false;
         },
         imprimir(manifiesto){
             window.open(`/transportes/manifiestos/${manifiesto.id}/imprimir-manifiesto`);
         }
     }
-    
+
 }
 </script>
