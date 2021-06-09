@@ -28,7 +28,7 @@ class TransporteProgramacionesController extends Controller
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
         }
-        
+
         $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
         ->where('terminal_origen_id',$user_terminal->terminal_id)
         ->get()
