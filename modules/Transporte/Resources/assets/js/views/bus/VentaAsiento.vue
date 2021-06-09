@@ -422,7 +422,7 @@ export default {
                     full_description: "",
                     has_igv: false,
                     has_plastic_bag_taxes: false,
-                    id: 44,
+                    id: 2,
                     internal_id: null,
                     item_unit_types: [],
                     lots: [],
@@ -438,7 +438,7 @@ export default {
                     unit_price: "100", //cambiado
                     unit_type_id: "ZZ",
                 },
-                item_id: 44,
+                item_id: 2,
                 percentage_igv: 18,
                 percentage_isc: 0,
                 percentage_other_taxes: 0,
