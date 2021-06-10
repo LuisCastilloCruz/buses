@@ -6,6 +6,9 @@
                 <el-button type="info" @click="agregarItem('ss')">Asiento</el-button>
                 <el-button type="info" @click="agregarItem('ses')">Scalera</el-button>
                 <el-button type="info" @click="agregarItem('sv')">Televisión</el-button>
+                <el-button v-if="!remove" type="danger" @click="remove = true">Eliminar</el-button>
+                <el-button v-else @click="remove = false">Cancelar</el-button>
+
             </div>
             <div class="col-12 d-flex justify-content-center">
                 <div class="col-3">
@@ -19,7 +22,7 @@
                 </div>
             </div>
         </div>
-        <bus v-if="piso == 1" :seats.sync="asientosPisoUno" drag @onDelete="eliminar" />
+        <bus v-if="piso == 1" :seats.sync="asientosPisoUno" drag :remove="remove" @onDelete="eliminar" />
         <bus v-if="piso == 2" :seats.sync="asientosPisoDos" drag />
 
         <div class="row mt-2">
@@ -58,7 +61,8 @@ export default {
             asientos:[],
             loading:false,
             piso:null,
-            transporte:this.vehiculo
+            transporte:this.vehiculo,
+            remove:false,
         });
     },
     watch:{
@@ -156,50 +160,54 @@ export default {
                 showCancelButton: true,
                 confirmButtonText: 'OK',
                 cancelButtonText: 'Cancelar',
-                beforeClose:async(action, instance, done) => {
+                beforeClose:(action, instance, done) => {
                     if (action === 'confirm') {
                         instance.confirmButtonLoading = true;
                         instance.confirmButtonText = 'Cargando...';
-                        if(asiento.id){
-                            try{
-                                const { data } = await this.$http.delete(`/transportes/vehiculos/${asiento.id}/eliminar`);
-                                instance.confirmButtonLoading = false;
-                                if(!data.success){ 
+                        asiento.deleted = true;
+                        setTimeout(async() => {
+                            if(asiento.id){
+                                try{
+                                    const { data } = await this.$http.delete(`/transportes/vehiculos/${asiento.id}/eliminar`);
+                                    instance.confirmButtonLoading = false;
+                                    if(!data.success){ 
+                                        this.$message({
+                                            type: 'error',
+                                            message: data.message
+                                        }); 
+                                        done();
+                                        return;
+                                    }
+                                    this.asientos.splice(index,1);
                                     this.$message({
-                                        type: 'error',
+                                        type: 'success',
                                         message: data.message
                                     }); 
+
                                     done();
-                                    return;
+
+
+                                }catch(error){
+                                    this.$axiosError(error);
+                                    done();
                                 }
+                            }else {
                                 this.asientos.splice(index,1);
+                                instance.confirmButtonLoading = false;
                                 this.$message({
                                     type: 'success',
-                                    message: data.message
+                                    message: 'Se ha eliminado el asiento'
                                 }); 
-
                                 done();
-
-
-                            }catch(error){
-                                this.$axiosError(error);
-                                done();
-                            }
-                        }else {
-                            this.asientos.splice(index,1);
-                            instance.confirmButtonLoading = false;
-                            this.$message({
-                                type: 'success',
-                                message: 'Se ha eliminado el asiento'
-                            }); 
-                            done();
-                        }
+                            } 
+                        }, 1000);
+                       
                         
                     } else {
                         done();
                     }
                 }
-            });
+            }).then(() => this.remove = false);
            
 
 

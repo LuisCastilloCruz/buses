@@ -5,9 +5,8 @@
             :id="'seat-'+index"
             :style="{left:asiento.left,top:asiento.top,cursor: drag ? 'move' : 'pointer'}"
             v-on:dblclick="dbClick(asiento)"
-            
             >
-                <div v-if="drag" class="remove-element" @click="onDelete(asiento,index)">
+                <div v-if="remove" class="remove-element" @click="onDelete(asiento,index)">
                     <el-tooltip class="item" effect="dark" content="Eliminar" placement="top-start">
                         <i class="fa fa-minus"></i>
                     </el-tooltip>
@@ -182,6 +181,10 @@ export default {
             default:() => []
         },
         drag:{
+            type:Boolean,
+            default:false
+        },
+        remove:{
             type:Boolean,
             default:false
         }
