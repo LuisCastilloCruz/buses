@@ -610,7 +610,7 @@ export default {
       if (
         identity_document_types.includes(customer.identity_document_type_id)
       ) {
-        this.document_types = _.filter(this.all_document_types, { id: "03" });
+        this.document_types = _.filter(this.all_document_types, document_type_id => (document_type_id.id === '03' || document_type_id.id === '80'));
       } else {
         this.document_types = this.all_document_types;
       }

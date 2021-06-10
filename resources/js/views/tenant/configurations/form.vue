@@ -162,6 +162,22 @@
                                     <small class="form-control-feedback" v-if="errors.cotizaction_finance" v-text="errors.cotizaction_finance[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Imprimir Ticket en forma silenciosa</label>
+                                <div class="form-group" :class="{'has-danger': errors.print_silent}">
+                                    <el-switch v-model="form.print_silent" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.print_silent" v-text="errors.print_silent[0]"></small>
+                                    <a href="https://www.aqpfact.pe/soporte" target="_blank"> Descargar programa</a>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <el-input v-if="form.print_silent" v-model="printer_silent" type="text" placeholder="TM-T20III" ></el-input>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <el-button type="primary" icon="fas fa-save" @click="guardar_printer_silent"></el-button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mt-4">
@@ -254,6 +270,7 @@
                 form: {},
                 affectation_igv_types: [],
                 placeholder:'',
+                printer_silent:localStorage.printer_silent
 
             }
         },
@@ -265,7 +282,6 @@
                 if (response.data !== ''){
                 this.form = response.data.data;
                 }
-                // console.log(this.placeholder)
             });
 
             await this.events()
@@ -322,6 +338,7 @@
                     legend_footer: false,
                     default_document_type_03: false,
                     destination_sale: false,
+                    print_silent:false
                 };
             },
             submit() {
@@ -365,6 +382,12 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
+            },
+            guardar_printer_silent(){
+                console.log("guardando");
+                localStorage.printer_silent = this.printer_silent;
+
+                console.log(localStorage.printer_silent );
             }
         }
     }

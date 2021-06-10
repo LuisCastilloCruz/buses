@@ -54,6 +54,28 @@
         </a>
         @endif
 
+        @if($vc_order > 0)
+        <span class="separator"></span>
+        <ul class="notifications">
+            <li class="open">
+
+                <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-truck text-secondary"></i>
+                    <span class="badge badge-red">{{ $vc_order }}</span>
+                </a>
+                <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
+                    <a href="{{route('tenant.order_notes.not_sent')}}">
+                        <div class="notification-title">
+                            <span class="float-right badge badge-default"><i class="fas fa-arrow-right"></i></span>Pedidos pendientes
+                        </div>
+                    </a>
+                    {{-- <div class="content">
+                    </div> --}}
+                </div>
+            </li>
+        </ul>
+        @endif
+
         @if($vc_document > 0)
         <span class="separator"></span>
         <ul class="notifications">

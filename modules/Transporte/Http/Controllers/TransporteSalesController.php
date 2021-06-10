@@ -2,6 +2,7 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
+use App\Models\Tenant\Configuration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,6 +20,7 @@ use Modules\Transporte\Models\TransporteEstadoAsiento;
 use Modules\Transporte\Models\TransportePasaje;
 use Modules\Transporte\Models\TransporteProgramacion;
 use Modules\Transporte\Models\TransporteVehiculo;
+use Modules\Transporte\Models\TransporteUserTerminal;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Catalogs\DocumentType;
@@ -35,17 +37,12 @@ class TransporteSalesController extends Controller
     use FinanceTrait;
     public function index()
     {
-        $plantilla='<table class="mx-auto bus"><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr> <tr><td>7</td><td>8</td><td>9</td></tr></table>';
-        //$plantilla="si sale";
-
-        $user = Auth::user();
-
-        $user_terminal = $user->user_terminal;
+        $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
 
         if(is_null($user_terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
-            return redirect()->back();  
+            return redirect()->back();
         }
 
         $terminal = $user_terminal->terminal;
@@ -63,6 +60,7 @@ class TransporteSalesController extends Controller
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
+        $configuration = Configuration::first();
 
         return view('transporte::bus.Sales',compact(
             'programaciones',
@@ -72,7 +70,8 @@ class TransporteSalesController extends Controller
             'establishment',
             'document_types_invoice',
             'payment_method_types',
-            'payment_destinations'
+            'payment_destinations',
+            'configuration'
         ));
     }
 
@@ -171,7 +170,7 @@ class TransporteSalesController extends Controller
                 }else {
                     $seat->estado_asiento_id = 1;
                     $seat->pasajero = null;
-                } 
+                }
             }
             $programacion->transporte->asientos = $listSeats;
         }
@@ -186,20 +185,19 @@ class TransporteSalesController extends Controller
 
         DB::connection('tenant')->beginTransaction();
         try {
-            
-    
+
+
             // $asiento = TransporteAsiento::find($request->asiento_id);
             $programacion = TransporteProgramacion::find($request->programacion_id);
-    
+
             // $hours = $this->convertToSeconds($programacion->tiempo_aproximado) / 3600; //convierto a horas
 
             $fechaSalida = "{$request->fecha_salida} {$programacion->hora_salida}";
-    
+
             // $fechaLLegada = Carbon::parse($fechaSalida)->addHours($hours)
             // ->subMinute();
 
             $attributes = $request->only([
-                'serie',
                 'document_id',
                 'pasajero_id',
                 'asiento_id',
@@ -215,7 +213,7 @@ class TransporteSalesController extends Controller
                     // 'fecha_llegada' => $fechaLLegada
                 ])
             );
-    
+
             DB::connection('tenant')->commit();
 
             return response()->json([
@@ -299,5 +297,5 @@ class TransporteSalesController extends Controller
     }
 
 
-    
+
 }

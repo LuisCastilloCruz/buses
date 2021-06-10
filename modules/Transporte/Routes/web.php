@@ -46,21 +46,22 @@ if ($hostname) {
 				Route::post('terminales/store','TransporteTerminalesController@store');
 				Route::put('terminales/{terminal}/update','TransporteTerminalesController@update');
 				Route::delete('terminales/{terminal}/delete','TransporteTerminalesController@destroy');
-
+                // Pasajes
+                Route::get('pasajes', 'TransportePasajeController@index');
 				//programaciones
 				Route::get('programaciones','TransporteProgramacionesController@index');
 				Route::post('programaciones/store','TransporteProgramacionesController@store');
 				Route::put('programaciones/{programacion}/update','TransporteProgramacionesController@update');
 				Route::put('programaciones/{programacion}/configuracion-rutas','TransporteProgramacionesController@configuracionRutas');
 				Route::delete('programaciones/{programacion}/delete','TransporteProgramacionesController@destroy');
-				
+
 
 				//Manifiestos
 				Route::get('manifiestos/','TransporteManifiestosController@index');
 				Route::post('manifiestos/get-programaciones','TransporteManifiestosController@getProgramaciones');
 				Route::post('manifiestos/guardar-manifiesto','TransporteManifiestosController@store');
 				Route::get('manifiestos/{manifiesto}/imprimir-manifiesto','TransporteManifiestosController@imprimirManifiesto');
-			
+
 			});
 	});
 }

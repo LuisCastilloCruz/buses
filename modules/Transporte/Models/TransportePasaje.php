@@ -14,13 +14,11 @@ class TransportePasaje extends ModelTenant
     protected $table = 'transporte_pasajes';
 
     protected $fillable = [
-        'serie',
         'document_id',
         'pasajero_id',
         'asiento_id',
         'precio',
         'fecha_salida',
-        // 'fecha_llegada',
         'programacion_id',
         'estado_asiento_id'
 

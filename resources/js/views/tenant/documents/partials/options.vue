@@ -24,8 +24,10 @@
                 <p>Imprimir A4</p>
             </div>
              <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
-
-                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket')">
+                 <button v-if="this.configuration.print_silent" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket')">
+                     <i class="fa fa-receipt"></i>
+                 </button>
+                <button v-else type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket')">
                     <i class="fa fa-receipt"></i>
                 </button>
                  <p>Imprimir Ticket 80MM</p>
@@ -33,10 +35,13 @@
 
              <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
 
-                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket_50')">
+                 <button v-if="this.configuration.print_silent" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket_50')">
+                     <i class="fa fa-receipt"></i>
+                 </button>
+                <button  v-else type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket_50')">
                     <i class="fa fa-receipt"></i>
                 </button>
-                <p>Imprimir Ticket 50MM</p>
+                <p>Imprimir Ticket 50MM {{this.configuration.print_silent}}</p>
             </div>
 
             <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
@@ -103,7 +108,7 @@
 
 <script>
     export default {
-        props: ['showDialog', 'recordId', 'showClose','isContingency','generatDispatch','dispatchId'],
+        props: ['showDialog', 'recordId', 'showClose','isContingency','generatDispatch','dispatchId','configuration'],
         data() {
             return {
                 titleDialog: null,
@@ -116,7 +121,7 @@
             }
         },
         async created() {
-            this.initForm()
+            this.initForm();
         },
         methods: {
             clickSendWhatsapp() {
@@ -152,7 +157,6 @@
                 }
             },
             async create() {
-
                 await this.getCompany()
                 await this.getRecord()
 
@@ -160,6 +164,7 @@
                     this.locked_emission = response.data
                     // console.log(response)
                 });
+                //console.log(this.configuration);
             },
             async getCompany(){
 
@@ -180,6 +185,30 @@
             },
             clickPrint(format){
                 window.open(`/print/document/${this.form.external_id}/${format}`, '_blank');
+            },
+            clickPrintSilent(format){
+                const urlPdf = `${window.location.origin}/print/document/${this.form.external_id}/${format}`;
+                if(localStorage.printer_silent==""){
+                    this.$message.error("Configure el nombre de la impresora corréctamente en Configuración, avanzado, Imprimir Ticket en forma silenciosa...");
+                    return null;
+                }
+                const url = `http://localhost:8080/url?urlPdf=${urlPdf}&impresora=${nombreImpresora}`;
+                // Elemento DOM, solo es para depurar
+                const $estado = "Imprimiendo...";
+
+                fetch(url)
+                    .then(respuesta => {
+                        // Si la respuesta es OK, entonces todo fue bien
+                        if (respuesta.status === 200) {
+                            this.$message.success("Se imprimió...")
+                        } else {
+                            // Si no, decodificamos el mensaje para ver el error
+                            respuesta.json()
+                                .then(mensaje => {
+                                    this.$message.error("Error imprimiendo: " + mensaje);
+                                });
+                        }
+                    });
             },
             clickDownloadImage() {
                 window.open(`${this.form.image_detraction}`, '_blank');

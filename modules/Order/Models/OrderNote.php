@@ -241,13 +241,13 @@ class OrderNote extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
-    
+
     public function inventory_kardex()
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
-    
+
     public function scopeWherePendingState($query, $params)
     {
 
@@ -258,7 +258,7 @@ class OrderNote extends ModelTenant
                             ->where('customer_id', $params['person_id']);
         }
 
-        
+
         return $query->doesntHave('documents')
                         ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id']);
@@ -274,10 +274,10 @@ class OrderNote extends ModelTenant
             return $query->whereHas('documents')
                             ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                             ->where('customer_id', $params['person_id']);
-                            
+
         }
 
-        
+
         return $query->whereHas('documents')
                         ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id']);
@@ -292,12 +292,16 @@ class OrderNote extends ModelTenant
 
             return $query->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                             ->where('customer_id', $params['person_id']);
-                        
+
         }
 
         return $query->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id']);
 
+    }
+    public function scopeWhereNotSent($query)
+    {
+        return  $query->whereNotIn('state_type_id', ['11'])->where('date_of_issue','<=',date('Y-m-d'));
     }
 
 }

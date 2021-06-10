@@ -11,6 +11,13 @@ if($current_hostname) {
 
         Route::middleware(['auth', 'locked.tenant'])->group(function () {
 
+            Route::prefix('order-notes/not-sent')->group(function() {
+                Route::get('', 'OrderNoteController@index_not_sent')->name('tenant.order_notes.not_sent')->middleware('redirect.level','tenant.internal.mode');
+                Route::get('records', 'OrderNoteController@record_not_sent');
+                Route::get('data_table', 'OrderNoteController@data_table_not_sent');
+
+            });
+
             Route::prefix('order-notes')->group(function () {
 
                 Route::get('/', 'OrderNoteController@index')->name('tenant.order_notes.index')->middleware(['redirect.level']);

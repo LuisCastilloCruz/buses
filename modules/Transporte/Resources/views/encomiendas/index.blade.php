@@ -1,7 +1,7 @@
 @extends('tenant.layouts.app')
 
 @section('content')
-    <tenant-transporte-encomiendas 
+    <tenant-transporte-encomiendas
     :encomiendas='@json($encomiendas)'
     :estados-pago='@json($estadosPagos)'
     :estados-envio='@json($estadosEnvios)'
@@ -11,6 +11,7 @@
     :payment-method-types='@json($payment_method_types)'
     :payment-destinations='@json($payment_destinations)'
     :user-terminal='@json($user_terminal)'
+    :configuration='@json($configuration)'
     />
 
 @endsection

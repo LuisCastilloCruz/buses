@@ -1,6 +1,6 @@
 <template>
 
-    <div v-loading="loadingProgramaciones">        
+    <div v-loading="loadingProgramaciones">
 
         <div class="row">
             <div class="col-12">
@@ -43,72 +43,73 @@
                                 </el-date-picker>
                             </div>
                         </div>
-                        <div class="col-3">
-                            <div  class="form-group">
-                                <label for="">Serie</label>
-                                <el-select v-model="serie"  popper-class="el-select-customers"
-                                placeholder="Serie"
-                                >
-                                    <el-option v-for="ser in series" :key="ser.id" :value="ser.id" :label="ser.number">
+                        <div v-if="ruta" class="col-4">
+                            <div v-if="programaciones.length > 0" class="row mt-2">
+                                <div class="col-12">
+                                    <table class="table table-striped table-border">
+                                        <thead>
+                                        <tr>
 
-                                    </el-option>
-                                </el-select>
-                                <!-- <el-input v-model="serie"></el-input> -->
+                                            <th>Vehiculo</th>
+                                            <th>Hora salida</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="programacion in programaciones" :key="programacion.id">
+
+                                            <td>{{ programacion.transporte.placa }}</td>
+                                            <td>{{ programacion.hora_salida }}</td>
+                                            <td>
+                                                <template v-if="!selectProgramacion">
+                                                    <el-button type="success" size="mini" @click="seleccionar(programacion)">
+                                                        <i class="fa fa-check"></i>
+                                                    </el-button>
+                                                </template>
+                                                <template v-else>
+                                                    <el-button v-if="selectProgramacion.id == programacion.id" type="danger" size="mini" @click="quitar">
+                                                        <i class="fa fa-minus-circle"></i>
+                                                    </el-button>
+                                                    <el-button v-else type="success" size="mini" @click="seleccionar(programacion)">
+                                                        <i class="fa fa-check"></i>
+                                                    </el-button>
+                                                </template>
+
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
                             </div>
-                        </div>
-                        
-                    </div>
-                    <div v-if="programaciones.length > 0" class="row mt-2">
-                        <div class="col-12">
-                            <table class="table table-striped table-border">
-                                <thead>
-                                    <tr>
-                                       
-                                        <th>Vehiculo</th>
-                                        <th>Hora salida</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="programacion in programaciones" :key="programacion.id">
-                                        
-                                        <td>{{ programacion.transporte.placa }}</td>
-                                        <td>{{ programacion.hora_salida }}</td>
-                                        <td>
-                                            <template v-if="!selectProgramacion">
-                                                <el-button type="success" size="mini" @click="seleccionar(programacion)">
-                                                    <i class="fa fa-check"></i>
-                                                </el-button>
-                                            </template>
-                                            <template v-else>
-                                                <el-button v-if="selectProgramacion.id == programacion.id" type="danger" size="mini" @click="quitar">
-                                                    <i class="fa fa-minus-circle"></i>
-                                                </el-button>
-                                                <el-button v-else type="success" size="mini" @click="seleccionar(programacion)">
-                                                    <i class="fa fa-check"></i>
-                                                </el-button>
-                                            </template>
-                                            
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        
-                        </div>
-                    </div>
-                    <div v-else class="row mt-2">
-                        <div class="col-12">
-                            <el-alert
-                                title="No hay programaciones"
-                                center
-                                type="info"
-                                :closable="false">
-                            </el-alert>
+                            <div v-else class="row mt-2">
+                                <div class="col-12">
+                                    <el-alert
+                                        title="No hay programaciones"
+                                        center
+                                        type="info"
+                                        :closable="false">
+                                    </el-alert>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <template v-if="asientos.length > 0" >
                         <div class="row justify-content-center">
+                            <div class="col-3">
+                                <div v-if="vehiculo" class="row justify-content-center">
+                                    <div class="form-group">
+                                        <label for="" class="pl-3 text-right pr-2" style="width:40%;float: left">Piso</label>
+                                        <div style="width: 60%;float: left">
+                                            <el-select v-model="piso" placeholder="Piso" :disabled="vehiculo.pisos == 1">
+                                                <el-option v-for="floor in vehiculo.pisos" :label="floor" :key="floor" :value="floor" >
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-3">
                                 <div class="form-group">
                                     <label for="">Disponible</label>
@@ -167,42 +168,32 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="vehiculo" class="row justify-content-center">
-                            <div class="col-3">
-                                <div class="form-group">
-                                    <label for="">Piso</label>
-                                    <el-select v-model="piso" placeholder="Piso" :disabled="vehiculo.pisos == 1">
-                                        <el-option v-for="floor in vehiculo.pisos" :label="floor" :key="floor" :value="floor" >
-                                        </el-option>
-                                    </el-select>
-                                </div>
-                            </div>
-                        </div>
+
                         <div class="row">
                             <bus v-if="piso == 1" :seats.sync="asientosPisoUno" @dbclick="dbClick"  />
                             <bus v-if="piso == 2" :seats.sync="asientosPisoDos" @dbclick="dbClick"  />
                         </div>
-                        
+
                     </template>
-                    
+
 
                 </el-card>
             </div>
-           
+
         </div>
-        <venta-asiento 
-        :visible.sync="visible" 
-        :asiento="asiento" 
-        :estados-asientos="estadoAsientos" 
+        <venta-asiento
+        :visible.sync="visible"
+        :asiento="asiento"
+        :estados-asientos="estadoAsientos"
         :programacion="selectProgramacion"
         :fecha-salida="fecha_salida"
         @onUpdateItem="onUpdateItem"
-        :serie="serie"
         :establishment="establishment"
         :series="series"
         :document-types-invoice="documentTypesInvoice"
         :payment-method-types="paymentMethodTypes"
         :payment-destinations="paymentDestinations"
+        :configuration="configuration"
         @onSuccessVenta="onSuccessVenta"
          />
 
@@ -211,10 +202,11 @@
         :recordId="documentId"
         :isContingency="false"
         :showClose="true"
+        :configuration="configuration"
         ></document-options>
     </div>
-    
-    
+
+
 </template>
 <script>
 import Bus from './Bus';
@@ -259,7 +251,11 @@ export default {
             type: Array,
             required: true,
         },
-        
+        configuration:{
+            type: Object,
+            required: true,
+        }
+
     },
     components:{
         Bus,
@@ -280,7 +276,7 @@ export default {
 
             terminales:[],
             ruta:null,
-            
+
 
             fecha_salida:'',
             destino:null,
@@ -293,7 +289,6 @@ export default {
 
             visible:false,
             asiento:{},
-            serie:null,
 
             //document
             showDialogDocumentOptions:false,
@@ -309,7 +304,7 @@ export default {
         asientosPisoDos:function(){
             return this.asientos.filter(  asiento => asiento.piso == 2);
         }
-        
+
     },
     watch:{
         // ciudad(newVal){
@@ -345,7 +340,7 @@ export default {
                     fill:'#1b99a5',
                     animation:'none'
                 }
-                
+
             }else if(estado == 3){ //Reservado
 
                 if(config.isSeat){
@@ -360,8 +355,8 @@ export default {
                     animation:'none'
                 }
 
-                
-                
+
+
             }
         },
 
@@ -392,12 +387,6 @@ export default {
 
         dbClick(asiento){
             // asiento.estado_asiento_id = 1;
-            if(!this.serie){
-                return this.$message({
-                    type: 'info',
-                    message: 'Debe seleccionar la serie'
-                });
-            }
             if(asiento.type != 'ss') return;
             this.asiento = asiento;
             this.visible = true;
@@ -429,9 +418,9 @@ export default {
             this.vehiculo = this.selectProgramacion.transporte;
         },
 
-        
 
-        
+
+
     }
 }
 </script>

@@ -653,6 +653,7 @@
         <document-options :showDialog.sync="showDialogOptions"
                           :recordId="documentNewId"
                           :isContingency="is_contingency"
+                          :configuration="configuration"
                           :showClose="false"></document-options>
 
 
@@ -1816,7 +1817,8 @@
                 }
 
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form).then(response => {
+                this.$http.post(`/${this.resource}`, this.form).
+                then(response => {
                     if (response.data.success) {
                         this.$eventHub.$emit('reloadDataItems', null)
                         this.resetForm();
@@ -1829,16 +1831,11 @@
                         this.saveCashDocument();
                     }
                     else {
-                        this.$message.error(response.data.message);
+                        this.$message.error(response.data.data.message);
                     }
                 }).catch(error => {
-
-                    //alert('sdsd')
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data.data;
-                    }
-                    else {
-                        this.$message.error(error.response.data.data.message);
+                    if (error.response) {
+                        this.$message.error(error.response.data.message);
                     }
                 }).then(() => {
                     this.loading_submit = false;

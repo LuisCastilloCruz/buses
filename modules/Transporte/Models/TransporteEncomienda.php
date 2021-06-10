@@ -12,7 +12,6 @@ class TransporteEncomienda extends ModelTenant
     protected $table = 'transporte_encomiendas';
     protected $fillable = [
         'document_id',
-        'descripcion',
         'remitente_id',
         'destinatario_id',
         'fecha_salida',
@@ -38,7 +37,7 @@ class TransporteEncomienda extends ModelTenant
         return $this->belongsTo(Document::class,'document_id','id');
     }
 
-    // public function getFechaSalidaAttribute($value){ 
+    // public function getFechaSalidaAttribute($value){
 
     //     setlocale(LC_TIME, 'es');
     //     $date = \Carbon\Carbon::parse($value);

@@ -48,6 +48,7 @@ class ConfigurationResource extends JsonResource
             'PrinterNombre2'=>$this->PrinterNombre2,
             'PrinterRuta2'=>$this->PrinterRuta2,
             'PrinterTipoConexion2'=>$this->PrinterTipoConexion2,
+            'print_silent'=>(bool) $this->print_silent,
         ];
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
-use App\Models\System\Client;
 use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
@@ -23,6 +23,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Modules\Finance\Traits\FinanceTrait;
 use Illuminate\Support\Facades\Session;
+use Modules\Transporte\Models\TransporteUserTerminal;
 
 class TransporteEncomiendaController extends Controller
 {
@@ -37,19 +38,19 @@ class TransporteEncomiendaController extends Controller
 
         $estadosPagos = TransporteEstadoPagoEncomienda::all();
 
-        $user = Auth::user();
+        $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
 
-        $user_terminal = $user->user_terminal;
-
-        if(is_null($user_terminal)) {
+        if(is_null($user_terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
-        } 
+        }
 
-        
+        $terminal = $user_terminal->terminal;
+
+
         $estadosEnvios = TransporteEstadoEnvio::all();
-        
+
         $encomiendas = TransporteEncomienda::with([
             'document.items',
             'programacion' => function($progamacion){
@@ -71,7 +72,8 @@ class TransporteEncomiendaController extends Controller
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
-        
+        $configuration = Configuration::first();
+
 
         return view('transporte::encomiendas.index', compact(
             'encomiendas',
@@ -82,7 +84,8 @@ class TransporteEncomiendaController extends Controller
             'document_types_invoice',
             'payment_method_types',
             'payment_destinations',
-            'user_terminal'
+            'user_terminal',
+            'configuration'
         ));
     }
 
@@ -123,7 +126,7 @@ class TransporteEncomiendaController extends Controller
     }
 
     public function getDestinos(Request $request,TransporteTerminales $terminal){
-        
+
         $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
         ->where('terminal_origen_id',$terminal->id);
         return response()->json([
@@ -173,15 +176,15 @@ class TransporteEncomiendaController extends Controller
                     'estado_envio_id'
                 )
             );
-    
+
             $encomienda->remitente;
             $encomienda->destinatario;
             $encomienda->programacion;
             $encomienda->estadoEnvio;
             $encomienda->estadoPago;
             $encomienda->document;
-    
-    
+
+
             return response()->json([
                 'success' => true,
                 'encomienda' => $encomienda,
@@ -194,8 +197,8 @@ class TransporteEncomiendaController extends Controller
                 'message' => 'Ocurrió un error al procesar su petición'
             ]);
         }
-        
-        
+
+
 
     }
 
@@ -241,7 +244,7 @@ class TransporteEncomiendaController extends Controller
                     'estado_envio_id'
                 )
             );
-    
+
             $encomienda->remitente;
             $encomienda->destinatario;
             $encomienda->programacion;

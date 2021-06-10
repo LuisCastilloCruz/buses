@@ -46,7 +46,8 @@ class Configuration extends ModelTenant
         'PrinterTipoConexion1',
         'PrinterNombre2',
         'PrinterRuta2',
-        'PrinterTipoConexion2'
+        'PrinterTipoConexion2',
+        'print_silent'
     ];
 
     public function setPlanAttribute($value)

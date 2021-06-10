@@ -32,7 +32,7 @@ class TransporteManifiestosController extends Controller
             'serie'
         ])->get();
 
-        
+
         return view('transporte::manifiestos.index',compact('series','choferes','manifiestos'));
     }
 
@@ -91,7 +91,7 @@ class TransporteManifiestosController extends Controller
                 'message' => 'Se ha generado el manifiesto correctamente',
                 'manifiesto' => $manifiesto,
             ]);
-            
+
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
@@ -208,7 +208,7 @@ class TransporteManifiestosController extends Controller
             'programacion',
             'manifiesto',
             'encomiendas',
-            'vehiculo',
+            'vehiculo'
         ));
 
         $pdf->WriteHTML($content);

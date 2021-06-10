@@ -1,0 +1,181 @@
+<template>
+    <div>
+        <div class="page-header pr-0">
+            <h2>
+                <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
+            </h2>
+            <ol class="breadcrumbs">
+                <li class="active"><span>LISTADO DE PASAJES VENDIDOS</span></li>
+            </ol>
+            <div class="right-wrapper pull-right">
+                <div class="btn-group flex-wrap">
+                    <button
+                        type="button"
+                        class="btn btn-custom btn-sm mt-2 mr-2"
+                        @click="onCreate"
+                    >
+                        <i class="fa fa-plus-circle"></i> Nuevo
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-0">
+            <div class="card-header bg-info">
+                <h3 class="my-0">Listado de pasajes</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>fecha </th>
+                            <th>Cliente</th>
+                            <th>Número</th>
+                            <th>Estado Sunat</th>
+                            <th>T.Gravado</th>
+                            <th>T.Igv</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="pasaje in listPasajes" :key="pasaje.id">
+                            <td class="text-right">{{ pasaje.id }}</td>
+                            <td>{{ pasaje.fecha_salida }}</td>
+                            <td>{{ pasaje.fecha_salida }}</td>
+                            <!-- <td>{{ item.categoria }}</td> -->
+                            <td class="text-center">
+                                <el-button type="success" @click="onEdit(pasaje)">
+                                    <i class="fa fa-edit"></i>
+                                </el-button>
+                                <el-button type="primary" @click="verComprobante(pasaje)">
+                                    <i class="fa fa-file-alt"></i>
+                                </el-button>
+                                <el-button type="danger" @click="onDelete(pasaje)">
+                                    <i class="fa fa-trash"></i>
+                                </el-button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <document-options
+            :showDialog.sync="showDialogDocumentOptions"
+            :recordId="documentNewId"
+            :isContingency="false"
+            :showClose="true"
+            :configuration="configuration"
+        ></document-options>
+    </div>
+</template>
+
+<script>
+import DocumentOptions from "@views/documents/partials/options.vue";
+
+export default {
+    props: {
+        pasajes:{
+            type:Array,
+            required:true,
+            default:() => []
+        },
+        establishment:{
+            type:Object,
+            required:true
+        },
+        series:{
+            type:Array,
+            default:() => []
+        },
+        documentTypesInvoice:{
+            type:Array,
+            default:() => []
+        },
+        paymentMethodTypes: {
+            type: Array,
+            required: true,
+        },
+        paymentDestinations: {
+            type: Array,
+            required: true,
+        },
+        userTerminal:{
+            type:Object,
+            default:{}
+        },
+        configuration:{
+            type: Object,
+            required: true,
+        }
+    },
+    components: {
+        DocumentOptions
+    },
+    created(){
+        this.listPasajes = this.pasajes;
+        console.log(this.listPasajes.document);
+    },
+    data() {
+        return {
+            listPasajes: [],
+            openModalAddEdit: false,
+            pasaje:null,
+            loading: false,
+            edit:false,
+            documentNewId:null,
+            showDialogDocumentOptions:false,
+        };
+    },
+    mounted() {
+    },
+    methods: {
+        onDelete(item) {
+            this.$confirm(`¿estás seguro de eliminar al elemento ${item.nombre}?`, 'Atención', {
+                confirmButtonText: 'Si, continuar',
+                cancelButtonText: 'No, cerrar',
+                type: 'warning'
+            }).then(() => {
+                this.$http.delete(`/transportes/choferes/${item.id}/delete`).then(response => {
+                    this.$message({
+                        type: 'success',
+                        message: response.data.message
+                    });
+                    this.items = this.items.filter(i => i.id !== item.id);
+                }).catch(error => {
+                    this.axiosError(error)
+                });
+            }).catch();
+        },
+        onEdit(pasaje) {
+            this.edit = true;
+            this.pasaje = { ...pasaje };
+            this.openModalAddEdit = true;
+        },
+        onUpdateItem(pasaje) {
+            // console.log(pasaje);
+            this.items = this.listPasajes.map((i) => {
+                if (i.id === pasaje.id) {
+                    return pasaje;
+                }
+                return i;
+            });
+            this.edit = false;
+        },
+        onAddItem(pasaje) {
+            this.documentNewId = pasaje.document_id;
+            this.showDialogDocumentOptions = true;
+            this.listPasajes.unshift(pasaje);
+        },
+        onCreate() {
+            window.location.href="/transportes/sales";
+        },
+        verComprobante(pasaje){
+            this.documentNewId = pasaje.document_id;
+            this.showDialogDocumentOptions = true;
+        }
+    },
+};
+</script>

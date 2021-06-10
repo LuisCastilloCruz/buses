@@ -31,7 +31,6 @@ class RealizarVentaRequest extends FormRequest
             'fecha_salida' => ['required'],
             'pasajero_id' => ['required'],
             'programacion_id' => ['required'],
-            'serie' => ['required']
         ];
     }
 }

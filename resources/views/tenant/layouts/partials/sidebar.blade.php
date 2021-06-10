@@ -1025,15 +1025,6 @@
                             <span>Transportes</span>
                         </a>
                             <ul class="nav nav-children">
-                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'manifiestos')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ url('transportes/manifiestos') }}">Manifiestos</a>
-                                </li>
-                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'sales')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ url('transportes/sales') }}">Pasajes</a>
-                                </li>
-                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'encomiendas')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ url('transportes/encomiendas') }}">Encomiendas</a>
-                                </li>
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'choferes')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/choferes') }}">Choferes</a>
                                 </li>
@@ -1048,6 +1039,15 @@
                                 </li>
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'programaciones')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/programaciones') }}">Programaciones</a>
+                                </li>
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'sales')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/pasajes') }}">Pasajes</a>
+                                </li>
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'encomiendas')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/encomiendas') }}">Encomiendas</a>
+                                </li>
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'manifiestos')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/manifiestos') }}">Manifiestos</a>
                                 </li>
                             </ul>
                     </li>

@@ -197,6 +197,7 @@ Vue.component('tenant-order-notes-index', require('../../modules/Order/Resources
 Vue.component('tenant-order-notes-form', require('../../modules/Order/Resources/assets/js/views/order_notes/form.vue'));
 Vue.component('tenant-order-notes-edit', require('../../modules/Order/Resources/assets/js/views/order_notes/form_edit.vue'));
 Vue.component('tenant-report-valued-kardex', require('../../modules/Inventory/Resources/assets/js/valued_kardex/index.vue'));
+Vue.component('tenant-order-notes-not-sent', require('../../modules/Order/Resources/assets/js/views/order_notes/not_sent.vue'));
 
 //Finance
 Vue.component('tenant-finance-global-payments-index', require('../../modules/Finance/Resources/assets/js/views/global_payments/index.vue'));
@@ -286,6 +287,9 @@ Vue.component('tenant-transporte-bus-draggable', require('@viewsModuleTransporte
 
 // Transporte :: encomiendas
 Vue.component('tenant-transporte-encomiendas', require('@viewsModuleTransporte/encomiendas/List.vue'));
+
+// Transporte :: encomiendas
+Vue.component('tenant-transporte-pasajes', require('@viewsModuleTransporte/pasajes/List.vue'));
 
 //Transporte :: terminales
 

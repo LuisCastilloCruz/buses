@@ -654,11 +654,12 @@
                 <strong>Vendedor:</strong>
             </td>
         </tr>
-
-                <tr>
-                    <td>{{ $document->user->name }}</td>
-                </tr>
-
+        <tr>
+            @if ($document->seller)
+                <td>{{ $document->seller->name }}</td>
+            @else
+                <td>{{ $document->user->name }}</td>
+            @endif
         </tr>
 
     </table>

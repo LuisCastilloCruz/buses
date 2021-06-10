@@ -559,7 +559,11 @@
             @endphp
             @foreach($payments as $row)
                 <tr>
-                    <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                    <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td><td style="width: 100px"> <strong>Vendedor</strong> @if ($document->seller)
+                        <td>{{ $document->seller->name }}</td>
+                    @else
+                        <td>{{ $document->user->name }}</td>
+                        @endif</td>
                 </tr>
             @endforeach
         </tr>
