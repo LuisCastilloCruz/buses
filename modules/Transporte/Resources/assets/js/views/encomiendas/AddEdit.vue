@@ -223,7 +223,7 @@
                         
                     </div>
                 </div>
-                <div class="row mt-2">
+                <div v-if="!edit" class="row mt-2">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header bg-info">
@@ -700,6 +700,7 @@ export default {
             this.$http
                 .put(`/transportes/choferes/${this.chofer.id}/update`, this.form)
                 .then((response) => {
+                    
                     this.$emit("onUpdateItem", response.data.data);
                     this.onClose();
                 })
@@ -716,11 +717,14 @@ export default {
             this.errors = {};
 
             try{
-                await this.$http.post(`/transportes/encomiendas/store`,this.encomienda);
+                const { data } = await this.$http.post(`/transportes/encomiendas/store`,this.encomienda);
                 this.$emit('onAddItem',data.encomienda);
                 this.onClose();
             }catch(error){
-                this.axiosError(error);
+                if(error.response){
+                    this.axiosError(error);
+                }
+                
             }
         },
         onSubmit() {
@@ -817,7 +821,6 @@ export default {
                     this.programaciones.push(this.encomienda.programacion);
                 } 
                 this.document = this.encomienda.document;
-                console.log(this.encomienda.programacion_id);
                 this.document.items.forEach( item => {
                     this.total += parseFloat(item.total);
                 });
@@ -1060,11 +1063,14 @@ export default {
             );
         },
         async updateEncomienda(evt){
+            this.loading = true;
             await this.$http.put(`/transportes/encomiendas/${this.encomienda.id}/update`,this.encomienda)
             .then(({ data }) => {
+                this.$message.success(data.message);
                 this.$emit('onUpdateItem',data.encomienda);
                 this.onClose();
             }).finally(() => {
+                this.loading = false;
                 this.errors = {};
             }).catch((error) => {
                 this.axiosError(error);

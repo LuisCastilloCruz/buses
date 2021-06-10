@@ -19,6 +19,7 @@ if ($hostname) {
 				Route::put('vehiculos/{id}/update', 'TransporteVehiculoController@update');
 				Route::delete('vehiculos/{id}/delete', 'TransporteVehiculoController@destroy');
 				Route::put('vehiculos/{vehiculo}/guardar-asientos','TransporteVehiculoController@guardarAsientos');
+				Route::delete('vehiculos/{asiento}/eliminar','TransporteVehiculoController@eliminarAsiento');
 				// Choferes
 				Route::get('choferes', 'TransporteChoferController@index');
 				Route::post('choferes/store', 'TransporteChoferController@store');

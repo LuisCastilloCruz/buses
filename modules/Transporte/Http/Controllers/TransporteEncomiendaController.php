@@ -252,6 +252,7 @@ class TransporteEncomiendaController extends Controller
 
             return response()->json([
                 'success' => true,
+                'message' => 'Se ha actualizado la información',
                 'encomienda' => $encomienda,
             ]);
 

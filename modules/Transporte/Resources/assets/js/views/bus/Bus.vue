@@ -7,6 +7,12 @@
             v-on:dblclick="dbClick(asiento)"
             
             >
+                <div v-if="drag" class="remove-element" @click="onDelete(asiento,index)">
+                    <el-tooltip class="item" effect="dark" content="Eliminar" placement="top-start">
+                        <i class="fa fa-minus"></i>
+                    </el-tooltip>
+                    
+                </div>
                 <!-- Asiento normal -->
                 <template v-if="asiento.type == 'ss'">
                     <svg  @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
@@ -290,10 +296,25 @@ export default {
             this.target.style.top = y + 'px'; 
         },
 
+        onDelete(asiento,index){
+            this.$emit('onDelete',asiento,index);
+        }
+
     }
     
 }
 </script>
-<style lang="css" >
-
+<style >
+.remove-element{
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    background-color: red;
+    border-radius: 50%;
+    cursor: pointer;
+    left: calc(100% - 5px);
+    display: flex;
+    justify-content: center;
+    color: #ffff;
+}
 </style>

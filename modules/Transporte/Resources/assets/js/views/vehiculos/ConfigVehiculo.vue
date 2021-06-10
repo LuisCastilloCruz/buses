@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <bus v-if="piso == 1" :seats.sync="asientosPisoUno" drag />
+        <bus v-if="piso == 1" :seats.sync="asientosPisoUno" drag @onDelete="eliminar" />
         <bus v-if="piso == 2" :seats.sync="asientosPisoDos" drag />
 
         <div class="row mt-2">
@@ -148,6 +148,62 @@ export default {
                 this.axiosError(error);
             });
         },
+        eliminar(asiento,index){
+
+            this.$msgbox({
+                title:'Eliminar',
+                message:'¿Desea eliminar el asiento?',
+                showCancelButton: true,
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancelar',
+                beforeClose:async(action, instance, done) => {
+                    if (action === 'confirm') {
+                        instance.confirmButtonLoading = true;
+                        instance.confirmButtonText = 'Cargando...';
+                        if(asiento.id){
+                            try{
+                                const { data } = await this.$http.delete(`/transportes/vehiculos/${asiento.id}/eliminar`);
+                                instance.confirmButtonLoading = false;
+                                if(!data.success){ 
+                                    this.$message({
+                                        type: 'error',
+                                        message: data.message
+                                    }); 
+                                    done();
+                                    return;
+                                }
+                                this.asientos.splice(index,1);
+                                this.$message({
+                                    type: 'success',
+                                    message: data.message
+                                }); 
+
+                                done();
+
+
+                            }catch(error){
+                                this.$axiosError(error);
+                                done();
+                            }
+                        }else {
+                            this.asientos.splice(index,1);
+                            instance.confirmButtonLoading = false;
+                            this.$message({
+                                type: 'success',
+                                message: 'Se ha eliminado el asiento'
+                            }); 
+                            done();
+                        }
+                        
+                    } else {
+                        done();
+                    }
+                }
+            });
+           
+
+
+        }
 
     }
     

@@ -42,11 +42,13 @@ class TransporteVehiculoController extends Controller
      */
     public function store(Request $request)
     {
-        $room = TransporteVehiculo::create($request->only('placa', 'nombre','asientos','pisos'));
+
+        $data = array_merge($request->only('placa', 'nombre','pisos'),['asientos' => 0]);
+        $vehiculo = TransporteVehiculo::create($data);
 
         return response()->json([
             'success' => true,
-            'data'    => $room
+            'data'    => $vehiculo
         ], 200);
     }
 
@@ -79,7 +81,7 @@ class TransporteVehiculoController extends Controller
     public function update(TransporteVehiculoRequest $request, $id)
     {
         $vehiculo = TransporteVehiculo::findOrFail($id);
-        $vehiculo->fill($request->only('placa', 'nombre','asientos','pisos'));
+        $vehiculo->fill($request->only('placa', 'nombre','pisos'));
         $vehiculo->save();
 
         return response()->json([
@@ -181,5 +183,21 @@ class TransporteVehiculoController extends Controller
 
         }
         
+    }
+
+    public function eliminarAsiento(TransporteAsiento $asiento){
+        try{
+            $asiento->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se ha eliminado el asiento'
+            ],200);
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puedo eliminar el asiento'
+            ],500);
+        }
     }
 }
