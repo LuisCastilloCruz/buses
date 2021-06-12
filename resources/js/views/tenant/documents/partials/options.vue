@@ -192,6 +192,7 @@
                     this.$message.error("Configure el nombre de la impresora corréctamente en Configuración, avanzado, Imprimir Ticket en forma silenciosa...");
                     return null;
                 }
+                const nombreImpresora = localStorage.printer_silent;
                 const url = `http://localhost:8080/url?urlPdf=${urlPdf}&impresora=${nombreImpresora}`;
                 // Elemento DOM, solo es para depurar
                 const $estado = "Imprimiendo...";
