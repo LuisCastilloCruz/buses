@@ -250,8 +250,20 @@ export default {
                     fill:'#fff',
                     animation:'none'
                 }
-
                 
+            }else if(asiento.estado_asiento_id == 4){ //Seleccionado
+
+                if(config.isSeat){
+                    return {
+                        fill:'#003c71',
+                        animation:'reservado 1s infinite'
+                    }
+                }
+
+                return {
+                    fill:'#003c71',
+                    animation:'none'
+                }
                 
             }
         },

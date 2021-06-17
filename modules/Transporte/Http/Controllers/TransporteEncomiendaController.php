@@ -51,32 +51,18 @@ class TransporteEncomiendaController extends Controller
 
         $estadosEnvios = TransporteEstadoEnvio::all();
 
-        $encomiendas = TransporteEncomienda::with([
-            'document.items',
-            'programacion' => function($progamacion){
-                return $progamacion->with([
-                    'vehiculo:id,placa',
-                    'origen:id,nombre',
-                    'destino:id,nombre',
-                ]);
-            },
-            'remitente:id,name',
-            'destinatario:id,name',
-            'estadoPago',
-            'estadoEnvio'
-        ])->orderBy('id', 'DESC')
-        ->get();
+        $document_type_03_filter = config('tenant.document_type_03_filter');
+        
 
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
         $series = Series::where('establishment_id', $establishment->id)->get();
-        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80',100,33])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::first();
 
 
         return view('transporte::encomiendas.index', compact(
-            'encomiendas',
             'estadosPagos',
             'estadosEnvios',
             'establishment',
@@ -85,7 +71,8 @@ class TransporteEncomiendaController extends Controller
             'payment_method_types',
             'payment_destinations',
             'user_terminal',
-            'configuration'
+            'configuration',
+            'document_type_03_filter'
         ));
     }
 
@@ -96,6 +83,39 @@ class TransporteEncomiendaController extends Controller
     public function create()
     {
         return view('transporte::create');
+    }
+
+
+    public function getEncomiendas(){
+
+        try{
+
+            $encomiendas = TransporteEncomienda::with([
+                'document.items',
+                'programacion' => function($progamacion){
+                    return $progamacion->with([
+                        'vehiculo:id,placa',
+                        'origen:id,nombre',
+                        'destino:id,nombre',
+                    ]);
+                },
+                'remitente:id,name',
+                'destinatario:id,name',
+                'estadoPago',
+                'estadoEnvio'
+            ])->orderBy('id', 'DESC')
+            ->get();
+
+            return response()->json($encomiendas,200);
+
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Lo sentimos ocurrio un error en su petición'
+            ],500);
+        }
+        
+
+        
     }
 
 
@@ -147,7 +167,7 @@ class TransporteEncomiendaController extends Controller
         if($date->isSameDay($today)){
             /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
             $time = date('h:i:s');
-            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%h:%i:%s') >= '{$time}'");
+            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%I:%S') >= '{$time}'");
         }
 
         return response()->json([
@@ -255,6 +275,7 @@ class TransporteEncomiendaController extends Controller
 
             return response()->json([
                 'success' => true,
+                'message' => 'Se ha actualizado la información',
                 'encomienda' => $encomienda,
             ]);
 
@@ -272,8 +293,27 @@ class TransporteEncomiendaController extends Controller
      * @param int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(TransporteEncomienda $encomienda)
     {
         //
+
+        try{
+
+            $encomienda->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se ha actualizado la información con éxito'
+            ]);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lo sentimos ocurrió un error'
+            ]);
+
+        }
+
     }
 }

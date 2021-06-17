@@ -8,6 +8,8 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use Carbon\Carbon;
 use DateTime;
+use Exception;
+use Illuminate\Mail\Transport\Transport;
 use Modules\Transporte\Http\Requests\ManifiestoFormRequest;
 use Modules\Transporte\Models\TransporteChofer;
 use Modules\Transporte\Models\TransporteEncomienda;
@@ -26,42 +28,8 @@ class TransporteManifiestosController extends Controller
         $series = Series::where('establishment_id', $establishment->id)->get();
         $choferes = TransporteChofer::all();
 
-        $manifiestos = TransporteManifiesto::with([
-            'chofer',
-            'copiloto',
-            'serie'
-        ])->get();
-
-
-        return view('transporte::manifiestos.index',compact('series','choferes','manifiestos'));
+        return view('transporte::manifiestos.index',compact('series','choferes'));
     }
-
-    // public function getProgramaciones(Request $request){
-    //     $user = $request->user();
-
-    //     $date = Carbon::parse($request->fecha_salida);
-    //     $today = Carbon::now();
-
-    //     if(is_null($request->fecha_salida)){
-    //         return collect([]);
-    //     }
-
-    //     $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
-    //     ->where('terminal_origen_id',$user->terminal_id)
-    //     ->WhereEqualsOrBiggerDate($request->fecha_salida);
-
-    //     $date = Carbon::parse($request->fecha_salida);
-    //     $today = Carbon::now();
-
-    //     /* váliddo si es el mismo dia  */
-    //     if($date->isSameDay($today)){
-    //         /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
-    //         $time = date('h:i:s');
-    //         $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%h:%i:%s') >= '{$time}'");
-    //     }
-
-    //     return response()->json($programaciones->get(),200);
-    // }
 
 
     public function store(ManifiestoFormRequest $request){
@@ -84,6 +52,10 @@ class TransporteManifiestosController extends Controller
                 'fecha' => $request->fecha,
                 'hora' => $request->hora
             ]);
+
+            $manifiesto->chofer;
+            $manifiesto->copiloto;
+            $manifiesto->serie;
 
 
             return response()->json([
@@ -133,6 +105,7 @@ class TransporteManifiestosController extends Controller
         ])
         ->where('programacion_id',$programacion->id)
         ->whereDate('fecha_salida',$manifiesto->fecha)
+        ->where('estado_asiento_id','!=',4)
         ->get();
 
         $user = $request->user();
@@ -142,6 +115,7 @@ class TransporteManifiestosController extends Controller
             $programacion->where('terminal_origen_id',$user->terminal_id)
             ->whereTime('hora_salida',$manifiesto->hora);
         })
+        ->where('estado_asiento_id','!=',4)
         ->whereDate('fecha_salida',$manifiesto->fecha)->count();
 
 
@@ -157,6 +131,7 @@ class TransporteManifiestosController extends Controller
                 ->where('terminal_origen_id',$ruta->terminal_id);
             })
             ->whereDate('fecha_salida',$manifiesto->fecha)
+            ->where('estado_asiento_id','!=',4)
             ->get();
             $pasajesRecogidosRuta += count($tempPasajes);
 
@@ -218,4 +193,215 @@ class TransporteManifiestosController extends Controller
         $pdf->Output($name,'I');
 
     }
+
+
+    public function indexManifiestoEncomiendas(Request $request,$manifiesto){
+
+        $manifiesto = TransporteManifiesto::with([
+            'programacion.destino',
+            'programacion.origen',
+            'chofer',
+            'copiloto'
+        ])->find($manifiesto);
+
+        if( is_null($manifiesto)) abort(404);
+        
+        return view('transporte::manifiestos.asignacion',compact('manifiesto'));
+
+    }
+
+
+    public function getEncomiendas(Request $request){
+        try{
+
+            $programacion = $request->input('programacion');
+            $fecha = $request->input('fecha');
+            $cliente = $request->input('cliente');
+
+            $encomiendas = TransporteEncomienda::with('document:id,total,series,number','document.items','remitente:id,name','programacion')
+            ->where('programacion_id',$programacion)
+            ->where('fecha_salida',$fecha)
+            ->get();
+
+            if(!empty($cliente)){ 
+                $encomiendas->whereHas('remitente',function($remitente) use ($cliente){
+                    $remitente->where('nombre','like',"%{$cliente}%");
+                }); 
+        
+            }
+
+
+            return response()->json($encomiendas,200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'message' => 'Lo sentimos ocurrio un error'
+            ],500);
+
+        }
+    }
+
+    public function getEncomiendasSinAsignar(Request $request){
+        try{
+
+            $fecha_inicio = $request->input('fecha_inicio');
+            $fecha_final = $request->input('fecha_final');
+
+            $cliente = $request->input('cliente');
+
+            $encomiendas = TransporteEncomienda::with('document:id,total,series,number','document.items','remitente:id,name')
+            ->whereNull('programacion_id')
+            ->whereBetween('fecha_salida',[$fecha_inicio,$fecha_final]);
+
+
+            
+
+            // $listEncomiendas = collect([]);
+
+            // foreach($encomiendas->get() as $encomienda){
+
+            //     foreach($encomienda->document->items as $item){
+
+            //         $listEncomiendas->push([
+            //             'id' => $encomienda->id,
+            //             ''
+
+            //         ]);
+
+            //     }
+
+            // }
+
+            
+
+
+            return response()->json($encomiendas->get(),200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'error' => $e->getMessage(),
+                'message' => 'Lo sentimos ocurrio un error'
+            ],500);
+
+        }
+    }
+
+    public function asignarEncomienda(Request $request){
+        try{
+
+            $programacion =  $request->input('programacion');
+            $manifiesto = TransporteManifiesto::find($request->input('manifiesto'));
+            
+            TransporteEncomienda::where('id',$request->input('encomienda'))->update([
+                'programacion_id' => $programacion,
+                'fecha_salida' => $manifiesto->fecha
+            ]);
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Asignado'
+            ],200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lo sentimos ocurrio un error'
+            ],500);
+
+        }
+    }
+
+    public function desasignarEncomienda(Request $request){
+        try{
+            
+            TransporteEncomienda::where('id',$request->input('encomienda'))->update([
+                'programacion_id' => null,
+            ]);
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Asignado'
+            ],200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lo sentimos ocurrio un error'
+            ],500);
+
+        }
+    }
+
+    public function getManifiestos(Request $request){
+        try{
+
+            extract($request->only(['tipo']));
+
+            $manifiestos = TransporteManifiesto::with([
+                'chofer',
+                'copiloto',
+                'serie',
+                'programacion' => function($programacion){
+                    $programacion->with('destino','origen','vehiculo');
+                }
+            ])
+            ->where('tipo',$tipo)->get();
+
+            return response()->json($manifiestos,200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'message' => 'Lo sentimos ha ocurrido un error'
+            ],500);
+
+        }
+        
+    }
+
+
+    public function update(ManifiestoFormRequest $request,TransporteManifiesto $manifiesto){
+        try {
+
+            $programacion = TransporteProgramacion::findOrFail($request->programacion_id);
+
+            $manifiesto->update([
+                'serie' => $request->serie,
+                'tipo' => $request->tipo,
+                'chofer_id' => $request->chofer_id,
+                'copiloto_id' => $request->copiloto_id,
+                'observaciones' => $request->observaciones,
+                'programacion_id' => $programacion->id,
+                'fecha' => $request->fecha,
+                'hora' => $request->hora
+            ]);
+
+            $manifiesto->chofer;
+            $manifiesto->copiloto;
+            $manifiesto->serie;
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se ha actualizado la información correctamente',
+                'manifiesto' => $manifiesto,
+            ]);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lo sentimos, ocurrio un error al actualizar la información',
+                'error' => $th->getMessage()
+            ],500);
+        }
+    }
+
+
+   
 }

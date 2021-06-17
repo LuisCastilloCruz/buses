@@ -55,11 +55,11 @@
                                 <el-button type="primary" @click="onConfigRutas(programacion)">
                                     <i class="fa fa-cogs"></i>
                                 </el-button>
-                                <el-tooltip class="item" effect="dark" content="Generar manifiesto" placement="top-start">
+                                <!-- <el-tooltip class="item" effect="dark" content="Generar manifiesto" placement="top-start">
                                     <el-button type="secondary" @click="openModalGenerarManifiesto(programacion)">
                                         <i class="fa fa-file"></i>
                                     </el-button>
-                                </el-tooltip>
+                                </el-tooltip> -->
                                 
                                 <el-button type="success" @click="onEdit(programacion)">
                                     <i class="fa fa-edit"></i>
@@ -178,7 +178,7 @@ export default {
                     message: response.data.message
                 });
             });
-            }).catch();
+            })
         },
         onEdit(programacion) {
             this.programacion = { ...programacion };

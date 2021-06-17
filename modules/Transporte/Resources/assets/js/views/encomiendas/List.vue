@@ -23,7 +23,7 @@
             <div class="card-header bg-info">
                 <h3 class="my-0">Listado de encomiendas</h3>
             </div>
-            <div class="card-body">
+            <div v-loading="loading" class="card-body">
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -82,6 +82,7 @@
             :edit="edit"
             :user-terminal="userTerminal"
             :configuration="configuration"
+            :document_type_03_filter="document_type_03_filter"
         ></ModalAddEdit>
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
@@ -99,10 +100,10 @@ import DocumentOptions from "@views/documents/partials/options.vue";
 
 export default {
     props: {
-        encomiendas:{
-            type:Array,
-            required:true,
-            default:() => []
+
+        document_type_03_filter:{
+            type:Boolean,
+            required:true
         },
         estadosPago:{
             type:Array,
@@ -146,7 +147,7 @@ export default {
         DocumentOptions
     },
     created(){
-        this.listEncomiendas = this.encomiendas;
+        this.getEncomiendas();
     },
     data() {
         return {
@@ -162,20 +163,36 @@ export default {
     mounted() {
     },
     methods: {
+
+        async getEncomiendas(){
+            try{
+                this.loading = true;
+                const { data } = await this.$http.get('/transportes/encomiendas/get-encomiendas');
+                this.listEncomiendas = data;
+                this.loading = false;
+
+            }catch(error){
+                this.loading = false;
+                if(error.response) this.axiosError(error);
+            }
+        },
         onDelete(item) {
-            this.$confirm(`¿estás seguro de eliminar al elemento ${item.nombre}?`, 'Atención', {
+            this.$confirm(`¿estás seguro de eliminar la encomienda?`, 'Atención', {
                 confirmButtonText: 'Si, continuar',
                 cancelButtonText: 'No, cerrar',
                 type: 'warning'
             }).then(() => {
-                this.$http.delete(`/transportes/choferes/${item.id}/delete`).then(response => {
+                this.$http.delete(`/transportes/encomiendas/${item.id}/delete`).then(response => {
                     this.$message({
                         type: 'success',
                         message: response.data.message
                     });
-                    this.items = this.items.filter(i => i.id !== item.id);
+                    this.listEncomiendas = this.listEncomiendas.filter(i => i.id !== item.id);
                 }).catch(error => {
-                    this.axiosError(error)
+                    if(error.response){
+                        this.axiosError(error)
+                    }
+                    
                 });
             }).catch();
         },
@@ -185,19 +202,21 @@ export default {
             this.openModalAddEdit = true;
         },
         onUpdateItem(encomienda) {
-            // console.log(encomienda);
-            this.items = this.listEncomiendas.map((i) => {
-                if (i.id === encomienda.id) {
-                    return encomienda;
-                }
-                return i;
-            });
-            this.edit = false;
+            this.getEncomiendas();
+            // // console.log(encomienda);
+            // this.items = this.listEncomiendas.map((i) => {
+            //     if (i.id === encomienda.id) {
+            //         return encomienda;
+            //     }
+            //     return i;
+            // });
+            // this.edit = false;
         },
         onAddItem(encomienda) {
+            this.getEncomiendas();
             this.documentNewId = encomienda.document_id;
-            this.showDialogDocumentOptions = true;
-            this.listEncomiendas.unshift(encomienda);
+            // this.showDialogDocumentOptions = true;
+            // this.listEncomiendas.unshift(encomienda);
         },
         onCreate() {
             this.edit = false;

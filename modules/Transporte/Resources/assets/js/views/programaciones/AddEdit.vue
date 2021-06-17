@@ -10,7 +10,7 @@
             <div class="form-body">
                 <div class="form-group">
                     <label for="nombre">Origen</label>
-                    <el-select placeholder="Seleccionar origen" v-model="form.terminal_origen_id" :class="{ 'is-invalid': errors.destino_id}" disabled>
+                    <el-select placeholder="Seleccionar origen" v-model="form.terminal_origen_id" :class="{ 'is-invalid': errors.destino_id}" >
                         <el-option
                             v-for="terminal in terminales"
                             :key="terminal.id"

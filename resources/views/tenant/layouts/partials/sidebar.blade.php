@@ -1040,7 +1040,7 @@
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'programaciones')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/programaciones') }}">Programaciones</a>
                                 </li>
-                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'sales')) ? 'nav-active' : '' }}">
+                                <li class="{{ (($path[0] === 'transportes') && (($path[1] === 'pasajes') || $path[1] === 'sales')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/pasajes') }}">Pasajes</a>
                                 </li>
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'encomiendas')) ? 'nav-active' : '' }}">

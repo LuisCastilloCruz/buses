@@ -9,16 +9,19 @@ if ($hostname) {
 			->prefix('transportes')
 			->group(function () {
 			    //Bus
-                Route::get('sales', 'TransporteSalesController@index');
+                Route::get('sales/{pasaje?}', 'TransporteSalesController@index');
 				Route::get('sales/get-ciudades', 'TransporteSalesController@getCiudades');
 				Route::post('sales/programaciones-disponibles', 'TransporteSalesController@getProgramacionesDisponibles');
 				Route::post('sales/realizar-venta-boleto', 'TransporteSalesController@realizarVenta');
+				Route::put('sales/{pasaje}/actualizar-boleto', 'TransporteSalesController@updateVenta');
+				
 				// Vehiculos
 				Route::get('vehiculos', 'TransporteVehiculoController@index');
 				Route::post('vehiculos/store', 'TransporteVehiculoController@store');
 				Route::put('vehiculos/{id}/update', 'TransporteVehiculoController@update');
 				Route::delete('vehiculos/{id}/delete', 'TransporteVehiculoController@destroy');
 				Route::put('vehiculos/{vehiculo}/guardar-asientos','TransporteVehiculoController@guardarAsientos');
+				Route::delete('vehiculos/{asiento}/eliminar','TransporteVehiculoController@eliminarAsiento');
 				// Choferes
 				Route::get('choferes', 'TransporteChoferController@index');
 				Route::post('choferes/store', 'TransporteChoferController@store');
@@ -34,12 +37,14 @@ if ($hostname) {
                 Route::get('destinos/get-districts', 'TransporteDestinoController@getDistritos');
                 // Encomiendas
                 Route::get('encomiendas', 'TransporteEncomiendaController@index');
+				Route::get('encomiendas/get-encomiendas', 'TransporteEncomiendaController@getEncomiendas');
 				Route::post('encomiendas/store', 'TransporteEncomiendaController@store');
 				Route::get('encomiendas/get-clientes','TransporteEncomiendaController@getClientes');
 				Route::get('encomiendas/get-terminales','TransporteEncomiendaController@getTerminales');
 				Route::get('encomiendas/{terminal}/get-destinos','TransporteEncomiendaController@getDestinos');
 				Route::post('encomiendas/programaciones-disponibles','TransporteEncomiendaController@getProgramacionesDisponibles');
 				Route::put('encomiendas/{encomienda}/update','TransporteEncomiendaController@update');
+				Route::delete('encomiendas/{encomienda}/delete','TransporteEncomiendaController@destroy');
 				//terminales
 				Route::get('terminales','TransporteTerminalesController@index');
 				Route::post('terminales/store','TransporteTerminalesController@store');
@@ -47,6 +52,8 @@ if ($hostname) {
 				Route::delete('terminales/{terminal}/delete','TransporteTerminalesController@destroy');
                 // Pasajes
                 Route::get('pasajes', 'TransportePasajeController@index');
+				Route::delete('pasajes/{pasaje}/delete', 'TransportePasajeController@destroy');
+				Route::get('pasajes/get-pasajes','TransportePasajeController@getPasajes');
 				//programaciones
 				Route::get('programaciones','TransporteProgramacionesController@index');
 				Route::post('programaciones/store','TransporteProgramacionesController@store');
@@ -59,8 +66,14 @@ if ($hostname) {
 				Route::get('manifiestos/','TransporteManifiestosController@index');
 				Route::post('manifiestos/get-programaciones','TransporteManifiestosController@getProgramaciones');
 				Route::post('manifiestos/guardar-manifiesto','TransporteManifiestosController@store');
+				Route::put('manifiestos/{manifiesto}/actualizar-manifiesto','TransporteManifiestosController@update');
 				Route::get('manifiestos/{manifiesto}/imprimir-manifiesto','TransporteManifiestosController@imprimirManifiesto');
-
+				Route::get('manifiestos/{manifiesto}/asignar-encomiendas','TransporteManifiestosController@indexManifiestoEncomiendas');
+				Route::post('manifiestos/get-encomiendas','TransporteManifiestosController@getEncomiendas');
+				Route::post('manifiestos/get-encomiendas-sin-asignar','TransporteManifiestosController@getEncomiendasSinAsignar');
+				Route::post('manifiestos/asignacion-encomienda','TransporteManifiestosController@asignarEncomienda');
+				Route::post('manifiestos/desasignar-encomienda','TransporteManifiestosController@desasignarEncomienda');
+				Route::get('manifiestos/get-manifiestos','TransporteManifiestosController@getManifiestos');
 			});
 	});
 }

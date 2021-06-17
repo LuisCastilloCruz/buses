@@ -9,9 +9,10 @@
 
 
     <tenant-transporte-bus-sales
+    :document_type_03_filter='@json($document_type_03_filter)'
+    :item-pasajero='@json($pasaje)'
     :estado-asientos="{{ $estadosAsientos }}"
     :terminal="{{ $terminal }}"
-    :list-programaciones="{{ $programaciones }}"
     :establishment='@json($establishment)'
     :series='@json($series)'
     :document-types-invoice='@json($document_types_invoice)'

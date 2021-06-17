@@ -2,6 +2,7 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
+use App\Http\Resources\Tenant\DocumentCollection;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
@@ -22,6 +23,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Modules\Finance\Traits\FinanceTrait;
 use Illuminate\Support\Facades\Session;
+use Modules\Transporte\Models\TransporteEstadoAsiento;
 use Modules\Transporte\Models\TransporteUserTerminal;
 
 class TransportePasajeController extends Controller
@@ -32,7 +34,7 @@ class TransportePasajeController extends Controller
      */
 
     use FinanceTrait;
-    public function index()
+    public function index(Request $request)
     {
 
         $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
@@ -45,26 +47,41 @@ class TransportePasajeController extends Controller
 
         $terminal = $user_terminal->terminal;
 
-        $pasajes = TransportePasaje::with('document')->get();
+        // $pasajes = TransportePasaje::with('document','pasajero','asiento')
+        // ->whereHas('programacion',function($programacion) use ($terminal){
+        //     $programacion->where('terminal_origen_id',$terminal->id);
+        // })
+        // ->get();
 
-        //dd($pasajes->document->series);
+
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
+        
+        /** Obtengo las series que pertencen a transporte */
         $series = Series::where('establishment_id', $establishment->id)->get();
-        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80',100,33])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::first();
 
+        // $programaciones = TransporteProgramacion::with('origen','destino')
+        // ->where('terminal_origen_id',$terminal->id)
+        // ->get();
+
+        $estadosAsientos = TransporteEstadoAsiento::where('id','!=',1)
+        ->get();
+
 
         return view('transporte::pasajes.index', compact(
-            'pasajes',
+            // 'programaciones',
+            // 'pasajes',
             'establishment',
             'series',
             'document_types_invoice',
             'payment_method_types',
             'payment_destinations',
-            'user_terminal',
-            'configuration'
+            'terminal',
+            'configuration',
+            'estadosAsientos'
         ));
     }
 
@@ -75,6 +92,38 @@ class TransportePasajeController extends Controller
     public function create()
     {
         return view('transporte::create');
+    }
+
+
+    public function getPasajes(Request $request){
+        try{
+
+            $terminal = $request->user()->terminal;
+
+            $pasajes = TransportePasaje::with([
+                'document',
+                'pasajero',
+                'asiento',
+                'programacion' => function($programacion){
+                    $programacion->with('origen:id,nombre','destino:id,nombre');
+                }
+            ])
+            ->whereHas('programacion',function($programacion) use ($terminal){
+                $programacion->where('terminal_origen_id',$terminal->id);
+            })
+            ->get();
+
+            return response()->json($pasajes,200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'message' => 'Lo sentimos ocurrio un error'
+            ],500);
+
+        }
     }
 
 
@@ -126,7 +175,7 @@ class TransportePasajeController extends Controller
         if($date->isSameDay($today)){
             /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
             $time = date('h:i:s');
-            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%h:%i:%s') >= '{$time}'");
+            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%I:%S') >= '{$time}'");
         }
 
         return response()->json([
@@ -251,8 +300,26 @@ class TransportePasajeController extends Controller
      * @param int $id
      * @return Response
      */
-    public function destroy($id)
-    {
+    public function destroy(TransportePasaje $pasaje){
+        try{
+
+            $pasaje->update([
+                'estado_asiento_id' => 4
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se ha cancelado el boleto correctamente'
+            ]);
+        }catch(Exception $e){
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Error al eliminar el pasaje'
+            ]);
+
+        }
+
         //
     }
 }
