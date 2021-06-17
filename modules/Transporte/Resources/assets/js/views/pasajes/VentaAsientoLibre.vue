@@ -798,7 +798,6 @@ export default {
                 setTimeout(() => {
                     this.$emit('anularBoleto',this.transportePasaje);
                 }, 500);
-                
             });
             
             
