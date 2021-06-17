@@ -3,7 +3,7 @@
 
         <div v-if="programacion" class="form-body">
             <template v-for="terminal in terminales">
-                <div v-if="terminal.id != programacion.terminal_origen_id"  class="form-group row" :key="terminal.id">
+                <div v-if="(terminal.id != programacion.terminal_origen_id && terminal.id != programacion.terminal_destino_id)"  class="form-group row" :key="terminal.id">
                     <!-- <label for="">{{ terminal.nombre }}</label> -->
                     <el-checkbox v-model="rutas" :label="terminal.id">{{ terminal.nombre }} </el-checkbox>
                 </div>
@@ -62,6 +62,7 @@ export default {
         onCreate() {
             if (this.programacion) {
                 this.form = this.programacion;
+                this.rutas.push(this.programacion.terminal_destino_id);
                 this.rutas = this.programacion.rutas.map( ruta => ruta.terminal_id);
             }
         },

@@ -168,4 +168,8 @@ class User extends Authenticatable
         return $this->hasOne(TransporteUserTerminal::class,'user_id','id');
     }
 
+    public function getTerminalAttribute($value){
+        return is_null($this->transporte_user_terminal) ? null : $this->transporte_user_terminal->terminal;
+    }
+
 }

@@ -26,6 +26,7 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Traits\FinanceTrait;
+use Modules\Transporte\Models\TransporteRuta;
 
 class TransporteSalesController extends Controller
 {
@@ -35,35 +36,44 @@ class TransporteSalesController extends Controller
      */
 
     use FinanceTrait;
-    public function index()
+    public function index(Request $request, TransportePasaje $pasaje = null)
     {
-        $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
 
-        if(is_null($user_terminal)){
+        $user = $request->user();
+        $terminal = $request->user()->terminal;
+
+        if(is_null($terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
         }
 
-        $terminal = $user_terminal->terminal;
-
-
-        $programaciones = TransporteProgramacion::with('origen','destino')
-        ->where('terminal_origen_id',$terminal->id)
-        ->get();
+        if(!is_null($pasaje)){
+            $pasaje->load([
+                'document',
+                'pasajero',
+                'asiento',
+                'programacion' => function($programacion){
+                    $programacion->with('origen:id,nombre','destino:id,nombre');
+                }
+            ]);
+        }
 
         $estadosAsientos = TransporteEstadoAsiento::where('id','!=',1)
         ->get();
 
-        $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
+        $document_type_03_filter = config('tenant.document_type_03_filter');
+
+        $establishment =  Establishment::where('id', $user->establishment_id)->first();
         $series = Series::where('establishment_id', $establishment->id)->get();
-        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80',100,33])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::first();
 
         return view('transporte::bus.Sales',compact(
-            'programaciones',
+            'document_type_03_filter',
+            'pasaje',
             'terminal',
             'estadosAsientos',
             'series',
@@ -121,8 +131,6 @@ class TransporteSalesController extends Controller
             $programaciones->whereTime('hora_salida','>=',$time);
         }
 
-
-
         $listProgramaciones = $programaciones->get();
         foreach($listProgramaciones as $programacion){
 
@@ -134,34 +142,11 @@ class TransporteSalesController extends Controller
 
             foreach($listSeats as $seat){
 
-                // foreach($tempProgramaciones as $tempProgramacion){
-                //     $hours = $this->convertToSeconds($tempProgramacion->tiempo_aproximado) / 3600; //convierto a horas
-                //     $fechaSalida = "{$request->fecha_salida} {$tempProgramacion->hora_salida}";
-                //     $horaAproximada = Carbon::parse($fechaSalida)->addHours($hours);
-
-                //     $isState = TransportePasaje::whereRaw(DB::raw('DATE(fecha_salida) = ?'))
-                //     ->whereRaw(DB::raw('TIME(fecha_salida) >= ?'))
-                //     ->whereRaw(DB::raw('TIME(fecha_llegada) < ?'))
-                //     ->whereRaw('asiento_id = ?')
-                //     ->setBindings([
-                //         $request->fecha_salida,
-                //         $programacion->hora_salida,
-                //         $horaAproximada->format('H:i:s'),
-                //         $seat->id
-                //     ])
-                //     ->first();
-                //     if($isState){
-                //         $seat->estado_asiento_id = $isState->estado_asiento_id;
-                //         break;
-                //     }else {
-                //         $seat->estado_asiento_id = 1;
-                //     }
-                // }
-
-                $isState = TransportePasaje::with('pasajero')
+                $isState = TransportePasaje::with('pasajero','asiento')
                 ->whereDate('fecha_salida',$request->fecha_salida)
                 ->where('asiento_id',$seat->id)
                 ->where('programacion_id',$programacion->id)
+                ->where('estado_asiento_id','!=',4) //diferente de cancelado
                 ->first();
 
                 if(!is_null($isState)){
@@ -172,6 +157,21 @@ class TransporteSalesController extends Controller
                     $seat->pasajero = null;
                 }
             }
+
+            $asientosOcupados = $listSeats->filter(function($asiento){
+                return in_array($asiento->estado_asiento_id,[2,3]);
+            });
+
+
+            $asiendosDisponible = $listSeats->filter(function($asiento){
+                return $asiento->estado_asiento_id == 1;
+            });
+
+            $asientos = $this->getAsientosPasajesEnRuta($programacion,$asiendosDisponible,$request->fecha_salida);
+           
+
+            $listSeats = $asientosOcupados->merge($asientos);
+
             $programacion->transporte->asientos = $listSeats;
         }
 
@@ -181,22 +181,81 @@ class TransporteSalesController extends Controller
 
     }
 
+    private function getAsientosPasajesEnRuta(TransporteProgramacion $programacion,$listSeats,$fecha){
+
+        /** Busco todas las programaciones donde la terminal de destino de la programación seleccionada
+         * sean rutas de alguna programación
+         */
+        $programaciones = TransporteProgramacion::with('destino')->whereHas('rutas',function($rutas) use($programacion){
+            $rutas->where('transporte_rutas.terminal_id',$programacion->terminal_destino_id);
+        })
+        ->where('vehiculo_id',$programacion->vehiculo_id)
+        ->get();
+
+        
+        //válido si tengo alguna, si no retorno la misma lista si alterar los valores que ya tiene
+        if(count($programaciones) <= 0) return $listSeats;
+
+        $disponibles = collect([]); // aqui almacenaré los asientos disponibles
+        $ocupados = collect([]); //aqui los ocupados
+
+        foreach($programaciones as $ruta){ // itero las programaciones en las que la terminal destino es una ruta
+            
+            /** Obtengo lista temporal de los asientos disponibles */
+            $tempList = $listSeats->whereNotIn('id',$ocupados->pluck('id'));
+            foreach($tempList as $seat){
+
+                /** Busco si hay algun asiento ocupado con esa programación y esa fecha asi como tambien el asiento */
+                $isState = TransportePasaje::with('pasajero','asiento')
+                ->whereDate('fecha_salida',$fecha)
+                ->where('asiento_id',$seat->id)
+                ->where('programacion_id',$ruta->id)
+                ->where('estado_asiento_id','!=',4) //diferente de cancelado
+                ->first();
+    
+                if(!is_null($isState)){
+                    $seat->estado_asiento_id = $isState->estado_asiento_id;
+                    $seat->transporte_pasaje = $isState;
+                    $ocupados->push($seat); //inserto el asiento en la lista de ocupados
+
+                    /** Si existe en disponibles lo remuevo */
+                    $disponibles = $disponibles->filter(function($asiento) use($seat){
+                        return $asiento->id != $seat->id;
+                    });
+                }else {
+
+                    /** Verifico si existe ya en la lista de disponibles 
+                     * si ya existe continuo con la iteración
+                     */
+                    $exist = $disponibles->first(function($asiento) use($seat){
+                        return $asiento->id == $seat->id;
+                    });
+
+                    if(!is_null($exist)) continue;
+
+                    $seat->estado_asiento_id = 1;
+                    $seat->pasajero = null;
+                    $disponibles->push($seat); //meto el asiento en la lista de disponibles
+                }
+            }
+
+        }
+
+
+        /** Hago merge con la lista de ocupados que se encontró y 
+         * disponibles
+         */
+        
+        $newList = $disponibles->merge($ocupados); 
+        return $newList;
+    }
+
     public function realizarVenta(RealizarVentaRequest $request){
 
         DB::connection('tenant')->beginTransaction();
         try {
 
-
-            // $asiento = TransporteAsiento::find($request->asiento_id);
             $programacion = TransporteProgramacion::find($request->programacion_id);
-
-            // $hours = $this->convertToSeconds($programacion->tiempo_aproximado) / 3600; //convierto a horas
-
-            $fechaSalida = "{$request->fecha_salida} {$programacion->hora_salida}";
-
-            // $fechaLLegada = Carbon::parse($fechaSalida)->addHours($hours)
-            // ->subMinute();
-
             $attributes = $request->only([
                 'document_id',
                 'pasajero_id',
@@ -204,12 +263,15 @@ class TransporteSalesController extends Controller
                 'precio',
                 'fecha_salida',
                 'programacion_id',
+                'estado_asiento_id',
+                'tipo_venta',
+                'numero_asiento',
             ]);
 
             TransportePasaje::create(
                 array_merge($attributes,[
-                    'estado_asiento_id' => $request->estado_asiento_id,
-                    'fecha_salida' => Carbon::parse($fechaSalida)->format('Y-m-d H:i:s'),
+                    'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
+                    'hora_salida' => $programacion->hora_salida
                     // 'fecha_llegada' => $fechaLLegada
                 ])
             );
@@ -233,9 +295,43 @@ class TransporteSalesController extends Controller
     }
 
 
-    private function convertToSeconds($time){
-        list($hours, $mins, $secs) = explode(':', $time);
-        return ($hours * 3600 ) + ($mins * 60 ) + $secs;
+    public function updateVenta(Request $request,TransportePasaje $pasaje){
+
+        DB::connection('tenant')->beginTransaction();
+        try {
+
+            $programacion = TransporteProgramacion::find($request->programacion_id);
+            $attributes = $request->only([
+                'asiento_id',
+                'precio',
+                'fecha_salida',
+                'programacion_id',
+                'numero_asiento',
+            ]);
+
+            $pasaje->update(
+                array_merge($attributes,[
+                    'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
+                    'hora_salida' => $programacion->hora_salida
+                ])
+            );
+
+            DB::connection('tenant')->commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Éxito!!'
+            ],200);
+
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al procesar su petición',
+                'error' => $th->getMessage()
+            ],500);
+        }
+
     }
 
 

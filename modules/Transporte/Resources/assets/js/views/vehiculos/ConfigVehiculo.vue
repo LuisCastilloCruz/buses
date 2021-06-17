@@ -15,7 +15,7 @@
                     <div class="form-group">
                         <label for="">Piso</label>
                         <el-select v-model="piso" placeholder="Piso">
-                            <el-option v-for="floor in vehiculo.pisos" :label="floor" :key="floor" :value="floor" >
+                            <el-option v-for="floor in pisos" :label="floor" :key="floor" :value="floor" >
                             </el-option>
                         </el-select>
                     </div>
@@ -55,6 +55,7 @@ export default {
     created(){
         this.asientos = this.seats;
         this.piso = 1;
+        this.pisos = parseInt(this.vehiculo.pisos);
     },
     data(){
         return({
@@ -63,6 +64,7 @@ export default {
             piso:null,
             transporte:this.vehiculo,
             remove:false,
+            pisos:null,
         });
     },
     watch:{

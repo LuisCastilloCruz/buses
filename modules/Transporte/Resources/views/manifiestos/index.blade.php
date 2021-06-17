@@ -1,9 +1,9 @@
 @extends('tenant.layouts.app')
 
 @section('content')
-    <tenant-transporte-manifiestos 
-    :list-manifiestos='@json($manifiestos)' 
+    <tenant-transporte-manifiestos
     :series='@json($series)'
+    :choferes='@json($choferes)'
     />
 
 @endsection

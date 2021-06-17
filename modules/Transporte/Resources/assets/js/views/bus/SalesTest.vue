@@ -6,6 +6,7 @@
             <div class="col-12">
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
+                        <span class="mr-2"><a class="btn btn-primary btn-sm" href="/transportes/pasajes"> <i class="fa fa-arrow-left"></i>  </a></span>
                         <span>Venta de boletos terminal  <el-tag >{{ terminal.nombre }}</el-tag></span>
                     </div>
 
@@ -181,7 +182,7 @@
             </div>
 
         </div>
-        <venta-asiento
+        <venta-asiento-old
         :visible.sync="visible"
         :asiento="asiento"
         :estados-asientos="estadoAsientos"
@@ -195,6 +196,7 @@
         :payment-destinations="paymentDestinations"
         :configuration="configuration"
         @onSuccessVenta="onSuccessVenta"
+        @anularBoleto="anularBoleto"
          />
 
         <document-options
@@ -204,14 +206,19 @@
         :showClose="true"
         :configuration="configuration"
         ></document-options>
+
+        <documents-voided 
+        :showDialog.sync="showDialogVoided"
+        :recordId="documentId"></documents-voided>
     </div>
 
 
 </template>
 <script>
 import Bus from './Bus';
-import VentaAsiento from './VentaAsiento.vue';
+import VentaAsientoOld from './VentaAsientoOld.vue';
 import DocumentOptions from "@views/documents/partials/options.vue";
+import DocumentsVoided from '@views/documents/partials/voided.vue';
 export default {
 
     props:{
@@ -259,14 +266,20 @@ export default {
     },
     components:{
         Bus,
-        VentaAsiento,
-        DocumentOptions
+        VentaAsientoOld,
+        DocumentOptions,
+        DocumentsVoided
     },
     created(){
         this.searchCiudad();
+        this.$eventHub.$on('reloadData',async() => {
+            this.cancelarBoleto();
+        });
     },
     data(){
         return ({
+            pasajeroId:null,
+            showDialogVoided:false,
             vehiculo:null,
             guardarSeats:false,
             asientos:[],
@@ -367,7 +380,7 @@ export default {
 
         async getProgramaciones(){
 
-            // console.log(this.encomienda.fecha_salida);
+            
             if(this.fecha_salida){
                 this.loadingProgramaciones = true;
                 this.programaciones = [];
@@ -417,6 +430,40 @@ export default {
             this.asientos = this.selectProgramacion.transporte.asientos;
             this.vehiculo = this.selectProgramacion.transporte;
         },
+
+        anularBoleto(pasaje){
+            this.documentId = pasaje.document_id;
+            this.pasajeroId = pasaje.id;
+            this.showDialogVoided = true;
+
+        },
+        async cancelarBoleto(){
+            try{
+                const { data } = await axios.delete(`/transportes/pasajes/${this.pasajeroId}/delete`);
+
+                if(!data.success){
+                    this.$message({
+                        type: 'error',
+                        message: data.message
+                    });
+                }
+
+                this.$message({
+                    type: 'success',
+                    message: data.message
+                });
+
+                this.onUpdateItem();
+                
+            }catch(error){
+
+                this.$message({
+                    type: 'error',
+                    message: 'Lo sentimos ha ocurrido un error'
+                });
+
+            }
+        }
 
 
 

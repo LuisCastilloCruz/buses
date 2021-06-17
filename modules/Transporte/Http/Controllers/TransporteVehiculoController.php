@@ -187,7 +187,16 @@ class TransporteVehiculoController extends Controller
 
     public function eliminarAsiento(TransporteAsiento $asiento){
         try{
+
+            DB::connection('tenant')->beginTransaction();
             $asiento->delete();
+            $asiento->vehiculo->update([
+                'asientos' => TransporteAsiento::where([
+                    'vehiculo_id' => $asiento->vehiculo_id,
+                    'type'=> 'ss'
+                ])->count()
+            ]);
+            DB::connection('tenant')->commit();
 
             return response()->json([
                 'success' => true,

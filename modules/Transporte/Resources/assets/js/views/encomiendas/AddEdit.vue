@@ -15,12 +15,13 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="form-group">
+                                    
                                     <label for="">Tipo de comprobante</label>
                                     <el-select
                                         v-model="document.document_type_id"
                                         @change="changeDocumentType"
                                         popper-class="el-select-document_type"
-                                        dusk="document_type_id"
+                                        :disabled="edit"
                                         class="border-left rounded-left border-info"
                                     >
                                         <el-option
@@ -35,7 +36,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Serie</label>
-                                    <el-select v-model="document.series_id">
+                                    <el-select v-model="document.series_id" :disabled="edit">
                                         <el-option
                                             v-for="option in series"
                                             :key="option.id"
@@ -76,7 +77,10 @@
                     </div>
                     <div class="col-6">
                         <div class="form-group">
-                            <label for="dni">Remitente</label>
+                            <label for="dni">
+                                Remitente
+                                <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
+                            </label>
                             <el-select v-model="encomienda.remitente_id" filterable remote  popper-class="el-select-customers"
                                        placeholder="Buscar remitente"
                                        :remote-method="searchRemitente"
@@ -92,7 +96,10 @@
                     </div>
                     <div class="col-6">
                         <div class="form-group">
-                            <label for="nombre">Destinatario</label>
+                            <label for="nombre">
+                                Destinatario
+                                <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
+                            </label>
                             <el-select v-model="encomienda.destinatario_id" filterable remote  popper-class="el-select-customers"
                                 placeholder="Buscar destinatario"
                                 :remote-method="searchDestinatario"
@@ -151,10 +158,10 @@
                                 Lista de productos
                             </div>
                             <div class="card-body">
-                                <div class="row">
+                                <div v-if="!edit" class="row">
 
                                     <div class="col-3">
-                                        <el-input v-model="producto.description" placeholder="Descripción"></el-input>
+                                        <el-input v-model="producto.item.description" placeholder="Descripción"></el-input>
                                     </div>
                                     <div class="col-3">
                                         <el-input type="number" v-model="producto.unit_price" placeholder="Precio"></el-input>
@@ -175,7 +182,7 @@
                                             <tbody>
 
                                                 <tr v-for="(producto,index) in document.items" :key="index">
-                                                    <td>{{ producto.description }}</td>
+                                                    <td>{{ producto.item.description }}</td>
                                                     <td>{{ producto.unit_price | toDecimals }}</td>
                                                     <td>{{ producto.quantity }}</td>
                                                     <th>
@@ -199,7 +206,7 @@
 
                     </div>
                 </div>
-                <div v-if="!edit" class="row mt-2">
+                <div class="row mt-2">
                     <div class="col-12">
                         <el-collapse v-model="activePanel" accordion>
                             <el-collapse-item name="1" >
@@ -324,6 +331,12 @@
                     :configuration="configuration"
                 ></document-options>
 
+                <person-form :showDialog.sync="showDialogNewPerson"
+                type="customers"
+                :external="true"
+                :input_person="input_person"
+                :document_type_id="document.document_type_id"></person-form>
+
                 <div class="row text-center mt-4">
                     <div class="col-6">
                         <el-button
@@ -356,9 +369,14 @@
 import moment from "moment";
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 import DocumentOptions from "@views/documents/partials/options.vue";
+import PersonForm from "@views/persons/form.vue";
 
 export default {
     props: {
+        document_type_03_filter:{
+            type:Boolean,
+            required:true
+        },
         visible: {
             type: Boolean,
             required: true,
@@ -412,11 +430,14 @@ export default {
         }
     },
     components:{
-        DocumentOptions
+        DocumentOptions,
+        PersonForm
     },
     mixins: [exchangeRate],
     data() {
         return {
+            input_person:{},
+            showDialogNewPerson:false,
             title: "Encomienda",
             total: 0,
             loading: false,
@@ -449,6 +470,7 @@ export default {
             load:false,
             productos:[],
             producto:{
+                item:{}
 
             },
             encomienda: {
@@ -501,11 +523,11 @@ export default {
         }
     },
     methods: {
-        async onSuccessVenta(documentId){
-            await this.onUpdateItem()
-            this.documentId = documentId;
-            this.showDialogDocumentOptions = true;
-        },
+        // async onSuccessVenta(documentId){
+        //     await this.onUpdateItem()
+        //     this.documentId = documentId;
+        //     this.showDialogDocumentOptions = true;
+        // },
         selectCustomer(){
             this.document.customer_id = this.encomienda.remitente_id;
             this.document.customer = this.remitentes.find( remitente => remitente.id == this.encomienda.remitente_id );
@@ -660,7 +682,7 @@ export default {
                 .then( ({data}) => {
                     this.loading = false;
                     this.$emit('onAddItem',data.encomienda);
-                    this.$emit('onSuccessVenta',this.documentId);
+                    // this.$emit('onSuccessVenta',this.documentId);
                     this.$message({
                         type: 'success',
                         message: 'Encomienda registrada.'
@@ -690,10 +712,10 @@ export default {
             this.encomienda.programacion_id = programacion.id;
         },
         agregarProducto(evt){
-            if(this.producto.description && this.producto.unit_price){
+            if(this.producto.item.description && this.producto.unit_price){
                 let precio = parseFloat(this.producto.unit_price);
                 this.producto.input_unit_price_value=precio;
-                this.producto.item.description= this.producto.description;
+                this.producto.item.description= this.producto.item.description;
                 this.producto.item.unit_price=precio;
                 this.producto.total=precio;
                 this.producto.total_base_igv=precio;
@@ -701,8 +723,7 @@ export default {
                 this.producto.unit_price=precio;
                 this.producto.unit_value=precio;
 
-                this.document.items.push(this.producto);
-                console.log(this.document.items);
+                this.document.items.push( Object.assign({},this.producto) );;
                 this.document.payments.push(this.payment);
                 //this.document.customer_id=this.pasajeroId;
 
@@ -718,11 +739,7 @@ export default {
             this.productos.splice(index,1);
         },
         async onCreate() {
-            this.load = true;
             this.initProducto();
-            await this.initializeSelects();
-            await this.searchTerminales();
-            this.load = false;
             this.total = 0;
 
             this.terminalId = this.userTerminal.terminal_id;
@@ -738,9 +755,6 @@ export default {
                 this.document.items.forEach( item => {
                     this.total += parseFloat(item.total);
                 });
-
-
-
             }else {
                 this.comprobante = null;
                 this.encomienda = {
@@ -753,11 +767,24 @@ export default {
                     programacion_id:null,
                     fecha_salida:moment().format("YYYY-MM-DD")
                 }
+                this.initDocument();
+                this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
+                this.document.establishment_id = this.establishment.id;
                 this.clickAddPayment();
             }
-
+            this.changeDocumentType();
             this.onCalculateTotals();
-            this.validateIdentityDocumentType();
+            // this.validateIdentityDocumentType();
+
+
+            this.load = true;
+            
+            await this.initializeSelects();
+            await this.searchTerminales();
+            
+            this.load = false;
+
+            
             // this.all_document_types = this.documentTypesInvoice;
             // this.total = this.room.item.total;
             // this.document.items = this.rent.items.map((i) => i.item);
@@ -769,6 +796,10 @@ export default {
             await this.searchExchangeRateByDate(date).then((res) => {
                 this.document.exchange_rate_sale = res;
             });
+
+
+
+            
             // if (this.chofer) {
             //     this.form = this.chofer;
             //     this.title = "Editar chofer";
@@ -931,6 +962,10 @@ export default {
         },
         initDocument() {
             this.document = {
+                note_credit_or_debit_type_id:null,
+                note_description:null,
+                affected_document_id:null,
+                group_id:null,
                 customer_id: null,
                 customer: {},
                 document_type_id: null,

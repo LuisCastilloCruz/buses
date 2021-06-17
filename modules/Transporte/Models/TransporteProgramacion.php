@@ -16,6 +16,7 @@ class TransporteProgramacion extends ModelTenant
         'terminal_destino_id',
         'terminal_origen_id',
         'vehiculo_id',
+        'fecha_salida',
         'hora_salida',
         'tiempo_aproximado'
     ];

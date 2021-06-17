@@ -3,6 +3,7 @@
 namespace Modules\Transporte\Models;
 
 use App\Models\Tenant\ModelTenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransporteAsiento extends ModelTenant
 {
@@ -20,5 +21,10 @@ class TransporteAsiento extends ModelTenant
         'fecha_desocupado',
         'type'
     ];
+
+
+    public function vehiculo() : BelongsTo{
+        return $this->belongsTo(TransporteVehiculo::class,'vehiculo_id','id');
+    }
 
 }
