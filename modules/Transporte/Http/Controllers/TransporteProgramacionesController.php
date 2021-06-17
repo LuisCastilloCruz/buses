@@ -68,6 +68,7 @@ class TransporteProgramacionesController extends Controller
         $programacion->vehiculo;
         $programacion->rutas;
         $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
+        $programacion->syncRutas([$programacion->terminal_destino_id]);
 
         return response()->json([
             'success' => true,
