@@ -1,192 +1,198 @@
 <template>
     <div>
-        <el-tabs v-model="tabs" >
-            <el-tab-pane label="Venta boletos" name="venta">
-                <el-collapse v-model="activeNames"  class="mt-2" accordion>
-                    <el-collapse-item :name="1" >
-                        <template slot="title">
-                            <i class="fa fa-plus text-info"></i> &nbsp; Boleto<i class="header-icon el-icon-information"></i>
-                        </template>
-                        <div class="row mt-2">
-                            <div class="col-5">
-                                <div class="form-group">
-                                    <label for="">Tipo de comprobante</label>
-                                    <el-select
-                                        v-model="document.document_type_id"
-                                        @change="changeDocumentType"
-                                        popper-class="el-select-document_type"
-                                        dusk="document_type_id"
-                                        class="border-left rounded-left border-info"
-                                        :disabled="transportePasaje ? true : false"
-                                    >
-                                        <el-option
-                                            v-for="option in documentTypesInvoice"
-                                            :key="option.id"
-                                            :value="option.id"
-                                            :label="option.description"
-                                        ></el-option>
-                                    </el-select>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="form-group">
-                                    <label for="">Serie</label>
-                                    <!-- <el-input v-model="document.serie" disabled></el-input> -->
-                                    <el-select v-model="document.series_id" :disabled="transportePasaje ? true : false">
-                                        <el-option
-                                            v-for="option in allSeries"
-                                            :key="option.id"
-                                            :value="option.id"
-                                            :label="option.number"
-                                        ></el-option>
-                                    </el-select>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="form-group">
-                                    <label for="dni">Estado de asiento</label>
-                                    <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
-                                            placeholder="Estado asiento"
-                                            :disabled=" (transportePasaje) ? true : false"
-                                    >
-                                        <el-option v-for="estado in estadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div id="tabs" >
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item active">
+                            <a class="nav-link active" href="#boleto" data-toggle="tab"><i class="fas fa-star"></i> Boleto</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#manifiesto" data-toggle="tab">Manifiesto de pasajeros</a>
+                        </li>
+                    </ul>
 
-                                        </el-option>
-                                    </el-select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row pt-2">
-                            <div class="col-5">
-                                <div class="form-group">
-                                    <label for="dni">
-                                        Pasajero
-                                        <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
-                                    </label>
-                                    <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
-                                        dusk="pasajeroId"
-                                        placeholder="Buscar remitente"
-                                        :remote-method="searchPasajero"
-                                        :loading="loadingPasajero"
-                                        :disabled=" (transportePasaje) ? true : false"
+                    <div class="tab-content">
+                        <div id="boleto" class="tab-pane active">
+                            <div class="row mt-2">
+                                <div class="col-5">
+                                    <div class="form-group">
+                                        <label for="">Tipo de comprobante</label>
+                                        <el-select
+                                            v-model="document.document_type_id"
+                                            @change="changeDocumentType"
+                                            popper-class="el-select-document_type"
+                                            dusk="document_type_id"
+                                            class="border-left rounded-left border-info"
+                                            :disabled="transportePasaje ? true : false"
                                         >
-                                        <el-option v-for="pasaje in tempPasajeros" :key="pasaje.id" :value="pasaje.id" :label="pasaje.name">
-
-                                        </el-option>
-                                    </el-select>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="form-group">
-                                    <label for="dni">Precio</label>
-                                    <el-input v-model="precio" type="number" ></el-input>
-                                </div>
-                            
-                            </div>
-                            <div class="col-3">
-                                <div class="form-group">
-                                    <label for="dni">Asiento</label>
-                                    <el-input :disabled="tipoVenta == 2 ? true : false" v-model="numeroAsiento" type="number" min="1" ></el-input>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-if="transportePasaje" class="row justify-content-center">
-
-                            <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
-                                Comprobante
-                                <i class="fa fa-file-alt"></i>
-                            </el-button>
-                            <el-button type="danger" @click="anularBoleto" :style="{marginTop:'1.90rem'}">
-                                Anular
-                                <i class="fa fa-trash"></i>
-                            </el-button>
-                            
-                        </div>
-                    </el-collapse-item>
-                </el-collapse>
-                
-                <div v-if="!transportePasaje" class="row mt-2">
-                    <div class="col-md-12">
-                        <el-collapse v-model="activePanel" accordion>
-                            <el-collapse-item name="1" >
-                                <template slot="title">
-                                    <i class="fa fa-plus text-info"></i> &nbsp;Pagos<i class="header-icon el-icon-information"></i>
-                                </template>
-                                <div  class="row mt-2">
-                                    <div class="col-12">
-                                        <div class="row mt-2">
-                                            <div class="col-12">
-                                                <table class="table table-bordered table-stripped">
-                                                    <thead>
-                                                    <th>M. Pago</th>
-                                                    <th>Destino</th>
-                                                    <th>Referencia</th>
-                                                    <!-- <th>Monto</th> -->
-                                                    </thead>
-                                                    <tbody>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-group mb-2 mr-2">
-                                                                <el-select v-model="payment.payment_method_type_id">
-                                                                    <el-option
-                                                                        v-for="option in paymentMethodTypes"
-                                                                        :key="option.id"
-                                                                        :value="option.id"
-                                                                        :label="option.description"
-                                                                    ></el-option>
-                                                                </el-select>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group mb-2 mr-2">
-                                                                <el-select
-                                                                    v-model="payment.payment_destination_id"
-                                                                    filterable
-                                                                    :disabled="payment.payment_destination_disabled"
-                                                                >
-                                                                    <el-option
-                                                                        v-for="option in paymentDestinations"
-                                                                        :key="option.id"
-                                                                        :value="option.id"
-                                                                        :label="option.description"
-                                                                    ></el-option>
-                                                                </el-select>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group mb-2 mr-2">
-                                                                <el-input v-model="payment.reference"></el-input>
-                                                            </div>
-                                                        </td>
-                                                        <!-- <td>
-                                                            <div class="form-group mb-2 mr-2">
-                                                                <el-input disabled v-model="payment.payment"></el-input>
-                                                            </div>
-                                                        </td> -->
-                                                    </tr>
-
-                                                    </tbody>
-
-                                                </table>
-                                            </div>
-
-                                        </div>
+                                            <el-option
+                                                v-for="option in documentTypesInvoice"
+                                                :key="option.id"
+                                                :value="option.id"
+                                                :label="option.description"
+                                            ></el-option>
+                                        </el-select>
                                     </div>
                                 </div>
-                            </el-collapse-item>
-                        </el-collapse>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="">Serie</label>
+                                        <!-- <el-input v-model="document.serie" disabled></el-input> -->
+                                        <el-select v-model="document.series_id" :disabled="transportePasaje ? true : false">
+                                            <el-option
+                                                v-for="option in allSeries"
+                                                :key="option.id"
+                                                :value="option.id"
+                                                :label="option.number"
+                                            ></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="dni">Estado de asiento</label>
+                                        <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
+                                                   placeholder="Estado asiento"
+                                                   :disabled=" (transportePasaje) ? true : false"
+                                        >
+                                            <el-option v-for="estado in estadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
+
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-2">
+                                <div class="col-5">
+                                    <div class="form-group">
+                                        <label for="dni">
+                                            Pasajero
+                                            <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
+                                        </label>
+                                        <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
+                                                   dusk="pasajeroId"
+                                                   placeholder="Buscar remitente"
+                                                   :remote-method="searchPasajero"
+                                                   :loading="loadingPasajero"
+                                                   :disabled=" (transportePasaje) ? true : false"
+                                        >
+                                            <el-option v-for="pasaje in tempPasajeros" :key="pasaje.id" :value="pasaje.id" :label="pasaje.name">
+
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="dni">Precio</label>
+                                        <el-input v-model="precio" type="number" ></el-input>
+                                    </div>
+
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="dni">Asiento</label>
+                                        <el-input :disabled="tipoVenta == 2 ? true : false" v-model="numeroAsiento" type="number" min="1" ></el-input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="transportePasaje" class="row justify-content-center">
+
+                                <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
+                                    Comprobante
+                                    <i class="fa fa-file-alt"></i>
+                                </el-button>
+                                <el-button type="danger" @click="anularBoleto" :style="{marginTop:'1.90rem'}">
+                                    Anular
+                                    <i class="fa fa-trash"></i>
+                                </el-button>
+
+                            </div>
+
+                            <div v-if="!transportePasaje" class="row mt-2">
+                                <div class="col-md-12">
+                                    <el-collapse v-model="activePanel" accordion>
+                                        <el-collapse-item name="1" >
+                                            <template slot="title">
+                                                <i class="fa fa-plus text-info"></i> &nbsp;Pagos<i class="header-icon el-icon-information"></i>
+                                            </template>
+                                            <div  class="row mt-2">
+                                                <div class="col-12">
+                                                    <div class="row mt-2">
+                                                        <div class="col-12">
+                                                            <table class="table table-bordered table-stripped">
+                                                                <thead>
+                                                                <th>M. Pago</th>
+                                                                <th>Destino</th>
+                                                                <th>Referencia</th>
+                                                                <!-- <th>Monto</th> -->
+                                                                </thead>
+                                                                <tbody>
+
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="form-group mb-2 mr-2">
+                                                                            <el-select v-model="payment.payment_method_type_id">
+                                                                                <el-option
+                                                                                    v-for="option in paymentMethodTypes"
+                                                                                    :key="option.id"
+                                                                                    :value="option.id"
+                                                                                    :label="option.description"
+                                                                                ></el-option>
+                                                                            </el-select>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="form-group mb-2 mr-2">
+                                                                            <el-select
+                                                                                v-model="payment.payment_destination_id"
+                                                                                filterable
+                                                                                :disabled="payment.payment_destination_disabled"
+                                                                            >
+                                                                                <el-option
+                                                                                    v-for="option in paymentDestinations"
+                                                                                    :key="option.id"
+                                                                                    :value="option.id"
+                                                                                    :label="option.description"
+                                                                                ></el-option>
+                                                                            </el-select>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="form-group mb-2 mr-2">
+                                                                            <el-input v-model="payment.reference"></el-input>
+                                                                        </div>
+                                                                    </td>
+                                                                    <!-- <td>
+                                                                        <div class="form-group mb-2 mr-2">
+                                                                            <el-input disabled v-model="payment.payment"></el-input>
+                                                                        </div>
+                                                                    </td> -->
+                                                                </tr>
+
+                                                                </tbody>
+
+                                                            </table>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </el-collapse-item>
+                                    </el-collapse>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="manifiesto" class="tab-pane">
+                            <div>Vista de manifiestos</div>
+                        </div>
                     </div>
+
                 </div>
-            </el-tab-pane>
-            <el-tab-pane label="Manifiestos" name="manifiesto">
+            </div>
+        </div>
 
-                <div>Vista de manifiestos</div>
-
-            </el-tab-pane>
-
-        </el-tabs>
-        
 
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
@@ -196,7 +202,7 @@
         :configuration="configuration"
         ></document-options>
 
-    
+
 
         <person-form :showDialog.sync="showDialogNewPerson"
         type="customers"
@@ -208,13 +214,13 @@
             <div class="col-12 d-flex justify-content-center">
                 <el-button v-if="transportePasaje && programacion" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
                 <el-button v-else :loading="loading" type="primary" @click="saveDocument">Guardar</el-button>
-                
-                
+
+
             </div>
         </div>
 
     </div>
-   
+
 </template>
 <script>
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
@@ -226,7 +232,7 @@ export default {
     components:{
         DocumentOptions,
         PersonForm,
-        
+
     },
     props:{
         document_type_03_filter:{
@@ -298,7 +304,7 @@ export default {
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
         this.onCreate();
-       
+
     },
     watch:{
         precio:function(newVal){
@@ -323,7 +329,7 @@ export default {
         return ({
 
             tabs:'venta',
-            
+
             input_person:{},
             showDialogNewPerson:false,
             pasajeros:[],
@@ -476,7 +482,7 @@ export default {
                 precio:this.precio,
             };
             this.loading = true;
-           
+
             this.$http.put(`/transportes/sales/${this.transportePasaje.id}/actualizar-boleto`,data)
             .then( ({data}) => {
                 this.loading = false;
@@ -771,7 +777,7 @@ export default {
             this.document.series_id = (this.allSeries.length > 0)?this.allSeries[0].id:null
         },
         filterCustomers() {
-            
+
             if (['0101', '1001', '1004'].includes(this.document.operation_type_id)) {
 
                 if(this.document.document_type_id === '01') {
@@ -799,8 +805,8 @@ export default {
                     this.$emit('anularBoleto',this.transportePasaje);
                 }, 500);
             });
-            
-            
+
+
         }
 
 
