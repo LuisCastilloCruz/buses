@@ -125,3 +125,12 @@ ul.nav-main li .nav-children li.nav-active > .nav-link {
 .card {
     width: 100%;
 }
+html body #tabs .nav-tabs .nav-link, html.dark body .tabs .nav-tabs .nav-link, html body .tabs .nav-tabs .nav-link:hover, html.dark body .tabs .nav-tabs .nav-link:hover {
+    color: #0088CC !important;
+}
+html body #tabs .nav-tabs li.active .nav-link, html.dark body .tabs .nav-tabs li.active .nav-link {
+    border-top-color: #0088CC !important;
+    color: #0088CC !important;
+}
+
+
