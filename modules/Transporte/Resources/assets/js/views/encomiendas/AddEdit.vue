@@ -888,7 +888,7 @@ export default {
                     full_description: "",
                     has_igv: false,
                     has_plastic_bag_taxes: false,
-                    id: 1,
+                    id: 46,
                     internal_id: null,
                     item_unit_types: [],
                     lots: [],

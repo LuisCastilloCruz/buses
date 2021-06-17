@@ -438,7 +438,7 @@ export default {
                     unit_price: "100", //cambiado
                     unit_type_id: "ZZ",
                 },
-                item_id: 2,
+                item_id: 1,
                 percentage_igv: 18,
                 percentage_isc: 0,
                 percentage_other_taxes: 0,
