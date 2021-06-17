@@ -134,10 +134,13 @@ class TransporteProgramacionesController extends Controller
 
         $rutas = (array) $request->rutas;
         $programacion->syncRutas($rutas);
-        $programacion->origen;
-        $programacion->destino;
-        $programacion->vehiculo;
-        $programacion->rutas; //cargo de nuevo las rutas
+        $programacion->load(
+            'origen',
+            'destino',
+            'vehiculo',
+            'rutas'
+        );
+        $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
 
         return response()->json([
             'success' => true,
