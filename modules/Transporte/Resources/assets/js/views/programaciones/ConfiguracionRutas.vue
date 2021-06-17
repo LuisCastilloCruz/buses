@@ -60,10 +60,12 @@ export default {
             this.$emit("update:visible", false);
         },
         onCreate() {
+            this.rutas = [];
             if (this.programacion) {
                 this.form = this.programacion;
                 this.rutas = this.programacion.rutas.map( ruta => ruta.terminal_id);
-                this.rutas.push(this.programacion.terminal_destino_id);
+                if(!this.rutas.includes(this.programacion.terminal_destino_id)) this.rutas.push(this.programacion.terminal_destino_id);
+                
             }
         },
         async guardarConfiguracion(evt){
