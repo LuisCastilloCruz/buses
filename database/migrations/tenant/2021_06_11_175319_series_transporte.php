@@ -29,21 +29,6 @@ class SeriesTransporte extends Migration
             'description' => 'MANIFIESTO DE ENCOMIENDAS'
         ]);
 
-
-        DB::table('series')->insert([
-            'establishment_id' => 1,
-            'document_type_id' => 33,
-            'number' => '0001',
-            'contingency' => 0
-        ]);
-
-        DB::table('series')->insert([
-            'establishment_id' => 1,
-            'document_type_id' => 100,
-            'number' => '0001',
-            'contingency' => 0
-        ]);
-
     }
 
     /**
