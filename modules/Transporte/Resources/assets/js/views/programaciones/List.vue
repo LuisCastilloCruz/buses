@@ -170,7 +170,7 @@ export default {
                     type: 'success',
                     message: response.data.message
                 });
-                this.items = this.items.filter(i => i.id !== item.id);
+                this.listProgramaciones = this.listProgramaciones.filter(i => i.id !== item.id);
             }).catch(error => {
                 let response = error.response;
                 this.$message({

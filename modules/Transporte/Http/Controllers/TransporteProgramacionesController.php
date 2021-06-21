@@ -63,11 +63,16 @@ class TransporteProgramacionesController extends Controller
             // 'tiempo_aproximado'
         ));
 
-        $programacion->destino;
-        $programacion->origen;
-        $programacion->vehiculo;
-        $programacion->rutas;
+
         $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
+        $programacion->syncRutas([$programacion->terminal_destino_id]);
+        $programacion->load([
+            'destino',
+            'origen',
+            'vehiculo',
+            'rutas'
+        ]);
+        
 
         return response()->json([
             'success' => true,
@@ -112,6 +117,7 @@ class TransporteProgramacionesController extends Controller
                 throw new Exception('Lo sentimos no se puede eliminar la programación, tiene manifiestos',888);
             }
 
+            $programacion->syncRutas([]);
             $programacion->delete();
 
             return response()->json([
@@ -134,10 +140,13 @@ class TransporteProgramacionesController extends Controller
 
         $rutas = (array) $request->rutas;
         $programacion->syncRutas($rutas);
-        $programacion->origen;
-        $programacion->destino;
-        $programacion->vehiculo;
-        $programacion->rutas; //cargo de nuevo las rutas
+        $programacion->load(
+            'origen',
+            'destino',
+            'vehiculo',
+            'rutas'
+        );
+        $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
 
         return response()->json([
             'success' => true,

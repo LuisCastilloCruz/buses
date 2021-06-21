@@ -60,15 +60,16 @@ export default {
             this.$emit("update:visible", false);
         },
         onCreate() {
+            this.rutas = [];
             if (this.programacion) {
                 this.form = this.programacion;
-                this.rutas.push(this.programacion.terminal_destino_id);
                 this.rutas = this.programacion.rutas.map( ruta => ruta.terminal_id);
             }
         },
         async guardarConfiguracion(evt){
             this.loading = true;
             try{
+
                 const { data } = await this.$http.put(`/transportes/programaciones/${this.programacion.id}/configuracion-rutas`,{ rutas: this.rutas });
                 this.$emit("onUpdateItem", data.data);
                 this.onClose();
