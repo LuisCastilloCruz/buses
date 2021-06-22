@@ -7,7 +7,8 @@ use App\Models\Tenant\Catalogs\DocumentType;
 use Modules\BusinessTurn\Models\DocumentHotel;
 use Modules\BusinessTurn\Models\DocumentTransport;
 use Modules\Order\Models\OrderNote;
-
+use Modules\Transporte\Models\TransporteEncomienda;
+use Modules\Transporte\Models\TransportePasaje;
 
 class Document extends ModelTenant
 {
@@ -407,5 +408,14 @@ class Document extends ModelTenant
     public function seller()
     {
         return $this->belongsTo(User::class);
+    }
+
+
+    public function encomienda(){
+        return $this->hasOne(TransporteEncomienda::class,'document_id','id');
+    }
+
+    public function pasaje(){
+        return $this->hasOne(TransportePasaje::class,'document_id','id');
     }
 }

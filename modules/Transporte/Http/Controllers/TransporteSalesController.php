@@ -2,6 +2,7 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
+use App\Models\Tenant\Cash;
 use App\Models\Tenant\Configuration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -42,6 +43,7 @@ class TransporteSalesController extends Controller
         $user = $request->user();
         $terminal = $request->user()->terminal;
 
+        $isCashOpen =  !is_null(Cash::where([['user_id',$user->id],['state',true]])->first());
         if(is_null($terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
@@ -81,7 +83,8 @@ class TransporteSalesController extends Controller
             'document_types_invoice',
             'payment_method_types',
             'payment_destinations',
-            'configuration'
+            'configuration',
+            'isCashOpen'
         ));
     }
 

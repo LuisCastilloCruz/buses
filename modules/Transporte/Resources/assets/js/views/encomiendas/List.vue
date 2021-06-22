@@ -83,6 +83,8 @@
             :user-terminal="userTerminal"
             :configuration="configuration"
             :document_type_03_filter="document_type_03_filter"
+            @onSuccessVenta="onSuccessVenta"
+            :is-cash-open="isCashOpen"
         ></ModalAddEdit>
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
@@ -140,7 +142,12 @@ export default {
         configuration:{
             type: Object,
             required: true,
-        }
+        },
+        isCashOpen:{
+            type:Boolean,
+            required:true,
+            default:false,
+        },
     },
     components: {
         ModalAddEdit,
@@ -163,6 +170,11 @@ export default {
     mounted() {
     },
     methods: {
+
+        onSuccessVenta(documentId){
+            this.documentNewId = documentId;
+            this.showDialogDocumentOptions = true;
+        },
 
         async getEncomiendas(){
             try{

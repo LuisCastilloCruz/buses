@@ -158,15 +158,51 @@
                                 Lista de productos
                             </div>
                             <div class="card-body">
-                                <div v-if="!edit" class="row">
 
-                                    <div class="col-3">
-                                        <el-input v-model="producto.item.description" placeholder="Descripción"></el-input>
+                                <div v-if="!edit" class="row">
+                                    <div v-if="!addNewItem" class="col-4">
+                                        <div class="form-group">
+                                            <label for="">
+                                                Buscar producto
+                                                <a href="#" @click.prevent="addNewItem = true,initProducto()">[+ Nuevo]</a>
+                                            </label>
+                                            <el-select v-model="selectItem" filterable remote value-key="id"  popper-class="el-select-customers"
+                                                placeholder="Buscar producto"
+                                                :remote-method="searchProducto"
+                                                :loading="loadingSProducto"
+                                                clearable
+                                                
+                                                >
+                                                <el-option v-for="item in items" :key="item.id" :value="item" :label="item.name">
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+
+                                    <div v-else class="col-4">
+
+                                        <div class="form-group">
+                                            <label for="">
+                                                Descripción <span class="text-danger">*</span>
+                                                <a href="#" @click.prevent="addNewItem = false">[Buscar]</a>
+                                            </label>
+                                            <el-input v-model="producto.item.description" placeholder="Descripción"></el-input>
+                                        </div>
+
+                                        
+                                        
                                     </div>
                                     <div class="col-3">
-                                        <el-input type="number" v-model="producto.unit_price" placeholder="Precio"></el-input>
+                                        <div class="form-group">
+                                            <label for="">Precio unitario <span class="text-danger">*</span></label>
+                                            <el-input type="number" v-model="producto.unit_price" placeholder="Precio"></el-input>
+                                        </div>
+                                        
                                     </div>
-                                    <el-button type="primary" @click="agregarProducto">Agregar</el-button>
+                                    <div class="col-3">
+                                        <el-button :style="{marginTop:'1.82rem'}" :loading="loadingProducto" type="primary" @click="agregarProducto">Agregar</el-button>
+                                    </div>
+                                    
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-12">
@@ -186,7 +222,7 @@
                                                     <td>{{ producto.unit_price | toDecimals }}</td>
                                                     <td>{{ producto.quantity }}</td>
                                                     <th>
-                                                        <el-button type="danger" @click="eliminarProducto(index)">
+                                                        <el-button v-if="!edit" type="danger" @click="eliminarProducto(index)">
                                                             <i class="fa fa-trash"></i>
                                                         </el-button>
                                                     </th>
@@ -195,7 +231,6 @@
                                                 <tr>
                                                     <td><strong>Total: </strong></td>
                                                     <td class="text-right" colspan="3"> {{ total | toDecimals }} </td>
-
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -427,7 +462,12 @@ export default {
         configuration:{
             type: Object,
             required: true,
-        }
+        },
+        isCashOpen:{
+            type:Boolean,
+            required:true,
+            default:false,
+        },
     },
     components:{
         DocumentOptions,
@@ -436,6 +476,7 @@ export default {
     mixins: [exchangeRate],
     data() {
         return {
+            loadingProducto:false,
             input_person:{},
             showDialogNewPerson:false,
             title: "Encomienda",
@@ -476,7 +517,7 @@ export default {
             encomienda: {
                 document_id:null,
                 remitente_id:null,
-                destinatatio_id:null,
+                destinatario_id:null,
                 estado_pago_id:null,
                 estado_envio_id:null,
                 programacion_id:null,
@@ -487,7 +528,11 @@ export default {
             series:[],
             is_contingency: 0,
             activePanel: 0,
-            activePanel2:0
+            activePanel2:0,
+            items:[],
+            loadingSProducto:false,
+            addNewItem:false,
+            selectItem:null,
         };
     },
     async mounted() {
@@ -520,6 +565,58 @@ export default {
         },
         total(newVal){
             if(newVal) this.payment.payment = parseFloat(newVal);
+        },
+        selectItem(value){
+            if(value){
+                let precio = parseFloat(this.selectItem.sale_unit_price);
+                this.producto.item.id = this.selectItem.id;
+                this.producto.item.name = this.selectItem.name;
+                this.producto.item.second_name = this.selectItem.second_name;
+                this.producto.item.amount_plastic_bag_taxes = this.selectItem.amount_plastic_bag_taxes;
+                this.producto.item.attributes = this.selectItem.attributes;
+                this.producto.item.barcode = this.selectItem.barcode;
+                this.producto.item.brand = this.selectItem.brand;
+                this.producto.item.calculate_quantity = this.selectItem.calculate_quantity;
+                this.producto.item.category = this.selectItem.category;
+                this.producto.item.currency_type_id = this.selectItem.currency_type_id;
+                this.producto.item.currency_type_symbol = this.selectItem.currency_type_symbol;
+                this.producto.item.description = this.selectItem.description;
+                this.producto.item.full_description = this.selectItem.full_description;
+                this.producto.item.has_igv = this.selectItem.has_igv;
+                this.producto.item.has_plastic_bag_taxes = this.selectItem.has_plastic_bag_taxes;
+                this.producto.item.internal_id = this.selectItem.internal_id;
+
+                this.producto.item.item_unit_types = this.selectItem.item_unit_types
+                this.producto.item.lots = this.selectItem.lots
+                this.producto.item.lots_enabled = this.selectItem.lots_enabled
+                this.producto.item.lots_group = this.selectItem.lots_group
+                this.producto.item.presentation = this.selectItem.presentation
+                this.producto.item.purchase_affectation_igv_type_id = this.selectItem.purchase_affectation_igv_type_id
+                this.producto.item.purchase_unit_price = this.selectItem.purchase_unit_price
+                this.producto.item.sale_affectation_igv_type_id = this.selectItem.sale_affectation_igv_type_id
+                this.producto.item.sale_unit_price = this.selectItem.sale_unit_price
+                this.producto.item.series_enabled = this.selectItem.series_enabled
+                this.producto.item.stock = this.selectItem.stock;
+                this.producto.item.stock_min = this.selectItem.stock_min;
+                this.producto.item.unit_type_id = this.selectItem.unit_type_id;
+                this.producto.unit_price = precio
+                // this.producto.total = precio;
+                // this.producto.total_base_igv=precio;
+                // this.producto.total_value=precio;
+                // this.producto.unit_price=precio;
+                // this.producto.unit_value=precio;
+                // this.document.items.push( Object.assign({},this.producto) );
+                // this.document.payments.push(this.payment);
+
+                // this.total += parseFloat(this.producto.unit_price);
+                // if(this.document.payments.length > 0){
+                //     this.document.payments[0].payment = this.total;
+                // }
+                
+            
+            }else {
+                this.initProducto();
+            }
         }
     },
     methods: {
@@ -619,6 +716,16 @@ export default {
 
         },
 
+        async searchProducto(q=''){
+
+            this.loadingSProducto = true;
+            const { data } = await this.$http.get(`/transportes/encomiendas/get-productos?search=${q}`);
+            this.loadingSProducto = false;
+            this.items = data;
+            
+
+        },
+
         async initializeSelects(){
             //remitentes
             this.loadingRemitente = true;
@@ -682,7 +789,7 @@ export default {
                 .then( ({data}) => {
                     this.loading = false;
                     this.$emit('onAddItem',data.encomienda);
-                    // this.$emit('onSuccessVenta',this.documentId);
+                    this.$emit('onSuccessVenta',this.documentId);
                     this.$message({
                         type: 'success',
                         message: 'Encomienda registrada.'
@@ -711,18 +818,31 @@ export default {
         guardarEncomienda(programacion){
             this.encomienda.programacion_id = programacion.id;
         },
-        agregarProducto(evt){
-            if(this.producto.item.description && this.producto.unit_price){
+        async agregarProducto(evt){
+            if(this.producto.item.description && this.producto.unit_price){                
                 let precio = parseFloat(this.producto.unit_price);
                 this.producto.input_unit_price_value=precio;
-                this.producto.item.description= this.producto.item.description;
-                this.producto.item.unit_price=precio;
+                this.producto.item.name = this.producto.item.second_name = this.producto.item.description;
+                this.producto.item.sale_unit_price =precio;
                 this.producto.total=precio;
                 this.producto.total_base_igv=precio;
                 this.producto.total_value=precio;
                 this.producto.unit_price=precio;
                 this.producto.unit_value=precio;
 
+                if(!this.producto.item.id){
+                    this.loadingProducto = true;
+                    let id = await this.createItem(this.producto.item);
+                    await this.searchProducto();
+                    this.loadingProducto = false;
+                    if(!id) return this.$message.error('Lo sentimos no se pudo agregar el producto');
+                    this.producto.item_id = this.producto.item.id = id;
+                }else {
+                    this.producto.item_id = this.producto.item.id;
+                }
+                
+                
+                
                 this.document.items.push( Object.assign({},this.producto) );;
                 this.document.payments.push(this.payment);
                 //this.document.customer_id=this.pasajeroId;
@@ -732,11 +852,18 @@ export default {
                 if(this.document.payments.length > 0){
                     this.document.payments[0].payment = this.total;
                 }
+                this.selectItem = null;
+                // this.initProducto();
             }
         },
 
         eliminarProducto(index){
-            this.productos.splice(index,1);
+            this.document.items.splice(index,1);
+            let total = 0;
+            this.document.items.forEach(item => {
+                total += parseFloat(item.unit_price);
+            })
+            this.total = total;
         },
         async onCreate() {
             this.initProducto();
@@ -781,6 +908,7 @@ export default {
             
             await this.initializeSelects();
             await this.searchTerminales();
+            await this.searchProducto();
             
             this.load = false;
 
@@ -834,6 +962,15 @@ export default {
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error("El destino del pago es obligatorio");
             }
+
+            if(!this.encomienda.remitente_id || !this.encomienda.destinatario_id){
+                return this.$message.info('Debe seleccionar remitente y destinatario.');
+            }
+
+            console.log(this.isCashOpen);
+
+            if(!this.isCashOpen) return this.$message.info('La caja no esta abierta');
+            
             // return;
             this.loading = true;
             this.$http
@@ -908,6 +1045,9 @@ export default {
                 document_item_id: null,
                 input_unit_price_value: "100",//cambiado
                 item: {
+                    id: null,
+                    name:null,
+                    second_name:null,
                     amount_plastic_bag_taxes: "0.10",
                     attributes: [],
                     barcode: "",
@@ -916,11 +1056,10 @@ export default {
                     category: "",
                     currency_type_id: "PEN",
                     currency_type_symbol: "S/",
-                    description: "PASAJE AREQUIPA CUSCO", //cambiado
+                    description: null, //cambiado
                     full_description: "",
                     has_igv: false,
                     has_plastic_bag_taxes: false,
-                    id: 46,
                     internal_id: null,
                     item_unit_types: [],
                     lots: [],
@@ -930,9 +1069,10 @@ export default {
                     purchase_affectation_igv_type_id: "20",
                     purchase_unit_price: "0.000000",
                     sale_affectation_igv_type_id: "20",
-                    sale_unit_price: 35,
+                    sale_unit_price: 0,
                     series_enabled: false,
-                    stock: "",
+                    stock: 1,
+                    stock_min:1,
                     unit_price: "0", //cambiado
                     unit_type_id: "ZZ",
                 },
@@ -943,7 +1083,7 @@ export default {
                 price_type_id: "01",
                 quantity: 1,
                 system_isc_type_id: null,
-                total: 100,//cambiado
+                total: 0,//cambiado
                 total_base_igv: 100,//cambiado
                 total_base_isc: 0,
                 total_base_other_taxes: 0,
@@ -954,9 +1094,9 @@ export default {
                 total_other_taxes: 0,
                 total_plastic_bag_taxes: 0,
                 total_taxes: 0,
-                total_value: 100,//cambiado
-                unit_price: 100,//cambiado
-                unit_value: 100,//cambiado
+                total_value: 0,//cambiado
+                unit_price: 0,//cambiado
+                unit_value: 0,//cambiado
                 warehouse_id: null
             };
         },
@@ -1126,6 +1266,15 @@ export default {
 
             } else {
                 this.pasajeros = this.pasajeros
+            }
+        },
+        async createItem(item){
+            try{
+                const { data } = await this.$http.post('/items',item);
+                return data.id;
+
+            }catch(error){
+                return null;
             }
         },
     },

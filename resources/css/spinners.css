@@ -168,3 +168,8 @@ Preloader
     opacity: 0.25;
   }
 }
+
+
+.el-loading-mask{
+  z-index: 1019 !important;
+}

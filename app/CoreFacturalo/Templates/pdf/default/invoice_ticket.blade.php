@@ -19,6 +19,9 @@
     $total_payment = $document->payments->sum('payment');
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
+    $encomienda = $document->encomienda;
+    $pasaje = $document->pasaje;
+
 @endphp
 <html>
 <head>
@@ -298,6 +301,71 @@
 </table>
 @endif
 
+@if(!is_null($encomienda))
+<table>
+    <tr>
+        <td class="desc"><b>Destinatario: </b></td>
+        <td class="desc">{{ $encomienda->destinatario->name }}</td>
+    </tr>
+    @if ($encomienda->programacion)
+        <tr>
+            <td class="desc"><b>Origen: </b></td>
+            <td class="desc">
+                {{ $encomienda->programacion->origen->nombre  }}
+            </td>
+        </tr>
+        <tr style="margin-top: 20px">
+            <td class="desc"><h3><b>Destino: </b></h3> </td>
+            <td class="desc">
+                <h3>
+                    <b>{{ $encomienda->programacion->destino->nombre }}</b>
+                </h3>
+            </td>
+        </tr>
+        {{-- <tr>
+            <td class="align-top desc"><b>Hora salida</b></td>
+            <td class="text-left desc">{{ $encomienda->programacion->hora_salida }}</td>
+        </tr>
+        <tr>
+            <td class="align-top desc"><b>Fecha Salida</b></td>
+            <td class="text-left desc">{{ $encomienda->fecha_salida }}</td>
+        </tr> --}}
+        
+    @else
+        <tr>
+            <td class="desc"><b>Origen: </b></td>
+            <td class="desc">
+                Sin programación asignada
+            </td>
+        </tr>
+    @endif
+</table>
+@endif
+
+
+@if(!is_null($pasaje))
+<table>
+    <tr>
+        <td class="align-top desc"><b>Fecha de viaje: </b></td>
+        <td class="text-left desc">{{ $pasaje->fecha_salida }}</td>
+    </tr>
+    <tr>
+        <td class="desc"> <h4> <b>Hora de viaje: </b> </h4> </td>
+        <td class="desc"> <h4> <strong>{{ $pasaje->programacion->hora_salida }}</strong></h4></td>
+    </tr>
+    <tr>
+        <td class="desc">
+            <strong>Nro. Asiento: {{ $pasaje->numero_asiento }}</strong>
+            
+        </td>
+    </tr>
+    
+</table>
+@endif
+
+
+
+
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr>
@@ -461,6 +529,17 @@
             </tr>
         @endforeach
     </tr>
+
+    @if (!is_null($pasaje) || !is_null($encomienda))
+        <tr>
+            <td class="text-center desc">Condición</td>
+        </tr>
+        <tr>
+            <td class="text-center desc">
+                <h3><strong>{{ $document->state_type_id == '05' ? 'PAGADO' : $document->state_type->description }}</strong></h3>
+            </td>
+        </tr>
+    @endif
 
 
     @if ($document->detraction)

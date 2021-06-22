@@ -12,6 +12,7 @@
     :user-terminal='@json($user_terminal)'
     :configuration='@json($configuration)'
     :document_type_03_filter='@json($document_type_03_filter)'
+    :is-cash-open='@json($isCashOpen)'
     />
 
 @endsection

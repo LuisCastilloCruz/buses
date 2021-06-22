@@ -231,6 +231,7 @@
                     @onSuccessVenta="onSuccessVenta"
                     @anularBoleto="anularBoleto"
                     :document_type_03_filter="document_type_03_filter"
+                    :is-cash-open="isCashOpen"
                     />
 
                     
@@ -272,6 +273,11 @@ import DocumentsVoided from '@views/documents/partials/voided.vue';
 export default {
 
     props:{
+        isCashOpen:{
+            type:Boolean,
+            required:true,
+            default:false,
+        },
         document_type_03_filter:{
             type:Boolean,
             required:true,

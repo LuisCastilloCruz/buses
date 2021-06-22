@@ -2,9 +2,12 @@
 
 namespace Modules\Transporte\Http\Controllers;
 
+use App\Http\Resources\Tenant\ItemResource;
+use App\Models\Tenant\Cash;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use Carbon\Carbon;
@@ -33,7 +36,7 @@ class TransporteEncomiendaController extends Controller
      */
 
     use FinanceTrait;
-    public function index()
+    public function index(Request $request)
     {
 
         $estadosPagos = TransporteEstadoPagoEncomienda::all();
@@ -61,7 +64,7 @@ class TransporteEncomiendaController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::first();
 
-
+        $isCashOpen =  !is_null(Cash::where([['user_id',$request->user()->id],['state',true]])->first());
         return view('transporte::encomiendas.index', compact(
             'estadosPagos',
             'estadosEnvios',
@@ -72,7 +75,8 @@ class TransporteEncomiendaController extends Controller
             'payment_destinations',
             'user_terminal',
             'configuration',
-            'document_type_03_filter'
+            'document_type_03_filter',
+            'isCashOpen'
         ));
     }
 
@@ -315,5 +319,32 @@ class TransporteEncomiendaController extends Controller
 
         }
 
+    }
+
+    public function getProductos(Request $request){
+        try{
+            extract($request->only('search'));
+
+            $items = Item::select();
+
+            $items->where('item_type_id','01')
+            ->where(function($query) use($search){
+                $query->where('name','like',"%{$search}%")
+                ->orWhere('second_name','like',"%{$search}%")
+                ->orWhere('description','like',"%{$search}%");
+            });
+
+            return response()->json($items->get()->map(function($item){
+                $it = new ItemResource($item);
+                return $it;
+            }),200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'message' => 'Lo sentimos ocurrio un error'
+            ],422);
+
+        }
     }
 }

@@ -293,6 +293,11 @@ export default {
         tipoVenta:{
             type:Number,
             default:null
+        },
+        isCashOpen:{
+            type:Boolean,
+            required:true,
+            default:false,
         }
     },
     created(){
@@ -399,19 +404,40 @@ export default {
         },
 
         async saveDocument(){
-            this.loading = true;
+
+            
+
+           let validator = this.validate();
+
+           if(validator.fails){
+               return this.$message.info(validator.first);
+            }
+
+           
             this.document.items.length=0;
             let precio = parseFloat(this.precio);
-
-            if(!precio) return;
+            if(!precio) {
+                this.$message.info('Por favor indique el precio de el asiento');
+                return;
+            } 
 
             this.producto.input_unit_price_value=precio;
+            this.producto.item.description = this.producto.item.name = this.producto.item.second_name  = `${this.programacion.origen.nombre}-${this.programacion.destino.nombre}`;
+            this.producto.item.sale_unit_price = precio;
             this.producto.item.unit_price=precio;
             this.producto.total=precio;
             this.producto.total_base_igv=precio;
             this.producto.total_value=precio;
             this.producto.unit_price=precio;
             this.producto.unit_value=precio;
+
+            this.loading = true;
+            // console.log(this.producto.item);
+            // return;
+
+            const id = await this.createItem(this.producto.item);
+            if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
+            this.producto.item_id = this.producto.item.id = id;
 
             this.document.items.push(this.producto);
             this.document.payments.push(this.payment);
@@ -422,6 +448,7 @@ export default {
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error("El destino del pago es obligatorio");
             }
+            
 
             await this.$http
                 .post(`/documents`, this.document)
@@ -461,12 +488,15 @@ export default {
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
             .then( ({data}) => {
                 this.loading = false;
+                this.initProducto();
                 this.$emit('onSuccessVenta',this.documentId);
                 this.$emit('onUpdateItem');
                 this.$message({
                     type: 'success',
                     message: data.message
                 });
+
+               
             }).catch( error => {
                 this.axiosError(error);
             }).finally(() => {
@@ -516,6 +546,9 @@ export default {
                 document_item_id: null,
                 input_unit_price_value: "100",//cambiado
                 item: {
+                    id:null,
+                    name:null,
+                    second_name:null,
                     amount_plastic_bag_taxes: "0.10",
                     attributes: [],
                     barcode: "",
@@ -528,7 +561,7 @@ export default {
                     full_description: "",
                     has_igv: false,
                     has_plastic_bag_taxes: false,
-                    id: 2,
+                    item_type_id:'02',
                     internal_id: null,
                     item_unit_types: [],
                     lots: [],
@@ -538,13 +571,14 @@ export default {
                     purchase_affectation_igv_type_id: "20",
                     purchase_unit_price: "0.000000",
                     sale_affectation_igv_type_id: "20",
-                    sale_unit_price: 35,
+                    sale_unit_price: 0,
                     series_enabled: false,
-                    stock: "",
-                    unit_price: "100", //cambiado
+                    stock: 1,
+                    stock_min:1,
+                    unit_price: 0, //cambiado
                     unit_type_id: "ZZ",
                 },
-                item_id: 2,
+                item_id: null,
                 percentage_igv: 18,
                 percentage_isc: 0,
                 percentage_other_taxes: 0,
@@ -807,6 +841,68 @@ export default {
             });
 
 
+        },
+        async createItem(item){
+            try{
+                const { data } = await this.$http.post('/items',item);
+                return data.id;
+
+            }catch(error){
+                return null;
+            }
+        },
+
+
+        validate(){
+            let valid = true;
+            let errors = [];
+            if(!this.isCashOpen) {
+                valid = false;
+                errors.push('La caja no esta abierta');
+                this.$message.info('La caja no esta abierta');
+            }
+            
+
+            if(!this.pasajeroId){
+                valid = false;
+                errors.push('Debe seleccionar un pasajero');
+
+            }
+            if(!this.programacion) {
+                valid = false;
+                errors.push('Debe seleccionar una programación');
+            }
+
+            if(this.tipoVenta == 2){
+                if(!this.asiento) {
+                    valid = false;
+                    errors.push('Debe seleccionar un asiento');
+                }
+            }else {
+                if(!this.numero_asiento){
+                    valid = false;
+                    errors.push('Debe seleccionar un asiento');
+                }
+            }
+
+            if(!this.precio){
+                valid = false;
+                errors.push('Debe poner un precio');
+            }
+
+            if(this.precio){
+                let p = parseFloat(this.precio);
+                if(p <= 0){
+                    valid = false;
+                    errors.push('El precio debe ser mayor a 0');
+                }
+            }
+
+            return {
+                fails:!valid,
+                errors:errors,
+                first:errors.length > 0 ? errors[0] : null,
+            }
         }
 
 
