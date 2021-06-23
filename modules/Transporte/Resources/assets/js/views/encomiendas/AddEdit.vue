@@ -1267,7 +1267,7 @@ export default {
                 }
 
             } else {
-                this.pasajeros = this.pasajeros
+                this.tempRemitentes = this.remitentes
             }
         },
         async createItem(item){
