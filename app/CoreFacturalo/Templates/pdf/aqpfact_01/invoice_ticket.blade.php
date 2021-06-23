@@ -20,7 +20,7 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
 
-    $encomeinda = $document->encomienda;
+    $encomienda = $document->encomienda;
     $pasaje = $document->pasaje;
 
 @endphp
