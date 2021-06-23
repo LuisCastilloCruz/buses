@@ -87,7 +87,7 @@
                                        :loading="loadingRemitente"
                                        @change="selectCustomer"
                             >
-                                <el-option v-for="remitente in remitentes" :key="remitente.id" :value="remitente.id" :label="remitente.name">
+                                <el-option v-for="remitente in tempRemitentes" :key="remitente.id" :value="remitente.id" :label="remitente.name">
 
                                 </el-option>
                             </el-select>
@@ -533,6 +533,7 @@ export default {
             loadingSProducto:false,
             addNewItem:false,
             selectItem:null,
+            tempRemitentes:[]
         };
     },
     async mounted() {
@@ -1255,17 +1256,18 @@ export default {
             if (['0101', '1001', '1004'].includes(this.document.operation_type_id)) {
 
                 if(this.document.document_type_id === '01') {
-                    this.pasajeros = _.filter(this.pasajeros, {'identity_document_type_id': '6'})
+                    this.tempRemitentes = _.filter(this.remitentes, {'identity_document_type_id': '6'})
                 } else {
-                    if(this.document_type_03_filter) {
-                        this.pasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
-                    } else {
-                        this.pasajeros = this.pasajeros
-                    }
+                    this.tempRemitentes = _.filter(this.remitentes, (c) => { return c.identity_document_type_id !== '6' })
+                    // if(this.document_type_03_filter) {
+                    //     this.pasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
+                    // } else {
+                    //     this.pasajeros = this.pasajeros
+                    // }
                 }
 
             } else {
-                this.pasajeros = this.pasajeros
+                this.tempRemitentes = this.remitentes
             }
         },
         async createItem(item){

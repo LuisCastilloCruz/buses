@@ -817,11 +817,13 @@ export default {
                 if(this.document.document_type_id === '01') {
                     this.tempPasajeros = _.filter(this.pasajeros, {'identity_document_type_id': '6'})
                 } else {
-                    if(this.document_type_03_filter) {
-                        this.tempPasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
-                    } else {
-                        this.tempPasajeros = [...this.pasajeros]
-                    }
+
+                    this.tempPasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
+                    // if(this.document_type_03_filter) {
+                    //     this.tempPasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
+                    // } else {
+                    //     this.tempPasajeros = [...this.pasajeros]
+                    // }
                 }
 
             } else {
