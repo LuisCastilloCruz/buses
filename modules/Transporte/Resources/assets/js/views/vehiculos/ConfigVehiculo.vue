@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
                 <el-button type="info" @click="agregarItem('sb')">Baño</el-button>
-                <el-button type="info" @click="agregarItem('ss')">Asiento</el-button>
+                
                 <el-button type="info" @click="agregarItem('ses')">Scalera</el-button>
                 <el-button type="info" @click="agregarItem('sv')">Televisión</el-button>
                 <el-button v-if="!remove" type="danger" @click="remove = true">Eliminar</el-button>
@@ -20,10 +20,22 @@
                         </el-select>
                     </div>
                 </div>
+                <div class="col-md-2">
+                    <div class="row text-center justify-content-center">
+                        <label for="">Asiento</label>
+                        <el-input type="number" v-model="asiento.numero_asiento"></el-input>
+                        <el-button class="mt-2" type="info" @click="agregarItem('ss')">+</el-button>
+                    </div>
+                    <!-- <div class="form-group row">
+                        
+
+                    </div> -->
+                </div>
+                
             </div>
         </div>
         <bus v-if="piso == 1" :seats.sync="asientosPisoUno" drag :remove="remove" @onDelete="eliminar" />
-        <bus v-if="piso == 2" :seats.sync="asientosPisoDos" drag />
+        <bus v-if="piso == 2" :seats.sync="asientosPisoDos" drag :remove="remove" @onDelete="eliminar" />
 
         <div class="row mt-2">
             <div class="col-12 d-flex justify-content-center">
@@ -56,6 +68,7 @@ export default {
         this.asientos = this.seats;
         this.piso = 1;
         this.pisos = parseInt(this.vehiculo.pisos);
+        this.initAsiento()
     },
     data(){
         return({
@@ -65,6 +78,8 @@ export default {
             transporte:this.vehiculo,
             remove:false,
             pisos:null,
+            numeroAsiento:null,
+            asiento:null
         });
     },
     watch:{
@@ -89,55 +104,75 @@ export default {
             //ss = asiento
             //sb = baño
             //ses = escalera
-            //sv = televisión       
-            switch(type){
-                case 'ss':
-                    /** Obtengo solo los que son asientos normales */
-                    let posicion = this.asientos.filter( asiento => asiento.type == 'ss');
-                    this.asientos.push({
-                        id:null,
-                        top:'50px',
-                        left:'50px',
-                        type:'ss',
-                        estado_asiento_id:1,
-                        piso:this.piso,
-                        numero_asiento:(posicion.length + 1)
-                    });
-                    break;
-                case 'sb':
-                    this.asientos.push({
-                        id:null,
-                        top:'50px',
-                        left:'50px',
-                        type:'sb',
-                        piso:this.piso,
-                        estado_asiento_id:1,
-                        numero_asiento:0
-                    });
-                    break;
-                case 'ses':
-                    this.asientos.push({
-                        id:null,
-                        top:'50px',
-                        left:'50px',
-                        type:'ses',
-                        piso:this.piso,
-                        estado_asiento_id:1,
-                        numero_asiento:0
-                    });
-                    break;
-                case 'sv':
-                    this.asientos.push({
-                        id:null,
-                        top:'50px',
-                        left:'50px',
-                        type:'sv',
-                        piso:this.piso,
-                        estado_asiento_id:1,
-                        numero_asiento:0
-                    });
-                    break;
+            //sv = televisión   
+
+            if(type === 'ss') {
+                if(!this.asiento.numero_asiento) return this.$message.info('Debe agregar número de asiento');
+                let exist = this.asientos.find( s => s.numero_asiento == this.asiento.numero_asiento  );
+                if(exist) return this.$message.info('Numero de asiento ya existe');
             }
+
+            
+            this.asiento.piso = this.piso;
+            this.asiento.type = type;
+            this.asiento.numero_asiento = type === 'ss' ? this.asiento.numero_asiento : 0;
+
+            this.asientos.push(Object.assign({},this.asiento));
+            this.initAsiento();
+            // switch(type){
+            //     case 'ss':
+            //         /** Obtengo solo los que son asientos normales */
+            //         // let posicion = this.asientos.filter( asiento => asiento.type == 'ss');
+                    
+            
+                    
+                    
+            //         this.asiento.
+            //         this.asientos.push({
+            //             id:null,
+            //             top:'50px',
+            //             left:'50px',
+            //             type:'ss',
+            //             estado_asiento_id:1,
+            //             piso:this.piso,
+            //             numero_asiento:this.numeroAsiento
+            //         });
+            //         this.numeroAsiento = null;
+            //         break;
+            //     case 'sb':
+            //         this.asientos.push({
+            //             id:null,
+            //             top:'50px',
+            //             left:'50px',
+            //             type:'sb',
+            //             piso:this.piso,
+            //             estado_asiento_id:1,
+            //             numero_asiento:0
+            //         });
+            //         break;
+            //     case 'ses':
+            //         this.asientos.push({
+            //             id:null,
+            //             top:'50px',
+            //             left:'50px',
+            //             type:'ses',
+            //             piso:this.piso,
+            //             estado_asiento_id:1,
+            //             numero_asiento:0
+            //         });
+            //         break;
+            //     case 'sv':
+            //         this.asientos.push({
+            //             id:null,
+            //             top:'50px',
+            //             left:'50px',
+            //             type:'sv',
+            //             piso:this.piso,
+            //             estado_asiento_id:1,
+            //             numero_asiento:0
+            //         });
+            //         break;
+            // }
         },
         guardar(evt){
             this.loading = true;
@@ -145,11 +180,13 @@ export default {
                 asientos:this.asientos,
             }).then( response => {
                 this.transporte = response.data.vehiculo;
+                this.asientos = response.data.vehiculo.seats;
                 this.$message({
                     type: 'success',
                     message: response.data.message
                 });
                 this.loading = false;
+                this.initAsiento();
             }).catch(error => {
                 this.axiosError(error);
             });
@@ -166,7 +203,6 @@ export default {
                     if (action === 'confirm') {
                         instance.confirmButtonLoading = true;
                         instance.confirmButtonText = 'Cargando...';
-                        asiento.deleted = true;
                         setTimeout(async() => {
                             if(asiento.id){
                                 try{
@@ -213,6 +249,17 @@ export default {
            
 
 
+        },
+        initAsiento(){
+            this.asiento = {
+                id:null,
+                top:'50px',
+                left:'50px',
+                type:'ss',
+                estado_asiento_id:1,
+                piso:1,
+                numero_asiento:null
+            };
         }
 
     }
