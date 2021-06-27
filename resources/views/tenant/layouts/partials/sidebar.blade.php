@@ -3,7 +3,6 @@
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
     $path[0] = ($path[0] === '')?'documents':$path[0];
-
 @endphp
 
 <aside id="sidebar-left" class="sidebar-left">
@@ -994,6 +993,7 @@
                         </ul>
                     </li>
                     @endif
+                    @if(in_array('hotel', $vc_modules))
                     <li class=" nav-parent
                         {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
@@ -1018,7 +1018,9 @@
                             </li>
                         </ul>
                     </li>
-                        <li class=" nav-parent
+                    @endif
+                    @if(in_array('transporte', $vc_modules))
+                    <li class=" nav-parent
                         {{ ($path[0] === 'transportes') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-building" aria-hidden="true"></i>
@@ -1051,6 +1053,7 @@
                                 </li>
                             </ul>
                     </li>
+                    @endif
                 </ul>
             </nav>
         </div>
