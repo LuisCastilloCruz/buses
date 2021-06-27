@@ -168,6 +168,8 @@ class TransporteVehiculoController extends Controller
 
             DB::connection('tenant')->commit();
 
+            $vehiculo->load('seats');
+
 
             return response()->json([
                 'success' => true,
