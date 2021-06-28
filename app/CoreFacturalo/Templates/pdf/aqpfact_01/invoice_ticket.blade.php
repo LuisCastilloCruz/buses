@@ -113,7 +113,7 @@
 
     <tr>
         <td class="align-top"><p class="desc"><b>Cliente:</b></p></td>
-        <td><p class="desc">{{ $customer->name }} asdfasdfasdfasd</p></td>
+        <td><p class="desc">{{ $customer->name }</p></td>
     </tr>
     <tr>
         <td><p class="desc"><b>{{ $customer->identity_document_type->description }}:</b></p></td>
