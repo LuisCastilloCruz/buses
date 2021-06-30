@@ -128,7 +128,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Reporte POS - {{$cash->user->name}} - {{$cash->date_opening}} {{$cash->time_opening}}</title>
+        <title>Reporte POS - {{$cash->user->name}}</title>
         <style>
             html {
                 font-family: sans-serif;
