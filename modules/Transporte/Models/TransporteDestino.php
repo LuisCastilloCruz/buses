@@ -10,14 +10,10 @@ class TransporteDestino extends ModelTenant
 {
 	protected $table = 'transporte_destinos';
 
-	protected $fillable = ['nombre', 'district_id'];
+	protected $fillable = ['id','nombre'];
 
-	public function district()
-	{
-		return $this->belongsTo(District::class, 'district_id');
-	}
 
-	public function terminales() : HasMany{
+	public function terminales(){
 		return $this->hasMany(TransporteTerminales::class,'destino_id','id');
 	}
 

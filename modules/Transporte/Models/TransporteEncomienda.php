@@ -17,7 +17,9 @@ class TransporteEncomienda extends ModelTenant
         'fecha_salida',
         'programacion_id',
         'estado_envio_id',
-        'estado_pago_id'
+        'estado_pago_id',
+        'origen_id',
+        'destino_id'
     ];
 
 

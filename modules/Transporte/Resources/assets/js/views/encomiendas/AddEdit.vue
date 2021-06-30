@@ -132,8 +132,8 @@
                     <div class="col-4">
                         <div class="form-group">
                             <label for="">Destino</label>
-                            <el-select v-model="destinoId" :loading="loadingDestinos" popper-class="el-select-customers" placeholder="Destino" @change="seleccionarFecha">
-                                <el-option v-for="destino in destinos" :key="destino.id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">
+                            <el-select v-model="destino_id" :loading="loadingDestinos" popper-class="el-select-customers" placeholder="Destino" @change="seleccionarFecha">
+                                <el-option v-for="destino in destinos" :key="destino.id" :value="destino.id" :label="`${destino.nombre}`">
                                 </el-option>
                             </el-select>
                         </div>
@@ -521,7 +521,9 @@ export default {
                 estado_pago_id:null,
                 estado_envio_id:null,
                 programacion_id:null,
-                fecha_salida:moment().format("YYYY-MM-DD")
+                fecha_salida:moment().format("YYYY-MM-DD"),
+                origen_id:null,
+                destino_id:null
             },
             payment:{},
             document_types: [],
@@ -763,7 +765,8 @@ export default {
             this.loadingDestinos = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/${this.terminalId}/get-destinos`);
             this.loadingDestinos = false;
-            this.destinos = data.programaciones;
+            //this.destinos = data.programaciones;
+            this.destinos = data.destinos;
         },
         onUpdate() {
             this.loading = true;
@@ -982,7 +985,7 @@ export default {
                         this.encomienda.document_id = response.data.data.id;
                         this.form_cash_document.document_id = response.data.data.id;
                         this.$emit("update:showDialog", false);
-                        await this.onStore();// guardando pasajes
+                        await this.onStore();// guardando encomienda
                         await this.saveCashDocument();
                     } else {
                         this.$message.error(response.data.message);

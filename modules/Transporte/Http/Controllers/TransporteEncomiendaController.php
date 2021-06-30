@@ -20,6 +20,7 @@ use Modules\Transporte\Models\TransporteEncomienda;
 use Modules\Transporte\Models\TransporteEstadoEnvio;
 use Modules\Transporte\Models\TransporteEstadoPagoEncomienda;
 use Modules\Transporte\Models\TransporteProgramacion;
+use Modules\Transporte\Models\TransporteDestino;
 use Modules\Transporte\Models\TransporteTerminales;
 use App\Models\Tenant\PaymentMethodType;
 use Exception;
@@ -151,10 +152,15 @@ class TransporteEncomiendaController extends Controller
 
     public function getDestinos(Request $request,TransporteTerminales $terminal){
 
-        $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
+        /* $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
         ->where('terminal_origen_id',$terminal->id);
         return response()->json([
             'programaciones' => $programaciones->get()
+        ]);
+ */
+        $destinos = TransporteDestino::get();
+        return response()->json([
+            'destinos' => $destinos
         ]);
     }
 
@@ -197,7 +203,9 @@ class TransporteEncomiendaController extends Controller
                     'fecha_salida',
                     'programacion_id',
                     'estado_pago_id',
-                    'estado_envio_id'
+                    'estado_envio_id',
+                    'origen_id',
+                    'destino_id'
                 )
             );
 
