@@ -29,7 +29,9 @@ class RealizarVentaRequest extends FormRequest
             'estado_asiento_id' => ['required'],
             'fecha_salida' => ['required'],
             'pasajero_id' => ['required'],
-            'programacion_id' => ['required'],
+            // 'programacion_id' => ['required'],
+            'destino_id' => ['required'],
+            'hora_salida' => ['required']
         ];
     }
 }

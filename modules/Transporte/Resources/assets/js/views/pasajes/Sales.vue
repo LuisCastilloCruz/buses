@@ -37,8 +37,11 @@
                                 placeholder="Destino"
                                 @change="getProgramaciones"
                                 >
-                                    <el-option v-for="destino in destinos" :key="destino.id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">
-                                    </el-option>
+                                    <template v-for="destino in destinos">
+                                        <el-option v-if="destino.id != terminalId"  :key="destino.id" :value="destino.id" :label="`${destino.nombre}`">
+                                        </el-option>
+                                    </template>
+                                    
                                 </el-select>
                             </div>
                         </div>
@@ -75,8 +78,9 @@
                                 </el-date-picker>
                             </div>
                         </div>
+                        
 
-                        <div v-loading="loadingProgramaciones" v-if="destinoId" class="col-5">
+                        <div v-loading="loadingProgramaciones" v-if="destinoId && tipoVenta == 2" class="col-5">
                             <div v-if="programaciones.length > 0" class="row mt-2">
                                 <div class="col-12">
                                     <table class="table table-striped table-border">
@@ -126,6 +130,14 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div v-if="destinoId && tipoVenta == 1" class="col-md-4">
+                            <div class="from-group">
+                                <label for="">Hora salida</label>
+                                <el-input type="time" v-model="horaSalida"></el-input>
+                            </div>
+                        </div>
+                       
 
                         <div class="col-md-4">
                             <template v-if="asientos.length > 0 && tipoVenta == 2" >
@@ -232,10 +244,10 @@
                     @anularBoleto="anularBoleto"
                     :document_type_03_filter="document_type_03_filter"
                     :is-cash-open="isCashOpen"
+                    :destino="destino"
+                    :origen="origen"
+                    :horaSalida="horaSalida"
                     />
-
-                    
-
                    
 
 
@@ -261,6 +273,27 @@
         <documents-voided 
         :showDialog.sync="showDialogVoided"
         :recordId="documentId"></documents-voided>
+        
+        <detalle-boleto 
+        :document-types-invoice="documentTypesInvoice"
+        :visible.sync="visible"
+        :programacion="selectProgramacion"
+        :estados-asientos="estadoAsientos"
+        :fecha-salida="fecha_salida"
+        :establishment="establishment"
+        :series="series"
+        :payment-destinations="paymentDestinations"
+        :payment-method-types="paymentMethodTypes"
+        :configuration="configuration"
+        :asiento="asiento"
+        @anularBoleto="anularBoleto"
+        />
+
+
+        <documents-voided 
+        :showDialog.sync="showDialogVoided"
+        :recordId="documentId"></documents-voided>
+    
     </div>
 
 
@@ -270,6 +303,7 @@ import Bus from './Bus';
 import VentaAsientoLibre from './VentaAsientoLibre.vue';
 import DocumentOptions from "@views/documents/partials/options.vue";
 import DocumentsVoided from '@views/documents/partials/voided.vue';
+import DetalleBoleto from './DetalleBoleto.vue';
 export default {
 
     props:{
@@ -326,7 +360,16 @@ export default {
         Bus,
         VentaAsientoLibre,
         DocumentOptions,
-        DocumentsVoided
+        DocumentsVoided,
+        DetalleBoleto
+    },
+    watch:{
+        terminalId(newVal){
+            this.origen = this.terminales.find( ter => ter.id == this.terminalId );
+        },
+        destinoId(newVal){
+            this.destino = this.destinos.find( ter => ter.id == this.destinoId );
+        }
     },
     async created(){
         this.load = true;
@@ -382,7 +425,9 @@ export default {
             terminalId:null,
 
             loadingTerminales:false,
-
+            horaSalida:null,
+            destino:null,
+            origen:null,
         });
     },
     computed:{
@@ -404,18 +449,24 @@ export default {
             this.programaciones = [];
             this.destinoId = null;
             this.fecha_salida = null;
+            this.horaSalida = null;
+            this.origen = null;
         },
 
         async onCreate(){
             if(this.itemPasajero){
                 this.tipoVenta = this.itemPasajero.tipo_venta;
-                this.terminalId = this.itemPasajero.programacion.origen.id;
+                this.terminalId = this.itemPasajero.origen_id;
                 this.fecha_salida = this.itemPasajero.fecha_salida;
-                this.destinoId = this.itemPasajero.programacion.destino.id;
+                this.destinoId = this.itemPasajero.destino_id;
                 this.asiento = this.itemPasajero.asiento;
-                await this.getProgramaciones();
-                let programacion = this.programaciones.find( p  => p.id === this.itemPasajero.programacion.id)
-                this.seleccionar(programacion);
+                this.horaSalida = this.itemPasajero.hora_salida;
+                if(this.tipoVenta == 2){
+                    await this.getProgramaciones();
+                    let programacion = this.programaciones.find( p  => p.id === this.itemPasajero.programacion.id)
+                    this.seleccionar(programacion);
+                }
+               
             }
 
         },
@@ -510,8 +561,13 @@ export default {
         },
 
         dbClick(asiento){
+            
             if(asiento.type != 'ss') return;
-            if(asiento.estado_asiento_id == 2) return;
+            if(asiento.estado_asiento_id == 2) {
+                this.asiento = asiento;
+                this.visible = true;
+                return;
+            };
             this.asientos = this.asientos.map( seat => {
                 if(seat.estado_asiento_id == 4){
                     seat.estado_asiento_id = 1;
@@ -520,7 +576,6 @@ export default {
             } );
             asiento.estado_asiento_id = 4;
             this.asiento = asiento;
-            this.visible = true;
         },
 
         searchCiudad(value= ''){
@@ -589,7 +644,7 @@ export default {
             this.loadingDestinos = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/${this.terminalId}/get-destinos`);
             this.loadingDestinos = false;
-            this.destinos = data.programaciones;
+            this.destinos = data.destinos;
         },
 
 

@@ -145,7 +145,7 @@ class TransporteSalesController extends Controller
 
             foreach($listSeats as $seat){
 
-                $isState = TransportePasaje::with('pasajero','asiento')
+                $isState = TransportePasaje::with('pasajero','asiento','document:id,document_type_id')
                 ->whereDate('fecha_salida',$request->fecha_salida)
                 ->where('asiento_id',$seat->id)
                 ->where('programacion_id',$programacion->id)
@@ -209,7 +209,7 @@ class TransporteSalesController extends Controller
             foreach($tempList as $seat){
 
                 /** Busco si hay algun asiento ocupado con esa programación y esa fecha asi como tambien el asiento */
-                $isState = TransportePasaje::with('pasajero','asiento')
+                $isState = TransportePasaje::with('pasajero','asiento','document:id,document_type_id')
                 ->whereDate('fecha_salida',$fecha)
                 ->where('asiento_id',$seat->id)
                 ->where('programacion_id',$ruta->id)
@@ -258,7 +258,6 @@ class TransporteSalesController extends Controller
         DB::connection('tenant')->beginTransaction();
         try {
 
-            $programacion = TransporteProgramacion::find($request->programacion_id);
             $attributes = $request->only([
                 'document_id',
                 'pasajero_id',
@@ -269,12 +268,14 @@ class TransporteSalesController extends Controller
                 'estado_asiento_id',
                 'tipo_venta',
                 'numero_asiento',
+                'destino_id',
+                'hora_salida'
             ]);
 
             TransportePasaje::create(
                 array_merge($attributes,[
                     'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
-                    'hora_salida' => $programacion->hora_salida
+                    'origen_id' => $request->user()->terminal->id
                     // 'fecha_llegada' => $fechaLLegada
                 ])
             );
@@ -303,19 +304,21 @@ class TransporteSalesController extends Controller
         DB::connection('tenant')->beginTransaction();
         try {
 
-            $programacion = TransporteProgramacion::find($request->programacion_id);
+            
             $attributes = $request->only([
                 'asiento_id',
                 'precio',
                 'fecha_salida',
                 'programacion_id',
                 'numero_asiento',
+                'hora_salida',
+                'origen_id',
+                'destino_id'
             ]);
 
             $pasaje->update(
                 array_merge($attributes,[
                     'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
-                    'hora_salida' => $programacion->hora_salida
                 ])
             );
 

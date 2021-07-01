@@ -212,7 +212,7 @@
 
         <div class="row mt-4">
             <div class="col-12 d-flex justify-content-center">
-                <el-button v-if="transportePasaje && programacion" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
+                <el-button v-if="transportePasaje && destino" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
                 <el-button v-else :loading="loading" type="primary" @click="saveDocument">Guardar</el-button>
 
 
@@ -298,6 +298,21 @@ export default {
             type:Boolean,
             required:true,
             default:false,
+        },
+        horaSalida:{
+            type:String|null,
+            required:true,
+            default:null,
+        },
+        origen:{
+            type:Object|null,
+            required:true,
+            default:null
+        },
+        destino:{
+            type:Object|null,
+            required:true,
+            default:null
         }
     },
     created(){
@@ -328,6 +343,12 @@ export default {
                 this.precio = null;
             }
 
+        }
+    },
+    computed:{
+        nameItem(){
+            if(this.tipoVenta == 2) return `${this.programacion.origen.nombre}-${this.programacion.destino.nombre}`
+            else if(this.tipoVenta == 1) return `${this.origen.nombre}-${this.destino.nombre}`;
         }
     },
     data(){
@@ -422,7 +443,7 @@ export default {
             } 
 
             this.producto.input_unit_price_value=precio;
-            this.producto.item.description = this.producto.item.name = this.producto.item.second_name  = `${this.programacion.origen.nombre}-${this.programacion.destino.nombre}`;
+            this.producto.item.description = this.producto.item.name = this.producto.item.second_name  = this.nameItem;
             this.producto.item.sale_unit_price = precio;
             this.producto.item.unit_price=precio;
             this.producto.total=precio;
@@ -479,10 +500,12 @@ export default {
                 asiento_id:this.tipoVenta == 2 ? this.asiento.id : null,
                 numero_asiento:this.numeroAsiento,
                 estado_asiento_id:this.estadoAsiento,
-                programacion_id:this.programacion.id,
+                programacion_id: this.tipoVenta == 2 ? this.programacion.id : null,
                 fecha_salida:this.fechaSalida,
                 precio:this.precio,
                 tipo_venta:this.tipoVenta, //venta asiento libre
+                destino_id:this.destino.id,
+                hora_salida: this.tipoVenta == 2 ?  this.programacion.hora_salida : this.horaSalida
             };
 
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
@@ -507,9 +530,12 @@ export default {
             let data = {
                 asiento_id:this.tipoVenta == 2 ? this.asiento.id : null,
                 numero_asiento:this.numeroAsiento,
-                programacion_id:this.programacion.id,
+                programacion_id:this.tipoVenta == 2 ? this.programacion.id : null,
                 fecha_salida:this.fechaSalida,
+                origen_id:this.origen.id,
+                destino_id:this.destino.id,
                 precio:this.precio,
+                hora_salida:this.horaSalida
             };
             this.loading = true;
 
@@ -876,12 +902,18 @@ export default {
             }
 
             if(this.tipoVenta == 2){
+
+                if(!this.programacion){
+                    valid = false;
+                    errors.push('Debe seleccionar una programación');
+                }
+
                 if(!this.asiento) {
                     valid = false;
                     errors.push('Debe seleccionar un asiento');
                 }
             }else {
-                if(!this.numero_asiento){
+                if(!this.numeroAsiento){
                     valid = false;
                     errors.push('Debe seleccionar un asiento');
                 }

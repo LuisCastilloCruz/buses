@@ -132,7 +132,7 @@
                     <div class="col-4">
                         <div class="form-group">
                             <label for="">Destino</label>
-                            <el-select v-model="destino_id" :loading="loadingDestinos" popper-class="el-select-customers" placeholder="Destino" @change="seleccionarFecha">
+                            <el-select v-model="encomienda.destino_id" :loading="loadingDestinos" popper-class="el-select-customers" placeholder="Destino" @change="seleccionarFecha">
                                 <el-option v-for="destino in destinos" :key="destino.id" :value="destino.id" :label="`${destino.nombre}`">
                                 </el-option>
                             </el-select>
@@ -731,24 +731,27 @@ export default {
 
         async initializeSelects(){
             //remitentes
-            this.loadingRemitente = true;
-            const { data:remitentes } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=`);
-            this.loadingRemitente = false;
-            this.remitentes = remitentes.clientes;
+            // this.loadingRemitente = true;
+            // const { data:remitentes } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=`);
+            // this.loadingRemitente = false;
+            // this.remitentes = remitentes.clientes;
+            await this.searchRemitente();
+            await this.searchDestinatario()
 
             //destinatarios
-            this.loadingDestinatario = true;
-            const { data:destinatarios } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=`);
-            this.loadingDestinatario = false;
-            this.destinatarios = destinatarios.clientes;
+            // this.loadingDestinatario = true;
+            // const { data:destinatarios } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=`);
+            // this.loadingDestinatario = false;
+            // this.destinatarios = destinatarios.clientes;
         },
-        async searchRemitente(input){
+        async searchRemitente(input = ''){
             this.loadingRemitente = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
             this.loadingRemitente = false;
             this.remitentes = data.clientes;
+            this.filterCustomers();
         },
-        async searchDestinatario(input){
+        async searchDestinatario(input = ''){
             this.loadingDestinatario = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
             this.loadingDestinatario = false;
@@ -845,9 +848,9 @@ export default {
                     this.producto.item_id = this.producto.item.id;
                 }
                 
+                let p =  JSON.parse(JSON.stringify(this.producto));
                 
-                
-                this.document.items.push( Object.assign({},this.producto) );;
+                this.document.items.push( p );
                 this.document.payments.push(this.payment);
                 //this.document.customer_id=this.pasajeroId;
 
@@ -878,7 +881,7 @@ export default {
                 this.encomienda = {...this.itemEncomienda};
                 let programacion = this.encomienda.programacion;
 
-                this.destinoId = programacion  ?  programacion.terminal_destino_id : null;
+                // this.encomienda.destino_id = programacion  ?  programacion.terminal_destino_id : null;
                 if(programacion){
                     this.programaciones.push(this.encomienda.programacion);
                 }
@@ -890,6 +893,7 @@ export default {
                 this.comprobante = null;
                 this.encomienda = {
                     document_id: null,
+                    destino_id:null,
                     descripcion:null,
                     remitente_id:null,
                     destinatatio_id:null,
@@ -970,8 +974,6 @@ export default {
             if(!this.encomienda.remitente_id || !this.encomienda.destinatario_id){
                 return this.$message.info('Debe seleccionar remitente y destinatario.');
             }
-
-            console.log(this.isCashOpen);
 
             if(!this.isCashOpen) return this.$message.info('La caja no esta abierta');
             
@@ -1272,6 +1274,7 @@ export default {
             } else {
                 this.tempRemitentes = this.remitentes
             }
+           
         },
         async createItem(item){
             try{

@@ -195,19 +195,22 @@ class TransporteEncomiendaController extends Controller
         //
         try{
 
-            $encomienda = TransporteEncomienda::create(
-                $request->only(
-                    'document_id',
-                    'remitente_id',
-                    'destinatario_id',
-                    'fecha_salida',
-                    'programacion_id',
-                    'estado_pago_id',
-                    'estado_envio_id',
-                    'origen_id',
-                    'destino_id'
-                )
+            $data = $request->only(
+                'document_id',
+                'remitente_id',
+                'destinatario_id',
+                'fecha_salida',
+                'programacion_id',
+                'estado_pago_id',
+                'estado_envio_id',
+                'destino_id'
             );
+
+            $data = array_merge($data,['terminal_id' => $request->user()->terminal->id]);
+
+            // dd($data);
+
+            $encomienda = TransporteEncomienda::create($data);
 
             $encomienda->remitente;
             $encomienda->destinatario;

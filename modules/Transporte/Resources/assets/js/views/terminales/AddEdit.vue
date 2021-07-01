@@ -7,6 +7,8 @@
         width="500px"
     >
         <form autocomplete="off" @submit.prevent="onSubmit">
+
+            
             <div class="form-body">
                 <div class="form-group">
                     <label for="nombre">Nombre</label>
@@ -20,7 +22,7 @@
                 </div>
                 <div class="form-group">
                     <label for="nombre">Ciudad</label>
-                    <el-select placeholder="Seleccionar ciudad" v-model="form.destino_id" :class="{ 'is-invalid': errors.destino_id}">
+                    <el-select placeholder="Seleccionar ciudad" v-model="form.destino_id" :class="{ 'el-form-item is-error': errors.destino_id}">
                         <!-- <el-option :value="null">Seleccionar ciudad</el-option> -->
                         <el-option
                             v-for="ciudad in destinos"
@@ -37,7 +39,7 @@
                         </option>
                     </select> -->
                     <!-- <input type="text" id="nombre" class="form-control" v-model="form.nombre" :class="{ 'is-invalid': errors.nombre }"/> -->
-                    <div v-if="errors.destino_id" class="invalid-feedback">{{ errors.destino_id[0] }}</div>
+                    <span v-if="errors.destino_id" :style="{marginTop: '0.25rem',fontSize: '80%',color: '#dc3545'}">El destino es obligatorio</span>
                 </div>
                 <!-- <div class="form-group">
                     <label for="licencia">Licencia</label>
@@ -136,11 +138,10 @@ export default {
                 this.$emit("onAddItem", data.data);
                 this.onClose();
             } catch(error){
-                this.axiosError(error);
+                if(error.response) this.axiosError(error);
+                
             }finally{
                 this.loading = false;
-                this.errors = {};
-
             }
             
             // this.$http
@@ -165,6 +166,7 @@ export default {
             }
         },
         onClose() {
+            this.errors = {};
             this.$emit("update:visible", false);
         },
         onCreate() {

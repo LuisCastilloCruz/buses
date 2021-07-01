@@ -29,6 +29,7 @@ class TransporteEncomiendaRequest extends FormRequest
             'destinatario_id' => ['required'],
             'estado_pago_id' => ['required'],
             'estado_envio_id' => ['required'],
+            'destino_id' => ['required']
             // 'programacion_id' => ['required','exists:tenant.transporte_programaciones,id']
         ];
     }

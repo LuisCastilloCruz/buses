@@ -23,8 +23,9 @@ class TransportePasaje extends ModelTenant
         'estado_asiento_id',
         'tipo_venta',
         'numero_asiento',
-        'hora_salida'
-
+        'hora_salida',
+        'destino_id',
+        'origen_id'
     ];
 
 

@@ -18,7 +18,7 @@ class TransporteEncomienda extends ModelTenant
         'programacion_id',
         'estado_envio_id',
         'estado_pago_id',
-        'origen_id',
+        'terminal_id',
         'destino_id'
     ];
 
@@ -52,5 +52,13 @@ class TransporteEncomienda extends ModelTenant
 
     public function estadoEnvio() : BelongsTo{
         return $this->belongsTo(TransporteEstadoEnvio::class,'estado_envio_id','id');
+    }
+
+    public function terminal() : BelongsTo{
+        return $this->belongsTo(TransporteTerminales::class,'terminal_id','id');
+    }
+
+    public function destino() : BelongsTo{
+        return $this->belongsTo(TransporteTerminales::class,'destino_id','id');
     }
 }

@@ -14,8 +14,10 @@ class TenantTransporteAddDestinoIdToEncomiendas extends Migration
     public function up()
     {
         Schema::table('transporte_encomiendas', function (Blueprint $table) {
-            $table->boolean('origen_id')->after('programacion_id');
-            $table->boolean('destino_id')->after('origen_id');
+            $table->unsignedInteger('terminal_id')->after('programacion_id');
+            $table->foreign('terminal_id')->references('id')->on('transporte_terminales');
+            $table->unsignedInteger('destino_id')->after('terminal_id');
+            $table->foreign('destino_id')->references('id')->on('transporte_terminales');
         });
     }
 
@@ -27,7 +29,7 @@ class TenantTransporteAddDestinoIdToEncomiendas extends Migration
     public function down()
     {
         Schema::table('transporte_encomiendas', function (Blueprint $table) {
-            $table->dropColumn('origen_id');
+            $table->dropColumn('terminal_id');
             $table->dropColumn('destino_id');
         });
     }

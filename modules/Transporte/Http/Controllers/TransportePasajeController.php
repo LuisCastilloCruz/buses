@@ -108,9 +108,7 @@ class TransportePasajeController extends Controller
                     $programacion->with('origen:id,nombre','destino:id,nombre');
                 }
             ])
-            ->whereHas('programacion',function($programacion) use ($terminal){
-                $programacion->where('terminal_origen_id',$terminal->id);
-            })
+            ->where('origen_id',$terminal->id)
             ->get();
 
             return response()->json($pasajes,200);

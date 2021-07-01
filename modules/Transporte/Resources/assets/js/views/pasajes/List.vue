@@ -43,7 +43,7 @@
                         <tbody>
                         <tr v-for="pasaje in listPasajes" :key="pasaje.id">
                             <td class="text-right">{{ pasaje.id }}</td>
-                            <td>{{ pasaje.fecha_salida }}</td>
+                            <td>{{ pasaje.fecha_salida }} {{ pasaje.hora_salida }}</td>
                             <td>{{ pasaje.pasajero.name }}</td>
                             <td>{{ pasaje.document.series }}-{{pasaje.document.number}}</td>
 
