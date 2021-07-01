@@ -216,7 +216,7 @@ export default {
             default: {},
         },
         programacion: {
-            type: Object | null,
+            type: Object|null,
             required: true,
             default: {},
         },
@@ -226,9 +226,9 @@ export default {
             default:() => []
         },
         fechaSalida: {
-            type: String,
+            type: String|null,
             required: true,
-            default: '',
+            default: null,
         },
         establishment:{
             type:Object,

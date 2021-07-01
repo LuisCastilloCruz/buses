@@ -599,12 +599,15 @@ export default {
             
         },
         async onUpdateItem(){
-            let program = this.selectProgramacion;
-            await this.getProgramaciones();
-            this.selectProgramacion = this.programaciones
-            .find(  programacion => programacion.id == program.id );
-            this.asientos = this.selectProgramacion.transporte.asientos;
-            this.vehiculo = this.selectProgramacion.transporte;
+            if(this.tipoVenta == 2){
+                let program = this.selectProgramacion;
+                await this.getProgramaciones();
+                this.selectProgramacion = this.programaciones
+                .find(  programacion => programacion.id == program.id );
+                this.asientos = this.selectProgramacion.transporte.asientos;
+                this.vehiculo = this.selectProgramacion.transporte;
+            }
+            
         },
 
         anularBoleto(pasaje){
