@@ -443,7 +443,8 @@ export default {
             } 
 
             this.producto.input_unit_price_value=precio;
-            this.producto.item.description = this.producto.item.name = this.producto.item.second_name  = this.nameItem;
+            this.producto.item.description = 'Boleto -'+this.nameItem;
+            this.producto.item.name = 'Boleto -'+this.nameItem;
             this.producto.item.sale_unit_price = precio;
             this.producto.item.unit_price=precio;
             this.producto.total=precio;
