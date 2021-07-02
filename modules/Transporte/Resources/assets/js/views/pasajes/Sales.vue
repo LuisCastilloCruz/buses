@@ -38,7 +38,7 @@
                                 @change="getProgramaciones"
                                 >
                                     <template v-for="destino in destinos">
-                                        <el-option v-if="destino.id != terminalId"  :key="destino.id" :value="destino.id" :label="`${destino.nombre}`">
+                                        <el-option  :key="destino.id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">
                                         </el-option>
                                     </template>
                                     
@@ -405,7 +405,7 @@ export default {
             ruta:null,
 
 
-            fecha_salida:'',
+            fecha_salida: moment().format('YYYY-MM-DD'),
             destinoId:null,
             destinos:[],
 
@@ -641,10 +641,11 @@ export default {
             }
         },
         async searchDestinos(){
+            console.log(this.terminalId);
             this.loadingDestinos = true;
-            const { data } = await this.$http.get(`/transportes/encomiendas/${this.terminalId}/get-destinos`);
+            const { data } = await this.$http.get(`/transportes/pasajes/${this.terminalId}/get-destinos`);
             this.loadingDestinos = false;
-            this.destinos = data.destinos;
+            this.destinos = data.programaciones;
         },
 
 

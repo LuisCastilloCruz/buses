@@ -155,8 +155,9 @@ class TransportePasajeController extends Controller
 
         $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
             ->where('terminal_origen_id',$terminal->id);
+
         return response()->json([
-            'programaciones' => $programaciones->get()
+            'programaciones' => $programaciones->distinct()->get(['terminal_destino_id'])
         ]);
     }
 
