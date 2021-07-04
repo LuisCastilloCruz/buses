@@ -14,6 +14,7 @@ use App\Models\Tenant\Configuration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Modules\Account\Models\CompanyAccount;
+use DateTime;
 
 class PleController extends Controller
 {
@@ -26,13 +27,14 @@ class PleController extends Controller
     {
         $type    = $request->input('type');
         $month   = $request->input('month');
+        $date_periodo= Carbon::parse($request->input('month'))->format('Y-m-d');
         $periodo = Carbon::parse($month.'-01')->format('Ym');
         $moneda  = '1';
 
         $d_start = Carbon::parse($month.'-01')->format('Y-m-d');
         $d_end = Carbon::parse($month.'-01')->endOfMonth()->format('Y-m-d');
 
-        $records = $this->getDocuments($d_start, $d_end,$type);
+        $records = $this->getDocuments($d_start, $d_end,$type,$date_periodo);
         $company = Company::active();
 
         switch ($type) {
@@ -103,7 +105,7 @@ class PleController extends Controller
 
     }
 
-    private function getDocuments($d_start, $d_end,$type)
+    private function getDocuments($d_start, $d_end,$type,$date_periodo)
     {
         if($type=='140100') // ventas
         {
@@ -118,8 +120,12 @@ class PleController extends Controller
         }
         else if($type=='080100') // compras
         {
+            $anio= Carbon::parse($date_periodo)->format('Y');
+            $mes= Carbon::parse($date_periodo)->format('m');
+
             return Purchase::query()
-                ->whereBetween('date_of_issue', [$d_start, $d_end])
+                ->whereYear('date_periodo', $anio)
+                ->whereMonth('date_periodo', $mes)
                 ->whereIn('document_type_id', ['01', '03','07','08','04','02','14'])
                 ->whereIn('currency_type_id', ['PEN','USD'])
                 ->orderBy('series')
@@ -129,8 +135,12 @@ class PleController extends Controller
         }
         else if($type=='080200') // compras ND
         {
+            $anio= Carbon::parse($date_periodo)->format('Y');
+            $mes= Carbon::parse($date_periodo)->format('m');
+
             return Purchase::query()
-                ->whereBetween('date_of_issue', [$d_start, $d_end])
+                ->whereYear('date_periodo', $anio)
+                ->whereMonth('date_periodo', $mes)
                 ->whereIn('document_type_id', ['9999']) // para que me dé vacío
                 ->whereIn('currency_type_id', ['PEN','USD'])
                 ->orderBy('series')
@@ -148,8 +158,11 @@ class PleController extends Controller
         foreach ($documents as $index => $row)
         {
             $date_of_issue = Carbon::parse($row->date_of_issue);
+            $date_doc= strtotime($row->date_of_issue->format('Y-m'));
+            $date_periodo= strtotime($row->date_periodo->format('Y-m'));
             $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
             $detail = $row->supplier->name;
+            $tip_doc =$row->document_type_id;
 
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
             $regimen="";
@@ -172,6 +185,36 @@ class PleController extends Controller
 
             $type_basimp= $row->type_basimp;
             $estado=$row->state_type_id;
+
+            $estado_libro ="";
+            // SIN RECHAZAR, SIN ANULAR RH, boleta -- NO DAN CREDITO FIZCAL
+            if(($estado!='09' && $estado!='11') && $tip_doc  == '02' || $tip_doc == '03'){
+                $estado_libro="0";
+            }
+
+            // SIN RECHAZAR, SIN ANULAR , DEL PERIODO, FACTURA, LIQ COMPRA, NC, ND, SERVICIOS PUBLICOS -- SI DAN CREDITO FIZCAL
+            elseif(($estado!='09' && $estado!='11') && ($date_doc==$date_periodo) && $tip_doc == '01' || $tip_doc == '04' || $tip_doc == '07' || $tip_doc == '08' || $tip_doc == '14'){
+                $estado_libro="1";
+            }
+
+            //sin rechazar sin anular, factura de fecha pasada, mas de 12 meses
+            elseif(($estado!='09' && $estado!='11')  && ($date_doc<$date_periodo) ){
+                
+                $firstDate  = new DateTime($row->date_of_issue->format('Y-m'));
+                $secondDate = new DateTime($row->date_periodo->format('Y-m'));
+                $intvl = $firstDate->diff($secondDate);
+                $anio=  $intvl->y;
+                $meses=  $intvl->m;
+                $tot_mes=($anio*12)+$meses;
+                if($tot_mes <12){//sin rechazar sin anular, factura de fecha pasada, menos de 12 meses
+                    $estado_libro="6";    
+                }
+                else{
+                    $estado_libro="7";  //sin rechazar sin anular, factura de fecha pasada, mas de 12 meses
+                }
+            }
+
+        
             $tc    = $row->exchange_rate_sale;
             $total_taxed = $row->total_taxed;
             $total_igv =$row->total_igv;
@@ -254,7 +297,7 @@ class PleController extends Controller
                 'col_39' =>'',
                 'col_40' =>'',
                 'col_41' =>'',
-                'col_42' =>($estado=='11') ? '2' : '1',
+                'col_42' =>$estado_libro,
                 'col_43' =>''
             ];
 

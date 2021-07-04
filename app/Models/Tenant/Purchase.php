@@ -60,6 +60,7 @@ class Purchase extends ModelTenant
         'detraction',
         'legends',
         'type_basimp',
+        'date_periodo',
         'date_of_due',
         'purchase_order_id',
         'customer_id',
@@ -69,6 +70,7 @@ class Purchase extends ModelTenant
     protected $casts = [
         'date_of_issue' => 'date',
         'date_of_due' => 'date',
+        'date_periodo'=> 'date',
     ];
 
 
