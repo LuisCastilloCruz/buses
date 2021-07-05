@@ -851,14 +851,14 @@ export default {
                 let p =  JSON.parse(JSON.stringify(this.producto));
                 
                 this.document.items.push( p );
-                this.document.payments.push(this.payment);
+                // this.document.payments.push(this.payment);
                 //this.document.customer_id=this.pasajeroId;
 
                 //this.document.items.push(Object.assign({},this.producto));
                 this.total += parseFloat(this.producto.unit_price);
-                if(this.document.payments.length > 0){
-                    this.document.payments[0].payment = this.total;
-                }
+                // if(this.document.payments.length > 0){
+                //     this.document.payments[0].payment = this.total;
+                // }
                 this.selectItem = null;
                 // this.initProducto();
             }
@@ -978,6 +978,7 @@ export default {
             if(!this.isCashOpen) return this.$message.info('La caja no esta abierta');
             
             // return;
+            this.document.payments.push(this.payment);
             this.loading = true;
             this.$http
                 .post(`/${this.resource_documents}`, this.document)
