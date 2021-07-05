@@ -915,8 +915,6 @@ export default {
             this.changeDocumentType();
             this.onCalculateTotals();
             // this.validateIdentityDocumentType();
-
-
             this.load = true;
             
             await this.initializeSelects();
