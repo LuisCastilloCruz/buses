@@ -331,13 +331,20 @@
         <tr>
             <td class="align-top desc"><b>Fecha Salida</b></td>
             <td class="text-left desc">{{ $encomienda->fecha_salida }}</td>
-        </tr> --}}
-        
+        </tr> --}}       
     @else
         <tr>
-            <td class="desc"><b>Origen: </b></td>
+            <td class="desc"><h4><b>Origen: </b></h4></td>
             <td class="desc">
-                Sin programación asignada
+                <h4><b>{{ $encomienda->terminal->nombre  }}</b></h4>
+            </td>
+        </tr>
+        <tr style="margin-top: 20px">
+            <td class="desc"><h3><b>Destino: </b></h3> </td>
+            <td class="desc">
+                <h3>
+                    <b>{{ $encomienda->destino->nombre }}</b>
+                </h3>
             </td>
         </tr>
     @endif
@@ -347,27 +354,36 @@
 @if(!is_null($pasaje))
 <table>
     @if ($pasaje->programacion)
-    <tr>
-    <td class="desc" with="40"><h3 style="padding: 0px;"><b>Origen: </b></h3> </td>
-        <td class="desc">
-        <h3><b>{{ $pasaje->programacion->origen->nombre  }}</b></h3>
-        </td>
-    </tr>
-    <tr style="margin-top: 20px">
-        <td class="desc"><h3><b>Destino: </b></h3> </td>
-        <td class="desc">
-            <h3><b>{{ $pasaje->programacion->destino->nombre }}</b></h3>
-        </td>
-    </tr>
+        <tr>
+        <td class="desc" with="40"><h3 style="padding: 0px;"><b>Origen: </b></h3> </td>
+            <td class="desc">
+            <h3><b>{{ $pasaje->programacion->origen->nombre  }}</b></h3>
+            </td>
+        </tr>
+        <tr style="margin-top: 20px">
+            <td class="desc"><h3><b>Destino: </b></h3> </td>
+            <td class="desc">
+                <h3><b>{{ $pasaje->programacion->destino->nombre }}</b></h3>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top desc"><h5><b>Fecha viaje: </b></h5></td>
+            <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }}</h4></td>
+        </tr>
+        <tr>
+            <td class="desc"> <h5> <b>Hora viaje: </b> </h4> </td>
+            <td class="desc"> <h4> <strong>{{ $pasaje->programacion->hora_salida }}</strong></h4></td>
+        </tr>
+    @else
+        <tr>
+            <td class="align-top desc"><h5><b>Fecha viaje: </b></h5></td>
+            <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }}</h4></td>
+        </tr>
+        <tr>
+            <td class="desc"> <h5> <b>Hora viaje: </b> </h4> </td>
+            <td class="desc"> <h4> <strong>{{ $pasaje->hora_salida }}</strong></h4></td>
+        </tr>
     @endif
-    <tr>
-        <td class="align-top desc"><h5><b>Fecha viaje: </b></h5></td>
-        <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }}</h4></td>
-    </tr>
-    <tr>
-        <td class="desc"> <h5> <b>Hora viaje: </b> </h4> </td>
-        <td class="desc"> <h4> <strong>{{ $pasaje->programacion->hora_salida }}</strong></h4></td>
-    </tr>
     <tr>
         <td class="desc">
             <h5><b>N°. Asiento: </b></h5>

@@ -55,6 +55,7 @@ if ($hostname) {
                 // Pasajes
                 Route::get('pasajes', 'TransportePasajeController@index');
 				Route::delete('pasajes/{pasaje}/delete', 'TransportePasajeController@destroy');
+				Route::get('pasajes/{terminal}/get-destinos','TransportePasajeController@getDestinos');
 				Route::get('pasajes/get-pasajes','TransportePasajeController@getPasajes');
 				//programaciones
 				Route::get('programaciones','TransporteProgramacionesController@index');

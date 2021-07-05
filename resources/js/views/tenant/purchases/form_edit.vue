@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.supplier_id}">
                                 <label class="control-label">
                                     Proveedor
@@ -76,6 +76,13 @@
                                 <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
                             </div>
                         </div> -->
+                        <div class="col-lg-2">
+                            <div class="form-group" :class="{'has-danger': errors.date_periodo}">
+                                <label class="control-label">Periodo</label>
+                                <el-date-picker v-model="form.date_periodo" type="month" value-format="yyyy-MM-dd" format="MM/yyyy" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                <small class="form-control-feedback" v-if="errors.date_periodo" v-text="errors.date_periodo[0]"></small>
+                            </div>
+                        </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                 <label class="control-label">Moneda</label>
@@ -656,6 +663,7 @@
                 this.$http.get(`/${this.resource}/record/${this.resourceId}` )
                 .then(response => {
                     let dato = response.data.data.purchase
+                    console.log(dato)
                     this.form.id = dato.id
                     this.form.document_type_id = dato.document_type_id
                     this.form.series = dato.series
@@ -680,6 +688,7 @@
                     this.form.has_payment = (this.form.payments.length>0) ? true:false
                     this.form.has_client = (this.form.customer_id) ? true:false
                     this.form.type_basimp= dato.type_basimp
+                    this.form.date_periodo = dato.date_periodo
 
                     if(this.form.document_type_id=='07' || this.document_type_id =='08'){
                         this.form.note.purchase_id= dato.note_purchase.purchase_id
@@ -793,6 +802,7 @@
                     has_client: false,
                     has_payment: false,
                     type_basimp: null,
+                    date_periodo : moment().format('YYYY-MM-DD'),
                     note: {
                         id:null,
                         series:null,
@@ -949,7 +959,7 @@
 
             },
             async submit() {
-
+                console.log(this.form);    
 
                 let validate = await this.validate_payments()
                 if(!validate.success) {

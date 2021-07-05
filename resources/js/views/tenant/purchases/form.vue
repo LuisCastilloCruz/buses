@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.supplier_id}">
                                 <label class="control-label">
                                     Proveedor
@@ -76,6 +76,13 @@
                                 <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
                             </div>
                         </div> -->
+                        <div class="col-lg-2">
+                            <div class="form-group" :class="{'has-danger': errors.date_periodo}">
+                                <label class="control-label">Periodo</label>
+                                <el-date-picker v-model="form.date_periodo" type="month" value-format="yyyy-MM-dd" format="MM/yyyy" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                <small class="form-control-feedback" v-if="errors.date_periodo" v-text="errors.date_periodo[0]"></small>
+                            </div>
+                        </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                 <label class="control-label">Moneda</label>
@@ -737,6 +744,7 @@
                     number: null,
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
+                    date_periodo:  moment().format('YYYY-MM-DD'),
                     supplier_id: null,
                     payment_method_type_id:'01',
                     currency_type_id: null,

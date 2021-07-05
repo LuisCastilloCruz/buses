@@ -24,7 +24,7 @@
     {{--<link rel="dns-prefetch" href="https://fonts.gstatic.com">--}}
     {{--<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">--}}
 
-    <link async href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link async href="{{ asset(mix('css/app.css')) }}" rel="stylesheet">
 
     <!-- Styles -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
@@ -180,13 +180,13 @@
 
     @stack('scripts')
 
-    <script src="{{ asset('js/manifest.js') }}"></script>
-    <script src="{{ asset('js/vendor.js') }}"></script>
+    <script src="{{ asset(mix('js/manifest.js')) }}"></script>
+    <script src="{{ asset(mix('js/vendor.js')) }}"></script>
     <!-- Theme Base, Components and Settings -->
-    <script src="{{asset('porto-light/js/theme.js')}}"></script>
+    <script src="{{asset('porto-light/js/theme.js') }}"></script>
 
     <!-- Theme Custom -->
-    <script src="{{asset('porto-light/js/custom.js')}}"></script>
+    <script src="{{asset('porto-light/js/custom.js') }}"></script>
     <!-- Theme Initialization Files -->
     <script src="{{asset('porto-light/js/theme.init.js')}}"></script>
     <script src="{{asset('porto-light/js/jquery.xml2json.js')}}"></script>
@@ -199,7 +199,7 @@
         }
 
     </script>
-    <script defer src="{{ asset('js/app.js') }}"></script>
+    <script defer src="{{ asset(mix('js/app.js')) }}"></script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
     @yield('js')   
 

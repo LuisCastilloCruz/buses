@@ -828,14 +828,19 @@ export default {
         async agregarProducto(evt){
             if(this.producto.item.description && this.producto.unit_price){                
                 let precio = parseFloat(this.producto.unit_price);
+                let valorventa = parseFloat(precio/1.18);
+                let igv = parseFloat(precio-valorventa);
+
                 this.producto.input_unit_price_value=precio;
                 this.producto.item.name = this.producto.item.second_name = this.producto.item.description;
                 this.producto.item.sale_unit_price =precio;
                 this.producto.total=precio;
-                this.producto.total_base_igv=precio;
-                this.producto.total_value=precio;
+                this.producto.total_base_igv=valorventa;
+                this.producto.total_value=valorventa;
                 this.producto.unit_price=precio;
-                this.producto.unit_value=precio;
+                this.producto.unit_value=valorventa;
+                this.producto.total_igv= igv;
+                this.producto.total_taxes=igv;
 
                 if(!this.producto.item.id){
                     this.loadingProducto = true;
@@ -1039,12 +1044,12 @@ export default {
                 IdLoteSelected: null,
                 affectation_igv_type: {
                     active: 1,
-                    description: "Exonerado - Operación Onerosa",
+                    description: "Grabado - Operación Onerosa",
                     exportation: 0,
                     free: 0,
-                    id: "20"
+                    id: "10"
                 },
-                affectation_igv_type_id: "20",
+                affectation_igv_type_id: "10",
                 attributes: [],
                 charges: [],
                 currency_type_id: "PEN",
@@ -1073,9 +1078,9 @@ export default {
                     lots_enabled: false,
                     lots_group: [],
                     presentation: [],
-                    purchase_affectation_igv_type_id: "20",
+                    purchase_affectation_igv_type_id: "10",
                     purchase_unit_price: "0.000000",
-                    sale_affectation_igv_type_id: "20",
+                    sale_affectation_igv_type_id: "10",
                     sale_unit_price: 0,
                     series_enabled: false,
                     stock: 1,
