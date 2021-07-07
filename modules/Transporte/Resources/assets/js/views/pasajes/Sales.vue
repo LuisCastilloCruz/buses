@@ -38,7 +38,7 @@
                                 @change="getProgramaciones"
                                 >
                                     <template v-for="destino in destinos">
-                                        <el-option  :key="destino.id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">
+                                        <el-option  :key="destino.id" :value="destino.id" :label="`${destino.nombre}`">
                                         </el-option>
                                     </template>
                                     
@@ -368,7 +368,7 @@ export default {
             this.origen = this.terminales.find( ter => ter.id == this.terminalId );
         },
         destinoId(newVal){
-            this.destino = this.destinos.find( ter => ter.id == this.destinoId );
+            this.destino = this.destinos.find( destino => destino.id == newVal );
         }
     },
     async created(){
@@ -644,11 +644,10 @@ export default {
             }
         },
         async searchDestinos(){
-            console.log(this.terminalId);
             this.loadingDestinos = true;
             const { data } = await this.$http.get(`/transportes/pasajes/${this.terminalId}/get-destinos`);
             this.loadingDestinos = false;
-            this.destinos = data.programaciones;
+            this.destinos = data.destinos;
         },
 
 
