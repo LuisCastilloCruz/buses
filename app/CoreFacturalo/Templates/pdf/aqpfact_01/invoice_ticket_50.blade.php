@@ -499,6 +499,9 @@
     <tr>
         <td class="text-center desc pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
+    <tr>
+        <td class="text-center desc pt-2 pb-3">&nbsp;</td>
+    </tr>
 </table>
 
 </body>

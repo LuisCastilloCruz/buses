@@ -38,10 +38,10 @@
                  <button v-if="this.configuration.print_silent" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket_50')">
                      <i class="fa fa-receipt"></i>
                  </button>
-                <button  v-else type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket_50')">
+                <button  v-else type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket_58')">
                     <i class="fa fa-receipt"></i>
                 </button>
-                <p>Imprimir Ticket 50MM {{this.configuration.print_silent}}</p>
+                <p>Imprimir Ticket 58MM {{this.configuration.print_silent}}</p>
             </div>
 
             <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
