@@ -495,8 +495,6 @@ export default {
 
         },
         async guardarPasaje(){
-            console.log('hula');
-            console.log(this.documentId);
             let data = {
                 document_id:this.documentId,
                 pasajero_id:this.pasajeroId,
@@ -514,6 +512,11 @@ export default {
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
             .then( ({data}) => {
                 this.loading = false;
+                this.precio = null;
+                this.pasajeroId = null;
+                this.numeroAsiento = null;
+                this.document.document_type_id = '03';
+                this.filterCustomers();
                 this.initProducto();
                 this.$emit('onSuccessVenta',this.documentId);
                 this.$emit('onUpdateItem');

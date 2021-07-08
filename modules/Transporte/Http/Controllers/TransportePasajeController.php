@@ -154,10 +154,14 @@ class TransportePasajeController extends Controller
 
     public function getDestinos(Request $request,TransporteTerminales $terminal){
 
-        $destinos = TransporteDestino::all();
+        // $destinos = TransporteDestino::all();
 
+        $destinos = TransporteProgramacion::with('vehiculo','origen','destino.destino')
+            ->where('terminal_origen_id',$terminal->id); 
+            
         return response()->json([
-            'destinos' => $destinos
+            'destinos' => $destinos->distinct()->get(['terminal_destino_id'])
+            // 'programaciones' => $programaciones->distinct()->get(['terminal_destino_id'])
         ]);
     }
 

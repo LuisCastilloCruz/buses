@@ -38,7 +38,8 @@
                                 @change="getProgramaciones"
                                 >
                                     <template v-for="destino in destinos">
-                                        <el-option  :key="destino.id" :value="destino.id" :label="`${destino.nombre}`">
+                                       <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
+                                         <el-option  :key="destino.id" :value="destino.destino.id" :label="`${destino.destino.destino.nombre}`">
                                         </el-option>
                                     </template>
                                     
@@ -86,7 +87,7 @@
                                     <table class="table table-striped table-border">
                                         <thead>
                                         <tr>
-
+                                            <th>Terminal</th>    
                                             <th>Vehiculo</th>
                                             <th>Hora salida</th>
                                             <th></th>
@@ -94,7 +95,7 @@
                                         </thead>
                                         <tbody>
                                         <tr v-for="programacion in programaciones" :key="programacion.id">
-
+                                            <td>{{ programacion.destino.nombre }}</td>   
                                             <td>{{ programacion.transporte.placa }}</td>
                                             <td>{{ programacion.hora_salida }}</td>
                                             <td>
@@ -368,7 +369,8 @@ export default {
             this.origen = this.terminales.find( ter => ter.id == this.terminalId );
         },
         destinoId(newVal){
-            this.destino = this.destinos.find( destino => destino.id == newVal );
+            let exist = this.destinos.find( destino => destino.destino.id == newVal );
+            if(exist) this.destino = exist.destino;
         }
     },
     async created(){
@@ -537,6 +539,8 @@ export default {
         },
 
         async getProgramaciones(){
+
+            console.log('Aquí: '+this.destinoId);
             if(this.fecha_salida){
                 this.loadingProgramaciones = true;
                 this.programaciones = [];
@@ -576,6 +580,9 @@ export default {
             } );
             asiento.estado_asiento_id = 4;
             this.asiento = asiento;
+
+            let element = document.getElementById('precio-boleto');
+            element.focus();
         },
 
         searchCiudad(value= ''){
@@ -648,6 +655,9 @@ export default {
             const { data } = await this.$http.get(`/transportes/pasajes/${this.terminalId}/get-destinos`);
             this.loadingDestinos = false;
             this.destinos = data.destinos;
+            //this.destinos = data.programaciones;
+
+            console.log(this.destinos);
         },
 
 
