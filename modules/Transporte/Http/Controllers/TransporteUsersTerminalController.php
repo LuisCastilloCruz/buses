@@ -36,8 +36,7 @@ class TransporteUsersTerminalController extends Controller
 	{
 
 		try{
-			$registro = TransporteUserTerminal::where('user_id',$request->user_id);
-
+			$registro = TransporteUserTerminal::where('user_id',$request->user_id)->first();
             if($registro){
                 throw new Exception('Ya exite terminal asignado a este usuario, edite en el listado.',888);
             } 
