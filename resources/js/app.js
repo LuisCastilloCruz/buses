@@ -297,6 +297,9 @@ Vue.component('tenant-transporte-terminales', require('@viewsModuleTransporte/te
 //Transporte :: programaciones
 Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/programaciones/List.vue'));
 
+//Transporte :: usuariosterminales
+Vue.component('tenant-transporte-usuariosterminales',require('@viewsModuleTransporte/usuariosterminales/List.vue'));
+
 // //Transporte :: manifiesto pasajeros
 // Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/manifiestos/ManifiestoEncomiendas.vue'));
 
