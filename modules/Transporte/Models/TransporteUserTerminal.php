@@ -11,6 +11,7 @@ class TransporteUserTerminal extends ModelTenant
     //
 
     protected $table = 'transporte_user_terminal';
+    protected $fillable = ['terminal_id','user_id'];
 
     protected $with=['terminal'];
 

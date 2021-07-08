@@ -68,4 +68,14 @@ class TransporteTerminalesController extends Controller
             'data'    => $terminal
         ]);
     }
+    public function getAll(){
+        $terminales = TransporteTerminales::with(['destino'])
+        ->orderBy('id', 'DESC')
+        ->get();
+        
+        return response()->json([
+            'success' => true,
+            'data'    => $terminales
+        ]);
+    }
 }

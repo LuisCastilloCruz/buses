@@ -77,6 +77,13 @@ if ($hostname) {
 				Route::post('manifiestos/asignacion-encomienda','TransporteManifiestosController@asignarEncomienda');
 				Route::post('manifiestos/desasignar-encomienda','TransporteManifiestosController@desasignarEncomienda');
 				Route::get('manifiestos/get-manifiestos','TransporteManifiestosController@getManifiestos');
+			
+				//usuarios terminales
+				Route::get('usuarios-terminales','TransporteUsersTerminalController@index');
+				Route::get('usuarios-terminales/get-tables','TransporteUsersTerminalController@getTables');
+				Route::post('usuarios-terminales/store','TransporteUsersTerminalController@store');
+				Route::put('usuarios-terminales/{usuario_terminal}/update','TransporteUsersTerminalController@update');
+				Route::delete('usuarios-terminales/{id}/delete','TransporteUsersTerminalController@destroy');
 			});
 	});
 }

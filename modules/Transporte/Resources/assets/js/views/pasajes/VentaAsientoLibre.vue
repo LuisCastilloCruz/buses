@@ -319,7 +319,7 @@ export default {
         this.initDocument();
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
-        this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
+        this.document.document_type_id = '03';
         this.allSeries = this.series;
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
@@ -495,6 +495,8 @@ export default {
 
         },
         async guardarPasaje(){
+            console.log('hula');
+            console.log(this.documentId);
             let data = {
                 document_id:this.documentId,
                 pasajero_id:this.pasajeroId,
@@ -522,6 +524,7 @@ export default {
 
                
             }).catch( error => {
+                alert(error);
                 this.axiosError(error);
             }).finally(() => {
                 this.loading = false;
