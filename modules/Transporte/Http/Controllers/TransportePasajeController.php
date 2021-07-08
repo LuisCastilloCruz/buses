@@ -23,6 +23,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Modules\Finance\Traits\FinanceTrait;
 use Illuminate\Support\Facades\Session;
+use Modules\Transporte\Models\TransporteDestino;
 use Modules\Transporte\Models\TransporteEstadoAsiento;
 use Modules\Transporte\Models\TransporteUserTerminal;
 
@@ -153,11 +154,10 @@ class TransportePasajeController extends Controller
 
     public function getDestinos(Request $request,TransporteTerminales $terminal){
 
-        $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
-            ->where('terminal_origen_id',$terminal->id);
+        $destinos = TransporteDestino::all();
 
         return response()->json([
-            'programaciones' => $programaciones->distinct()->get(['terminal_destino_id'])
+            'destinos' => $destinos
         ]);
     }
 
@@ -173,7 +173,7 @@ class TransportePasajeController extends Controller
         /* váliddo si es el mismo dia  */
         if($date->isSameDay($today)){
             /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
-            $time = date('h:i:s');
+            $time = date('H:i:s');
             $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%I:%S') >= '{$time}'");
         }
 
