@@ -484,6 +484,9 @@ if ($hostname) {
 			Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
 			Route::get('cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
 
+			//caja modulo transporte
+			Route::get('/transportes/cash', 'Tenant\CashController@index')->name('tenant.transportes.cash.index');
+
 			//Tags
 			Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
 			Route::get('tags/columns', 'Tenant\TagController@columns');

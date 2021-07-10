@@ -86,7 +86,7 @@
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="dni">Precio</label>
-                                        <el-input v-model="precio" type="number" ></el-input>
+                                        <el-input v-model="precio" type="number" id="precio-boleto"></el-input>
                                     </div>
 
                                 </div>
@@ -186,6 +186,7 @@
                         </div>
                         <div id="manifiesto" class="tab-pane">
                             <div>Vista de manifiestos</div>
+                            <a href="http://demo.facturador-mayo.local/transportes/manifiestos" target="_blank">Abrir en otra ventana</a>
                         </div>
                     </div>
 
@@ -225,7 +226,7 @@
 <script>
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 import DocumentOptions from "@views/documents/partials/options.vue";
-import PersonForm from "@views/persons/form.vue";
+import PersonForm from "@views/persons/form2.vue";
 
 export default {
     mixins: [exchangeRate],
@@ -324,6 +325,9 @@ export default {
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
         this.onCreate();
+        this.$eventHub.$on('reloadDataPersons', (pasajeroId) => {
+                this.reloadDataCustomers(pasajeroId)
+            })
 
     },
     watch:{
@@ -355,7 +359,7 @@ export default {
         return ({
 
             tabs:'venta',
-
+            resource: "documents",
             input_person:{},
             showDialogNewPerson:false,
             pasajeros:[],
@@ -393,6 +397,14 @@ export default {
         });
     },
     methods:{
+        reloadDataCustomers(pasajeroId) {
+        this.$http
+            .get(`/${this.resource}/search/customer/${pasajeroId}`)
+            .then((response) => {
+            this.tempPasajeros = this.pasajeros  = response.data.customers;
+            this.pasajeroId = pasajeroId;
+            });
+        },
         async searchPasajero(input=''){
             this.loadingPasajero = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
