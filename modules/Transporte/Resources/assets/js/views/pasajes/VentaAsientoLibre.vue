@@ -208,6 +208,7 @@
         <person-form :showDialog.sync="showDialogNewPerson"
         type="customers"
         :external="true"
+        :buscar_destinatario="buscar_destinatario"
         :input_person="input_person"
         :document_type_id="document.document_type_id"></person-form>
 
@@ -370,6 +371,7 @@ export default {
             pasajeroId:null,
             precio:null,
             numeroAsiento:null,
+            buscar_destinatario:false,
 
             loading:false,
 
