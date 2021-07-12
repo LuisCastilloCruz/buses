@@ -40,7 +40,7 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr v-for="manifiesto in listManifiestos" :key="manifiesto.id">
-                                                        <td>{{ manifiesto.serie.number }}</td>
+                                                        <td>{{ manifiesto.serie }}</td>
                                                         <td>{{ manifiesto.numero }}</td>
                                                         <td>{{ manifiesto.chofer.nombre }}</td>
                                                         <td>{{ manifiesto.copiloto.nombre }}</td>
@@ -120,7 +120,7 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr v-for="manifiesto in listPasajes" :key="manifiesto.id">
-                                                        <td>{{ manifiesto.serie.number }}</td>
+                                                        <td>{{ manifiesto.serie }}</td>
                                                         <td>{{ manifiesto.numero }}</td>
                                                         <td>{{ manifiesto.chofer.nombre }}</td>
                                                         <td>{{ manifiesto.copiloto.nombre }}</td>

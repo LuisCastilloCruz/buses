@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-3">
                 <div class="form-group">
-                    <label for="">Serie</label>
+                    <label for="">Serie:</label>
                     <el-select v-model="manifiesto.serie" placeholder="Serie">
                         <el-option
                         v-for="serie in series"

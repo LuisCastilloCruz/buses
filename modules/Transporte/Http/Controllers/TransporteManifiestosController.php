@@ -7,6 +7,8 @@ use Illuminate\Routing\Controller;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use Carbon\Carbon;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
 use DateTime;
 use Exception;
 use Illuminate\Mail\Transport\Transport;
@@ -22,10 +24,19 @@ use Mpdf\Mpdf;
 class TransporteManifiestosController extends Controller
 {
     //
+    protected $company;
+    protected $configuration;
+
+    public function __construct()
+    {
+        $this->configuration = Configuration::first();
+        $this->company = Company::active();
+    }
 
     public function index(){
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
-        $series = Series::where('establishment_id', $establishment->id)->get();
+        $series = Series::where('establishment_id', $establishment->id)
+                  ->whereIn('document_type_id', ['33', '100'])->get(); 
         $choferes = TransporteChofer::all();
 
         return view('transporte::manifiestos.index',compact('series','choferes'));
@@ -96,6 +107,10 @@ class TransporteManifiestosController extends Controller
             'margin_left' => 2
         ]);
 
+        $company = $this->company;
+        $establishment_id = auth()->user()->establishment_id;
+        $establishment = Establishment::where('id',$establishment_id)->first();
+
         $programacion = $manifiesto->programacion;
         $vehiculo = $programacion->vehiculo;
 
@@ -146,7 +161,9 @@ class TransporteManifiestosController extends Controller
             'pasajes',
             'vehiculo',
             'pasajesEnTerminal',
-            'pasajesRecogidosRuta'
+            'pasajesRecogidosRuta',
+            'company',
+            'establishment'
         ));
 
         $pdf->WriteHTML($content);
@@ -165,6 +182,9 @@ class TransporteManifiestosController extends Controller
             'margin_bottom' => 0,
             'margin_left' => 2
         ]);
+        $company = $this->company;
+        $establishment_id = auth()->user()->establishment_id;
+        $establishment = Establishment::where('id',$establishment_id)->first();
 
         $programacion = $manifiesto->programacion;
         $vehiculo = $programacion->vehiculo;
@@ -183,7 +203,9 @@ class TransporteManifiestosController extends Controller
             'programacion',
             'manifiesto',
             'encomiendas',
-            'vehiculo'
+            'vehiculo',
+            'company',
+            'establishment'
         ));
 
         $pdf->WriteHTML($content);
@@ -346,7 +368,6 @@ class TransporteManifiestosController extends Controller
             $manifiestos = TransporteManifiesto::with([
                 'chofer',
                 'copiloto',
-                'serie',
                 'programacion' => function($programacion){
                     $programacion->with('destino','origen','vehiculo');
                 }

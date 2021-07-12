@@ -36,6 +36,6 @@ class TransporteManifiesto extends ModelTenant
     }
 
     public function serie() : BelongsTo{
-        return $this->belongsTo(Series::class,'serie','id');
+        return $this->belongsTo(Series::class,'serie','number');
     }
 }

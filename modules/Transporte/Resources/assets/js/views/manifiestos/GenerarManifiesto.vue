@@ -4,12 +4,12 @@
             <div class="col-3">
                 <div class="form-group">
                     <label for="">Serie</label>
-                    <el-select v-model="manifiesto.serie" placeholder="Serie">
+                    <el-select v-model="manifiesto.serie">
                         <el-option
-                        v-for="serie in series"
+                        v-for="serie in all_series"
                         :key="serie.id"
                         :label="serie.number"
-                        :value="serie.id">
+                        :value="serie.number">
                         </el-option>
                     </el-select>
                     <span v-if="errors.serie" class="invalid-feedback" :style="{display:'block'}">{{ errors.serie[0] }}</span>
@@ -54,7 +54,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="">Chofer</label>
-                     <el-select v-model="manifiesto.chofer_id" placeholder="Chofer">
+                     <el-select v-model="manifiesto.chofer_id" >
                         <el-option
                         v-for="chofer in choferes"
                         :key="chofer.id"
@@ -68,7 +68,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="">Copiloto</label>
-                     <el-select v-model="manifiesto.copiloto_id" placeholder="Chofer">
+                     <el-select v-model="manifiesto.copiloto_id" >
                         <template  v-for="copiloto in choferes">
                             <el-option
                             v-if="manifiesto.chofer_id != copiloto.id"
@@ -191,6 +191,7 @@
     </el-dialog>
 </template>
 <script>
+import moment from 'moment'
 export default {
     props:{
         visible: {
@@ -250,6 +251,7 @@ export default {
                     descripcion:'Pasajes'
                 },
             ],
+            all_series:{},
             errors:{}
         });
     },
@@ -281,6 +283,7 @@ export default {
                 this.manifiesto.programacion_id = this.itemManifiesto.programacion_id;
                 this.listProgramaciones.push(this.itemManifiesto.programacion);
             }
+            this.initForm();
         },
         onStore(){
             this.loading = true;
@@ -299,6 +302,19 @@ export default {
                 this.loading = false;
                 this.axiosError(error);
             });
+        },
+        initForm(){
+            console.log(this.series);
+            this.manifiesto.fecha= moment().format('YYYY-MM-DD');
+            if(this.manifiesto.tipo==1){//encomienda
+                this.all_series = _.filter(this.series, {'document_type_id': '100'});
+            }
+            else{// pasajes
+               this.all_series = _.filter(this.series, {'document_type_id': '33'}); 
+            } 
+            this.manifiesto.serie = (this.all_series.length > 0)?this.all_series[0].number:null
+
+            console.log(this.all_series);
         },
         async searchOrigen(param){
             this.loadingOrigen = true;

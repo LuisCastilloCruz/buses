@@ -23,12 +23,13 @@
 <table style="width: 100%;font-size:11px">
     <tr>
         <td style="width: 33%;text-align: center">
-            <strong>TRANSPORTES Y TURISMO ANGELES
-                TOUR JUL PERU S.A.C. </strong> <br> 
-            <span style="font-size: 6px">
-                AV. LIMA NRO. 749 (EN ANTENA TELEFONICA FACTORIA SAN LUIS)
-                AREQUIPA - CAMANA
-            </span>   
+        <strong>{{ $company->name }} </strong> <br> 
+            <span style="font-size: 10px">
+            {{ ($establishment->address !== '-')? $establishment->address : '' }}
+            {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
+            {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
+            {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
+            </span>  
         </td>
         <td style="width: 10% !important;text-align: center">
             <table class="bordered" style="width: 30%;font-size:8px;">
@@ -58,7 +59,7 @@
             <table class="bordered" style="width: 100%">
                 <tr>
                     <td style="width: 100%;text-align:center">
-                        <h1>R.U.C.20600665431</h3>
+                    <h1>RUC: {{ $company->number }}</h3>
                     </td>
                 </tr>
                 <tr style="background-color: #0088cc;">
@@ -68,7 +69,7 @@
                 </tr>
                 <tr>
                     <td style="width: 100%;text-align:center">
-                        <h4>004-02090</h4>
+                    <h4>{{ $manifiesto->serie }} - {{ $manifiesto->numero }} </h4>
                     </td>
                 </tr>
             </table>
