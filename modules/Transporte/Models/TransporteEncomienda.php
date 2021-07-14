@@ -59,6 +59,6 @@ class TransporteEncomienda extends ModelTenant
     }
 
     public function destino() : BelongsTo{
-        return $this->belongsTo(TransporteTerminales::class,'destino_id','id');
+        return $this->belongsTo(TransporteDestino::class,'destino_id','id');
     }
 }
