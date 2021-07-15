@@ -180,7 +180,7 @@ class TransporteEncomiendaController extends Controller
         if($date->isSameDay($today)){
             /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
             $time = date('H:i:s');
-            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
+            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%I:%S') >= '{$time}'");
         }
 
         return response()->json([
