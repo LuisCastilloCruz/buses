@@ -168,7 +168,10 @@ class TransporteEncomiendaController extends Controller
 
         $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
         ->where('terminal_origen_id',$request->origen_id)
-        ->where('terminal_destino_id',$request->destino_id)
+        ->whereHas('destino',function($destino) use($request){
+            $destino->where('destino_id',$request->destino_id);
+        })
+        // ->where('terminal_destino_id',$request->destino_id)
         ->WhereEqualsOrBiggerDate($request->fecha_salida);
         $date = Carbon::parse($request->fecha_salida);
         $today = Carbon::now();
@@ -177,7 +180,7 @@ class TransporteEncomiendaController extends Controller
         if($date->isSameDay($today)){
             /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
             $time = date('H:i:s');
-            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%I:%S') >= '{$time}'");
+            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
         }
 
         return response()->json([

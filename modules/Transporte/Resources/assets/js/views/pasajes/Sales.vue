@@ -39,7 +39,7 @@
                                 >
                                     <template v-for="destino in destinos">
                                        <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
-                                         <el-option  :key="destino.id" :value="destino.destino.id" :label="`${destino.destino.destino.nombre}`">
+                                         <el-option  :key="destino.id" :value="destino.id" :label="`${destino.nombre}`">
                                         </el-option>
                                     </template>
                                     
@@ -245,7 +245,7 @@
                     @anularBoleto="anularBoleto"
                     :document_type_03_filter="document_type_03_filter"
                     :is-cash-open="isCashOpen"
-                    :destino="destino"
+                    :destinoId="destinoId"
                     :origen="origen"
                     :horaSalida="horaSalida"
                     />
@@ -368,10 +368,10 @@ export default {
         terminalId(newVal){
             this.origen = this.terminales.find( ter => ter.id == this.terminalId );
         },
-        destinoId(newVal){
-            let exist = this.destinos.find( destino => destino.destino.id == newVal );
-            if(exist) this.destino = exist.destino;
-        }
+        // destinoId(newVal){
+        //     let exist = this.destinos.find( destino => destino.destino.id == newVal );
+        //     if(exist) this.destino = exist.destino;
+        // }
     },
     async created(){
         this.load = true;
@@ -539,8 +539,6 @@ export default {
         },
 
         async getProgramaciones(){
-
-            console.log('Aquí: '+this.destinoId);
             if(this.fecha_salida){
                 this.loadingProgramaciones = true;
                 this.programaciones = [];
@@ -655,9 +653,6 @@ export default {
             const { data } = await this.$http.get(`/transportes/pasajes/${this.terminalId}/get-destinos`);
             this.loadingDestinos = false;
             this.destinos = data.destinos;
-            //this.destinos = data.programaciones;
-
-            console.log(this.destinos);
         },
 
 

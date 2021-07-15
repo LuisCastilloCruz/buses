@@ -122,7 +122,10 @@ class TransporteSalesController extends Controller
 
         $programaciones = TransporteProgramacion::with('origen','destino')
         ->where('terminal_origen_id',$request->origen_id)
-        ->where('terminal_destino_id',$request->destino_id)
+        ->whereHas('destino',function($destino) use($request){
+            $destino->where('destino_id',$request->destino_id);
+        })
+        // ->where('terminal_destino_id',$request->destino_id)
         ->WhereEqualsOrBiggerDate($request->fecha_salida);
         $date = Carbon::parse($request->fecha_salida);
         $today = Carbon::now();

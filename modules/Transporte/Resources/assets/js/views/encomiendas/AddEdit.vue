@@ -744,7 +744,7 @@ export default {
                 this.encomienda.programacion_id = null;
                 let data = {
                     origen_id:this.terminalId,
-                    destino_id:this.destinoId,
+                    destino_id:this.encomienda.destino_id,
                     fecha_salida:this.encomienda.fecha_salida
                 }
                 const { data:programaciones } = await this.$http.post(`/transportes/encomiendas/programaciones-disponibles`,data);

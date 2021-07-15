@@ -214,7 +214,7 @@
 
         <div class="row mt-4">
             <div class="col-12 d-flex justify-content-center">
-                <el-button v-if="transportePasaje && destino" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
+                <el-button v-if="transportePasaje && destinoId" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
                 <el-button v-else :loading="loading" type="primary" @click="saveDocument">Guardar</el-button>
 
 
@@ -311,8 +311,8 @@ export default {
             required:true,
             default:null
         },
-        destino:{
-            type:Object|null,
+        destinoId:{
+            type:Number|null,
             required:true,
             default:null
         }
@@ -519,7 +519,7 @@ export default {
                 fecha_salida:this.fechaSalida,
                 precio:this.precio,
                 tipo_venta:this.tipoVenta, //venta asiento libre
-                destino_id:this.destino.id,
+                destino_id:this.destinoId,
                 hora_salida: this.tipoVenta == 2 ?  this.programacion.hora_salida : this.horaSalida
             };
 
@@ -554,7 +554,7 @@ export default {
                 programacion_id:this.tipoVenta == 2 ? this.programacion.id : null,
                 fecha_salida:this.fechaSalida,
                 origen_id:this.origen.id,
-                destino_id:this.destino.id,
+                destino_id:this.destinoId,
                 precio:this.precio,
                 hora_salida:this.horaSalida
             };
