@@ -13,6 +13,12 @@
         </div>
     </div>
     <div class="header-right">
+        <a href="https://youtube.com/playlist?list=PLRfWQIWTl4WQnUwpMDBs8iAlcti3s_UNY" target="_blank">
+            <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="Video Tutoriales en Youtube">
+                <img src="{{asset("/logo/youtube.png")}}" alt="">
+            </div>
+        </a>
+        <span class="separator"></span>
         @if($vc_company->soap_type_id == "01")
         <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif">
         <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE DEMOSTRACIÓN, pulse para ir a configuración">
