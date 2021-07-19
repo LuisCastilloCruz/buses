@@ -280,7 +280,7 @@
 
     export default {
         mixins: [serviceNumber],
-        props: ['showDialog', 'type', 'recordId', 'external','buscar_destinatario','document_type_id','input_person'],
+        props: ['showDialog', 'type', 'recordId', 'external','buscar_destinatario','buscar_pasajero','document_type_id','input_person'],
 
         data() {
             return {
@@ -371,8 +371,8 @@
 
             },
             create() {
-                // console.log(this.input_person)
-                if(this.external && this.buscar_destinatario ==false) {
+                console.log(this.buscar_pasajero)
+                if(this.external && (this.buscar_destinatario ==false || this.buscar_pasajero == false) ) {
                     if(this.document_type_id === '01') {
                         this.form.identity_document_type_id = '6'
                     }
@@ -385,7 +385,7 @@
                         this.form.number = (this.input_person.number) ? this.input_person.number:''
                     }
                 }
-                if(this.external && this.buscar_destinatario ==true){
+                if(this.external && (this.buscar_destinatario ==true || this.buscar_pasajero == true)){
                     this.form.identity_document_type_id = '1'  
                 }
                 if(this.type === 'customers') {
@@ -497,11 +497,15 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
-                            if (this.external && this.buscar_destinatario ==false) {
+                            if (this.external && this.buscar_destinatario ==false && this.buscar_pasajero==false) {
+
                                 this.$eventHub.$emit('reloadDataPersons', response.data.id)
                             } 
                             else if(this.external && this.buscar_destinatario ==true){
                                 this.$eventHub.$emit('reloadDataDestinarios', response.data.id)     
+                            }
+                            else if(this.external && this.buscar_pasajero ==true){
+                                this.$eventHub.$emit('reloadDataPasajeros', response.data.id)     
                             }
                             else {
                                 this.$eventHub.$emit('reloadData')

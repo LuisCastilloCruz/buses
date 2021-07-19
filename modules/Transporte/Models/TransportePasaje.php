@@ -25,7 +25,8 @@ class TransportePasaje extends ModelTenant
         'numero_asiento',
         'hora_salida',
         'destino_id',
-        'origen_id'
+        'origen_id',
+        'cliente_id'
     ];
 
 
@@ -43,5 +44,8 @@ class TransportePasaje extends ModelTenant
 
     public function document() : BelongsTo{
         return $this->belongsTo(Document::class,'document_id','id');
+    }
+    public function cliente() : BelongsTo{
+        return $this->belongsTo(Person::class,'cliente_id','id');
     }
 }

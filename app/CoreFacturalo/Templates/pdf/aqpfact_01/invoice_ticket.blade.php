@@ -353,6 +353,12 @@
 
 @if(!is_null($pasaje))
 <table>
+    @if ($pasaje->pasajero->name && $document->document_type->id=='01')
+    <tr>
+        <td class="align-top desc"><h5><b>Pasajero: </b></h5></td>
+        <td class="text-left desc"><h4>{{ $pasaje->pasajero->name }}</h4></td>
+    </tr>
+    @endif
     @if ($pasaje->programacion)
         <tr>
         <td class="desc" with="40"><h3 style="padding: 0px;"><b>Origen: </b></h3> </td>

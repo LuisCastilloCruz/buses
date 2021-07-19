@@ -263,6 +263,7 @@ class TransporteSalesController extends Controller
 
             $attributes = $request->only([
                 'document_id',
+                'cliente_id',
                 'pasajero_id',
                 'asiento_id',
                 'precio',
