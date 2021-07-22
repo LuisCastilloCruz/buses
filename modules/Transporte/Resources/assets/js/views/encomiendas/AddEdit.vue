@@ -166,7 +166,7 @@
                                         <div class="form-group">
                                             <label for="">
                                                 Buscar producto
-                                                <a href="#" @click.prevent="addNewItem = true,initProducto()">[+ Nuevo]</a>
+                                                <a href="#" @click.prevent="addNewItem = true,nuevoProducto()">[+ Nuevo]</a>
                                             </label>
                                             <el-select v-model="selectItem" filterable remote value-key="id"  popper-class="el-select-customers"
                                                 placeholder="Buscar producto"
@@ -540,7 +540,8 @@ export default {
             loadingSProducto:false,
             addNewItem:false,
             selectItem:null,
-            tempRemitentes:[]
+            tempRemitentes:[],
+            selva:null
         };
     },
     async mounted() {
@@ -630,7 +631,12 @@ export default {
                 
             
             }else {
-                this.initProducto();
+               if(this.configuration.legend_footer==1){ // zona selva
+                     this.initProductoExonerado();
+                 }
+                 else{
+                     this.initProducto();
+                 }
             }
         }
     },
@@ -865,16 +871,29 @@ export default {
                     let valorventa = parseFloat(precio/1.18);
                     let igv = parseFloat(precio-valorventa);
 
-                    this.producto.input_unit_price_value=precio;
-                    this.producto.item.name = this.producto.item.second_name = this.producto.item.description;
-                    this.producto.item.sale_unit_price =precio;
-                    this.producto.total=precio;
-                    this.producto.total_base_igv=valorventa;
-                    this.producto.total_value=valorventa;
-                    this.producto.unit_price=precio;
-                    this.producto.unit_value=valorventa;
-                    this.producto.total_igv= igv;
-                    this.producto.total_taxes=igv;
+                    if(this.configuration.legend_footer==1){ // esto agrega producto exonerado
+                        this.producto.input_unit_price_value=precio;
+                        this.producto.item.name = this.producto.item.description;
+                        this.producto.item.sale_unit_price = precio;
+                        this.producto.item.unit_price=precio;
+                        this.producto.total=precio;
+                        this.producto.total_base_igv=precio;
+                        this.producto.total_value=precio;
+                        this.producto.unit_price=precio;
+                        this.producto.unit_value=precio;
+                    }
+                    else{ // esto es por defecto encomienda grabada
+                        this.producto.input_unit_price_value=precio;
+                        this.producto.item.name = this.producto.item.description;
+                        this.producto.item.sale_unit_price =precio;
+                        this.producto.total=precio;
+                        this.producto.total_base_igv=valorventa;
+                        this.producto.total_value=valorventa;
+                        this.producto.unit_price=precio;
+                        this.producto.unit_value=valorventa;
+                        this.producto.total_igv= igv;
+                        this.producto.total_taxes=igv;
+                    }
 
                     if(!this.producto.item.id){
                         this.loadingProducto = true;
@@ -899,7 +918,6 @@ export default {
                     //     this.document.payments[0].payment = this.total;
                     // }
                     this.selectItem = null;
-                    // this.initProducto();
                 }
             },
 
@@ -912,7 +930,13 @@ export default {
                 this.total = total;
             },
             async onCreate() {
-                this.initProducto();
+                 if(this.configuration.legend_footer==1){ // zona selva
+                     this.initProductoExonerado();
+                 }
+                 else{
+                     this.initProducto();
+                 }
+                
                 this.total = 0;
 
                 this.terminalId = this.userTerminal.terminal_id;
@@ -1128,7 +1152,81 @@ export default {
                     quantity: 1,
                     system_isc_type_id: null,
                     total: 0,//cambiado
-                    total_base_igv: 100,//cambiado
+                    total_base_igv: 0,//cambiado
+                    total_base_isc: 0,
+                    total_base_other_taxes: 0,
+                    total_charge: 0,
+                    total_discount: 0,
+                    total_igv: 0,
+                    total_isc: 0,
+                    total_other_taxes: 0,
+                    total_plastic_bag_taxes: 0,
+                    total_taxes: 0,
+                    total_value: 0,//cambiado
+                    unit_price: 0,//cambiado
+                    unit_value: 0,//cambiado
+                    warehouse_id: null
+                };
+            },
+            initProductoExonerado(){
+                this.producto = {
+                    IdLoteSelected: null,
+                    affectation_igv_type: {
+                        active: 1,
+                        description: "Exonerado - Operación Onerosa",
+                        exportation: 0,
+                        free: 0,
+                        id: "20"
+                    },
+                    affectation_igv_type_id: "20",
+                    attributes: [],
+                    charges: [],
+                    currency_type_id: "PEN",
+                    discounts: [],
+                    document_item_id: null,
+                    input_unit_price_value: "100",//cambiado
+                    item: {
+                        id:null,
+                        name:null,
+                        second_name:null,
+                        amount_plastic_bag_taxes: "0.10",
+                        attributes: [],
+                        barcode: "",
+                        brand: "",
+                        calculate_quantity: false,
+                        category: "",
+                        currency_type_id: "PEN",
+                        currency_type_symbol: "S/",
+                        description: null,
+                        full_description: "",
+                        has_igv: false,
+                        has_plastic_bag_taxes: false,
+                        item_type_id:'02',
+                        internal_id: null,
+                        item_unit_types: [],
+                        lots: [],
+                        lots_enabled: false,
+                        lots_group: [],
+                        presentation: [],
+                        purchase_affectation_igv_type_id: "20",
+                        purchase_unit_price: "0.000000",
+                        sale_affectation_igv_type_id: "20",
+                        sale_unit_price: 0,
+                        series_enabled: false,
+                        stock: 1,
+                        stock_min:1,
+                        unit_price: 0, //cambiado
+                        unit_type_id: "ZZ",
+                    },
+                    item_id: null,
+                    percentage_igv: 18,
+                    percentage_isc: 0,
+                    percentage_other_taxes: 0,
+                    price_type_id: "01",
+                    quantity: 1,
+                    system_isc_type_id: null,
+                    total: 0,//cambiado
+                    total_base_igv: 0,//cambiado
                     total_base_isc: 0,
                     total_base_other_taxes: 0,
                     total_charge: 0,
@@ -1323,6 +1421,14 @@ export default {
                     return null;
                 }
             },
+            nuevoProducto(){
+                if(this.configuration.legend_footer==1){ // zona selva
+                     this.initProductoExonerado();
+                 }
+                 else{
+                     this.initProducto();
+                 }
+            }
         },
 };
 </script>
