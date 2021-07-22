@@ -31,7 +31,8 @@
                         <div class="col-4">
                             <div class="form-group">
                                 <label for="">Destino</label>
-                                <el-select v-model="destinoId" 
+                                <el-select v-model="destino"
+                                value-key="id" 
                                 :loading="loadingDestinos" 
                                 popper-class="el-select-customers" 
                                 placeholder="Destino"
@@ -39,7 +40,7 @@
                                 >
                                     <template v-for="destino in destinos">
                                        <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
-                                         <el-option  :key="destino.id" :value="destino.id" :label="`${destino.nombre}`">
+                                         <el-option  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
                                         </el-option>
                                     </template>
                                     
@@ -67,7 +68,7 @@
                         
 
                         
-                        <div v-if="destinoId" class="col-3">
+                        <div v-if="destino" class="col-3">
                             <div  class="form-group">
                                 <label for="">Fecha salida</label>
                                 <el-date-picker
@@ -81,7 +82,7 @@
                         </div>
                         
 
-                        <div v-loading="loadingProgramaciones" v-if="destinoId && tipoVenta == 2" class="col-5">
+                        <div v-loading="loadingProgramaciones" v-if="destino && tipoVenta == 2" class="col-5">
                             <div v-if="programaciones.length > 0" class="row mt-2">
                                 <div class="col-12">
                                     <table class="table table-striped table-border">
@@ -132,7 +133,7 @@
                             </div>
                         </div>
 
-                        <div v-if="destinoId && tipoVenta == 1" class="col-md-4">
+                        <div v-if="destino && tipoVenta == 1" class="col-md-4">
                             <div class="from-group">
                                 <label for="">Hora salida</label>
                                 <el-input type="time" v-model="horaSalida"></el-input>
@@ -245,7 +246,7 @@
                     @anularBoleto="anularBoleto"
                     :document_type_03_filter="document_type_03_filter"
                     :is-cash-open="isCashOpen"
-                    :destinoId="destinoId"
+                    :destino="destino"
                     :origen="origen"
                     :horaSalida="horaSalida"
                     />
@@ -408,7 +409,6 @@ export default {
 
 
             fecha_salida: moment().format('YYYY-MM-DD'),
-            destinoId:null,
             destinos:[],
 
             loadingProgramaciones:false,
@@ -449,7 +449,7 @@ export default {
             this.pasajero = null;
             this.selectProgramacion = {};
             this.programaciones = [];
-            this.destinoId = null;
+            this.destino = null;
             this.fecha_salida = null;
             this.horaSalida = null;
             this.origen = null;
@@ -460,7 +460,7 @@ export default {
                 this.tipoVenta = this.itemPasajero.tipo_venta;
                 this.terminalId = this.itemPasajero.origen_id;
                 this.fecha_salida = this.itemPasajero.fecha_salida;
-                this.destinoId = this.itemPasajero.destino_id;
+                this.destino =  this.destinos.find(dest => dest.id ==  this.itemPasajero.destino_id);
                 this.asiento = this.itemPasajero.asiento;
                 this.horaSalida = this.itemPasajero.hora_salida;
                 if(this.tipoVenta == 2){
@@ -546,7 +546,7 @@ export default {
                 this.asientos = [];
                 let data = {
                     origen_id:this.terminalId,
-                    destino_id:this.destinoId,
+                    destino_id:this.destino.id,
                     fecha_salida:this.fecha_salida
                 }
                 const { data:programaciones } = await this.$http.post(`/transportes/sales/programaciones-disponibles`,data);

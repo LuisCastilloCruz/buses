@@ -240,7 +240,7 @@
 
         <div class="row mt-4">
             <div class="col-12 d-flex justify-content-center">
-                <el-button v-if="transportePasaje && destinoId" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
+                <el-button v-if="transportePasaje && destino" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
                 <el-button v-else :loading="loading" type="primary" @click="saveDocument">Guardar</el-button>
 
 
@@ -337,8 +337,8 @@ export default {
             required:true,
             default:null
         },
-        destinoId:{
-            type:Number|null,
+        destino:{
+            type:Object|null,
             required:true,
             default:null
         }
@@ -490,7 +490,7 @@ export default {
                 this.pasajero = this.transportePasaje.pasajero;
                 this.precio = this.transportePasaje.precio;
                 this.pasajeroId = this.pasajero.id;
-                this.clienteId = this.cliente.id;
+                this.clienteId = this.transportePasaje.cliente_id;
                 this.estadoAsiento = this.transportePasaje.estado_asiento_id;
                 this.documentId = this.transportePasaje.document_id;
                 this.numeroAsiento = this.transportePasaje.numero_asiento;
@@ -577,7 +577,7 @@ export default {
                 fecha_salida:this.fechaSalida,
                 precio:this.precio,
                 tipo_venta:this.tipoVenta, //venta asiento libre
-                destino_id:this.destinoId,
+                destino_id:this.destino.id,
                 hora_salida: this.tipoVenta == 2 ?  this.programacion.hora_salida : this.horaSalida
             };
 
@@ -613,7 +613,7 @@ export default {
                 programacion_id:this.tipoVenta == 2 ? this.programacion.id : null,
                 fecha_salida:this.fechaSalida,
                 origen_id:this.origen.id,
-                destino_id:this.destinoId,
+                destino_id:this.destino.id,
                 precio:this.precio,
                 hora_salida:this.horaSalida
             };
