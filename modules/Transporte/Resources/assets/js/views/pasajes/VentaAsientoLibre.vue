@@ -341,6 +341,8 @@ export default {
             type:Object|null,
             required:true,
             default:null
+
+            
         }
     },
     created(){
