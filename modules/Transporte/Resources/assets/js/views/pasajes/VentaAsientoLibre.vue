@@ -78,7 +78,7 @@
                                             Cliente
                                             <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>
                                         </label>
-                                        <el-select v-model="clienteId" filterable remote  popper-class="el-select-customers"
+                                        <el-select v-model="clienteId" filterable remote  popper-class="el-select-customers" id="cliente"
                                                    dusk="clienteId"
                                                    placeholder="Buscar cliente"
                                                    :remote-method="searchCliente"
@@ -95,7 +95,7 @@
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="dni">Asiento</label>
-                                        <el-input :disabled="tipoVenta == 2 ? true : false" v-model="numeroAsiento" type="number" min="1" ></el-input>
+                                        <el-input :disabled="tipoVenta == 2 ? true : false" v-model="numeroAsiento" type="number" min="1"  id="numero-asiento"></el-input>
                                     </div>
                                 </div>
                             </div>
@@ -972,39 +972,72 @@ export default {
                 errors.push('Debe seleccionar un pasajero');
 
             }
+            
             if(!this.programacion) {
                 valid = false;
                 errors.push('Debe seleccionar una programación');
             }
+            if(this.precio){
+                    let p = parseFloat(this.precio);
+                    if(p <= 0){
+                        valid = false;
+                        errors.push('El precio debe ser mayor a 0');
+                    }
+            }
 
-            if(this.tipoVenta == 2){
+            if(this.tipoVenta == 1){//venta libre
+                if(!this.horaSalida){
+                    valid = false;
+                    errors.push('Debe ingresar hora de salida');
+
+                    let element = document.getElementById('hora-salida');
+                    element.focus();
+                }
+                else if(!this.precio){
+                    valid = false;
+                    errors.push('Debe poner un precio');
+
+                    let element = document.getElementById('precio-boleto');
+                    element.focus();
+                }
+                else if(!this.clienteId){
+                    valid = false;
+                    errors.push('Debe seleccionar un cliente o pasajero');
+                    let element = document.getElementById('cliente');
+                    element.focus();
+                }
+                else if(!this.numeroAsiento){
+                    valid = false;
+                    errors.push('Debe ingresar un asiento');
+
+                    let element = document.getElementById('numero-asiento');
+                    element.focus();
+                }
+            }
+            
+            if(this.tipoVenta == 2){//venta con programación
 
                 if(!this.programacion){
                     valid = false;
                     errors.push('Debe seleccionar una programación');
                 }
 
-                if(!this.asiento) {
+                if(!this.precio){
+                    valid = false;
+                    errors.push('Debe poner un precio');
+
+                    let element = document.getElementById('precio-boleto');
+                    element.focus();
+                }
+                 else if(!this.clienteId){
+                    valid = false;
+                    errors.push('Debe seleccionar un cliente o pasajero');
+                    let element = document.getElementById('cliente');
+                    element.focus();
+                }
+                else if(!this.asiento) {
                     valid = false;
                     errors.push('Debe seleccionar un asiento');
-                }
-            }else {
-                if(!this.numeroAsiento){
-                    valid = false;
-                    errors.push('Debe seleccionar un asiento');
-                }
-            }
-
-            if(!this.precio){
-                valid = false;
-                errors.push('Debe poner un precio');
-            }
-
-            if(this.precio){
-                let p = parseFloat(this.precio);
-                if(p <= 0){
-                    valid = false;
-                    errors.push('El precio debe ser mayor a 0');
                 }
             }
 

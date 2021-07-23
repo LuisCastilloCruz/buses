@@ -136,7 +136,7 @@
                         <div v-if="destino && tipoVenta == 1" class="col-md-4">
                             <div class="from-group">
                                 <label for="">Hora salida</label>
-                                <el-input type="time" v-model="horaSalida"></el-input>
+                                <el-input type="time" v-model="horaSalida" id="hora-salida"></el-input>
                             </div>
                         </div>
                        
@@ -386,6 +386,7 @@ export default {
         await this.searchDestinos();
         await this.onCreate();
         this.load = false;
+
     },
     data(){
         return ({
@@ -451,7 +452,7 @@ export default {
             this.programaciones = [];
             this.destino = null;
             this.fecha_salida = null;
-            this.horaSalida = null;
+            //this.horaSalida = null;
             this.origen = null;
         },
 
