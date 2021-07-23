@@ -17,6 +17,9 @@
                         <el-tab-pane label="Imprimir Ticket" name="third">
                             <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
+                        <el-tab-pane label="Imprimir Ticket 58" name="four">
+                            <embed :src="form.print_ticket_58" type="application/pdf" width="100%" height="400px"/>
+                        </el-tab-pane>
 
                     </el-tabs>
                 </div>
@@ -80,6 +83,7 @@
                     identifier: null,
                     date_of_issue:null,
                     print_ticket: null,
+                    print_ticket_58:null,
                     print_a4: null,
                     print_a5: null,
                     series:null,

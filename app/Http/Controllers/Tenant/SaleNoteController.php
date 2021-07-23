@@ -602,11 +602,11 @@ class SaleNoteController extends Controller
                 } else {
                     $html_footer = $template->pdfFooter('default',$this->document);
                 }
-                $html_footer_legend = "";
+                /* $html_footer_legend = "";
                 if($this->configuration->legend_footer){
                     $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
                 }
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+                $pdf->SetHTMLFooter($html_footer.$html_footer_legend); */
             // }
         }
 
