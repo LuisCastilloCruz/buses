@@ -8,6 +8,11 @@
     $document_base = ($document->note) ? $document->note : null;
     $payments = $document->payments;
 
+    $configuracion = \App\Models\Tenant\Configuration::all();
+     foreach($configuracion as $config){
+        $legend_footer= $config['legend_footer'];
+     }
+
     if($document_base) {
         $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
 
@@ -621,18 +626,6 @@
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
 
-    @if ($customer->department_id == 16)
-        <tr>
-            <td class="text-center desc pt-2">
-                Representación impresa del Comprobante de Pago Electrónico.
-                <br/>Esta puede ser consultada en:
-                <br/> <b>{!! url('/buscar') !!}</b>
-                <br/> "Bienes transferidos en la Amazonía
-                <br/>para ser consumidos en la misma
-            </td>
-        </tr>
-    @endif
-
     @if($document->payment_method_type_id)
         <tr>
             <td class="desc pt-2">
@@ -667,8 +660,19 @@
     </tr>
 
     <tr>
+        <td class="text-center desc pt-2">
+            Representación impresa del Comprobante de Pago Electrónico.
+        </td>
+    </tr>
+
+    <tr>
         <td class="text-center desc pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
+    @if ($legend_footer==1)
+    <tr>
+        <td class="text-center desc pt-2">BIENES TRANSFERIDOS Y/O SERVICIOS PRESTADOS EN LA AMAZONIA PARA SER CONSUMIDOS EN LA MISMA</td>
+    </tr>
+    @endif
 </table>
 
 
