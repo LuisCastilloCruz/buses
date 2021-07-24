@@ -14,6 +14,10 @@ if($hostname) {
                 Route::get('format/download', 'FormatController@download');
                 Route::get('ple/download', 'PleController@download');
 
+                Route::get('tributo', 'TributoController@index')->name('tenant.account_tributo.index');
+                Route::get('tributo/table', 'TributoController@table')->name('tenant.account_tributo.table');
+                
+
 
                 Route::get('summary-report', 'SummaryReportController@index')->name('tenant.account_summary_report.index');
                 Route::get('summary-report/records', 'SummaryReportController@records');

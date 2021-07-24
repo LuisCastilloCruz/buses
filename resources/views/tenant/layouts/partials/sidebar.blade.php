@@ -833,6 +833,11 @@
                                     PLE Vers. 5.2.0 2021
                                 </a>
                             </li>
+                            <li class="{{(($path[0] === 'account') && ($path[1] == 'tributo'))   ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{ route('tenant.account_tributo.index') }}">
+                                    Cuadro de tributos
+                                </a>
+                            </li>
                             <li class="{{(($path[0] === 'account') && ($path[1] == 'summary-report'))   ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{ route('tenant.account_summary_report.index') }}">
                                     Reporte resumido - Ventas

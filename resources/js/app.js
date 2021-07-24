@@ -133,6 +133,7 @@ Vue.component('tenant-account-ple', require('../../modules/Account/Resources/ass
 Vue.component('tenant-account-summary-report', require('../../modules/Account/Resources/assets/js/views/summary_report/index.vue'));
 Vue.component('tenant-account-format', require('../../modules/Account/Resources/assets/js/views/account/format.vue'));
 Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
+Vue.component('tenant-account-tributo', require('../../modules/Account/Resources/assets/js/views/account/tributo.vue'));
 
 //contabilidad
 Vue.component('tenant-accounting-plan', require('../../modules/Account/Resources/assets/js/views/accounting/accounting_plan/index.vue'));
