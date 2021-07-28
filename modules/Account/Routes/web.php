@@ -15,7 +15,7 @@ if($hostname) {
                 Route::get('ple/download', 'PleController@download');
 
                 Route::get('tributo', 'TributoController@index')->name('tenant.account_tributo.index');
-                Route::get('tributo/table', 'TributoController@table')->name('tenant.account_tributo.table');
+                Route::post('tributo/table', 'TributoController@table')->name('tenant.account_tributo.table');
                 
 
 
