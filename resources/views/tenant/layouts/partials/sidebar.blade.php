@@ -175,7 +175,7 @@
                                         </a>
                                         <ul class="nav nav-children">
                                             <li class="{{ ($path[0] === 'summaries')?'nav-active':'' }}">
-                                                <a class="nav-link" href="{{route('tenant.summaries.index')}}">
+                                                <a class="nav-link" href="#" title="Las boletas y facturas se envían uno a uno, consulte el cdr en opciones o reenvíe.">
                                                     Resúmenes
                                                 </a>
                                             </li>
