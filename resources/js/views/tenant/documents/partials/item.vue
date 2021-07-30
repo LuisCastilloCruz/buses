@@ -939,7 +939,14 @@
                 // if(this.form.quantity < this.getMinQuantity()){
                 //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
                 // }
-                this.validateQuantity()
+                if(this.form.unit_price_value<=0){
+                      return this.$message.error('El precio no puede ser menor o igual a 0')
+                }
+                if(this.form.quantity<=0){
+                      return this.$message.error('la cantidad no puede ser menor o igual a 0')
+                }
+
+                this.validateQuantity();
 
                 if(this.form.item.lots_enabled){
                     if(!this.form.IdLoteSelected)

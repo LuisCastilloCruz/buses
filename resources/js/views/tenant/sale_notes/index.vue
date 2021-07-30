@@ -200,6 +200,7 @@
         <sale-note-generate :showDialog.sync="showDialogGenerate"
                            :recordId="recordId"
                            :showGenerate="true"
+                           :configuration="configuration"
                            :showClose="false"></sale-note-generate>
 
     </div>
@@ -214,7 +215,7 @@
     import {deletable} from '../../../mixins/deletable'
 
     export default {
-        props: ['soapCompany','typeUser'],
+        props: ['soapCompany','typeUser','configuration'],
         mixins: [deletable],
         components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate},
         data() {

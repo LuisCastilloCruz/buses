@@ -128,6 +128,7 @@
                               :generatDispatch="generate_dispatch"
                               :dispatchId="dispatch_id"
                               :isContingency="false"
+                              :configuration="configuration"
                               :showClose="true"></document-options>
 
         </el-dialog>
@@ -141,7 +142,7 @@
     export default {
         components: {DocumentOptions},
 
-        props: ['showDialog', 'recordId', 'showClose','showGenerate'],
+        props: ['showDialog', 'recordId', 'showClose','showGenerate','configuration'],
         data() {
             return {
                 titleDialog: null,
@@ -367,7 +368,7 @@
                         this.validateIdentityDocumentType()
 
                         this.assignDocument();
-                        this.titleDialog = 'Nota de venta registrada: '+this.form.identifier
+                        this.titleDialog = 'Nota de venta registrada: '+this.form.serie+'-'+this.form.number
                     })
 
 

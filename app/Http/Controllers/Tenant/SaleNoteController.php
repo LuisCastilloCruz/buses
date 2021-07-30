@@ -71,8 +71,9 @@ class SaleNoteController extends Controller
     {
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
+        $configuration = Configuration::first();
 
-        return view('tenant.sale_notes.index', compact('soap_company'));
+        return view('tenant.sale_notes.index', compact('soap_company','configuration'));
     }
 
 
