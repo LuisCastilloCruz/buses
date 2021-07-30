@@ -49,7 +49,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="(invoice, index) in listNotes" :key="invoice.id" :class="{'text-danger': (invoice.document.state_type_id === '11'),
+                                                    <tr v-for="(invoice, index) in listInvoices" :key="invoice.id" :class="{'text-danger': (invoice.document.state_type_id === '11'),
                                                     'text-warning': (invoice.document.state_type_id === '13'),
                                                     'border-light': (invoice.document.state_type_id === '01'),
                                                     'border-left border-info': (invoice.document.state_type_id === '03'),
