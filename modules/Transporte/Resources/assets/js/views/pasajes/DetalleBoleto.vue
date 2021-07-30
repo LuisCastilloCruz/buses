@@ -688,17 +688,7 @@ export default {
         },
         anularBoleto(){
             
-            this.$confirm(`¿Estás seguro de anular el boleto ?`, 'Atención', {
-                confirmButtonText: 'Si, continuar',
-                cancelButtonText: 'No, cerrar',
-                type: 'warning'
-            }).then(() => {
-                this.$emit('update:visible',false);
-                setTimeout(() => {
-                    this.$emit('anularBoleto',this.transportePasaje);
-                }, 500);
-            });
-
+            this.$emit('anularBoleto',this.transportePasaje);
             
         }
     }

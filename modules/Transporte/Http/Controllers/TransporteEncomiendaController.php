@@ -60,7 +60,7 @@ class TransporteEncomiendaController extends Controller
 
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
         $series = Series::where('establishment_id', $establishment->id)->get();
-        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80',100,33])->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::first();
@@ -116,6 +116,39 @@ class TransporteEncomiendaController extends Controller
         }catch(Exception $e){
             return response()->json([
                 'message' => 'Lo sentimos ocurrio un error en su petición'
+            ],500);
+        }
+        
+
+        
+    }
+    public function getEncomiendasNotes(){
+
+        try{
+
+            $encomiendas = TransporteEncomienda::with([
+                'saleNote.items',
+                'document',
+                'programacion' => function($progamacion){
+                    return $progamacion->with([
+                        'vehiculo:id,placa',
+                        'origen:id,nombre',
+                        'destino:id,nombre',
+                    ]);
+                },
+                'remitente:id,name',
+                'destinatario:id,name',
+                'estadoPago',
+                'estadoEnvio'
+            ])->join('sale_notes', 'sale_notes.id', '=', 'transporte_encomiendas.document_id')
+            ->orderBy('transporte_encomiendas.id', 'DESC')
+            ->get();
+
+            return response()->json($encomiendas,200);
+
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Lo sentimos ocurrio un error en su petición '.$e
             ],500);
         }
         

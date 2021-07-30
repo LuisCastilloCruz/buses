@@ -26,7 +26,8 @@ use Modules\Finance\Traits\FinanceTrait;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\SaleNoteItem;
 use App\Exports\CashProductExport;
-
+use App\Models\Tenant\Document;
+use App\Models\Tenant\SaleNote;
 
 class CashController extends Controller
 {
@@ -374,6 +375,57 @@ class CashController extends Controller
         $pdf = PDF::loadView('tenant.cash.report_product_pdf', compact("cash", "company", "documents","sale_notes"));
 
         $filename = "Reporte_POS_PRODUCTOS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
+
+        return $pdf->stream($filename.'.pdf');
+
+    }
+    public function enc_x_pagar($id)
+    {
+        $cash = Cash::findOrFail($id);
+        $company = Company::first();
+
+        $sale_notes =  CashDocument::with('sale_note')
+        ->join('transporte_encomiendas', 'transporte_encomiendas.document_id', '=', 'cash_documents.sale_note_id')
+        ->join('transporte_destinos','transporte_destinos.id','=','transporte_encomiendas.destino_id')
+        ->join('sale_notes','sale_notes.id','=','transporte_encomiendas.document_id')
+        ->where('transporte_encomiendas.estado_pago_id', 2) //2=pago en destino
+        ->where('cash_id', $cash->id)
+        ->get();
+
+        $pdf = PDF::loadView('tenant.cash.report_enc_x_pagar_pdf', compact("cash", "company","sale_notes"));
+
+        $filename = "Reporte_ENC_X_PAGAR- {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
+
+        return $pdf->stream($filename.'.pdf');
+
+    }
+    public function enc_x_pagar_items($id)
+    {
+        $cash = Cash::findOrFail($id);
+        $company = Company::first();
+
+        $cash_documents2 =  CashDocument::select('sale_note_id')
+        ->join('transporte_encomiendas', 'transporte_encomiendas.document_id', '=', 'cash_documents.sale_note_id')
+        ->where('transporte_encomiendas.estado_pago_id', 2) //2=pago en destino
+        ->where('cash_id', $cash->id)
+        ->get();
+
+
+        $source2 = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cash_documents2)->get();
+
+        $sale_notes = collect($source2)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->sale_note->series . '-' .str_pad($row->sale_note->number,8,'0',STR_PAD_LEFT),
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+
+
+        $pdf = PDF::loadView('tenant.cash.report_enc_x_pagar_pdf', compact("cash", "company","sale_notes"));
+
+        $filename = "Reporte_ENC_X_PAGAR- {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
 
         return $pdf->stream($filename.'.pdf');
 

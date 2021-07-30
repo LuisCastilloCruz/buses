@@ -3,6 +3,7 @@
 namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
+use Modules\Transporte\Models\TransporteEncomienda;
 
 class SaleNote extends ModelTenant
 {
@@ -230,6 +231,9 @@ class SaleNote extends ModelTenant
     public function documents()
     {
         return $this->hasMany(Document::class);
+    }
+    public function transporte_encomienda(){
+        return $this->hasOne(TransporteEncomienda::class,'document_id','id');
     }
 
 

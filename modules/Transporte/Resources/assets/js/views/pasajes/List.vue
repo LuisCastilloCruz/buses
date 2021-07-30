@@ -29,33 +29,43 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th></th>
+                            <th>#</th>
                             <th>Fecha y hora salida </th>
                             <th>Cliente</th>
                             <th>Número</th>
-                            <th>Estado Sunat</th>
                             <th>T.Gravado</th>
                             <th>T.Igv</th>
                             <th>Total</th>
+                            <th>Estado Sunat</th>
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="pasaje in listPasajes" :key="pasaje.id">
+                        <tr v-for="pasaje in listPasajes" :key="pasaje.id" :class="{'text-danger': (pasaje.document.state_type_id === '11'),
+                            'text-warning': (pasaje.document.state_type_id === '13'),
+                            'border-light': (pasaje.document.state_type_id === '01'),
+                            'border-left border-info': (pasaje.document.state_type_id === '03'),
+                            'border-left border-success': (pasaje.document.state_type_id === '05'),
+                            'border-left border-secondary': (pasaje.document.state_type_id === '07'),
+                            'border-left border-dark': (pasaje.document.state_type_id === '09'),
+                            'border-left border-danger': (pasaje.document.state_type_id === '11'),
+                            'border-left border-warning': (pasaje.document.state_type_id === '13')}">
                             <td class="text-right">{{ pasaje.id }}</td>
                             <td>{{ pasaje.fecha_salida }} {{ pasaje.hora_salida }}</td>
                             <td>{{ pasaje.pasajero.name }}</td>
                             <td>{{ pasaje.document.series }}-{{pasaje.document.number}}</td>
-
+                            <td>{{ pasaje.document.total_taxed }}</td>
+                            <td>{{ pasaje.document.total_igv }}</td>
+                            <td>{{ pasaje.document.total }}</td>
                             <td>
                                 <el-tooltip v-if="tooltip(pasaje.document, false)"  class="item" effect="dark" placement="bottom">
                                     <div slot="content">{{tooltip(pasaje.document)}}</div>
                                     <span class="badge bg-secondary text-white" :class="{'bg-danger': (pasaje.document.state_type_id === '11'), 'bg-warning': (pasaje.document.state_type_id === '13'), 'bg-secondary': (pasaje.document.state_type_id === '01'), 'bg-info': (pasaje.document.state_type_id === '03'), 'bg-success': (pasaje.document.state_type_id === '05'), 'bg-secondary': (pasaje.document.state_type_id === '07'), 'bg-dark': (pasaje.document.state_type_id === '09')}">
-                                        {{pasaje.document.state_type_description}}
+                                        {{pasaje.document.state_type.description}}
                                     </span>
                                 </el-tooltip>
                                 <span v-else class="badge bg-secondary text-white" :class="{'bg-danger': (pasaje.document.state_type_id === '11'), 'bg-warning': (pasaje.document.state_type_id === '13'), 'bg-secondary': (pasaje.document.state_type_id === '01'), 'bg-info': (pasaje.document.state_type_id === '03'), 'bg-success': (pasaje.document.state_type_id === '05'), 'bg-secondary': (pasaje.document.state_type_id === '07'), 'bg-dark': (pasaje.document.state_type_id === '09')}">
-                                    {{pasaje.document.state_type_description}}
+                                    {{pasaje.document.state_type.description}}
                                 </span>
                                 <template v-if="pasaje.document.regularize_shipping && pasaje.document.state_type_id === '01'">
                                     <el-tooltip class="item" effect="dark" :content="pasaje.document.message_regularize_shipping" placement="top-start">
@@ -63,17 +73,12 @@
                                     </el-tooltip>
                                 </template>
                             </td>
-                            <td>{{ pasaje.document.total_taxed }}</td>
-                            <td>{{ pasaje.document.total_igv }}</td>
-                            <td>{{ pasaje.document.total }}</td>
-                            <!-- <td>{{ pasaje.document }}</td> -->
-                            <!-- <td>{{ item.categoria }}</td> -->
                             <td class="text-center">
-                                <el-tooltip class="item" effect="dark" content="Editar" placement="top-start">
+                                <!-- <el-tooltip class="item" effect="dark" content="Editar" placement="top-start">
                                     <el-button type="success" @click="onEdit(pasaje)">
                                         <i class="fa fa-edit"></i>
                                     </el-button>
-                                </el-tooltip>
+                                </el-tooltip> -->
 
                                 <el-tooltip class="item" effect="dark" content="Imprimir comprobante" placement="top-start">
                                     <el-button type="primary" @click="verComprobante(pasaje)">

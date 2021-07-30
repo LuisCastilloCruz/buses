@@ -25,45 +25,155 @@
             </div>
             <div v-loading="loading" class="card-body">
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th></th>
+                    <el-tabs v-model="tab" >
+                            <el-tab-pane label="Facturas - Boletas" name="invoice">
+                                <div class="row">
+                                    <div class="col-md-12 d-flex justify-content-end">
+                                        <el-button type="primary" @click="onCreate(1)" >Nuevo</el-button>
+                                    </div>
+                                    <div v-loading="loadingInvoices" class="col-md-12 mt-2">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped">
+                                                <template v-if="listInvoices.length > 0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Numero</th>
+                                                        <th>Remitente</th>
+                                                        <th>Destinatario</th>
+                                                        <th>Fecha salida</th>
+                                                        <th>Hora salida</th>
+                                                        <th>Estado envio</th>
+                                                        <th>Estado Sunat</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(invoice, index) in listNotes" :key="invoice.id" :class="{'text-danger': (invoice.document.state_type_id === '11'),
+                                                    'text-warning': (invoice.document.state_type_id === '13'),
+                                                    'border-light': (invoice.document.state_type_id === '01'),
+                                                    'border-left border-info': (invoice.document.state_type_id === '03'),
+                                                    'border-left border-success': (invoice.document.state_type_id === '05'),
+                                                    'border-left border-secondary': (invoice.document.state_type_id === '07'),
+                                                    'border-left border-dark': (invoice.document.state_type_id === '09'),
+                                                    'border-left border-danger': (invoice.document.state_type_id === '11'),
+                                                    'border-left border-warning': (invoice.document.state_type_id === '13')}">
+                                                        <td class="text-right">{{ index+1 }}</td>
+                                                        <td>{{ invoice.document.series + '-' +invoice.document.number  }}</td>
+                                                        <td>{{ invoice.remitente.name }}</td>
+                                                        <td>{{ invoice.destinatario.name }}</td>
+                                                        <td>{{ invoice.fecha_salida }}</td>
+                                                        <td>{{ invoice.programacion ? invoice.programacion.hora_salida : 'Sin programación' }}</td>
+                                                        <td>{{ invoice.estado_envio.nombre }}</td>
+                                                        <td>
+                                                            <el-tooltip v-if="tooltip(invoice, false)" class="item" effect="dark" placement="bottom">
+                                                                <div slot="content">{{tooltip(invoice)}}</div>
+                                                                <span class="badge bg-secondary text-white" :class="{'bg-danger': (invoice.document.state_type_id === '11'), 'bg-warning': (invoice.document.state_type_id === '13'), 'bg-secondary': (invoice.document.state_type_id === '01'), 'bg-info': (invoice.document.state_type_id === '03'), 'bg-success': (invoice.document.state_type_id === '05'), 'bg-secondary': (invoice.document.state_type_id === '07'), 'bg-dark': (invoice.document.state_type_id === '09')}">
+                                                                    {{invoice.document.state_type.description}}
+                                                                </span>
+                                                            </el-tooltip>
+                                                            <span v-else class="badge bg-secondary text-white" :class="{'bg-danger': (invoice.document.state_type_id === '11'), 'bg-warning': (invoice.document.state_type_id === '13'), 'bg-secondary': (invoice.document.state_type_id === '01'), 'bg-info': (invoice.document.state_type_id === '03'), 'bg-success': (invoice.document.state_type_id === '05'), 'bg-secondary': (invoice.document.state_type_id === '07'), 'bg-dark': (invoice.document.state_type_id === '09')}">
+                                                                {{invoice.document.state_type.description}}
+                                                            </span>
+                                                            <template v-if="invoice.document.regularize_shipping && invoice.document.state_type_id === '01'">
+                                                                <el-tooltip class="item" effect="dark" :content="invoice.document.message_regularize_shipping" placement="top-start">
+                                                                    <i class="fas fa-exclamation-triangle fa-lg" style="color: #d2322d !important"></i>
+                                                                </el-tooltip>
+                                                            </template>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <el-button type="primary" @click="verComprobante(invoice)">
+                                                                <i class="fa fa-file-alt"></i>
+                                                            </el-button>
+                                                            <button data-toggle="tooltip" data-placement="top" title="Anular" v-if="invoice.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            @click.prevent="anularDocument(invoice)"><i class="fas fa-trash"></i></button>
+                                                        </td>
+                                                    </tr>
 
-                            <th>Remitente</th>
-                            <th>Destinatario</th>
-                            <th>Fecha salida</th>
-                            <th>Hora salida</th>
-                            <th>Estado envio</th>
-                            <!-- <th>Categoría</th> -->
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="encomienda in listEncomiendas" :key="encomienda.id">
-                            <td class="text-right">{{ encomienda.id }}</td>
-                            <td>{{ encomienda.remitente.name }}</td>
-                            <td>{{ encomienda.destinatario.name }}</td>
-                            <td>{{ encomienda.fecha_salida }}</td>
-                            <td>{{ encomienda.programacion ? encomienda.programacion.hora_salida : 'Sin programación' }}</td>
-                            <td>{{ encomienda.estado_envio.nombre }}</td>
-                            <!-- <td>{{ item.categoria }}</td> -->
-                            <td class="text-center">
-                                <el-button type="success" @click="onEdit(encomienda)">
-                                    <i class="fa fa-edit"></i>
-                                </el-button>
-                                <el-button type="primary" @click="verComprobante(encomienda)">
-                                    <i class="fa fa-file-alt"></i>
-                                </el-button>
-                                <el-button type="danger" @click="onDelete(encomienda)">
-                                    <i class="fa fa-trash"></i>
-                                </el-button>
+                                                </tbody>
+                                                </template>
+                                                <template v-else>
+                                                    <tr>
+                                                        <td class="text-center" colspan="8">
+                                                        <el-alert
+                                                            center
+                                                            title="No hay manifiestos registrados"
+                                                            type="info"
+                                                            :closable="false">
+                                                            </el-alert>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
 
 
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                            </el-tab-pane>
+                            <el-tab-pane label="Notas de venta" name="notes">
+
+                                <div class="row">
+                                    <div class="col-md-12 d-flex justify-content-end">
+                                        <el-button type="primary" @click="onCreate(2)"> Nuevo </el-button>
+                                    </div>
+                                    <div v-loading="loadingNotes" class="col-md-12 mt-2">
+                                        <table class="table table-bordered table-striped">
+                                                <template v-if="listNotes.length > 0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Numero</th>
+                                                        <th>Remitente</th>
+                                                        <th>Destinatario</th>
+                                                        <th>Fecha salida</th>
+                                                        <th>Hora salida</th>
+                                                        <th>Estado envio</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(note, index) in listNotes" :key="note.id">
+                                                        <td class="text-right">{{ index+1 }}</td>
+                                                        <td>{{ note.sale_note ? note.sale_note.series + '-' + note.sale_note.number :'' }}</td>
+                                                        <td>{{ note.remitente.name }}</td>
+                                                        <td>{{ note.destinatario.name }}</td>
+                                                        <td>{{ note.fecha_salida }}</td>
+                                                        <td>{{ note.programacion ? note.programacion.hora_salida : 'Sin programación' }}</td>
+                                                        <td>{{ note.estado_envio.nombre }}</td>
+                                                        <td class="text-center">
+                                                            <el-button type="primary" @click="verNota(note)">
+                                                                <i class="fa fa-file-alt"></i>
+                                                            </el-button>
+                                                            <button data-toggle="tooltip" data-placement="top" title="Anular" v-if="note.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            @click.prevent="anularNota(note.id)"><i class="fas fa-trash"></i></button>
+
+
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                                </template>
+                                                <template v-else>
+                                                    <tr>
+                                                        <td class="text-center" colspan="8">
+                                                        <el-alert
+                                                            center
+                                                            title="No hay comprobantes registrados"
+                                                            type="info"
+                                                            :closable="false">
+                                                            </el-alert>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </el-tab-pane>
+                        </el-tabs>
                 </div>
             </div>
         </div>
@@ -93,12 +203,27 @@
         :showClose="true"
         :configuration="configuration"
         ></document-options>
+
+        <sale-note-options
+                    :showDialog.sync="showDialogSaleNoteOptions"
+                    :recordId="documentNewId"
+                    :showClose="true"
+                >
+        </sale-note-options>
+
+        <documents-voided 
+        :showDialog.sync="showDialogVoided"
+        :recordId="recordId">
+        </documents-voided>
+
     </div>
 </template>
 
 <script>
 import ModalAddEdit from "./AddEdit";
 import DocumentOptions from "@views/documents/partials/options.vue";
+import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
+import DocumentsVoided from '@views/documents/partials/voided.vue'
 
 export default {
     props: {
@@ -151,23 +276,35 @@ export default {
     },
     components: {
         ModalAddEdit,
-        DocumentOptions
+        DocumentOptions,
+        SaleNoteOptions,
+        DocumentsVoided
     },
     created(){
         this.getEncomiendas();
+        this.getEncomiendasNotes();
     },
     data() {
         return {
-            listEncomiendas: [],
+            listInvoices: [],
+            listNotes: [],
             openModalAddEdit: false,
             encomienda:null,
             loading: false,
             edit:false,
             documentNewId:null,
             showDialogDocumentOptions:false,
+            showDialogSaleNoteOptions: false,
+            showDialogVoided:false,
+            tab:'invoice',
+            loadingInvoices:false,
+            loadingNotes:false,
+            recordId:null,
+            encomiendaId:null,
         };
     },
     mounted() {
+        //silent
     },
     methods: {
 
@@ -180,9 +317,20 @@ export default {
             try{
                 this.loading = true;
                 const { data } = await this.$http.get('/transportes/encomiendas/get-encomiendas');
-                this.listEncomiendas = data;
+                this.listInvoices = data;
                 this.loading = false;
 
+            }catch(error){
+                this.loading = false;
+                if(error.response) this.axiosError(error);
+            }
+        },
+        async getEncomiendasNotes(){
+            try{
+                this.loading = true;
+                const { data } = await this.$http.get('/transportes/encomiendas/get-encomiendas-notes');
+                this.listNotes = data;
+                this.loading = false;
             }catch(error){
                 this.loading = false;
                 if(error.response) this.axiosError(error);
@@ -199,7 +347,7 @@ export default {
                         type: 'success',
                         message: response.data.message
                     });
-                    this.listEncomiendas = this.listEncomiendas.filter(i => i.id !== item.id);
+                    this.listInvoices = this.listInvoices.filter(i => i.id !== item.id);
                 }).catch(error => {
                     if(error.response){
                         this.axiosError(error)
@@ -215,20 +363,10 @@ export default {
         },
         onUpdateItem(encomienda) {
             this.getEncomiendas();
-            // // console.log(encomienda);
-            // this.items = this.listEncomiendas.map((i) => {
-            //     if (i.id === encomienda.id) {
-            //         return encomienda;
-            //     }
-            //     return i;
-            // });
-            // this.edit = false;
         },
         onAddItem(encomienda) {
             this.getEncomiendas();
             this.documentNewId = encomienda.document_id;
-            // this.showDialogDocumentOptions = true;
-            // this.listEncomiendas.unshift(encomienda);
         },
         onCreate() {
             this.edit = false;
@@ -238,7 +376,44 @@ export default {
         verComprobante(encomienda){
             this.documentNewId = encomienda.document_id;
             this.showDialogDocumentOptions = true;
-        }
+        },
+        verNota(encomienda){
+            this.documentNewId = encomienda.document_id;
+            this.showDialogSaleNoteOptions = true;
+        },
+        anularDocument(encomienda) {
+            this.recordId = encomienda.document_id;
+            this.showDialogVoided = true;   
+        },
+        anularNota(id) {
+             this.$confirm(`¿Estás seguro de anular este registro ?`, 'Atención', {
+                confirmButtonText: 'Si, continuar',
+                cancelButtonText: 'No, cerrar',
+                type: 'warning'
+            }).then(() => {
+
+                this.$http
+                .get(`/sale-notes/anulate/${id}`)
+                .then(response => {
+                    this.getEncomiendasNotes();
+                });
+                
+            });
+
+        },
+        tooltip(row, message = true) {
+                if (message) {
+                    if (row.shipping_status) return row.shipping_status.message;
+
+                    if (row.sunat_shipping_status) return row.sunat_shipping_status.message;
+
+                    if (row.query_status) return row.query_status.message;
+                }
+
+                if ((row.shipping_status) || (row.sunat_shipping_status) || (row.query_status)) return true;
+
+                return false;
+            },
     },
 };
 </script>

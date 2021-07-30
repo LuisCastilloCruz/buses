@@ -1,4 +1,5 @@
 <template>
+    <div>
     <el-dialog
         :title="title"
         :visible="visible"
@@ -30,6 +31,8 @@
                                             :value="option.id"
                                             :label="option.description"
                                         ></el-option>
+
+                                        <el-option key="nv" value="nv" label="NOTA DE VENTA"></el-option>
                                     </el-select>
                                 </div>
                             </div>
@@ -143,7 +146,7 @@
                     <div class="col-4">
                         <div class="form-group">
                             <label for="">Pago</label>
-                            <el-select v-model="encomienda.estado_pago_id"  popper-class="el-select-customers" :class="{'is-invalid':errors.estado_pago_id}" placeholder="Pago" >
+                            <el-select v-model="encomienda.estado_pago_id"  popper-class="el-select-customers" :class="{'is-invalid':errors.estado_pago_id}" placeholder="Pago">
                                 <el-option v-for="estadoPago in estadosPago" :key="estadoPago.id" :value="estadoPago.id" :label="`${estadoPago.nombre}`">
                                 </el-option>
                             </el-select>
@@ -203,8 +206,7 @@
                                     </div>
                                     <div class="col-3">
                                         <el-button :style="{marginTop:'1.82rem'}" :loading="loadingProducto" type="primary" @click="agregarProducto">Agregar</el-button>
-                                    </div>
-                                    
+                                    </div>                                 
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-12">
@@ -359,22 +361,12 @@
                         </el-collapse>
                     </div>
                 </div>
-
-                <document-options
-                    :showDialog.sync="showDialogDocumentOptions"
-                    :recordId="documentId"
-                    :isContingency="false"
-                    :showClose="true"
-                    :configuration="configuration"
-                ></document-options>
-
                 <person-form :showDialog.sync="showDialogNewPerson"
                 type="customers"
                 :external="true"
                 :buscar_destinatario="buscar_destinatario"
                 :input_person="input_person"
                 :document_type_id="document.document_type_id"></person-form>
-
                 <div class="row text-center mt-4">
                     <div class="col-6">
                         <el-button
@@ -401,12 +393,28 @@
             </div>
         </form>
     </el-dialog>
+    <sale-note-options
+                    :showDialog.sync="showDialogSaleNoteOptions"
+                    :recordId="documentId"
+                    :showClose="true"
+                >
+    </sale-note-options>
+    <document-options
+                    :showDialog.sync="showDialogDocumentOptions"
+                    :recordId="documentId"
+                    :isContingency="false"
+                    :showClose="true"
+                    :configuration="configuration"
+                >
+    </document-options>
+    </div>            
 </template>
 
 <script>
 import moment from "moment";
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 import DocumentOptions from "@views/documents/partials/options.vue";
+import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import PersonForm from "@views/persons/form2.vue";
 
 export default {
@@ -474,7 +482,8 @@ export default {
     },
     components:{
         DocumentOptions,
-        PersonForm
+        PersonForm,
+        SaleNoteOptions
     },
     mixins: [exchangeRate],
     data() {
@@ -498,6 +507,7 @@ export default {
             all_document_types: [],
             resource_documents: "documents",
             showDialogDocumentOptions: false,
+            showDialogSaleNoteOptions: false,
             documentNewId: null,
             form_cash_document: {},
             loadingRemitente:false,
@@ -541,7 +551,8 @@ export default {
             addNewItem:false,
             selectItem:null,
             tempRemitentes:[],
-            selva:null
+            selva:null,
+            is_document_type_invoice: true
         };
     },
     async mounted() {
@@ -641,6 +652,9 @@ export default {
         }
     },
     methods: {
+        modalNote(){
+            this.showDialogSaleNoteOptions= true
+        },
         modalPerson(buscar_destinatario){
             this.showDialogNewPerson=true;
             this.buscar_destinatario = buscar_destinatario
@@ -690,7 +704,23 @@ export default {
         this.document.date_of_due = this.document.date_of_issue;
         },
         changeDocumentType() {
-            this.filterSeries();
+            this.document.is_receivable = false;
+            this.series = [];
+            if (this.document.document_type_id !== "nv") {
+                this.filterSeries();
+                this.is_document_type_invoice = true;
+            } else {
+                this.series = _.filter(this.allSeries, {
+                    document_type_id: "80",
+                });
+                this.document.series_id =
+                    this.series.length > 0 ? this.series[0].id : null;
+
+                this.is_document_type_invoice = false;
+                this.encomienda.estado_pago_id=2;//2 = pago en destino
+                //this.controlPago();
+            }
+        
             this.cleanCustomer();
             this.filterCustomers();
         },
@@ -699,30 +729,21 @@ export default {
             this.pasajeros = []
         },
         clickAddPayment() {
-        const payment =
-            this.document.payments.length == 0 ? this.document.total : 0;
+            const payment =
+                this.document.payments.length == 0 ? this.document.total : 0;
 
-            this.payment = {
-                id: null,
-                document_id: null,
-                date_of_payment: moment().format("YYYY-MM-DD"),
-                payment_method_type_id: "01",
-                payment_destination_id: null,
-                reference: null,
-                payment: payment,
-            }
+                this.payment = {
+                    id: null,
+                    document_id: null,
+                    date_of_payment: moment().format("YYYY-MM-DD"),
+                    payment_method_type_id: "01",
+                    payment_destination_id: null,
+                    reference: null,
+                    payment: payment,
+                }
 
-            this.payment.payment_destination_id = this.paymentDestinations.length > 0 ? this.paymentDestinations[0].id : null;;
+                this.payment.payment_destination_id = this.paymentDestinations.length > 0 ? this.paymentDestinations[0].id : null;;
 
-            // this.document.payments.push({
-            //     id: null,
-            //     document_id: null,
-            //     date_of_payment: moment().format("YYYY-MM-DD"),
-            //     payment_method_type_id: "01",
-            //     payment_destination_id: null,
-            //     reference: null,
-            //     payment: payment,
-            // });
         },
         onExitPage() {
         window.location.href = "/hotels/reception";
@@ -836,7 +857,13 @@ export default {
                     .then( ({data}) => {
                         this.loading = false;
                         this.$emit('onAddItem',data.encomienda);
-                        this.$emit('onSuccessVenta',this.documentId);
+      
+                        if (this.document.document_type_id === "nv") {
+                            this.modalNote();
+                        } else {
+                            this.$emit('onSuccessVenta',this.documentId);
+                        }
+
                         this.$message({
                             type: 'success',
                             message: 'Encomienda registrada.'
@@ -919,6 +946,8 @@ export default {
                     // }
                     this.selectItem = null;
                 }
+
+               // this.controlPago();
             },
 
             eliminarProducto(index){
@@ -981,31 +1010,10 @@ export default {
                 
                 this.load = false;
 
-                
-                // this.all_document_types = this.documentTypesInvoice;
-                // this.total = this.room.item.total;
-                // this.document.items = this.rent.items.map((i) => i.item);
-
-                // this.onCalculatePaidAndDebts();
-
-
                 const date = moment().format("YYYY-MM-DD");
                 await this.searchExchangeRateByDate(date).then((res) => {
                     this.document.exchange_rate_sale = res;
                 });
-
-
-
-                
-                // if (this.chofer) {
-                //     this.form = this.chofer;
-                //     this.title = "Editar chofer";
-                // } else {
-                //     this.title = "Crear chofer";
-                //     this.form = {
-                //         active: true,
-                //     };
-                // }
             },
             onUpdateItemsWithExtras(){
                 this.document.items = this.document.items.map((it) => {
@@ -1037,17 +1045,44 @@ export default {
                 }
 
                 if(!this.isCashOpen) return this.$message.info('La caja no esta abierta');
-                
-                // return;
-                this.document.payments.push(this.payment);
+
+                if(!this.encomienda.destino_id) return this.$message.info('Seleccione un destino de la encomienda');
+
+                if(this.document.items.length <= 0) return this.$message.info('Agregue detalles a su encomienda');
+
+                if(this.encomienda.estado_pago_id==1){//pagado
+                    this.document.payments.push(this.payment);
+                }
+                else{
+                    this.document.payments=[];
+                }
+                console.log(this.document.payments);
+                //if(1==1) return this.$message.info('prueba');
                 this.loading = true;
+
+                if (this.document.document_type_id === "nv") {
+                this.document.prefix = "NV";
+                this.resource_documents = "sale-notes";
+                } else {
+                    this.document.prefix = null;
+                    this.resource_documents = "documents";
+                }
+
                 this.$http
                     .post(`/${this.resource_documents}`, this.document)
                     .then(async (response) => {
                         if (response.data.success) {
                             this.documentId = response.data.data.id;
                             this.encomienda.document_id = response.data.data.id;
-                            this.form_cash_document.document_id = response.data.data.id;
+
+                            if (this.document.document_type_id === "nv"){
+                                this.form_cash_document.sale_note_id = response.data.data.id;
+                            }
+                            else{
+                                this.form_cash_document.document_id = response.data.data.id;
+                            }
+                            
+
                             this.$emit("update:showDialog", false);
                             await this.onStore();// guardando encomienda
                             await this.saveCashDocument();
@@ -1143,6 +1178,7 @@ export default {
                         stock_min:1,
                         unit_price: "0", //cambiado
                         unit_type_id: "ZZ",
+                        is_set: false
                     },
                     item_id: 1,
                     percentage_igv: 18,
@@ -1217,6 +1253,7 @@ export default {
                         stock_min:1,
                         unit_price: 0, //cambiado
                         unit_type_id: "ZZ",
+                        is_set: false
                     },
                     item_id: null,
                     percentage_igv: 18,
@@ -1428,7 +1465,15 @@ export default {
                  else{
                      this.initProducto();
                  }
-            }
+            },
+            /* controlPago(){
+                if (this.encomienda.estado_pago_id === 1) {//pagado
+                    this.payment.payment = parseFloat(this.total);
+                }
+                else if (this.encomienda.estado_pago_id === 2) {//pago en destino
+                    this.payments= [];
+                }
+            } */
         },
 };
 </script>

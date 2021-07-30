@@ -54,6 +54,7 @@
                                 <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownload(row.id)">PDF A4</a>
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket')">PDF Ticket</a>
+                                    <a v-if="pathname=='/transportes/cash'" class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportDestino(row.id, 'ticket')">Encomiendas pago en destino</a>
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'excel')">Excel</a>
                                     <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a> -->
                                 </div>
@@ -105,7 +106,7 @@
     export default {
         mixins: [deletable],
         components: { DataTable, CashForm, CashOptions},
-        props: ['typeUser'],
+        props: ['typeUser','modules'],
         data() {
             return {
                 showDialog: false,
@@ -114,6 +115,7 @@
                 resource: 'cash',
                 recordId: null,
                 cash:null,
+                pathname:null
             }
         },
         async created() {
@@ -128,6 +130,7 @@
                 this.open_cash = false
             })*/
 
+            this.pathname = window.location.pathname;
         },
         methods: {
             clickOptions(recordId){
@@ -136,6 +139,9 @@
             },
             clickDownloadReport(id, template){
                 window.open(`/${this.resource}/report-${template}/${id}`, '_blank');
+            },
+            clickDownloadReportDestino(id){
+                window.open(`/transportes/cash/report/porpagar/${id}`, '_blank');
             },
             clickDownload(id) {
                 window.open(`/${this.resource}/report/${id}`, '_blank');

@@ -5,6 +5,7 @@ namespace Modules\Transporte\Models;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\SaleNote;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransporteEncomienda extends ModelTenant
@@ -38,13 +39,9 @@ class TransporteEncomienda extends ModelTenant
     public function document() : BelongsTo{
         return $this->belongsTo(Document::class,'document_id','id');
     }
-
-    // public function getFechaSalidaAttribute($value){
-
-    //     setlocale(LC_TIME, 'es');
-    //     $date = \Carbon\Carbon::parse($value);
-    //     return $date->formatLocalized('%d de %B %Y');
-    // }
+    public function saleNote() : BelongsTo{
+        return $this->belongsTo(SaleNote::class,'document_id','id');
+    }
 
     public function estadoPago() : BelongsTo{
         return $this->belongsTo(TransporteEstadoPagoEncomienda::class,'estado_pago_id','id');

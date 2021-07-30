@@ -38,6 +38,7 @@ if ($hostname) {
                 // Encomiendas
                 Route::get('encomiendas', 'TransporteEncomiendaController@index');
 				Route::get('encomiendas/get-encomiendas', 'TransporteEncomiendaController@getEncomiendas');
+				Route::get('encomiendas/get-encomiendas-notes', 'TransporteEncomiendaController@getEncomiendasNotes');
 				Route::post('encomiendas/store', 'TransporteEncomiendaController@store');
 				Route::get('encomiendas/get-clientes','TransporteEncomiendaController@getClientes');
 				Route::get('encomiendas/get-terminales','TransporteEncomiendaController@getTerminales');
