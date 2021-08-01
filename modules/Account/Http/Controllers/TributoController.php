@@ -32,37 +32,39 @@ class TributoController extends Controller
         $year   = $request->input('year');
 
         //obtengo todos los meses de ese año
-        $meses = $this->getMonths($year);
+        //$meses = $this->getMonths($year);
+        $meses= array('01','02','03','04','05','06','07','08','09','10','11','12');
+        //return $meses;
         $table = collect([]);
         //itero por cada mes para ir sacando las sumatorias
         foreach($meses as $mes){
 
             $ventasNetas = Document::query()
-            ->whereMonth('date_of_issue',$mes->month)
+            ->whereMonth('date_of_issue',$mes)
             ->whereYear('date_of_issue',$year)
             ->sum('total_taxed');
 
             $comprasNetas = Purchase::query()
-            ->whereMonth('date_of_issue',$mes->month)
-            ->whereYear('date_of_issue',$year)
+            ->whereMonth('date_periodo',$mes)
+            ->whereYear('date_periodo',$year)
             ->sum('total_taxed');
 
-            $debitoFiscal = $ventasNetas * self::IGV;
-            $creditoFiscal = $comprasNetas * self::IGV;
+            $debitoFiscal = round($ventasNetas * self::IGV,2);
+            $creditoFiscal = round($comprasNetas * self::IGV,2);
 
-            $igvPorPagar = $debitoFiscal - $creditoFiscal;
+            $igvPorPagar = round($debitoFiscal - $creditoFiscal,2);
 
             $baseImponible = Document::query()
-            ->whereMonth('date_of_issue',$mes->month)
+            ->whereMonth('date_of_issue',$mes)
             ->whereYear('date_of_issue',$year)
             ->sum('total_igv');
 
             $coeficiente = 0.015;
 
-            $rentaPorPagar = $baseImponible * $coeficiente;
+            $rentaPorPagar = round($baseImponible * $coeficiente,2);
 
             $table->push([
-                'periodo' => $mes->date_of_issue->format('Y-m-d'),
+                'periodo' =>  $mes.'- '.$year,
                 'ventas_netas' => $ventasNetas,
                 'compras_netas' => $comprasNetas,
                 'debito_fiscal' => $debitoFiscal,
@@ -81,14 +83,15 @@ class TributoController extends Controller
     }
 
     private function getMonths($year){
-        //lo uso porque da un error al momento de hacer un group by con varios campos
+        /* //lo uso porque da un error al momento de hacer un group by con varios campos
         DB::connection('tenant')->statement("SET sql_mode = '' ");
         //obtengo los meses y los orderno y agrupo por mes 
         return Document::select(DB::raw('MONTH(date_of_issue) as month'),'date_of_issue')
         ->whereYear('date_of_issue',$year)
         ->groupBy('month')
         ->orderBy('month')
-        ->get();
+        ->get(); */
+        
     }
 
     private function getDocuments($year)

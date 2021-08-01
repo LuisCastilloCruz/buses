@@ -50,8 +50,8 @@
                                         <th width="150" class="text-center" rowspan="2">COMPRAS NETAS</th>
                                         <th width="150" class="text-center" colspan="3">IGV</th>
                                         <th width="150" class="text-center" colspan="3">RENTA</th>
-                                        <th width="150" class="text-center" colspan="3">PERCEPCIÓN EN EL PERIODO</th>
-                                        <th width="150" class="text-center" colspan="3">RETENCIÓN EN EL PERIODO</th>
+                                        <!-- <th width="150" class="text-center" colspan="3">PERCEPCIÓN EN EL PERIODO</th>
+                                        <th width="150" class="text-center" colspan="3">RETENCIÓN EN EL PERIODO</th> -->
                                     </tr>
                                     <tr>
                                         <td width="150" class="text-center">Débito fiscal</td>
