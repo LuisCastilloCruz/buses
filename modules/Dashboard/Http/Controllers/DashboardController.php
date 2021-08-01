@@ -27,7 +27,7 @@ class DashboardController extends Controller
 
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
-
+        //smilify('success', 'You are successfully reconnected'); 
         return view('dashboard::index', compact('soap_company'));
     }
 

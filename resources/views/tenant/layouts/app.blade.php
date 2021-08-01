@@ -68,13 +68,13 @@
     {{-- @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
     @endif --}}
+    @notifyCss
 
 
     @stack('styles')
 
 
     <script src="{{ asset('porto-light/vendor/modernizr/modernizr.js') }}"></script>
-
     <style>
         .descarga {
             color:black;
@@ -201,6 +201,7 @@
     </script>
     <script defer src="{{ asset(mix('js/app.js')) }}"></script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
+        
     @yield('js')   
 
 </body>

@@ -13,6 +13,10 @@
         </div>
     </div>
     <div class="header-right">
+    @include('notify::messages')
+    @notifyJs
+
+
         <a href="https://youtube.com/playlist?list=PLRfWQIWTl4WQnUwpMDBs8iAlcti3s_UNY" target="_blank">
             <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="Video Tutoriales en Youtube">
                 <img src="{{asset("/logo/youtube.png")}}" alt="">
