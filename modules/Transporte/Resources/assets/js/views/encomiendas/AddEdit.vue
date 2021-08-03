@@ -365,6 +365,7 @@
                 type="customers"
                 :external="true"
                 :buscar_destinatario="buscar_destinatario"
+                 :buscar_pasajero="buscar_pasajero"
                 :input_person="input_person"
                 :document_type_id="document.document_type_id"></person-form>
                 <div class="row text-center mt-4">
@@ -500,6 +501,7 @@ export default {
             response: {},
             documentId:null,
             buscar_destinatario:false,
+            buscar_pasajero:false,
             document: {
                 payments: [],
             },
