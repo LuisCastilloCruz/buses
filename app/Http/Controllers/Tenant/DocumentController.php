@@ -82,6 +82,12 @@ class DocumentController extends Controller
         $import_documents_second = config('tenant.import_documents_second_format');
         $configuration = Configuration::first();
 
+        $pendientes = Document::where('state_type_id','01')
+            ->get();
+
+        if(count($pendientes)>0){
+            smilify('error', "Por favor valide sus comprobantes:==================== 1.- Dentro del botón OPCIONES, dar click en el botón CONSULTAR CDR.========  2.- Si aparece el mensaje ticket no existe o server error, debe utilizar el botón REENVIAR.======================  3.- Si después de hacer todas las acciones anteriores, aún hay comprobantes pendientes, comunicarse con 950360472");
+        }
         return view('tenant.documents.index', compact('is_client','import_documents','import_documents_second','configuration'));
     }
 
