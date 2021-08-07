@@ -290,14 +290,15 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
-                                if(response.data.message.substring(0,53)==="Solo puede enviar el comprobante en un resumen diario"){
-
-                                    var data=window.location.origin;
-                                    window.location.href=data+"/summaries";
-                                }
-                                else{
-                                    this.$eventHub.$emit('reloadData')
-                                }
+                                // if(response.data.message.substring(0,53)==="Solo puede enviar el comprobante en un resumen diario"){
+                                //
+                                //     var data=window.location.origin;
+                                //     window.location.href=data+"/summaries";
+                                // }
+                                // else{
+                                //     this.$eventHub.$emit('reloadData')
+                                // }
+                            this.$eventHub.$emit('reloadData')
                         } else {
                             this.$message.error(response.data.message)
                         }
