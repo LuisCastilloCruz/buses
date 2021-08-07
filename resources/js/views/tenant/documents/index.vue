@@ -290,7 +290,14 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
-                            this.$eventHub.$emit('reloadData')
+                                if(response.data.message.substring(53)==="Solo puede enviar el comprobante en un resumen diario"){
+
+                                    var data=window.location.href;
+                                    window.location.href=data+"/summaries";
+                                }
+                                else{
+                                    this.$eventHub.$emit('reloadData')
+                                }
                         } else {
                             this.$message.error(response.data.message)
                         }
