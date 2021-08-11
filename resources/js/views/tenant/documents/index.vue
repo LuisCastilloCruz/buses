@@ -369,9 +369,22 @@ export default {
         clickDownload(download) {
             window.open(download, '_blank');
         },
-        clickResend(document_id) {
-            this.$http.get(`/${this.resource}/send/${document_id}`)
-                .then(response => {
+            clickResend(document_id) {
+                this.$http.get(`/${this.resource}/send/${document_id}`)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit('reloadData')
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        this.$message.error(error.response.data.message)
+                    })
+            },
+            clickSendOnline(document_id) {
+                this.$http.get(`/${this.resource}/send_server/${document_id}/1`).then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         this.$eventHub.$emit('reloadData')
