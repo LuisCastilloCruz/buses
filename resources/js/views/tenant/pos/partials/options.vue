@@ -60,9 +60,9 @@
                         </el-input>
                     </div>
 
-                    <div class="col-md-6 mt-2">
+                    <div class="col-md-6 mt-4">
                     </div>
-                    <div class="col-md-6 mt-2">
+                    <div class="col-md-6 mt-4">
                         <el-button  type="primary"  class="float-right" @click="clickNewSale">Nueva venta</el-button>
                     </div>
                 </div>

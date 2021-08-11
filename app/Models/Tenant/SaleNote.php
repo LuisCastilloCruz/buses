@@ -3,8 +3,15 @@
 namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
+use Carbon\Carbon;
 use Modules\Transporte\Models\TransporteEncomienda;
 
+/**
+ * Class SaleNote
+ *
+ * @package App\Models\Tenant
+ * @mixin \App\Models\Tenant\ModelTenant
+ */
 class SaleNote extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'];
@@ -66,12 +73,43 @@ class SaleNote extends ModelTenant
         'observation',
         'reference_data',
         'plate_number',
-    ];
+        'purchase_order',
+        'due_date',
+        'total_plastic_bag_taxes',
+        'additional_information',
+        'document_id',
+        'seller_id',
+];
 
     protected $casts = [
         'date_of_issue' => 'date',
         'automatic_date_of_issue' => 'date',
+        'due_date' => 'date',
     ];
+
+    /**
+     * Obtiene la fecha de vencimiento
+     *
+     * @return mixed
+     */
+    public function getDueDate()
+    {
+        return $this->due_date;
+    }
+
+    /**
+     * Establece la fecha de vencimiento
+     *
+     * @param mixed $due_date
+     *
+     * @return SaleNote
+     */
+    public function setDueDate($due_date)
+    {
+        $this->due_date = $due_date;
+        return $this;
+    }
+
 
     public function getEstablishmentAttribute($value)
     {
@@ -232,6 +270,14 @@ class SaleNote extends ModelTenant
     {
         return $this->hasMany(Document::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function seller()
+    {
+        return $this->belongsTo(User::class);
+    }
     public function transporte_encomienda(){
         return $this->hasOne(TransporteEncomienda::class,'document_id','id');
     }
@@ -279,4 +325,145 @@ class SaleNote extends ModelTenant
         return $this->belongsTo(PaymentMethodType::class);
     }
 
+    /**
+     * Busca el ultimo numero basado en series y el prefijo.
+     *
+     * @param \App\Models\Tenant\SaleNote $model
+     *
+     * @return int
+     */
+    public static function getLastNumberByModel(SaleNote $model) {
+        $sn = SaleNote::where(
+            [
+                'series' => $model->series,
+                'prefix' => $model->prefix,
+                // 'number',
+            ])
+                      ->select('number')
+                      ->orderBy('number', 'desc')
+                      ->first();
+        $return = 0;
+        if (!empty($sn)) {
+            $return += $sn->number;
+        }
+        return $return + 1;
+    }
+
+    public static function FormatNumber($number,$decimal = 2){
+        return number_format($number,$decimal);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCollectionData(){
+        $total_paid = number_format($this->payments->sum('payment'), 2, '.', '');
+        $total_pending_paid = number_format($this->total - $total_paid, 2, '.', '');
+        $document_id = $this->document_id;
+        // Normalmente, un documento tendrá el id de la NV,
+        // cuando se hace un CPE a partir de varias NV,
+        // se guarda el id del documento en el NV
+        /** @var \Illuminate\Database\Eloquent\Collection $documents */
+        $documents = $this->documents;
+        if(!empty($document_id) && $documents->count() < 1){
+            $documents = Document::where('id',$document_id)->get();
+        }
+        $total_documents = $documents->count();
+
+        $btn_generate = ($total_documents > 0) ? false : true;
+        $btn_payments = ($total_documents > 0) ? false : true;
+        $due_date = (!empty($this->due_date)) ? $this->due_date->format('Y-m-d') : null;
+
+        $this->seller_id = $this->user_id;
+        $this->payments = $this->getTransformPayments();
+        $message_text = '';
+        if(!empty($this->number_full) && !empty($this->external_id)){
+            $message_text = "Su comprobante de nota de venta {$this->number_full} ha sido generado correctamente, puede revisarlo en el siguiente enlace: ".
+                url('')."/sale-notes/print/{$this->external_id}/a4".'';
+        }
+
+        return [
+            'id'                           => $this->id,
+            'soap_type_id'                 => $this->soap_type_id,
+            'external_id'                  => $this->external_id,
+            'date_of_issue'                => $this->date_of_issue->format('Y-m-d'),
+            'identifier'                   => $this->identifier,
+            'full_number'                  => $this->series.'-'.$this->number,
+            'customer_name'                => $this->customer->name,
+            'customer_number'              => $this->customer->number,
+            'currency_type_id'             => $this->currency_type_id,
+            'total_exportation'            => self::FormatNumber($this->total_exportation),
+            'total_free'                   => self::FormatNumber($this->total_free),
+            'total_unaffected'             => self::FormatNumber($this->total_unaffected),
+            'total_exonerated'             => self::FormatNumber($this->total_exonerated),
+            'total_taxed'                  => self::FormatNumber($this->total_taxed),
+            'total_igv'                    => self::FormatNumber($this->total_igv),
+            'total'                        => self::FormatNumber($this->total),
+            'state_type_id'                => $this->state_type_id,
+            'state_type_description'       => $this->state_type->description,
+            'document_id'=>$this->document_id,
+            'documents'                    => $documents->transform(function ($row) {
+                /** @var \App\Models\Tenant\Document $row */
+                return [
+                    'id'          => $row->id,
+                    'number_full' => $row->number_full,
+                ];
+            }),
+            'btn_generate'                 => $btn_generate,
+            'btn_payments'                 => $btn_payments,
+            'changed'                      => (boolean)$this->changed,
+            'enabled_concurrency'          => (boolean)$this->enabled_concurrency,
+            'quantity_period'              => $this->quantity_period,
+            'type_period'                  => $this->type_period,
+            'apply_concurrency'            => (boolean)$this->apply_concurrency,
+            'created_at'                   => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at'                   => $this->updated_at->format('Y-m-d H:i:s'),
+            'paid'                         => (bool)$this->paid,
+            'total_canceled'               => (bool)$this->total_canceled,
+            'license_plate'                => $this->license_plate,
+            'total_paid'                   => $total_paid,
+            'total_pending_paid'           => $total_pending_paid,
+            'user_name'                    => ($this->user) ? $this->user->name : '',
+            'quotation_number_full'        => ($this->quotation) ? $this->quotation->number_full : '',
+            'sale_opportunity_number_full' => isset($this->quotation->sale_opportunity)
+                ? $this->quotation->sale_opportunity->number_full : '',
+            'number_full'                  => $this->number_full,
+            'print_a4'                     => url('')."/sale-notes/print/{$this->external_id}/a4",
+            'print_ticket' => url('')."/sale-notes/print/{$this->external_id}/ticket",
+            'print_a5' => url('')."/sale-notes/print/{$this->external_id}/a5",
+            'print_ticket_58' => url('')."/sale-notes/print/{$this->external_id}/ticket_58",
+            'purchase_order'               => $this->purchase_order,
+            'due_date'                     => $due_date,
+            'sale_note' => $this,
+            'seller_id' => $this->seller_id,
+            'message_text' => $message_text,
+            'serie' => $this->series,
+            'number' => $this->number_full,
+            // 'number' => $this->number,
+        ];
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getTransformPayments(){
+
+        $payments =$this->payments()->get();
+        return $payments->transform(function($row, $key){
+            /** @var SaleNotePayment $row */
+            return [
+                'id' => $row->id,
+                'sale_note_id' => $row->sale_note_id,
+                'date_of_payment' => $row->date_of_payment->format('Y-m-d'),
+                'payment_method_type_id' => $row->payment_method_type_id,
+                'has_card' => $row->has_card,
+                'card_brand_id' => $row->card_brand_id,
+                'reference' => $row->reference,
+                'payment' => $row->payment,
+                'payment_method_type' => $row->payment_method_type,
+                'payment_destination_id' => ($row->global_payment) ? ($row->global_payment->type_record == 'cash' ? 'cash':$row->global_payment->destination_id):null,
+                'payment_filename' => ($row->payment_file) ? $row->payment_file->filename:null,
+            ];
+        });
+    }
 }

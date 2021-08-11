@@ -16,7 +16,7 @@ class DownloadController extends Controller
     public function downloadExternal($model, $type, $external_id, $format = null) {
         $model = "App\\Models\\Tenant\\".ucfirst($model);
         $document = $model::where('external_id', $external_id)->first();
-        
+
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
         if ($format != null) $this->reloadPDF($document, 'invoice', $format);
@@ -57,13 +57,24 @@ class DownloadController extends Controller
         return $this->downloadStorage($document->filename, $folder);
     }
 
+    /**
+     * @param      $model
+     * @param      $external_id
+     * @param null $format
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Exception
+     */
     public function toPrint($model, $external_id, $format = null) {
+        $document_type = $model;
         $model = "App\\Models\\Tenant\\".ucfirst($model);
         $document = $model::where('external_id', $external_id)->first();
 
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
         if ($format != null) $this->reloadPDF($document, 'invoice', $format);
+        if ($document_type == 'dispatch') $this->reloadPDF($document, 'dispatch', 'a4');
+
 
         $temp = tempnam(sys_get_temp_dir(), 'pdf');
         file_put_contents($temp, $this->getStorage($document->filename, 'pdf'));

@@ -1,24 +1,47 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" @close="close">
+    <el-dialog :title="titleDialog" :visible="showDialog" @close="close">
+        <Keypress
+            key-event="keyup"
+            :key-code="112"
+            @success="handleFn112"
+        />
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
+                    <div class="col-md-12">
+                        <h2>
+                            <el-switch
+                                v-model="search_item_by_barcode"
+                                active-text="Buscar con escaner de código de barras"
+                                @change="changeSearchItemBarcode"
+                            ></el-switch>
+                        </h2>
+                    </div>
+
                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.item_id}">
+                        <div :class="{'has-danger': errors.item_id}" class="form-group">
                             <label class="control-label">
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select v-model="form.item_id" @change="changeItem"
-                                filterable
-                                placeholder="Buscar"
-                                remote
-                                :remote-method="searchRemoteItems"
-                                :loading="loading_search"
+                            <el-select v-show="!search_item_by_barcode"
+                                       v-model="form.item_id"
+                                       :remote-method="searchRemoteItems"
+                                       filterable
+                                       placeholder="Buscar"
+                                       remote
+                                       @change="changeItem"
+                                       :loading="loading_search"
                             >
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select>
-                            <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
+                            <el-input v-show="search_item_by_barcode"
+                                      placeholder="Buscar"
+                                      @change="searchBarCode"
+                                      v-model="form.barcode" :loading="loading_search"
+                            ></el-input>
+                            <small v-if="errors.item_id" class="form-control-feedback"
+                                   v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -51,8 +74,17 @@
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
+                        <el-checkbox v-model="form.update_purchase_price">Actualizar precio de compra</el-checkbox>
+                        <el-checkbox v-model="form.update_price">Editar precio de venta</el-checkbox>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-2" v-if="form.update_price">
+                        <div class="form-group" :class="{'has-danger': errors.unit_price}">
+                            <label class="control-label">Precio de venta</label>
+                            <el-input v-model="sale_unit_price"></el-input>
+                            <small class="form-control-feedback" v-if="errors.sale_unit_price" v-text="errors.sale_unit_price[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">Almacén de destino</label>
                             <el-select v-model="form.warehouse_id"   filterable  >
@@ -91,7 +123,9 @@
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
+                    <div class="col-md-12"
+                         v-if="form.item_unit_types !== undefined && form.item_unit_types.length > 0"
+                    >
                         <div style="margin:3px" class="table-responsive">
                             <h5 class="separator-title">
                                 Listado de Precios
@@ -110,20 +144,16 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(row, index) in form.item_unit_types">
-
+                                <tr v-for="(row, index) in form.item_unit_types" :key="index">
                                     <td class="text-center">{{row.unit_type_id}}</td>
                                     <td class="text-center">{{row.description}}</td>
                                     <td class="text-center">{{row.quantity_unit}}</td>
-
                                     <td class="series-table-actions text-right">
                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="selectedPrice(row)">
                                             <i class="el-icon-check"></i>
                                         </button>
                                     </td>
-
-
-                            </tr>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -276,14 +306,16 @@
 
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
-    // import LotsForm from '../../items/partials/lots.vue'
     import LotsForm from '@components/incomeLots.vue'
+    import Keypress from "vue-keypress";
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-        components: {itemForm, LotsForm},
+        components: {itemForm, LotsForm, Keypress},
         data() {
             return {
+                search_item_by_barcode:false,
+                sale_unit_price: 0,
                 loading_search:false,
                 titleDialog: 'Agregar Producto o Servicio',
                 showDialogLots:false,
@@ -292,6 +324,7 @@
                 errors: {},
                 form: {},
                 items: [],
+                all_items: [],
                 warehouses: [],
                 lots: [],
                 affectation_igv_types: [],
@@ -308,7 +341,6 @@
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                 this.all_items = response.data.items
-                // this.items = response.data.items
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
                 this.discount_types = response.data.discount_types
@@ -316,7 +348,6 @@
                 this.attribute_types = response.data.attribute_types
                 this.warehouses = response.data.warehouses
                 this.initFilterItems()
-                // this.filterItems()
             })
 
             this.$eventHub.$on('reloadDataItems', (item_id) => {
@@ -324,6 +355,32 @@
             })
         },
         methods: {
+            handleFn112(response) {
+                this.search_item_by_barcode = !this.search_item_by_barcode;
+            },
+            searchBarCode(input) {
+                this.loading_search = true
+                let parameters = `barcode=${input}`
+                this.$http.get(`/${this.resource}/search-items/?${parameters}`)
+                    .then(response => {
+                        let items = response.data.items
+                        this.items = items
+                        this.loading_search = false
+                        if (items === undefined || items.length == 0) {
+                            this.initFilterItems()
+                        } else if (this.items.length > 2) {
+                            // varios items
+                        } else {
+                            if (items.length == 1) {
+                                this.form.item_id = items[0].id
+                                this.items = response.data.items
+                                this.form.item = items[0]
+                                this.form.item_id = items[0].id
+                                this.changeItemAlt();
+                            }
+                        }
+                    })
+            },
             async searchRemoteItems(input) {
 
                 if (input.length > 2) {
@@ -332,15 +389,14 @@
                     let parameters = `input=${input}`
 
                     await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
-                            .then(response => {
-                                // console.log(response)
-                                this.items = response.data.items
-                                this.loading_search = false
+                        .then(response => {
+                            this.items = response.data.items
+                            this.loading_search = false
 
-                                if(this.items.length == 0){
-                                    this.initFilterItems()
-                                }
-                            })
+                            if (this.items.length == 0) {
+                                this.initFilterItems()
+                            }
+                        })
                 } else {
                     await this.initFilterItems()
                 }
@@ -353,18 +409,17 @@
                 this.lots = lots
             },
             clickLotcode(){
-                // if(this.form.stock <= 0)
-                //     return this.$message.error('El stock debe ser mayor a 0')
-
                 this.showDialogLots = true
             },
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
+                // this.items = this.items.filter(item => (item.warehouses!== undefined && item.warehouses.length >0))
             },
             initForm() {
                 this.errors = {}
                 this.form = {
                     item_id: null,
+                    barcode: null,
                     warehouse_id: 1,
                     warehouse_description: null,
                     item: {},
@@ -383,18 +438,13 @@
                     lot_code:null,
                     date_of_due: null,
                     purchase_has_igv: null,
-
+                    update_price: false,
+                    update_purchase_price: true,
                 }
 
                 this.item_unit_type = {};
                 this.lots = []
                 this.lot_code = null
-            },
-            // initializeFields() {
-            //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
-            // },
-            create() {
-            //     this.initializeFields()
             },
             clickAddDiscount() {
                 this.form.discounts.push({
@@ -454,39 +504,44 @@
                 this.initForm()
                 this.$emit('update:showDialog', false)
             },
-            selectedPrice(row)
-            {
-
+            selectedPrice(row) {
                 this.form.item_unit_type_id = row.id
                 this.item_unit_type = row
-
-               // this.form.unit_price = valor
                 this.form.item.unit_type_id = row.unit_type_id
             },
             changeItem() {
-                this.form.item = _.find(this.items, {'id': this.form.item_id})
+                const item = {..._.find(this.items, {'id': this.form.item_id})};
+                this.form.item = item;
+                const saleUnitPrice = item.sale_unit_price;
+                this.sale_unit_price = parseFloat(saleUnitPrice).toFixed(2);
                 this.form.unit_price = this.form.item.purchase_unit_price
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
-
-                //this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+                this.form.purchase_has_igv = this.form.item.purchase_has_igv;
 
             },
+
+            changeItemAlt() {
+                let item = _.find(this.items, {'id': this.form.item_id});
+                this.form.item = item;
+                let saleUnitPrice = item.sale_unit_price;
+                this.sale_unit_price = parseFloat(saleUnitPrice).toFixed(2);
+                this.form.unit_price = this.form.item.purchase_unit_price
+                this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
+                this.form.item_unit_types = item.item_unit_types
+                this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+                this.search_item_by_barcode = 0;
+            },
             async clickAddItem() {
-
                 if(this.form.item.lots_enabled){
-
                     if(!this.lot_code)
                         return this.$message.error('Código de lote es requerido');
 
                     if(!this.form.date_of_due)
                         return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
-
                 }
 
-                if(this.form.item.series_enabled)
-                {
-
+                if(this.form.item.series_enabled) {
                     if(this.lots.length > this.form.quantity)
                         return this.$message.error('La cantidad de series registradas es superior al stock');
 
@@ -509,19 +564,19 @@
                 this.form.item.unit_price = unit_price
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
-
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
-
                 this.row.lot_code = await this.lot_code
                 this.row.lots = await this.lots
+                this.row.update_price = this.form.update_price
+                this.row.update_purchase_price = this.form.update_purchase_price
+                this.row.sale_unit_price = this.sale_unit_price
 
                 this.row = this.changeWarehouse(this.row)
 
                 this.row.date_of_due = date_of_due
-                // console.log(this.row)
 
                 this.initForm()
-                // this.initializeFields()
+
                 this.$emit('add', this.row)
             },
             changeWarehouse(row){
@@ -550,6 +605,25 @@
                     })
                 }
 
+            },
+            enabledSearchItemsBarcode() {
+                if (this.search_item_by_barcode) {
+                    if (this.items.length == 1) {
+                        this.clickAddItem(this.items[0], 0);
+                        this.filterItems();
+                    }
+
+                    this.cleanInput();
+                }
+            },
+            changeSearchItemBarcode() {
+                this.cleanInput();
+                if(!this.search_item_by_barcode){
+                    this.initFilterItems()
+                }
+            },
+            cleanInput() {
+                this.input_item = null;
             },
         }
     }

@@ -3,9 +3,10 @@
 namespace Modules\Inventory\Providers;
 
 use Modules\Order\Models\OrderNote;
-use App\Models\Tenant\Document;  
+use App\Models\Tenant\Document;
 use Illuminate\Support\ServiceProvider;
 use Modules\Inventory\Traits\InventoryTrait;
+use App\Models\Tenant\Dispatch;
 
 class InventoryVoidedServiceProvider extends ServiceProvider
 {
@@ -14,11 +15,12 @@ class InventoryVoidedServiceProvider extends ServiceProvider
     public function register()
     {
     }
-    
+
     public function boot()
     {
         $this->voided();
         $this->voided_order_note();
+        $this->voided_dispatch();
     }
 
     private function voided()
@@ -31,37 +33,51 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                     foreach ($document['items'] as $detail) {
                         // dd($detail['item']->presentation);
-                        
+
                         if(!$detail->item->is_set){
 
                             $presentationQuantity = (!empty($detail['item']->presentation)) ? $detail['item']->presentation->quantity_unit : 1;
 
                             $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
-                            if(!$detail->document->sale_note_id && !$detail->document->order_note_id) $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+
+                            if(!$detail->document->sale_note_id && !$detail->document->order_note_id && !$detail->document->dispatch_id){
+
+                                $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+
+                            }else{
+
+                                if($detail->document->dispatch){
+
+                                    if(!$detail->document->dispatch->transfer_reason_type->discount_stock){
+                                        $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+                                    }
+                                }
+                            }
+
                             $this->updateDataLots($detail);
 
                         }
                         else{
-                            
+
                             $this->voidedDocumentItemSet($detail);
-            
+
                         }
-                        
+
                     }
 
                     $this->voidedWasDeductedPrepayment($document);
 
                 }
-            }         
+            }
         });
     }
 
-    
+
     private function voidedWasDeductedPrepayment($document)
     {
 
         if($document->prepayments){
-            
+
             foreach ($document->prepayments as $row) {
                 $fullnumber = explode('-', $row->number);
                 $series = $fullnumber[0];
@@ -75,7 +91,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                 }
             }
         }
-        
+
     }
 
     private function voided_order_note(){
@@ -100,5 +116,34 @@ class InventoryVoidedServiceProvider extends ServiceProvider
         });
 
     }
+
+
+
+    private function voided_dispatch()
+    {
+        Dispatch::updated(function ($dispatch) {
+
+            // dd($dispatch, $dispatch['state_type_id'],$dispatch->state_type_id);
+            if($dispatch->transfer_reason_type->discount_stock){
+
+                if(in_array($dispatch->state_type_id, [ '09', '11' ], true)){
+
+                    $warehouse = $this->findWarehouse($dispatch->establishment_id);
+
+                    foreach ($dispatch->items as $detail) {
+
+                        $this->createInventoryKardex($dispatch, $detail->item_id, $detail->quantity, $warehouse->id);
+
+                        if(!$detail->dispatch->reference_sale_note_id && !$detail->dispatch->reference_order_note_id && !$detail->dispatch->reference_document_id){
+                            $this->updateStock($detail->item_id, $detail->quantity, $warehouse->id);
+                        }
+
+                        $this->updateDataLots($detail);
+                    }
+                }
+            }
+        });
+    }
+
 
 }

@@ -93,11 +93,29 @@
                                     <div class="sub-title text-danger"><small>Se recomienda resoluciones 700x300</small></div>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Favicon</label>
+                                    <el-input v-model="form.favicon" :readonly="true">
+                                        <el-upload slot="append"
+                                                   :headers="headers"
+                                                   :data="{'type': 'favicon'}"
+                                                   action="/companies/uploads"
+                                                   :show-file-list="false"
+                                                   :on-success="successUpload">
+                                            <el-button type="primary" icon="el-icon-upload"></el-button>
+                                        </el-upload>
+                                    </el-input>
+                                    <div class="sub-title text-danger"><small>Se recomienda una imagen con fondo transparente y cuadrada en formato PNG</small></div>
+                                </div>
+                            </div>
                             <div class="col-md-6" v-if="form.soap_type_id == '02'">
                                 <div class="form-group" :class="{'has-danger': errors.certificate_due}">
                                     <label class="control-label">Vencimiento de Certificado</label>
-                                    <el-date-picker v-model="form.certificate_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
-                                    <small class="form-control-feedback" v-if="errors.certificate_due" v-text="errors.certificate_due[0]"></small>
+                                    <el-date-picker v-model="form.certificate_due" :clearable="true" type="date"
+                                                    value-format="yyyy-MM-dd"></el-date-picker>
+                                    <small v-if="errors.certificate_due" class="form-control-feedback"
+                                           v-text="errors.certificate_due[0]"></small>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4" v-show="false">
@@ -106,7 +124,25 @@
                                 </div>
                             </div>
                         </div>
-
+                        <!-- Datos de farmacia -->
+                        <div v-show="form.is_pharmacy" class="row">
+                            <div class="col-md-12 mt-2">
+                                <h4 class="border-bottom">Datos de farmacia</h4>
+                            </div>
+                        </div>
+                        <div v-show="form.is_pharmacy" class="row">
+                            <div class="col-md-12">
+                                <div :class="{'has-danger': errors.cod_digemid}" class="form-group">
+                                    <label class="control-label">Código de observación DIGEMID</label>
+                                    <!-- :disabled="!form.config_system_env" -->
+                                    <el-input v-model="form.cod_digemid"></el-input>
+                                    <!-- <div class="sub-title text-muted"><small>RUC + Usuario. Ejemplo: 01234567890ELUSUARIO</small></div>-->
+                                    <small v-if="errors.cod_digemid" class="form-control-feedback"
+                                           v-text="errors.cod_digemid[0]"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Entorno del sistema -->
                         <div class="row">
                             <div class="col-md-12 mt-2">
                                 <h4 class="border-bottom">Entorno del sistema</h4>
@@ -114,10 +150,11 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group" :class="{'has-danger': errors.soap_type_id}">
+                                <div :class="{'has-danger': errors.soap_type_id}" class="form-group">
                                     <label class="control-label">SOAP Tipo</label>
-                                    <el-select :disabled="!form.config_system_env" v-model="form.soap_type_id">
-                                        <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    <el-select v-model="form.soap_type_id" :disabled="!form.config_system_env">
+                                        <el-option v-for="option in soap_types" :key="option.id" :label="option.description"
+                                                   :value="option.id"></el-option>
                                     </el-select>
 
                                     <!-- <el-checkbox
@@ -125,21 +162,24 @@
                                            v-model="toggle"
                                            label="Ingresar Usuario">
                                     </el-checkbox> -->
-                                    <small class="form-control-feedback" v-if="errors.soap_type_id" v-text="errors.soap_type_id[0]"></small>
+                                    <small v-if="errors.soap_type_id" class="form-control-feedback"
+                                           v-text="errors.soap_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-md-6" v-if="form.soap_type_id != '03'">
-                                <div class="form-group" :class="{'has-danger': errors.soap_send_id}">
+                            <div v-if="form.soap_type_id != '03'" class="col-md-6">
+                                <div :class="{'has-danger': errors.soap_send_id}" class="form-group">
                                     <label class="control-label">SOAP Envio</label>
-                                    <el-select :disabled="!form.config_system_env" v-model="form.soap_send_id" >
-                                        <el-option v-for="(option, index) in soap_sends" :key="index" :value="index" :label="option"></el-option>
+                                    <el-select v-model="form.soap_send_id" :disabled="!form.config_system_env">
+                                        <el-option v-for="(option, index) in soap_sends" :key="index" :label="option"
+                                                   :value="index"></el-option>
                                     </el-select>
-                                    <small class="form-control-feedback" v-if="errors.soap_send_id" v-text="errors.soap_send_id[0]"></small>
+                                    <small v-if="errors.soap_send_id" class="form-control-feedback"
+                                           v-text="errors.soap_send_id[0]"></small>
                                 </div>
                             </div>
                         </div>
                         <template v-if="form.soap_type_id == '02' || form.soap_send_id == '02'">
-                            <div class="row" >
+                            <div class="row">
                                 <div class="col-md-12 mt-2">
                                     <h4 class="border-bottom">Usuario Secundario Sunat/OSE</h4>
                                 </div>
@@ -147,7 +187,8 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group" :class="{'has-danger': errors.soap_username}">
-                                        <label class="control-label">SOAP Usuario <span class="text-danger">*</span></label>
+                                        <label class="control-label">SOAP Usuario <span
+                                            class="text-danger">*</span></label>
                                         <el-input :disabled="!form.config_system_env" v-model="form.soap_username"></el-input>
                                         <div class="sub-title text-muted"><small>RUC + Usuario. Ejemplo: 01234567890ELUSUARIO</small></div>
                                         <small class="form-control-feedback" v-if="errors.soap_username" v-text="errors.soap_username[0]"></small>
@@ -232,7 +273,9 @@
                     operation_amazonia: false,
                     toggle: false,
                     config_system_env: false,
-                    img_firm: null
+                    img_firm: null,
+                    is_pharmacy: false,
+                    cod_digemid: null
 
                 }
             },

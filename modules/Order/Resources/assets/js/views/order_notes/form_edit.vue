@@ -232,6 +232,7 @@
             'typeUser': {
                 required: true,
             },
+            'configuration': {},
         },
         mixins: [functions, exchangeRate],
         data() {

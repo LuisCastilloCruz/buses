@@ -25,10 +25,10 @@
                     <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
                         <template
                             v-if="
-                                search.column == 'date_of_issue' ||
-                                    search.column == 'date_of_due' ||
-                                    search.column == 'date_of_payment' ||
-                                    search.column == 'delivery_date'
+                                search.column === 'date_of_issue' ||
+                                    search.column === 'date_of_due' ||
+                                    search.column === 'date_of_payment' ||
+                                    search.column === 'delivery_date'
                             "
                         >
                             <el-date-picker
@@ -86,17 +86,22 @@
 </template>
 
 <script>
-import moment from "moment";
 import queryString from "query-string";
 
 export default {
     props: {
+        productType: {
+            type: String,
+            required: false,
+            default: ''
+        },
         resource: String,
         applyFilter: {
             type: Boolean,
             default: true,
             required: false
-        }
+        },
+        pharmacy: Boolean,
     },
     data() {
         return {
@@ -107,18 +112,21 @@ export default {
             columns: [],
             records: [],
             pagination: {},
-            loading_submit: false
+            loading_submit: false,
+            fromPharmacy: false,
         };
     },
-    computed: {},
     created() {
+        if(this.pharmacy !== undefined && this.pharmacy === true){
+            this.fromPharmacy = true;
+        }
         this.$eventHub.$on("reloadData", () => {
             this.getRecords();
         });
+        this.$root.$refs.DataTable = this;
     },
     async mounted() {
         let column_resource = _.split(this.resource, "/");
-        // console.log(column_resource)
         await this.$http
             .get(`/${_.head(column_resource)}/columns`)
             .then(response => {
@@ -152,15 +160,22 @@ export default {
                 });
         },
         getQueryParameters() {
+            if (this.productType == 'ZZ') {
+                this.search.type = 'ZZ';
+            }
             return queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
+                isPharmacy:this.fromPharmacy,
                 ...this.search
             });
         },
         changeClearInput() {
             this.search.value = "";
             this.getRecords();
+        },
+        getSearch() {
+            return this.search;
         }
     }
 };

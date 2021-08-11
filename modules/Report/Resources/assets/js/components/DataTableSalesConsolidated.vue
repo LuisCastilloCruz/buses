@@ -50,7 +50,8 @@
                                 <div class="form-group">
                                     <label class="control-label">Tipo documento
                                     </label>
-                                    <el-select v-model="form.document_type_id" filterable clearable>
+                                    <el-select v-model="form.document_type_id" multiple filterable clearable
+                                               collapse-tags>
                                         <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
 
@@ -93,6 +94,29 @@
                             </div>
                         </div>
 
+                    <!-- Serie -->
+                    <div class="col-lg-3 col-md-3" >
+                        <div class="form-group">
+                            <label class="control-label">Serie
+                            </label>
+                            <el-select v-model="form.series" filterable clearable>
+                                <el-option v-for="option in series" :key="option.number" :value="option.number" :label="option.number"></el-option>
+                            </el-select>
+
+                        </div>
+                    </div>
+
+                    <!-- Establecimiento -->
+                    <div class="col-lg-3 col-md-3" >
+                        <div class="form-group">
+                            <label class="control-label">Establecimiento
+                            </label>
+                            <el-select v-model="form.establishment_id" filterable clearable>
+                                <el-option v-for="option in establishment_id" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+
+                        </div>
+                    </div>
 
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
@@ -147,8 +171,11 @@
             </div>
         </div>
 
-        <totals-by-item-form :showDialog.sync="showDialog"
-                        :parameters="getQueryParameters()"></totals-by-item-form>
+        <totals-by-item-form
+            :showDialog.sync="showDialog"
+            :parameters="getQueryParameters()"
+            :resource="'reports/sales-consolidated'"
+        ></totals-by-item-form>
     </div>
 </template>
 <style>
@@ -212,6 +239,8 @@
                     this.date_range_types = response.data.date_range_types
                     this.sellers = response.data.sellers
                     this.document_types = response.data.document_types
+                    this.series = response.data.series
+                    this.establishment_id = response.data.establishment_id
                 });
 
 
@@ -223,9 +252,7 @@
         },
         methods: {
             clickTotalByItem(){
-
                 this.showDialog = true
-
             },
             changeDisabledDates() {
                 if (this.form.date_end < this.form.date_start) {
@@ -281,7 +308,7 @@
 
                 this.form = {
                     person_id: null,
-                    document_type_id: null,
+                    document_type_id: [],
                     date_range_type_id: 'date_of_issue',
                     order_state_type_id: 'all_states',
                     type_person:null,
@@ -328,7 +355,7 @@
                     ...this.form
                 })
 
-                return `${parameters}&sellers=${JSON.stringify(this.form.sellers)}`
+                return `${parameters}&sellers=${JSON.stringify(this.form.sellers)}&document_type_id=${JSON.stringify(this.form.document_type_id)}`
 
             },
         }

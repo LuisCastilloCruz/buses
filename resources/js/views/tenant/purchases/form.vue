@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.supplier_id}">
                                 <label class="control-label">
                                     Proveedor

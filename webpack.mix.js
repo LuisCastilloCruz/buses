@@ -13,6 +13,7 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
    .sass('resources/sass/style.scss', 'public/css/app.css')
+   .sass('resources/sass/auth.scss', 'public/css/auth.css')
    .extract(['vue'])
    .version();
 
@@ -32,6 +33,7 @@ mix.webpackConfig({
             '@viewsModuleAccount': path.resolve(__dirname, 'modules/Account/Resources/assets/js/views'),
             '@viewsModuleItem': path.resolve(__dirname, 'modules/Item/Resources/assets/js/views'),
             '@viewsModuleHotel': path.resolve(__dirname, 'modules/Hotel/Resources/assets/js/views'),
+            '@viewsModuleDocumentary': path.resolve(__dirname, 'modules/DocumentaryProcedure/Resources/assets/js/views'),
             '@viewsModuleTransporte': path.resolve(__dirname, 'modules/Transporte/Resources/assets/js/views'),
         }
     }

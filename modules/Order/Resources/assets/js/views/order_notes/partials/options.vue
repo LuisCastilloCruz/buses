@@ -10,7 +10,7 @@
       :show-close="false"
     >
       <div class="row" v-show="!showGenerate">
-        <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+        <div class="col text-center font-weight-bold">
           <p>Imprimir A4</p>
           <button
             type="button"
@@ -20,7 +20,7 @@
             <i class="fa fa-file-alt"></i>
           </button>
         </div>
-        <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+        <div class="col text-center font-weight-bold">
           <p>Imprimir A5</p>
           <button
             type="button"
@@ -30,7 +30,7 @@
             <i class="fa fa-file-alt"></i>
           </button>
         </div>
-        <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+        <div class="col text-center font-weight-bold">
           <p>Imprimir Ticket</p>
           <button
             type="button"
@@ -39,6 +39,15 @@
           >
             <i class="fa fa-receipt"></i>
           </button>
+        </div>
+        <div class="col text-center font-weight-bold" v-if="configuration.ticket_58">
+            <p>Imprimir Ticket 58MM</p>
+            <button type="button"
+              class="btn btn-lg btn-info waves-effect waves-light"
+              @click="clickToPrint('ticket_58')"
+            >
+              <i class="fa fa-receipt"></i>
+            </button>
         </div>
       </div>
       <br />
@@ -282,6 +291,7 @@
       :recordId="documentNewId"
       :isContingency="false"
       :showClose="true"
+      :configuration="configuration"
     ></document-options>
 
     <sale-note-options
@@ -299,7 +309,7 @@ import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 export default {
   components: { DocumentOptions, SaleNoteOptions },
 
-  props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser'],
+  props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser','configuration'],
   data() {
     return {
       customer_email: "",
@@ -337,14 +347,13 @@ export default {
                 this.document.payments.splice(index, 1);
       },
     clickAddPayment() {
-
       let payment = (this.document.payments.length == 0) ? this.form.order_note.total : 0
 
       this.document.payments.push({
         id: null,
         document_id: null,
         date_of_payment: moment().format("YYYY-MM-DD"),
-        payment_method_type_id: "01",
+        payment_method_type_id: this.form.order_note.payment_method_type_id,
         payment_destination_id:null,
         reference: null,
         payment: payment
@@ -437,6 +446,7 @@ export default {
         is_receivable: false,
         payments: [],
         hotel: {},
+          seller_id: 0,
       };
     },
     changeDateOfIssue() {
@@ -567,6 +577,7 @@ export default {
         format_pdf: "a4"
       };
       this.document.order_note_id = this.form.id;
+        this.document.seller_id = q.user_id;
     },
     async create() {
       await this.$http.get(`/${this.resource}/option/tables`).then(response => {
@@ -582,6 +593,7 @@ export default {
         .get(`/${this.resource}/record2/${this.recordId}`)
         .then(response => {
           this.form = response.data.data;
+            this.form.order_note.seller_id =this.form.order_note.user_id;
           // this.validateIdentityDocumentType()
           this.getCustomer();
           let type = this.type == "edit" ? "editado" : "registrado";
@@ -602,23 +614,32 @@ export default {
         this.is_document_type_invoice = false;
       }
     },
-    async validateIdentityDocumentType() {
-      let identity_document_types = ["0", "1"];
-      // console.log(this.document)
-      let customer = _.find(this.customers, { id: this.document.customer_id });
+      async validateIdentityDocumentType() {
+          let identity_document_types = ["0", "1"];
+          /*
+          0		Doc.trib.no.dom.sin.ruc
+          1		DNI
+          */
+          let customer = _.find(this.customers, {id: this.document.customer_id});
 
-      if (
-        identity_document_types.includes(customer.identity_document_type_id)
-      ) {
-        this.document_types = _.filter(this.all_document_types, document_type_id => (document_type_id.id === '03' || document_type_id.id === '80'));
-      } else {
-        this.document_types = this.all_document_types;
-      }
+          if (identity_document_types.includes(customer.identity_document_type_id)) {
+              this.document_types = _.filter(this.all_document_types,
+                  _.overSome(
+                      [
+                          // {'id': '01'}, // Factura
+                          {'id': '03'}, // Boleta
+                          ['id', '80'] // Nota de venta
+                      ]
+                  )
+              );
+              // this.document_types = _.filter(this.all_document_types, {id: "03"});
+          } else {
+              this.document_types = this.all_document_types;
+          }
 
-      this.document.document_type_id =
-        this.document_types.length > 0 ? this.document_types[0].id : null;
-      await this.changeDocumentType();
-    },
+          this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
+          await this.changeDocumentType();
+      },
     filterSeries() {
       this.document.series_id = null;
       this.series = _.filter(this.all_series, {

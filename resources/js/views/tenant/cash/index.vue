@@ -52,7 +52,7 @@
                             <div class="btn-group flex-wrap">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte <span class="caret"></span></button>
                                 <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownload(row.id)">PDF A4</a>
+                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'a4')">PDF A4</a>
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket')">PDF Ticket</a>
                                     <a v-if="pathname=='/transportes/cash'" class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportDestino(row.id, 'ticket')">Encomiendas pago en destino</a>
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'excel')">Excel</a>

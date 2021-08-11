@@ -63,7 +63,7 @@
                             </div>
                         </template>
 
-                        <div class="col-md-3">
+                        <div class="col-md-3" v-if="defaultType !== 'purchase'">
                             <div class="form-group">
                                 <label class="control-label">Plataforma</label>
                                 <el-select v-model="form.web_platform_id" clearable>
@@ -89,6 +89,7 @@
                             </div>
                         </div> -->
 
+                    <div class="col-md-12">&nbsp;</div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
 
@@ -145,6 +146,7 @@
     export default {
         props: {
             resource: String,
+            defaultType : String,
         },
         data () {
             return {
@@ -185,6 +187,9 @@
             this.$eventHub.$on('reloadData', () => {
                 this.getRecords()
             })
+            if(this.defaultType!== undefined && this.defaultType !== null) {
+                this.form.type = this.defaultType;
+            }
         },
         async mounted () {
 

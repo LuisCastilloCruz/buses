@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Models\Tenant\Document;
 use App\Observers\DocumentObserver;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

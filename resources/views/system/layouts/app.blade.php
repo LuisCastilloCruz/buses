@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="sidebar-light sidebar-left-big-icons">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="sidebar-light sidebar-left-big-icons dashboard-system">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -67,19 +67,6 @@
 
         ul.nav-main > li.nav-active > a {
             box-shadow: 2px 0 0 #0088CC inset;
-        }
-        .header2 {
-            position: sticky;
-            top: 0;
-            background: #0088cc;
-        }
-        .header2 tr th{
-            color:#fff;
-        }
-        .div-clientes {
-            width: 100%;
-            height: 660px;
-            overflow: auto;
         }
     </style>
 </head>

@@ -6,10 +6,6 @@
                     <i class="fa fa-info-circle"></i>
                 </el-tooltip>
             </h3>
-            <div class="card-actions white-text">
-                <a href="#" class="card-action card-action-toggle text-white" data-card-toggle=""></a>
-                <a href="#" class="card-action card-action-dismiss text-white" data-card-dismiss=""></a>
-            </div>
         </div>
         <div class="card-body">
             <div class="row">

@@ -180,7 +180,7 @@
                             :noteCreditOrDebitTypeId="form.note_credit_or_debit_type_id"
                             :operation-type-id="form.operation_type_id"
                             :currency-type-id-active="form.currency_type_id"
-                            :user="user"
+                            :typeUser="user"
                             :exchange-rate-sale="form.exchange_rate_sale"
                             :configuration="configuration"
                             :editNameProduct="configuration.edit_name_product"
@@ -228,10 +228,10 @@
                 affected_documents: [],
             }
         },
-        async created() {
+        created() {
             this.document = this.document_affected
-            await this.initForm()
-            await this.$http.get(`/${this.resource}/tables`)
+            this.initForm()
+             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.document_types = response.data.document_types_note
                     this.currency_types = response.data.currency_types
@@ -250,8 +250,8 @@
                     this.changeDateOfIssue()
                 })
 
-            await this.getCustomer()
-            await this.getHasDocuments()
+             this.getCustomer()
+             this.getHasDocuments()
         },
         mounted() {
 
@@ -340,14 +340,14 @@
                     })
             },
             getHasDocuments(){
-                
+
                 this.$http.get(`/${this.resource}/note/has-documents/${this.form.affected_document_id}`)
                     .then(response => {
 
                         if(response.data.success){
 
                             this.affected_documents = response.data.data
-                            
+
                             let message = `<strong>El CPE ${ this.document.series }-${ this.document.number } ya tiene notas generadas</strong><br/>`
 
                             this.affected_documents.forEach(document => {

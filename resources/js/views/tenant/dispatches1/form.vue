@@ -46,7 +46,7 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.transport_mode_type_id}">
-                                <label class="control-label">Modo de translado</label>
+                                <label class="control-label">Modo de traslado</label>
                                 <el-select v-model="form.transport_mode_type_id">
                                     <el-option v-for="option in transportModeTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -57,7 +57,7 @@
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.transfer_reason_type_id}">
-                                <label class="control-label">Motivo de translado</label>
+                                <label class="control-label">Motivo de traslado</label>
                                 <el-select v-model="form.transfer_reason_type_id">
                                     <el-option v-for="option in transferReasonTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -321,9 +321,9 @@
                 </div>
             </form>
         </div>
-        
+
         <person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>
-        
+
         <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
     </div>
 </template>
@@ -331,7 +331,7 @@
 <script>
     import PersonForm from '../persons/form.vue';
     import Items from './items.vue';
-    
+
     export default {
         components: {PersonForm, Items},
         data() {
@@ -366,7 +366,7 @@
         },
         created() {
             this.clean();
-            
+
             this.$http.post(`/${this.resource}/tables`).then(response => {
                 this.identityDocumentTypes = response.data.identityDocumentTypes;
                 this.transferReasonTypes = response.data.transferReasonTypes;
@@ -387,7 +387,7 @@
                     'establishment_id': this.form.establishment_id,
                     'document_type_id': this.form.document_type_id
                 });
-                
+
                 this.code = this.form.establishment_id;
                 this.establishment_id = this.form.establishment_id;
             },
@@ -396,17 +396,17 @@
                     this.provincesOrigin = _.filter(this.provincesAll, {
                         'department_id': this.form.origin.department_id
                     });
-                    
+
                     this.$set(this.form.origin, 'province_id', null);
                     this.$set(this.form.origin, 'location_id', null);
-                    
+
                     return;
                 }
-                
+
                 this.provincesDelivery = _.filter(this.provincesAll, {
                     'department_id': this.form.delivery.department_id
                 });
-                
+
                 this.$set(this.form.delivery, 'province_id', null);
                 this.$set(this.form.delivery, 'location_id', null);
             },
@@ -415,27 +415,27 @@
                     this.districtsOrigin = _.filter(this.districtsAll, {
                         'province_id': this.form.origin.province_id
                     });
-                    
+
                     this.$set(this.form.origin, 'location_id', null);
-                    
+
                     return;
                 }
-                
+
                 this.districtsDelivery = _.filter(this.districtsAll, {
                     'province_id': this.form.delivery.province_id
                 });
-                
+
                 this.$set(this.form.delivery, 'location_id', null);
             },
             addItem(form) {
-                
+
                 let exist = this.form.items.find((item) => item.id == form.item.id);
-                
+
                 if (exist) {
-                    exist.quantity += form.quantity;                    
+                    exist.quantity += form.quantity;
                     return;
                 }
-                
+
                 this.form.items.push({
                     'description': form.item.description,
                     'internal_id': form.item.internal_id,
@@ -448,11 +448,11 @@
             },
             submit() {
                 this.loading_submit = true;
-                
+
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                         if (response.data.success) {
                             this.clean();
-                            
+
                             this.$message.success(response.data.message)
                         }
                         else {
@@ -460,7 +460,7 @@
                         }
                     }).catch(error => {
                         this.loading_submit = false;
-                        
+
                         if (error.response.status === 422) {
                             this.errors = error.response.data;
                         }

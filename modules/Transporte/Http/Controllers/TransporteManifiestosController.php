@@ -36,7 +36,7 @@ class TransporteManifiestosController extends Controller
     public function index(){
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
         $series = Series::where('establishment_id', $establishment->id)
-                  ->whereIn('document_type_id', ['33', '100'])->get(); 
+                  ->whereIn('document_type_id', ['33', '100'])->get();
         $choferes = TransporteChofer::all();
 
         return view('transporte::manifiestos.index',compact('series','choferes'));
@@ -48,9 +48,9 @@ class TransporteManifiestosController extends Controller
 
             $programacion = TransporteProgramacion::findOrFail($request->programacion_id);
 
-            $numero = TransporteManifiesto::where('tipo',$request->tipo)
-            ->count() + 1;
-
+            $numero = TransporteManifiesto::where('tipo', $request->tipo)
+                ->where('serie', $request->serie)
+                ->max('numero')+1;
 
             $manifiesto = TransporteManifiesto::create([
                 'serie' => $request->serie,
@@ -227,7 +227,7 @@ class TransporteManifiestosController extends Controller
         ])->find($manifiesto);
 
         if( is_null($manifiesto)) abort(404);
-        
+
         return view('transporte::manifiestos.asignacion',compact('manifiesto'));
 
     }
@@ -245,11 +245,11 @@ class TransporteManifiestosController extends Controller
             ->where('fecha_salida',$fecha)
             ->get();
 
-            if(!empty($cliente)){ 
+            if(!empty($cliente)){
                 $encomiendas->whereHas('remitente',function($remitente) use ($cliente){
                     $remitente->where('nombre','like',"%{$cliente}%");
-                }); 
-        
+                });
+
             }
 
 
@@ -277,7 +277,7 @@ class TransporteManifiestosController extends Controller
             ->whereBetween('fecha_salida',[$fecha_inicio,$fecha_final]);
 
 
-            
+
 
             // $listEncomiendas = collect([]);
 
@@ -295,7 +295,7 @@ class TransporteManifiestosController extends Controller
 
             // }
 
-            
+
 
 
             return response()->json($encomiendas->get(),200);
@@ -315,7 +315,7 @@ class TransporteManifiestosController extends Controller
 
             $programacion =  $request->input('programacion');
             $manifiesto = TransporteManifiesto::find($request->input('manifiesto'));
-            
+
             TransporteEncomienda::where('id',$request->input('encomienda'))->update([
                 'programacion_id' => $programacion,
                 'fecha_salida' => $manifiesto->fecha
@@ -339,7 +339,7 @@ class TransporteManifiestosController extends Controller
 
     public function desasignarEncomienda(Request $request){
         try{
-            
+
             TransporteEncomienda::where('id',$request->input('encomienda'))->update([
                 'programacion_id' => null,
             ]);
@@ -383,7 +383,7 @@ class TransporteManifiestosController extends Controller
             ],500);
 
         }
-        
+
     }
 
 
@@ -424,5 +424,5 @@ class TransporteManifiestosController extends Controller
     }
 
 
-   
+
 }

@@ -23,13 +23,13 @@
 <table style="width: 100%;font-size:11px">
     <tr>
         <td style="width: 33%;text-align: center">
-            <strong>{{ $company->name }} </strong> <br> 
+            <strong>{{ $company->name }} </strong> <br>
             <span style="font-size: 10px">
             {{ ($establishment->address !== '-')? $establishment->address : '' }}
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
             {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
-            </span>   
+            </span>
         </td>
         <td style="width: 10% !important;text-align: center">
             <table class="bordered" style="width: 30%;font-size:8px;">
@@ -93,7 +93,7 @@
                         {{ $programacion->destino->nombre }}
                     </td>
                 </tr>
-            
+
             </table>
             <table style="width: 100%;margin-top:20px">
                 <tr>
@@ -106,12 +106,12 @@
                         {{ $vehiculo->placa }}
                     </td>
                 </tr>
-            
+
             </table>
-        
+
         </td>
         <td style="width: 33%"></td>
-        
+
     </tr>
 </table>
 
@@ -129,7 +129,7 @@
                     <td style="text-align: right"><strong>Nro de Licencia:</strong></td>
                 </tr>
                 <tr>
-                    
+
                     <td>1.- {{ $chofer->nombre }}</td>
                     <td style="text-align: right">{{ $chofer->licencia }}</td>
                 </tr>
@@ -157,7 +157,7 @@
 <table style="width: 100%;font-size:9px;margin-top:20px">
     <tr>
         <td style="width: 115px">Cantidad Max de Asientos: </td>
-        <td style="border: 1px solid black;width:30px;text-align:center"> 
+        <td style="border: 1px solid black;width:30px;text-align:center">
             {{ $vehiculo->asientos }}
         </td>
         <td style="width: 112px">Ocupados por Tripulación</td>
@@ -173,7 +173,7 @@
             {{ $pasajesRecogidosRuta }}
         </td>
     </tr>
-</table> 
+</table>
 
 <table class="bordered" style="width: 100%;font-size:9px;margin-top:20px;text-align:center">
     <tr>
@@ -187,11 +187,11 @@
         <td> <strong>IMPORTE S/</strong> </td>
     </tr>
 
-    @foreach ($pasajes as $pasaje)
+    @foreach ($pasajes  as $index => $pasaje)
         <?php $pasajero = $pasaje->pasajero; ?>
         <?php $document = $pasaje->document; ?>
         <tr>
-            <td>{{ $pasaje->id }}</td>
+            <td>{{$index+1}}</td>
             <td>{{ $pasajero->name }}</td>
             <td>{{ $pasaje->programacion->destino->nombre }}</td>
             <td>{{ $pasajero->identity_document_type->description }}</td>
@@ -200,7 +200,7 @@
             <td>{{ $document->series }} - {{ $document->number }}</td>
             <td>{{  number_format($pasaje->precio,2,'.','')   }}</td>
         </tr>
-        
+
     @endforeach
 </table>
 
@@ -229,7 +229,7 @@
                     <td>CHOFER</td>
                 </tr>
             </table>
-            
+
         </td>
         <td style="width: 50%;text-align:center">
             <table style="width: 250px">

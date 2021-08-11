@@ -141,13 +141,13 @@
             <purchase-import :showDialog.sync="showImportDialog"></purchase-import>
         </div>
 
-        
+
         <purchase-payments
             :showDialog.sync="showDialogPurchasePayments"
             :purchaseId="recordId"
             :external="true"
             ></purchase-payments>
-            
+
         <purchase-options :showDialog.sync="showDialogOptions"
                           :recordId="recordId"
                           :showClose="true"></purchase-options>
@@ -155,6 +155,7 @@
 </template>
 
 <script>
+import {mapActions, mapState} from 'vuex'
 
     // import DocumentsVoided from './partials/voided.vue'
     // import DocumentOptions from './partials/options.vue'
@@ -169,6 +170,10 @@
         mixins: [deletable],
         // components: {DocumentsVoided, DocumentOptions, DataTable},
         components: {DataTable, PurchaseImport, PurchasePayments, PurchaseOptions},
+        props:[
+            'typeUser',
+            'configuration',
+        ],
         data() {
             return {
                 showDialogOptions: false,
@@ -211,9 +216,17 @@
                 }
             }
         },
+        computed: {
+            ...mapState([
+                'warehouses',
+            ]),
+        },
         created() {
+            this.$store.commit('setConfiguration',this.configuration)
+            this.$store.commit('setTypeUser',this.typeUser)
         },
         methods: {
+            ...mapActions(['loadConfiguration']),
             clickPurchasePayment(recordId) {
                 this.recordId = recordId;
                 this.showDialogPurchasePayments = true

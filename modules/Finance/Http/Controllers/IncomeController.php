@@ -2,7 +2,6 @@
 
 namespace Modules\Finance\Http\Controllers;
 
-use App\Models\Tenant\CashDocument;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -99,15 +98,6 @@ class IncomeController extends Controller
                 $record_payment = $doc->payments()->create($row);
                 $this->createGlobalPayment($record_payment, $row);
             }
-//            foreach ($data['payments'] as $row)
-//            {
-//                $record_payment = $doc->payments()->create($row);
-//                if($row['payment_method_type_id'] == '01'){
-//                    $row['payment_destination_id'] = 'cash';
-//                }
-//
-//                $this->createGlobalPayment($record_payment, $row);
-//            }
 
             return $doc;
         });

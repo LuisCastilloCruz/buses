@@ -7,6 +7,7 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
+                <a href="#" @click.prevent="showModalGenerateCPE = true" class="btn btn-custom btn-sm  mt-2 mr-2">Generar comprobante desde múltiples guías</a>
             </div>
         </div>
         <div class="card mb-0">
@@ -37,8 +38,10 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_cdr)" v-if="row.has_cdr">CDR</button>
                         </td>
                         <td class="text-center">
-                            <button v-if="!row.document_id" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
+                            <button v-if="row.btn_generate_document" type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">Opciones</button>
+                            <button v-if="showSentSunat(row)" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="sendSunat(row.id)">Enviar a Sunat</button>
                         </td>
                     </tr>
                 </data-table>
@@ -54,25 +57,61 @@
             :showClose="true"
             :showGenerate="true"
         ></FormGenerateDocument>
+        <ModalGenerateCPE :show.sync="showModalGenerateCPE"></ModalGenerateCPE>
     </div>
 </template>
 
 <script>
-    import DataTable from '../../../components/DataTable.vue'
-    import DispatchOptions from './partials/options.vue'
-    import FormGenerateDocument from "./generate-document";
+import DataTable from '../../../components/DataTable.vue'
+import DispatchOptions from './partials/options.vue'
+import FormGenerateDocument from "./generate-document";
+import ModalGenerateCPE from './ModalGenerateCPE';
 
-    export default {
-        components: {DataTable, DispatchOptions, FormGenerateDocument},
+export default {
+        components: {DataTable, DispatchOptions, FormGenerateDocument, ModalGenerateCPE},
+        props:['configuration'],
         data() {
             return {
                 resource: 'dispatches',
                 showDialogOptions: false,
                 recordId: null,
-                showDialogGenerateDocument: false
+                showDialogGenerateDocument: false,
+                showModalGenerateCPE: false,
             }
         },
+        created(){
+            this.$setStorage('configuration',this.configuration)
+        },
         methods: {
+            showSentSunat(row){
+                let data = row.soap_shipping_response;
+                if(this.configuration.auto_send_dispatchs_to_sunat === true) return false;
+                if(data === undefined || data === null) return true;
+                if(data.sent === null || data.sent === false) return true;
+                return false;
+            },
+            sendSunat(id){
+                this.$http.post(`/dispatches/sendSunat/${id}`)
+                    .then((result)=>{
+                        let data = result.data;
+                        if(data.sent === false){
+                            this.$notify.error({
+                                title: 'Envio no realizado',
+                                message: data.description,
+                            });
+                        }else{
+                            this.$notify.success({
+                                title: 'Se ha realizado el envio',
+                                message: data.description,
+                            });
+                        }
+                    }).catch(()=>{
+                    this.$notify.success({
+                        title: 'Error',
+                        message: 'Error desconocido',
+                    });
+                })
+            },
             onGenerateDocument(dispatchId) {
                 this.recordId = dispatchId;
                 this.showDialogGenerateDocument = true;
@@ -87,7 +126,6 @@
             clickPrint(external_id){
                 window.open(`/print/dispatch/${external_id}/a4`, '_blank');
             },
-
         }
     }
 </script>

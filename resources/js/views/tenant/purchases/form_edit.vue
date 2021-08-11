@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.supplier_id}">
                                 <label class="control-label">
                                     Proveedor
@@ -250,7 +250,6 @@
 
 
                         </div>
-
                         <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
                             <div class="form-group">
                                 <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
@@ -663,7 +662,6 @@
                 this.$http.get(`/${this.resource}/record/${this.resourceId}` )
                 .then(response => {
                     let dato = response.data.data.purchase
-                    console.log(dato)
                     this.form.id = dato.id
                     this.form.document_type_id = dato.document_type_id
                     this.form.series = dato.series
@@ -959,7 +957,7 @@
 
             },
             async submit() {
-                console.log(this.form);    
+
 
                 let validate = await this.validate_payments()
                 if(!validate.success) {

@@ -20,10 +20,11 @@ if($current_hostname) {
                 Route::post('', 'ExpenseController@store');
                 Route::get('record/{expense}', 'ExpenseController@record');
                 Route::get('{record}/voided', 'ExpenseController@voided');
+                Route::get('report/excel', 'ExpenseController@excel');
 
             });
 
-            
+
             Route::prefix('expense-payments')->group(function () {
 
                 Route::get('/records/{expense_id}', 'ExpensePaymentController@records');

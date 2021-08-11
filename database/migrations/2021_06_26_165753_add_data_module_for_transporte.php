@@ -13,9 +13,9 @@ class AddDataModuleForTransporte extends Migration
      */
     public function up()
     {
-        DB::table('modules')->insert([ 
-            ['id'=> 16, 'value' => 'transporte', 'description' => 'Modulo de transportes']
-        ]);
+//        DB::table('modules')->insert([
+//            ['id'=> 16, 'value' => 'transporte', 'description' => 'Modulo de transportes']
+//        ]);
     }
 
     /**
@@ -25,6 +25,6 @@ class AddDataModuleForTransporte extends Migration
      */
     public function down()
     {
-        DB::table('modules')->where('id', 16)->delete();
+//        DB::table('modules')->where('id', 16)->delete();
     }
 }

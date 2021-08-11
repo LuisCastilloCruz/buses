@@ -1,6 +1,6 @@
 <template>
     <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false" append-to-body>
-     
+
         <div class="row mb-4" v-if="form.response_message">
             <div class="col-md-12">
                 <el-alert
@@ -25,7 +25,7 @@
                         <i class="fa fa-file-download"></i>
                     </button>
                     <p>Descargar CDR</p>
-                </div>  
+                </div>
             </template>
             <template v-else>
                 <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold mt-3">
@@ -92,16 +92,16 @@
         },
         methods: {
             clickDownload() {
-                window.open(this.form.download_external_pdf, '_blank');
+                window.open(`/print/dispatch/${this.form.external_id}`, '_blank');
             },
             clickSendWhatsapp() {
-                
+
                 if(!this.form.customer_telephone){
                     return this.$message.error('El número es obligatorio')
                 }
 
                 window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
-            
+
             },
             initForm() {
                 this.errors = {};
@@ -130,7 +130,7 @@
             },
             clickDownloadCdr() {
                 window.open(this.form.download_cdr, '_blank');
-            }, 
+            },
             async create() {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                     this.form = response.data.data;

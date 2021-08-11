@@ -18,6 +18,12 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Arr;
 
+/**
+ * Class DashboardController
+ *
+ * @package Modules\Dashboard\Http\Controllers
+ * @mixin Controller
+ */
 class DashboardController extends Controller
 {
     public function index()
@@ -27,7 +33,6 @@ class DashboardController extends Controller
 
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
-        //smilify('success', 'You are successfully reconnected'); 
         return view('dashboard::index', compact('soap_company'));
     }
 
@@ -36,6 +41,11 @@ class DashboardController extends Controller
         return [
             'establishments' => DashboardView::getEstablishments()
         ];
+    }
+
+    public function globalData()
+    {
+        return response()->json((new DashboardData())->globalData(), 200);
     }
 
     public function data(Request $request)

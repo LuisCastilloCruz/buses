@@ -91,7 +91,7 @@
                                         </el-select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="dni">Asiento</label>
@@ -120,7 +120,7 @@
                                         </el-select>
                                     </div>
                                 </div>
-                                
+
                             </div>
                             <div v-if="transportePasaje" class="row justify-content-center">
 
@@ -342,7 +342,7 @@ export default {
             required:true,
             default:null
 
-            
+
         }
     },
     created(){
@@ -507,13 +507,13 @@ export default {
                return this.$message.info(validator.first);
             }
 
-           
+
             this.document.items.length=0;
             let precio = parseFloat(this.precio);
             if(!precio) {
                 this.$message.info('Por favor indique el precio de el asiento');
                 return;
-            } 
+            }
 
             this.producto.input_unit_price_value=precio;
             this.producto.item.description = 'Pasaje -'+this.nameItem;
@@ -543,7 +543,7 @@ export default {
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error("El destino del pago es obligatorio");
             }
-            
+
 
             await this.$http
                 .post(`/documents`, this.document)
@@ -591,6 +591,7 @@ export default {
                 this.pasajeroId = null;
                 this.numeroAsiento = null;
                 this.document.document_type_id = '03';
+                this.filterSeries();
                 this.filterCustomers();
                 this.initProducto();
                 this.$emit('onSuccessVenta',this.documentId);
@@ -600,7 +601,7 @@ export default {
                     message: data.message
                 });
 
-               
+
             }).catch( error => {
                 alert(error);
                 this.axiosError(error);
@@ -685,6 +686,11 @@ export default {
                     stock_min:1,
                     unit_price: 0, //cambiado
                     unit_type_id: "ZZ",
+                    series_enabled: false,
+                    purchase_has_igv: true,
+                    web_platform_id:null,
+                    has_plastic_bag_taxes: false,
+                    item_warehouse_prices: [],
                 },
                 item_id: null,
                 percentage_igv: 18,
@@ -965,14 +971,14 @@ export default {
                 errors.push('La caja no esta abierta');
                 this.$message.info('La caja no esta abierta');
             }
-            
+
 
             if(this.document.document_type_id=='01' && !this.pasajeroId){
                 valid = false;
                 errors.push('Debe seleccionar un pasajero');
 
             }
-            
+
             if(!this.programacion) {
                 valid = false;
                 errors.push('Debe seleccionar una programación');
@@ -1014,7 +1020,7 @@ export default {
                     element.focus();
                 }
             }
-            
+
             if(this.tipoVenta == 2){//venta con programación
 
                 if(!this.programacion){

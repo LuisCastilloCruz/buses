@@ -13,9 +13,9 @@ class AddDataModuleForHotel extends Migration
      */
     public function up()
     {
-        DB::table('modules')->insert([ 
-            ['id'=> 15, 'value' => 'hotel', 'description' => 'Módulo de hotel']
-        ]);
+//        DB::table('modules')->insert([
+//            ['id'=> 15, 'value' => 'hotel', 'description' => 'Módulo de hotel']
+//        ]);
     }
 
     /**
@@ -25,6 +25,6 @@ class AddDataModuleForHotel extends Migration
      */
     public function down()
     {
-        DB::table('modules')->where('id', 15)->delete();
+//        DB::table('modules')->where('id', 15)->delete();
     }
 }

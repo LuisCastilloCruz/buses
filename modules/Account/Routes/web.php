@@ -6,6 +6,15 @@ if($hostname) {
     Route::domain($hostname->fqdn)->group(function () {
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
 
+            /**
+             * account/
+             * account/download
+             * account/format
+             * account/format/download
+             * account/summary-report
+             * account/summary-report/records
+             * account/summary-report/format/download
+             */
             Route::prefix('account')->group(function () {
                 Route::get('/', 'AccountController@index')->name('tenant.account.index');
                 Route::get('download', 'AccountController@download');
@@ -16,7 +25,7 @@ if($hostname) {
 
                 Route::get('tributo', 'TributoController@index')->name('tenant.account_tributo.index');
                 Route::post('tributo/table', 'TributoController@table')->name('tenant.account_tributo.table');
-                
+
 
 
                 Route::get('summary-report', 'SummaryReportController@index')->name('tenant.account_summary_report.index');
@@ -38,6 +47,7 @@ if($hostname) {
                 Route::get('plan/columns', 'AccountingController@columns');
                 Route::get('plan/records', 'AccountingController@records');
                 Route::get('plan/record/{id}', 'AccountingController@record');
+                Route::get('params', 'CompanyAccountController@create')->name('tenant.accounting_params.index');
             });
 
 

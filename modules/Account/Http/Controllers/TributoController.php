@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 class TributoController extends Controller
 {
     const IGV = 0.18;
-    
+
 
     public function index()
     {
@@ -42,11 +42,13 @@ class TributoController extends Controller
             $ventasNetas = Document::query()
             ->whereMonth('date_of_issue',$mes)
             ->whereYear('date_of_issue',$year)
+            ->whereNotIn('state_type_id', ['09','11','13'])
             ->sum('total_taxed');
 
             $comprasNetas = Purchase::query()
             ->whereMonth('date_periodo',$mes)
             ->whereYear('date_periodo',$year)
+            ->whereNotIn('state_type_id', ['09','11','13'])
             ->sum('total_taxed');
 
             $debitoFiscal = round($ventasNetas * self::IGV,2);
@@ -57,6 +59,7 @@ class TributoController extends Controller
             $baseImponible = Document::query()
             ->whereMonth('date_of_issue',$mes)
             ->whereYear('date_of_issue',$year)
+            ->whereNotIn('state_type_id', ['09','11','13'])
             ->sum('total_igv');
 
             $coeficiente = 0.015;
@@ -85,13 +88,13 @@ class TributoController extends Controller
     private function getMonths($year){
         /* //lo uso porque da un error al momento de hacer un group by con varios campos
         DB::connection('tenant')->statement("SET sql_mode = '' ");
-        //obtengo los meses y los orderno y agrupo por mes 
+        //obtengo los meses y los orderno y agrupo por mes
         return Document::select(DB::raw('MONTH(date_of_issue) as month'),'date_of_issue')
         ->whereYear('date_of_issue',$year)
         ->groupBy('month')
         ->orderBy('month')
         ->get(); */
-        
+
     }
 
     private function getDocuments($year)
@@ -103,7 +106,7 @@ class TributoController extends Controller
                 // ->whereIn('currency_type_id', ['PEN','USD'])
                 ->get();
 
-        
+
     }
 
 }

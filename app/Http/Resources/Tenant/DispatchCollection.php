@@ -2,8 +2,15 @@
 
 namespace App\Http\Resources\Tenant;
 
+use App\Models\Tenant\Dispatch;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
+/**
+ * Class DispatchCollection
+ *
+ * @package App\Http\Resources\Tenant
+ * @mixin ResourceCollection
+ */
 class DispatchCollection extends ResourceCollection
 {
 	/**
@@ -15,6 +22,9 @@ class DispatchCollection extends ResourceCollection
 	public function toArray($request)
 	{
 		return $this->collection->transform(function ($row, $key) {
+		    /** @var Dispatch $row */
+            return $row->getCollectionData();
+            /** Se ha movido la salida, al modelo */
 			$has_cdr = false;
 
 			if (in_array($row->state_type_id, ['05', '07'])) {
@@ -41,6 +51,7 @@ class DispatchCollection extends ResourceCollection
 				'download_external_xml' => $row->download_external_xml,
 				'download_external_pdf' => $row->download_external_pdf,
 				'download_external_cdr' => $row->download_external_cdr,
+                'reference_document_id' => $row->reference_document_id,
 				'created_at'            => $row->created_at->format('Y-m-d H:i:s'),
 				'updated_at'            => $row->updated_at->format('Y-m-d H:i:s'),
 				'document_id'           => $row->document_id

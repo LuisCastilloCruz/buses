@@ -139,7 +139,6 @@
                 if (this.search_series_by_barcode) {
 
                     if (this.records.length == 1) {
-
                         let lot = await _.find(this.lots, {id: this.records[0].id})
 
                         if(!lot){
@@ -201,7 +200,6 @@
             verifyLot(row){
 
                 let lot = _.find(this.lots, {id:row.id})
-
                 return lot ? true : false
 
             },

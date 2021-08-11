@@ -427,7 +427,6 @@ export default {
     await this.searchExchangeRateByDate(date).then((res) => {
       this.document.exchange_rate_sale = res;
     });
-    console.log( this.document.items);
   },
   watch: {
     arrears(value) {
@@ -562,12 +561,7 @@ export default {
           it.input_unit_price_value = parseFloat(newTotal);
           it.item.unit_price = parseFloat(newTotal);
           it.unit_value = parseFloat(newTotal);
-
-          console.log(it);
-
           const newItem = calculateRowItem(it, "PEN", 3);
-
-          console.log(newItem);
           return newItem;
         }
         return it;

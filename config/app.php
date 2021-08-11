@@ -186,7 +186,8 @@ return [
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 
         ZanySoft\Zip\ZipServiceProvider::class,
-        Mckenziearts\Notify\LaravelNotifyServiceProvider::class
+        Barryvdh\Debugbar\ServiceProvider::class,
+        //Mckenziearts\Notify\LaravelNotifyServiceProvider::class
     ],
 
     /*
@@ -240,6 +241,7 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Zip' => ZanySoft\Zip\ZipFacade::class,
+        'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,
     ],
 
 ];

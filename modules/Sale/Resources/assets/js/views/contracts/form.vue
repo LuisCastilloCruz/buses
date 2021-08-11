@@ -22,9 +22,7 @@
                             </address>
                         </div>
                         <div class="col-sm-4">
-
                             <!-- <el-checkbox class="mt-3" v-model="form.active_terms_condition" @change="changeTermsCondition">Términos y condiciones del contrato</el-checkbox> -->
-
                         </div>
                     </div>
                 </header>
@@ -124,6 +122,23 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-12 pt-3">
+                                <div class="row">
+                                    <div class="form-group col-12 col-md-2">
+                                        <label>Vendedor</label>
+                                        <el-select v-model="form.seller_id" clearable>
+                                            <el-option v-for="sel in sellers" :key="sel.id" :value="sel.id" :label="sel.name">{{ sel.name }}</el-option>
+                                        </el-select>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
+                                            <label class="control-label">Descripcion</label>
+                                            <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
+                                            <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="col-lg-8 mt-2" v-if="showPayments && !form.quotation_id">
 
@@ -174,15 +189,6 @@
                                 </table>
 
 
-                            </div>
-
-                            <div class="col-lg-4">
-                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
-                                    <label class="control-label">Descripcion
-                                    </label>
-                                    <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
-                                </div>
                             </div>
                         </div>
 
@@ -295,6 +301,7 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                sellers: [],
                 resource: 'contracts',
                 showDialogTermsCondition: false,
                 showDialogAddItem: false,
@@ -328,17 +335,19 @@
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
-                    this.currency_types = response.data.currency_types
-                    this.establishments = response.data.establishments
-                    this.all_customers = response.data.customers
-                    this.discount_types = response.data.discount_types
-                    this.charges_types = response.data.charges_types
-                    this.company = response.data.company
+                    const data = response.data;
+                    this.currency_types = data.currency_types
+                    this.establishments = data.establishments
+                    this.all_customers = data.customers
+                    this.discount_types = data.discount_types
+                    this.charges_types = data.charges_types
+                    this.company = data.company
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
-                    this.payment_method_types = response.data.payment_method_types
-                    this.payment_destinations = response.data.payment_destinations
-                    this.configuration = response.data.configuration
+                    this.payment_method_types = data.payment_method_types
+                    this.payment_destinations = data.payment_destinations
+                    this.configuration = data.configuration
+                    this.sellers = data.sellers;
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()

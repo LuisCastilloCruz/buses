@@ -10,6 +10,8 @@ use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Exception;
+
 
 class DocumentsImport implements ToCollection
 {
@@ -28,7 +30,8 @@ class DocumentsImport implements ToCollection
                 $nrodocumento = $row[3];
                 $serienumero = explode('-', $nrodocumento);
                 $serie = $serienumero[0];
-                $number = $serienumero[1];
+                // $number = $serienumero[1];
+                $number = $serienumero[1] ?? null;
                 $correlativo = (int)$number;
 
                 if($row[2] == '03'){
@@ -36,7 +39,7 @@ class DocumentsImport implements ToCollection
                     $document_type_operation = '0101';
                 } elseif($row[2] == '0001'){
                     $document_type = '01';
-                    $document_type_operation = '0101';  
+                    $document_type_operation = '0101';
                 } elseif ($row[2] == '01') {
                     $document_type = '01';
                     $document_type_operation = '0101';
@@ -64,7 +67,7 @@ class DocumentsImport implements ToCollection
                 }
                  else {
                     $client_document_type = '0';
-                    $company_number = '00000000'; 
+                    $company_number = '00000000';
                 }
 
                 if ($row[10] == null) {
@@ -92,12 +95,12 @@ class DocumentsImport implements ToCollection
                 } else {
                     $unit_type = 'NIU';
                 }
-                
+
 
                 $total_primer_producto = $row[26] + $row[27];
 
-                //genero json y envio a api para no hacer insert 
-                
+                //genero json y envio a api para no hacer insert
+
                 $json = array(
                     "serie_documento" => $serie,
                     "numero_documento" => $correlativo,
@@ -107,7 +110,7 @@ class DocumentsImport implements ToCollection
                     "codigo_tipo_documento" => $document_type,
                     "codigo_tipo_moneda" => $currency,
                     "fecha_de_vencimiento" => $date_create,
-                    "numero_orden_de_compra" => "-",
+                    // "numero_orden_de_compra" => "-",
                     "totales" => [
                         "total_exportacion" => 0.00,
                         "total_operaciones_gravadas" => $mtosubtotal,
@@ -116,7 +119,8 @@ class DocumentsImport implements ToCollection
                         "total_operaciones_gratuitas" => 0.00,
                         "total_igv" => $mtoimpuesto,
                         "total_impuestos" => $mtoimpuesto,
-                        "total_valor" => $mtototal,
+                        "total_valor" => $mtosubtotal,
+                        // "total_valor" => $mtototal,
                         "total_venta" => $mtototal
                     ],
                     "datos_del_emisor" => [
@@ -139,7 +143,7 @@ class DocumentsImport implements ToCollection
                             "codigo_producto_sunat" => "",
                             "unidad_de_medida" => $unit_type,
                             "cantidad" => $row[24],
-                            "valor_unitario" => $row[25],
+                            "valor_unitario" => $row[25] / 1.18,
                             "codigo_tipo_precio" => "01",
                             "precio_unitario" => $row[25],
                             "codigo_tipo_afectacion_igv" => "10",
@@ -170,7 +174,7 @@ class DocumentsImport implements ToCollection
                             "codigo_producto_sunat" => "",
                             "unidad_de_medida" => $unit_type,
                             "cantidad" => $row[29],
-                            "valor_unitario" => $row[30],
+                            "valor_unitario" => $row[30] / 1.18,
                             "codigo_tipo_precio" => "01",
                             "precio_unitario" => $row[30],
                             "codigo_tipo_afectacion_igv" => "10",
@@ -191,7 +195,7 @@ class DocumentsImport implements ToCollection
 
                 try {
 
-                    $client = new \GuzzleHttp\Client();
+                    $client = new \GuzzleHttp\Client(['verify' => false]);
 
                     $response = $client->post($url, [
                         'headers' => [

@@ -13,7 +13,14 @@ use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\ModelTenant;
 use Modules\Inventory\Models\InventoryKardex;
+use Modules\Item\Models\ItemLot;
 
+/**
+ * Class OrderNote
+ *
+ * @package Modules\Order\Models
+ * @mixin ModelTenant
+ */
 class OrderNote extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items'];
@@ -298,6 +305,85 @@ class OrderNote extends ModelTenant
         return $query->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id']);
 
+    }
+
+    /**
+     * Establece el status anulado (11) para el pedido
+     *
+     * Recorre los items, si estos tienen lotes serán habilitados nuevamente
+     *
+     * @return $this
+     */
+    public function VoidOrderNote(): OrderNote
+    {
+        $order_items = $this->items;
+        /** @var OrderNoteItem $item */
+        foreach ($order_items as $items) {
+            $item = $items->item;
+            if (property_exists($item, 'lots')) {
+                $lots = $item->lots;
+                $total_lot = count($lots);
+                for ($i = 0; $i < $total_lot; $i++) {
+                    $lot = $lots[$i];
+                    if (property_exists($lot, 'has_sale') && $lot->has_sale == true) {
+                        $item_lot = ItemLot::find($lot->id);
+                        if (!empty($item_lot) && $item_lot->has_sale == true) {
+                            $item_lot->setHasSale(false)->push();
+                        }
+                    }
+                }
+            }
+        }
+        $this->state_type_id = '11';
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCollectionData(){
+        $btn_generate = (count($this->documents) > 0 || count($this->sale_notes) > 0)?false:true;
+
+        return [
+            'id' => $this->id,
+            'soap_type_id' => $this->soap_type_id,
+            'external_id' => $this->external_id,
+            'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
+            'date_of_due' => ($this->date_of_due) ? $this->date_of_due->format('Y-m-d') : null,
+            'delivery_date' => ($this->delivery_date) ? $this->delivery_date->format('Y-m-d') : null,
+            'identifier' => $this->identifier,
+            'user_name' => $this->user->name,
+            'customer_name' => $this->customer->name,
+            'customer_number' => $this->customer->number,
+            'currency_type_id' => $this->currency_type_id,
+            'total_exportation' => number_format($this->total_exportation,2),
+            // 'total_free' => number_format($this->total_free,2),
+            'total_unaffected' => number_format($this->total_unaffected,2),
+            'total_exonerated' => number_format($this->total_exonerated,2),
+            'total_taxed' => number_format($this->total_taxed,2),
+            'total_igv' => number_format($this->total_igv,2),
+            'total' => number_format($this->total,2),
+            'state_type_id' => $this->state_type_id,
+            'state_type_description' => $this->state_type->description,
+            'documents' => $this->documents->transform(function($row) {
+                /** @var Document $row */
+                return [
+                    'number_full' => $row->number_full,
+                    'state_type_id' => $row->state_type_id,
+                ];
+            }),
+            'sale_notes' => $this->sale_notes->transform(function($row) {
+                /** @var SaleNote $row */
+                return [
+                    'identifier' => $row->identifier,
+                    'state_type_id' => $row->state_type_id,
+                ];
+            }),
+            'btn_generate' => $btn_generate,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'print_a4' => url('')."/order-notes/print/{$this->external_id}/a4",
+        ];
     }
     public function scopeWhereNotSent($query)
     {

@@ -4,6 +4,7 @@ namespace Modules\Report\Http\Controllers;
 
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\Configuration;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Report\Exports\DocumentExport;
 use Illuminate\Http\Request;
@@ -40,8 +41,9 @@ class ReportDocumentController extends Controller
 
 
     public function index() {
-
-        return view('report::documents.index');
+        $configuration = Configuration::first();
+        $configuration->ticket_58 = (bool)$configuration->ticket_58;
+        return view('report::documents.index',compact('configuration'));
     }
 
     public function records(Request $request)
@@ -54,13 +56,14 @@ class ReportDocumentController extends Controller
 
 
     public function pdf(Request $request) {
-
+        set_time_limit (1800); // Maximo 30 minutos
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), Document::class)->get();
         $filters = $request->all();
 
-        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment", "filters"));
+        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment", "filters"))
+            ->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_Ventas_'.date('YmdHis');
 
@@ -87,15 +90,15 @@ class ReportDocumentController extends Controller
             $categories_services = $this->getCategories($records, true);
         }
 
-
-        return (new DocumentExport)
-                ->records($records)
-                ->company($company)
-                ->establishment($establishment)
-                ->filters($filters)
-                ->categories($categories)
-                ->categories_services($categories_services)
-                ->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
+        $documentExport = new DocumentExport();
+        $documentExport
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->categories($categories)
+            ->categories_services($categories_services);
+        return $documentExport->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
 
     }
 

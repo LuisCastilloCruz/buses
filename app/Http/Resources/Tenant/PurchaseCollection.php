@@ -3,19 +3,28 @@
 namespace App\Http\Resources\Tenant;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Collection;
 
+/**
+ * Class PurchaseCollection
+ *
+ * @package App\Http\Resources\Tenant
+ */
 class PurchaseCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * @return Collection
      */
     public function toArray($request)
     {
         return $this->collection->transform(function($row, $key) {
 
+            /** @var \App\Models\Tenant\Purchase  $row */
+            return $row->getCollectionData();
+            /** Pasado al modelo */
             $total = $row->total;
             if($row->total_perception)
             {
@@ -61,13 +70,13 @@ class PurchaseCollection extends ResourceCollection
                 'supplier_name' => $row->supplier->name,
                 'supplier_number' => $row->supplier->number,
                 'currency_type_id' => $row->currency_type_id,
-                'total_exportation' => $total_exportation,
-                'total_free' => number_format($total_free, 2, ".",""),
-                'total_unaffected' => number_format($total_unaffected, 2, ".",""),
-                'total_exonerated' => number_format($total_exonerated, 2, ".",""),
-                'total_taxed' => number_format($total_taxed, 2, ".",""),
-                'total_igv' => number_format($total_igv, 2, ".",""),
-                'total_perception' => number_format($total_perception, 2, ".",""),
+                'total_exportation' => $row->total_exportation,
+                'total_free' => number_format($row->total_free, 2, ".",""),
+                'total_unaffected' => number_format($row->total_unaffected, 2, ".",""),
+                'total_exonerated' => number_format($row->total_exonerated, 2, ".",""),
+                'total_taxed' => number_format($row->total_taxed, 2, ".",""),
+                'total_igv' => number_format($row->total_igv, 2, ".",""),
+                'total_perception' => number_format($row->total_perception, 2, ".",""),
                 'total' => number_format($total, 2, ".",""),
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,

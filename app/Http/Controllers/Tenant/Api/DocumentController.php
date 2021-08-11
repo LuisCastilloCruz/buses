@@ -11,7 +11,6 @@ use Exception;
 use Facades\App\Http\Controllers\Tenant\DocumentController as DocumentControllerSend;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\Tenant\DocumentResource;
 
 class DocumentController extends Controller
 {
@@ -156,11 +155,14 @@ class DocumentController extends Controller
     public function lists($startDate = null, $endDate = null)
     {
         if ($startDate == null) {
-            $record = Document::orderBy('created_at', 'desc')->take(50)->get();
+            $record = Document::orderBy('date_of_issue', 'desc')
+                ->take(50)
+                ->get();
         } else {
-            $record = Document::whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at', 'desc')->take(50)->get();
+            $record = Document::whereBetween('date_of_issue', [$startDate, $endDate])
+                ->orderBy('date_of_issue', 'desc')
+                ->get();
         }
-
         $records = new DocumentCollection($record);
         return $records;
     }

@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid p-0">
-        <div class="row page-header pr-0" style="height:auto">
+        <div class="row page-header pr-0 no-gutters" style="height:auto">
             <Keypress
                 key-event="keyup"
                 :key-code="112"
@@ -34,7 +34,7 @@
                         <button
                             type="button"
                             @click="back()"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
                         >
                             <i class="fa fa-border-all"></i>
                         </button>
@@ -51,7 +51,7 @@
                             type="button"
                             :disabled="place == 'cat2'"
                             @click="setView('cat2')"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
                         >
                             <i class="fa fa-bars"></i>
                         </button>
@@ -68,7 +68,7 @@
                             type="button"
                             :disabled="place == 'cat3'"
                             @click="setView('cat3')"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
                         >
                             <i class="fas fa-list-ul"></i>
                         </button>
@@ -85,7 +85,7 @@
                             type="button"
                             :disabled="place == 'cat'"
                             @click="back()"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
                         >
                             <i class="fa fa-undo"></i>
                         </button>
@@ -94,10 +94,10 @@
             </div>
             <div class="col-md-4">
                 <div class="right-wrapper">
-                    <h2 class="text-sm pr-5">
+                    <h2 class="text-sm pr-5" style="font-size: 14px;">
                         T/C {{ form.exchange_rate_sale }}
                     </h2>
-                    <h2 class="text-sm  pull-right">{{ user.name }}</h2>
+                    <h2 class="text-sm  pull-right" style="font-size: 14px;">{{ user.name }}</h2>
                 </div>
             </div>
         </div>
@@ -107,7 +107,7 @@
             class="row col-lg-12 m-0 p-0"
             v-loading="loading"
         >
-            <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
+            <div class="col-lg-8 col-md-6 px-4 hyo">
                 <template v-if="!search_item_by_barcode">
                     <el-input
                         v-show="
@@ -121,7 +121,7 @@
                         @input="searchItems"
                         @keyup.native="keyupTabCustomer"
                         @keyup.enter.native="keyupEnterAddItem"
-                        class="m-bottom"
+                        class="m-bottom mt-3"
                         ref="ref_search_items"
                     >
                         <el-button
@@ -145,7 +145,7 @@
                         @change="searchItemsBarcode"
                         @keyup.native="keyupTabCustomer"
                         ref="ref_search_items"
-                        class="m-bottom"
+                        class="m-bottom mt-3"
                     >
                         <el-button
                             slot="append"
@@ -168,15 +168,15 @@
                         </div>
                     </div>
                 </div>
-                <br />
+                <br/>
 
-                <div v-if="place == 'cat'" class="row">
+                <div v-if="place == 'cat'" class="row no-gutters">
                     <template v-for="(item, index) in categories">
-                        <div class="col-md-2" :key="index">
-                            <div @click="filterCategorie(item.id)" class="card">
+                        <div class="col" :key="index">
+                            <div @click="filterCategorie(item.id)" class="card p-0 m-0 mb-1 mr-1 text-center">
                                 <div
                                     :style="{ backgroundColor: item.color }"
-                                    class="card-body pointer"
+                                    class="card-body pointer rounded-0"
                                     style="font-weight: bold;color: white;font-size: 18px;"
                                 >
                                     {{ item.name }}
@@ -196,7 +196,7 @@
                                 >
                                     <p
                                         class="font-weight-semibold mb-0"
-                                        v-if="item.description.length > 50"
+                                        v-if="DescriptionLength(item) > 50"
                                         data-toggle="tooltip"
                                         data-placement="top"
                                         :title="item.description"
@@ -205,7 +205,7 @@
                                     </p>
                                     <p
                                         class="font-weight-semibold mb-0"
-                                        v-if="item.description.length < 50"
+                                        v-if="DescriptionLength(item) <= 50"
                                     >
                                         {{ item.description }}
                                     </p>
@@ -218,7 +218,7 @@
                                     >
                                         <small>{{ item.internal_id }}</small>
                                         <template v-if="item.sets.length > 0">
-                                            <br />
+                                            <br/>
                                             <small>
                                                 {{ item.sets.join("-") }}
                                             </small>
@@ -233,9 +233,7 @@
                     </el-popover> -->
                                     </p>
                                 </div>
-                                <div
-                                    class="card-footer pointer text-center bg-primary"
-                                >
+                                <div class="card-footer pointer text-center bg-primary">
                                     <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                                     <template v-if="!item.edit_unit_price">
@@ -243,16 +241,11 @@
                                             class="font-weight-semibold text-right text-white"
                                         >
                                             <button
-                                                v-if="configuration.options_pos"
+                                                v-if="configuration.options_pos && edit_unit_price"
                                                 type="button"
                                                 class="btn btn-xs btn-primary-pos"
-                                                @click="
-                                                    clickOpenInputEditUP(index)
-                                                "
-                                            >
-                                                <span style="font-size:16px;"
-                                                    >&#9998;</span
-                                                >
+                                                @click="clickOpenInputEditUP(index)">
+                                                <span style="font-size:16px;">&#9998;</span>
                                             </button>
                                             ({{ item.unit_type_id }})
                                             {{ item.currency_type_symbol }}
@@ -583,23 +576,16 @@
                     </div>
                     <div class="row py-1 border-bottom m-0 p-0">
                         <div class="col-12">
-                            <table class="table table-sm table-borderless mb-0">
+                            <table class="table table-sm table-borderless mb-0 pos-list-items">
                                 <template v-for="(item, index) in form.items">
                                     <tr :key="index">
-                                        <td width="20%">
-                                            <el-input
-                                                v-model="item.item.aux_quantity"
-                                                @input="
-                                                    clickAddItem(
-                                                        item,
-                                                        index,
-                                                        true
-                                                    )
-                                                "
-                                                @keyup.enter.native="
-                                                    keyupEnterQuantity
-                                                "
-                                            ></el-input>
+                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
+                                            {{ item.unit_type_id }}
+                                        </td>
+                                        <td style="width: 80px; vertical-align: top">
+                                            <el-input v-model="item.item.aux_quantity"
+                                                      @input="clickAddItem(item, index, true)"
+                                                      @keyup.enter.native="keyupEnterQuantity"></el-input>
                                             <!-- <el-input
                                                 v-model="item.item.aux_quantity"
                                                 :readonly="
@@ -619,19 +605,14 @@
                                             ></el-input> -->
                                             <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                                         </td>
-                                        <td width="20%">
-                                            <p class="m-0">
+                                        <td>
+                                            <p class="item-description">
                                                 {{ item.item.description }}
                                             </p>
                                             <small>
                                                 {{ nameSets(item.item_id) }}
                                             </small>
                                             <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
-                                        </td>
-                                        <td>
-                                            <small>{{
-                                                item.unit_type_id
-                                            }}</small>
                                         </td>
                                         <!-- <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
@@ -645,45 +626,34 @@
                         </el-input>
                       </p>
                     </td> -->
-                                        <td>
-                                            <p
-                                                class="font-weight-semibold m-0 text-center"
-                                            >
+
+                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
+<!--                                            <p-->
+<!--                                                class="font-weight-semibold m-0 text-center"-->
+<!--                                            >-->
                                                 {{ currency_type.symbol }}
-                                            </p>
+<!--                                            </p>-->
                                         </td>
-                                        <td width="30%">
-                                            <p
-                                                class="font-weight-semibold m-0 text-center"
-                                            >
+                                        <td style="width: 80px; vertical-align: top">
+<!--                                            <p class="font-weight-semibold m-0 text-center">-->
                                                 <!-- {{currency_type.symbol}} {{item.total}} -->
+                                            <template v-if="edit_unit_price">
                                                 <el-input
                                                     v-model="item.total"
-                                                    @input="
-                                                        calculateQuantity(index)
-                                                    "
-                                                    @blur="
-                                                        blurCalculateQuantity(
-                                                            index
-                                                        )
-                                                    "
-                                                    :readonly="
-                                                        !item.item
-                                                            .calculate_quantity
-                                                    "
-                                                >
-                                                    <!-- <template slot="prepend" v-if="currency_type.symbol">{{ currency_type.symbol }}</template> -->
+                                                    @input="calculateQuantity(index)"
+                                                    @blur="blurCalculateQuantity(index)"
+                                                    :readonly="!item.item.calculate_quantity">
+                                                    <!--                                                     <template slot="prepend">{{ currency_type.symbol }}</template>-->
                                                 </el-input>
-                                            </p>
+                                            </template>
+                                            <template v-else>
+                                                {{ item.total }}
+                                            </template>
+<!--                                            </p>-->
                                         </td>
-                                        <td class="text-right">
-                                            <a
-                                                class="btn btn-sm btn-default"
-                                                @click="clickDeleteItem(index)"
-                                            >
-                                                <i
-                                                    class="fas fa-trash fa-wf"
-                                                ></i>
+                                        <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
+                                            <a class="btn btn-sm btn-default" @click="clickDeleteItem(index)">
+                                                <i class="fas fa-trash fa-wf"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -893,6 +863,7 @@
     white-space: nowrap;
     overflow-y: hidden;
 }
+
 .testimonial-group > .row > .col-sm-3 {
     display: inline-block;
     float: none;
@@ -916,6 +887,7 @@
 .ex1 {
     overflow-x: scroll;
 }
+
 .cat_c {
     width: 100px;
     margin: 1%;
@@ -924,18 +896,22 @@
     color: white;
     min-height: 90px;
 }
+
 .cat_c p {
     color: white;
 }
+
 .c-width {
     width: 80px !important;
     padding: 0 !important;
     margin-right: 0 !important;
 }
+
 .el-select-dropdown {
     max-width: 80% !important;
     margin-right: 1% !important;
 }
+
 .el-input-group__append {
     padding: 0 10px !important;
 }
@@ -943,16 +919,17 @@
 
 <script>
 import Keypress from "vue-keypress";
-import { calculateRowItem } from "../../../helpers/functions";
+import {calculateRowItem} from "../../../helpers/functions";
 import PaymentForm from "./partials/payment.vue";
 import ItemForm from "./partials/form.vue";
-import { functions, exchangeRate } from "../../../mixins/functions";
+import {functions, exchangeRate} from "../../../mixins/functions";
 import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
 import PersonForm from "../persons/form.vue";
 import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
+
 export default {
     props: ["configuration", "soapCompany", "businessTurns", "typeUser"],
     components: {
@@ -1052,6 +1029,15 @@ export default {
                 width: `${clase}`,
                 padding: "5px"
             };
+        },
+        edit_unit_price() {
+            if(this.typeUser === 'admin') {
+                return true
+            }
+            if(this.typeUser === 'seller') {
+                return this.configuration.allow_edit_unit_price_to_seller;
+            }
+            return false;
         }
     },
     methods: {
@@ -1128,6 +1114,7 @@ export default {
                     } else {
                         this.pagination.total = 0;
                     }
+                    this.fixItems();
                 });
         },
         getQueryParameters() {
@@ -1135,6 +1122,8 @@ export default {
                 page: this.pagination.current_page
                     ? this.pagination.current_page
                     : 1,
+                input_item: this.input_item,
+                cat: this.category_selected,
                 limit: this.limit
             });
         },
@@ -1179,7 +1168,7 @@ export default {
             let item_search = this.items[index];
             this.items[index].sale_unit_price = this.items[
                 index
-            ].edit_sale_unit_price;
+                ].edit_sale_unit_price;
             this.items[index].edit_unit_price = false;
 
             // console.log(item_search)
@@ -1280,7 +1269,7 @@ export default {
             if (this.form.items[index].item.calculate_quantity) {
                 let quantity = _.round(
                     parseFloat(this.form.items[index].total) /
-                        parseFloat(this.form.items[index].unit_price),
+                    parseFloat(this.form.items[index].unit_price),
                     4
                 );
 
@@ -1473,7 +1462,7 @@ export default {
                 discounts: [],
                 attributes: [],
                 has_igv: false,
-                has_plastic_bag_taxes:false,
+                has_plastic_bag_taxes: false,
             };
         },
         async clickPayment() {
@@ -1586,7 +1575,6 @@ export default {
                 this.form.items[pos] = this.row;
             } else {
 
-                //cuando no hay estock porque ya agregó lo que había al carrito
                 response = await this.getStatusStock(
                     item.item_id,
                     item.presentation
@@ -1622,7 +1610,7 @@ export default {
                 this.form_item.attributes = [];
                 this.form_item.affectation_igv_type = _.find(
                     this.affectation_igv_types,
-                    { id: this.form_item.affectation_igv_type_id }
+                    {id: this.form_item.affectation_igv_type_id}
                 );
 
                 // console.log(this.form_item)
@@ -1639,7 +1627,7 @@ export default {
                     ? item.presentation.unit_type_id
                     : this.form_item.item.unit_type_id;
 
-                this.form.items.push(this.row);
+                this.form.items.unshift(this.row);
                 item.aux_quantity = 1;
             }
 
@@ -1823,7 +1811,7 @@ export default {
                             this.pagination.per_page = parseInt(
                                 response.data.meta.per_page
                             );
-
+                            this.fixItems();
                             this.loading = false;
                         } else {
                             this.loading = false;
@@ -1847,7 +1835,6 @@ export default {
                     .then(response => {
                         console.log("buah");
                         this.items = response.data.items;
-                        console.log(this.items);
                         this.enabledSearchItemsBarcode();
                         this.loading = false;
                         if (this.items.length == 0) {
@@ -1857,6 +1844,23 @@ export default {
             } else {
                 await this.filterItems();
             }
+        },
+        fixItems(){
+            this.items = this.all_items.map(i => {
+                /** Si description es vacio y hay nombre */
+                if(i.name !== undefined) {
+                    if ( i.description === undefined || i.description == null ) {
+                        i.description = i.name;
+                    }
+                }
+                /** Si description es vacio aun */
+                if(i.description == null){
+                    i.description = i.internal_id;
+                }
+
+                return i;
+            });
+            this.all_items =this.items;
         },
         enabledSearchItemsBarcode() {
             if (this.search_item_by_barcode) {
@@ -1876,7 +1880,21 @@ export default {
             this.input_item = null;
         },
         filterItems() {
-            this.items = this.all_items;
+            if (this.place === "cat3") {
+                this.items = this.all_items;
+            } else {
+                this.items = this.all_items.map(i => {
+                    console.log(i.description);
+                    // if (i.brand) {
+                    //     var desc = `${i.description} - ${i.brand}`;
+                    //     if(i.description != desc){
+                    //         i.description = `${i.description} - ${i.brand}`;
+                    //     }
+                    // }
+                    console.log(i.description);
+                    return i;
+                });
+            }
         },
         reloadDataCustomers(customer_id) {
             this.$http
@@ -1890,6 +1908,7 @@ export default {
         reloadDataItems(item_id) {
             this.$http.get(`/${this.resource}/table/items`).then(response => {
                 this.all_items = response.data;
+                this.fixItems();
                 this.filterItems();
             });
         },
@@ -1944,6 +1963,16 @@ export default {
                     return "";
                 }
             }
+        },
+        listReverse(items) {
+            console.log(items);
+            console.log(_.reverse(items));
+            return _.reverse(items);
+        },
+        DescriptionLength(item){
+            if(item.description === undefined) return 0;
+            if(item.description == null) return 0;
+            return item.description.length;
         }
     }
 };

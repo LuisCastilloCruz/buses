@@ -35,16 +35,20 @@
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
                     </div> -->
-                     <div class="col-md-9">
+                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Descripción</label>
                             <el-input v-model="form.name" dusk="name"></el-input>
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
                     </div>
-
-
-
+                    <div class="col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.model}">
+                            <label class="control-label">Modelo</label>
+                            <el-input v-model="form.model" dusk="model"></el-input>
+                            <small class="form-control-feedback" v-if="errors.model" v-text="errors.model[0]"></small>
+                        </div>
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
                             <label class="control-label">Unidad</label>
@@ -106,20 +110,39 @@
                                         <th class="font-weight-bold">Descripción</th>
                                         <th class="text-center font-weight-bold">Precio Unitario</th>
                                         <th class="text-right font-weight-bold">Cantidad</th>
+                                        <th class="text-right font-weight-bold">Total</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(row, index) in form.individual_items" :key="index">
-                                        <td>{{index + 1}}</td>
-                                        <td>{{row.full_description}}</td>
-                                        <td class="text-center">{{row.sale_unit_price}}</td>
-                                        <td class="text-right">{{row.quantity}}</td>
-                                        <td class="text-right">
-                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
-                                        </td>
-                                    </tr>
+                                <tr v-for="(row, index) in form.individual_items" :key="index">
+                                    <td>{{index + 1}}</td>
+                                    <td>{{row.full_description}}</td>
+                                    <td class="text-center">{{row.sale_unit_price}}</td>
+                                    <td class="text-right">
+                                        <el-input-number
+                                            v-model="row.quantity"
+                                            @change="calculateTotal"
+                                            :min="0"/>
+                                    </td>
+                                    <td class="text-center">{{row.sale_unit_price * row.quantity | toDecimals }}</td>
+                                    <td class="text-right">
+                                        <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
+                                                @click.prevent="clickRemoveItem(index)">x
+                                        </button>
+                                    </td>
+                                </tr>
                                 </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="font-weight-bold"></th>
+                                    <th class="text-center font-weight-bold"></th>
+                                    <th class="text-right font-weight-bold">Total</th>
+                                    <th class="text-center font-weight-bold">{{ total | toDecimals}}</th>
+                                    <th></th>
+                                </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -336,8 +359,8 @@
                     </div>
 
                     <item-set-form-item
-                                    :showDialog.sync="showDialogAddItem"
-                                    @add="addRow"></item-set-form-item>
+                        :showDialog.sync="showDialogAddItem"
+                        @add="addRow"></item-set-form-item>
 
                 </div>
             </div>
@@ -350,7 +373,7 @@
 </template>
 
 <script>
-    import ItemSetFormItem from './partials/item.vue'
+import ItemSetFormItem from './partials/item.vue'
 
     export default {
         props: ['showDialog', 'recordId', 'external'],
@@ -367,6 +390,7 @@
                 enabled_percentage_of_profit:false,
                 titleDialog: null,
                 resource: 'item-sets',
+                total: 0,
                 errors: {},
                 headers: headers_token,
                 form: {},
@@ -393,6 +417,7 @@
         },
         created() {
             this.initForm()
+            this.total = 0;
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
@@ -415,6 +440,13 @@
 
         },
         methods: {
+            calculateTotal(){
+                this.total = 0;
+                this.form.individual_items.forEach(row => {
+                    this.total += row.sale_unit_price * row.quantity;
+                });
+
+            },
             clickRemoveItem(index) {
                 this.form.individual_items.splice(index, 1)
                 this.changeIndividualItems()
@@ -433,7 +465,7 @@
                 this.changeIndividualItems()
             },
             changeIndividualItems(){
-
+                this.calculateTotal();
                 // let acum_sale_unit_price = 0
 
                 // this.form.individual_items.forEach(row => {
@@ -517,11 +549,13 @@
             },
             create() {
                 this.titleDialog = (this.recordId)? 'Editar producto compuesto':'Nuevo producto compuesto'
+                this.total = 0;
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
                             this.changeAffectationIgvType()
+                            this.calculateTotal();
                         })
                 }
             },
@@ -530,7 +564,8 @@
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
-                            this.changeAffectationIgvType()
+                            this.changeAffectationIgvType();
+
                         })
                 }
             },
@@ -653,4 +688,6 @@
             }
         }
     }
+// Se puede usar datos de la siguiente direccion.
+// resources/js/views/tenant/items/form.vue
 </script>

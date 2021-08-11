@@ -1,53 +1,60 @@
 <!DOCTYPE html>
+@php
+    $path = explode('/', request()->path());
+    $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
+    $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
+    $path[0] = ($path[0] === '')?'documents':$path[0];
+    $visual->sidebar_theme = property_exists($visual, 'sidebar_theme')?$visual->sidebar_theme:''
+@endphp
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     class="fixed no-mobile-device custom-scroll
-        {{$vc_compact_sidebar->compact_sidebar == true ? 'sidebar-left-collapsed' : ''}}
-        {{$visual->header == 'dark' ? 'header-dark' : ''}}
-        {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}}
+        sidebar-{{$visual->sidebar_theme ?? ''}}
+        {{ ($visual->sidebar_theme == 'white'
+        || $visual->sidebar_theme == 'gray'
+        || $visual->sidebar_theme == 'green'
+        || $visual->sidebar_theme == 'warning'
+        || $visual->sidebar_theme == 'ligth-blue') ? 'sidebar-light' : '' }}
+        {{$vc_compact_sidebar->compact_sidebar == true || $path[0] === 'documents' && $path[1] === 'create' ? 'sidebar-left-collapsed' : ''}}
+        {{-- header-{{$visual->navbar ?? 'fixed'}} --}}
+        {{-- {{$visual->header == 'dark' ? 'header-dark' : ''}} --}}
+        {{-- {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}} --}}
         {{$visual->bg == 'dark' ? 'dark' : ''}}
+        {{ ($path[0] === 'documents' && $path[1] === 'create'
+        || $path[0] === 'documents' && $path[1] === 'note'
+        || $path[0] === 'quotations' && $path[1] === 'create'
+        || $path[0] === 'sale-opportunities' && $path[1] === 'create'
+        || $path[0] === 'order-notes' && $path[1] === 'create'
+        || $path[0] === 'sale-notes' && $path[1] === 'create'
+        || $path[0] === 'purchase-quotations' && $path[1] === 'create'
+        || $path[0] === 'purchase-orders' && $path[1] === 'create'
+        || $path[0] === 'dispatches' && $path[1] === 'create'
+        || $path[0] === 'purchases' && $path[1] === 'create') ? 'newinvoice' : ''}}
         ">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{{ asset('porto-light/favicon/animated_favicon.gif') }}" type="image/gif" >
-
-    <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    {{--    <title>{{ config('app.name', 'Facturación Electrónica') }}</title>--}}
     <title>Facturación Electrónica 2021</title>
 
-    <!-- Scripts -->
-
-    <!-- Fonts -->
-    {{--<link rel="dns-prefetch" href="https://fonts.gstatic.com">--}}
-    {{--<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">--}}
-
     <link async href="{{ asset(mix('css/app.css')) }}" rel="stylesheet">
-
-    <!-- Styles -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
-    {{-- <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/css/fontawesome-all.min.css') }}" /> --}}
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/5.11/css/all.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2/css/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2-bootstrap-theme/select2-bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/datatables/media/css/dataTables.bootstrap4.css') }}" />
-
-    {{--<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />--}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.26.29/sweetalert2.min.css" />
     <link rel="stylesheet" href="{{asset('porto-light/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css')}}" />
 
-    <!-- Specific Page Vendor CSS -->
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-ui/jquery-ui.css')}}" />
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-ui/jquery-ui.theme.css')}}" />
     <link rel="stylesheet" href="{{asset('porto-light/vendor/select2/css/select2.css')}}" />
     <link rel="stylesheet" href="{{asset('porto-light/vendor/select2-bootstrap-theme/select2-bootstrap.min.css')}}" />
 
-    <!-- Daterange picker plugins css -->
     <link href="{{ asset('porto-light/vendor/bootstrap-timepicker/css/bootstrap-timepicker.css') }}" rel="stylesheet">
     <link href="{{ asset('porto-light/vendor/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
 
@@ -75,6 +82,7 @@
 
 
     <script src="{{ asset('porto-light/vendor/modernizr/modernizr.js') }}"></script>
+
     <style>
         .descarga {
             color:black;
@@ -108,26 +116,29 @@
         }
 
     </style>
+
+    @if ($vc_company->favicon)
+    <link rel="shortcut icon" type="image/png" href="{{ asset($vc_company->favicon) }}"/>
+    @endif
+    <script defer src="{{ mix('js/app.js') }}"></script>
+
 </head>
 <body class="pr-0">
+
     <section class="body">
         <!-- start: header -->
         @include('tenant.layouts.partials.header')
         <!-- end: header -->
         <div class="inner-wrapper">
-           
             <!-- start: sidebar -->
             @include('tenant.layouts.partials.sidebar')
             <!-- end: sidebar -->
             <section role="main" class="content-body" id="main-wrapper">
-                @if( Session::has( 'message' ))
-                    <div class="alert alert-danger text-center">
-                        {{ Session::get( 'message' ) }}
-                    </div>
-                @endif
               @yield('content')
               @include('tenant.layouts.partials.sidebar_styles')
             </section>
+
+            @yield('package-contents')
         </div>
     </section>
     @if($show_ws)
@@ -173,7 +184,7 @@
     {{--<script src="{{ asset('porto-light/vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>--}}
 
     <!-- Theme Initialization Files -->
-    <!-- {{-- <script src="{{asset('porto-light/js/theme.init.js')}}"></script> --}} -->
+    {{-- <script src="{{asset('porto-light/js/theme.init.js')}}"></script> --}}
 
     {{--<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>--}}
     {{--<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>--}}
@@ -183,7 +194,7 @@
     <script src="{{ asset(mix('js/manifest.js')) }}"></script>
     <script src="{{ asset(mix('js/vendor.js')) }}"></script>
     <!-- Theme Base, Components and Settings -->
-    <script src="{{asset('porto-light/js/theme.js') }}"></script>
+    <script src="{{asset('porto-light/js/theme.js')}}"></script>
 
     <!-- Theme Custom -->
     <script src="{{asset('porto-light/js/custom.js') }}"></script>
@@ -201,8 +212,5 @@
     </script>
     <script defer src="{{ asset(mix('js/app.js')) }}"></script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
-        
-    @yield('js')   
-
 </body>
 </html>

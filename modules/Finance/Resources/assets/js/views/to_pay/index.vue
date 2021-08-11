@@ -472,17 +472,6 @@
             clickOpen(){
                 window.open(`/${this.resource}/to-pay-all`, "_blank");
             },
-            changeSupplierToPay() {
-                if (this.form.supplier_id) {
-
-                    this.loadToPay()
-                    /*this.records = _.filter(this.records_base, {
-                    supplier_id: this.selected_customer
-                    });*/
-                } else {
-                    this.records = []
-                }
-            },
             changeDisabledDates() {
                 if (this.form.date_end < this.form.date_start) {
                     this.form.date_end = this.form.date_start
@@ -512,7 +501,6 @@
                     this.form.date_start = moment().startOf('month').format('YYYY-MM-DD');
                     this.form.date_end = moment().endOf('month').format('YYYY-MM-DD');
                 }
-                this.loadToPay();
             },
 
         }

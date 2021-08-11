@@ -232,4 +232,33 @@ class ServiceController extends Controller
         }
     }
 
+    public function validateCpe(Request $request){
+
+        $company_number = $request->numero_ruc_emisor;
+        $document_type_id = $request->codigo_tipo_documento;
+        $series = $request->serie_documento;
+        $number = $request->numero_documento;
+        $date_of_issue = $request->fecha_de_emision;
+        $total = $request->total;
+
+        $validate_cpe = new ValidateCpe2();
+        $response = $validate_cpe->search($company_number,$document_type_id,$series,$number,$date_of_issue,$total);
+
+        if ($response['success']) {
+
+            return [
+                'success' => true,
+                'data' => $response['data']
+            ];
+
+        } else {
+            return [
+                'success' => false,
+                'data' => $response
+            ];
+        }
+
+    }
+
+
 }

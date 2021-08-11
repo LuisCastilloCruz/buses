@@ -95,6 +95,17 @@
                             </div>
                         </div>
 
+                        <div class="col-lg-3 col-md-3" v-if="resource == 'reports/sales' || resource === 'reports/sale-notes'">
+                        <label>Orden de compra</label>
+                            <el-input v-model="form.purchase_order" clearable></el-input>
+                        </div>
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group"  >
+                            <label class="control-label">Numero de Guía</label>
+                            <el-input v-model="form.guides" clearable></el-input>
+                        </div>
+                    </div>
+
                         <div class="col-lg-3 col-md-3 mt-4" v-if="resource == 'reports/sales'">
                             <div class="form-group">
                                 <el-checkbox v-model="form.include_categories" >¿Incluir categorías?</el-checkbox><br>
@@ -303,14 +314,15 @@
                     if(row.currency_type_id == 'PEN'){
 
                         if((signal == '07' && state != '11')){
-                            this.totals.acum_total += parseFloat(row.total);
-                            this.totals.acum_total_taxed += parseFloat(row.total_taxed);
-                            this.totals.acum_total_igv += parseFloat(row.total_igv);
+
+                            this.totals.acum_total += parseFloat(-row.total);
+                            this.totals.acum_total_taxed += parseFloat(-row.total_taxed);
+                            this.totals.acum_total_igv += parseFloat(-row.total_igv);
 
 
-                            this.totals.acum_total_exonerated += parseFloat(row.total_exonerated);
-                            this.totals.acum_total_unaffected += parseFloat(row.total_unaffected);
-                            this.totals.acum_total_free += parseFloat(row.total_free);
+                            this.totals.acum_total_exonerated += parseFloat(-row.total_exonerated);
+                            this.totals.acum_total_unaffected += parseFloat(-row.total_unaffected);
+                            this.totals.acum_total_free += parseFloat(-row.total_free);
 
 
                         }else if(signal != '07' && state == '11'){
@@ -394,7 +406,8 @@
                     month_end: moment().format('YYYY-MM'),
                     seller_id:null,
                     state_type_id:null,
-                    include_categories: false
+                    include_categories: false,
+                    guides: null
                 }
 
             },

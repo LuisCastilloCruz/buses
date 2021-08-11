@@ -1,7 +1,7 @@
 <template>
     <el-dialog :title="title" class="text-left" :visible="showDialog"   @opened="create" @close="close" :close-on-click-modal="false">
         <!-- <p class="text-center">* Se recomienda resoluciones 700x300.</p> -->
-        <form autocomplete="off" @submit.prevent="submit">
+        <form autocomplete="off" @submit.prevent="submit" v-if="detraction">
             <div class="form-body">
                 <div class="row mb-3" >
                     <div class="col-lg-6 col-md-6">

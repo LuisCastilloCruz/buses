@@ -1,20 +1,14 @@
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
 require('./bootstrap');
 
-// window.Vue = require('vue');
 import Vue from 'vue'
+import store from './store'
 import ElementUI from 'element-ui'
 import Axios from 'axios'
 import movable from 'v-movable';
 
 import lang from 'element-ui/lib/locale/lang/es'
 import locale from 'element-ui/lib/locale'
+
 locale.use(lang)
 
 ElementUI.Select.computed.readonly = function () {
@@ -24,21 +18,11 @@ ElementUI.Select.computed.readonly = function () {
 
 export default ElementUI;
 
-
-//Vue.use(ElementUI)
 Vue.use(ElementUI, { size: 'small' })
 Vue.prototype.$eventHub = new Vue()
 Vue.prototype.$http = Axios
-
-
 Vue.use(movable);
 
-// import VueCharts from 'vue-charts'
-// Vue.use(VueCharts);
-// import { TableComponent, TableColumn } from 'vue-table-component';
-//
-// Vue.component('table-component', TableComponent);
-// Vue.component('table-column', TableColumn);
 Vue.component('tenant-dashboard-index', require('../../modules/Dashboard/Resources/assets/js/views/index.vue'));
 
 Vue.component('x-graph', require('./components/graph/src/Graph.vue'));
@@ -88,6 +72,7 @@ Vue.component('tenant-dispatches-create', require('./views/tenant/dispatches/cre
 Vue.component('tenant-purchases-index', require('./views/tenant/purchases/index.vue'));
 Vue.component('tenant-purchases-form', require('./views/tenant/purchases/form.vue'));
 Vue.component('tenant-purchases-edit', require('./views/tenant/purchases/form_edit.vue'));
+Vue.component('tenant-transfer-reason-types-index', require('./views/tenant/transfer_reason_types/index.vue'));
 
 Vue.component('tenant-purchases-items', require('./views/tenant/dispatches/items.vue'));
 Vue.component('tenant-attribute_types-index', require('./views/tenant/attribute_types/index.vue'));
@@ -135,6 +120,10 @@ Vue.component('tenant-account-format', require('../../modules/Account/Resources/
 Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
 Vue.component('tenant-account-tributo', require('../../modules/Account/Resources/assets/js/views/account/tributo.vue'));
 
+//
+Vue.component('tenant-inventory-report', require('../../modules/Inventory/Resources/assets/js/inventory/reports/index.vue'));
+//
+
 //contabilidad
 Vue.component('tenant-accounting-plan', require('../../modules/Account/Resources/assets/js/views/accounting/accounting_plan/index.vue'));
 
@@ -147,6 +136,8 @@ Vue.component('tenant-report-purchases-index', require('../../modules/Report/Res
 Vue.component('tenant-report-documents-index', require('../../modules/Report/Resources/assets/js/views/documents/index.vue'));
 Vue.component('tenant-report-customers-index', require('../../modules/Report/Resources/assets/js/views/customers/index.vue'));
 Vue.component('tenant-report-items-index', require('../../modules/Report/Resources/assets/js/views/items/index.vue'));
+/** Reporte de guias */
+Vue.component('tenant-report-guide-index', require('../../modules/Report/Resources/assets/js/views/guide/index.vue'));
 Vue.component('tenant-report-sale_notes-index', require('../../modules/Report/Resources/assets/js/views/sale_notes/index.vue'));
 Vue.component('tenant-report-quotations-index', require('../../modules/Report/Resources/assets/js/views/quotations/index.vue'));
 Vue.component('tenant-report-cash-index', require('../../modules/Report/Resources/assets/js/views/cash/index.vue'));
@@ -274,6 +265,13 @@ Vue.component('tenant-hotel-rent-add-product', require('@viewsModuleHotel/rooms/
 // Hoteles :: Checkout
 Vue.component('tenant-hotel-rent-checkout', require('@viewsModuleHotel/rooms/Checkout.vue'));
 
+// Trámite documentario
+Vue.component('tenant-documentary-offices', require('@viewsModuleDocumentary/offices/Offices.vue'));
+Vue.component('tenant-documentary-processes', require('@viewsModuleDocumentary/processes/Processes.vue'));
+Vue.component('tenant-documentary-documents', require('@viewsModuleDocumentary/documents/Documents.vue'));
+Vue.component('tenant-documentary-actions', require('@viewsModuleDocumentary/actions/Actions.vue'));
+Vue.component('tenant-documentary-files', require('@viewsModuleDocumentary/files/Files.vue'));
+Vue.component('tenant-documentary-requirements', require('@viewsModuleDocumentary/requirements/Requirements.vue'))
 
 // Transporte :: Vehiculos
 Vue.component('tenant-transporte-vehiculos', require('@viewsModuleTransporte/vehiculos/List.vue'));
@@ -342,12 +340,27 @@ Vue.component('system-configuration-culqi', require('./views/system/configuratio
 //token
 Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 
+// php info
+Vue.component('system-php-configuration', require('./views/system/configuration/php_info.vue'))
+
+//Configuración global del login
+Vue.component('system-login-settings', require('./views/system/configuration/login.vue'))
+
+// Configuración del login
+Vue.component('tenant-login-page', require('./views/tenant/login/index.vue'))
+
+/** Modulo DIGEMID **/
+Vue.component('tenant-digemid-index', require('../../modules/Digemid/Resources/assets/js/view/index.vue'));
+
 import moment from 'moment';
 
 Vue.mixin({
     filters: {
         toDecimals(number, decimal = 2) {
             return Number(number).toFixed(decimal);
+        },
+        DecimalText: function (number, decimal = 2) {
+            return isNaN(parseFloat(number)) ? number : Number(number).toFixed(decimal);
         },
         toDate(date) {
             if (date) {
@@ -363,6 +376,12 @@ Vue.mixin({
                 return moment(time, 'HH:mm:ss').format('HH:mm:ss');
             }
             return '';
+        },
+        pad(value, fill = '', length = 3) {
+            if (value) {
+                return String(value).padStart(length, fill);
+            }
+            return value;
         }
     },
     methods: {
@@ -382,5 +401,6 @@ Vue.mixin({
     }
 })
 const app = new Vue({
+    store: store,
     el: '#main-wrapper'
 });

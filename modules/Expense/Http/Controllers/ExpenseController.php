@@ -21,7 +21,9 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\Establishment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Company;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Expense\Exports\ExpenseExport;
+use Carbon\Carbon;
 
 class ExpenseController extends Controller
 {
@@ -102,7 +104,7 @@ class ExpenseController extends Controller
             foreach ($data['payments'] as $row)
             {
                 $record_payment = $doc->payments()->create($row);
-                
+
                 if($row['expense_method_type_id'] == 1){
                     $row['payment_destination_id'] = 'cash';
                 }
@@ -187,6 +189,25 @@ class ExpenseController extends Controller
                 'message' => 'Falló al anular',
             ];
         }
+    }
+
+    public function excel(Request $request) {
+
+        $records = Expense::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()
+                            ->latest()
+                            ->get();
+        // dd($records);
+
+        $establishment = auth()->user()->establishment;
+        $balance = new ExpenseExport();
+        $balance
+            ->records($records)
+            ->establishment($establishment);
+
+        // return $balance->View();
+        return $balance->download('Expense_'.Carbon::now().'.xlsx');
+
     }
 
 }

@@ -84,6 +84,7 @@ Documentación del archivo .ENV: [Guía](https://docs.google.com/document/d/1XpN
 Incrementar recursos - servidor: [Guía](https://drive.google.com/open?id=1IQad7UnljZEPd4hYWx5ZlR3LJliFGT25AjiI4-TlcJU "Clic")<br>
 Incrementar recursos - aplicación: [Guía](https://drive.google.com/open?id=1_A06M8AKR514XdctOpi8yIHOQd2cMIzm1BAdNCLUoew "Clic")<br>
 Configuracion de correo electrónico emisor: [Guía](https://docs.google.com/document/d/1sBXGgKZwcgKZTMTT_qQldpRT13jzEL4Q1S_yPpY-nOo/edit?usp=sharing "Clic")<br>
+Configuracion de correo emisor por cliente: [Guía](https://docs.google.com/document/d/1ix2vPsiqSoK9jNAOF2gPjWhNa3BdajU5x8I5aBvEz0o/edit?usp=sharing "Clic")<br>
 Manual - Cambio de dominio: [Guía](https://docs.google.com/document/d/14rbElqQ6Ru6hh3UCZm4wTKIUCm_hPbMNYz9EH8fcPRo/edit?usp=sharing "Clic")<br>
 Linux - Eliminar temporales: [Guía](https://docs.google.com/document/d/17-9F9xrQepGfSkZIiCcty-B0GAjeJnN5KO8p0rOBYxY/edit?usp=sharing "Clic")<br>
 Linux - Eliminar archivos por extensión: [Guía](https://docs.google.com/document/d/1M1s6EYF7sA89JccrXh7d_UhLB367F7Kk41yKCpSIzdo/edit#heading=h.ghi3ru1xdrna "Clic")<br>
@@ -94,6 +95,7 @@ Configuración de tareas programadas (crontab-LAMP): [Guía](https://docs.google
 
 ### Base de datos
 Guía acceso a base de datos: [Guía](https://drive.google.com/open?id=1uZ_qt34I8HucJYmt_RfI2orgfl9_dpqIh8RukwiG1uM "Clic")<br>
+Cambiar Contraseña root: [enlace](https://gist.github.com/rordi/ab55c92848fd06884172ed22ae88d7df "clic")<br>
 
 ### Docker
 Iniciar servicios docker: [Guía](https://docs.google.com/document/d/1MMuyeYE53RjDaOR2OLPsCtpxicDzqowlvoMTWpkBaSM/edit# "Clic")<br>

@@ -13,9 +13,9 @@ class TenantAddDataModuleForTransporteUsers extends Migration
      */
     public function up()
     {
-        DB::table('modules')->insert([ 
-            ['id'=> 16, 'value' => 'transporte', 'description' => 'Módulo transportes','order_menu'=>15]
-        ]);
+//        DB::table('modules')->insert([
+//            ['id'=> 16, 'value' => 'transporte', 'description' => 'Módulo transportes','order_menu'=>15]
+//        ]);
     }
 
     /**
@@ -25,6 +25,6 @@ class TenantAddDataModuleForTransporteUsers extends Migration
      */
     public function down()
     {
-        DB::table('modules')->where('id', 16)->delete();
+//        DB::table('modules')->where('id', 16)->delete();
     }
 }

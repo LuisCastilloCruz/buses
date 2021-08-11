@@ -16,7 +16,7 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="form-group">
-                                    
+
                                     <label for="">Tipo de comprobante</label>
                                     <el-select
                                         v-model="document.document_type_id"
@@ -176,7 +176,7 @@
                                                 :remote-method="searchProducto"
                                                 :loading="loadingSProducto"
                                                 clearable
-                                                
+
                                                 >
                                                 <el-option v-for="item in items" :key="item.id" :value="item" :label="item.name">
                                                 </el-option>
@@ -194,19 +194,19 @@
                                             <el-input v-model="producto.item.description" placeholder="Descripción"></el-input>
                                         </div>
 
-                                        
-                                        
+
+
                                     </div>
                                     <div class="col-3">
                                         <div class="form-group">
                                             <label for="">Precio unitario <span class="text-danger">*</span></label>
                                             <el-input type="number" v-model="producto.unit_price" placeholder="Precio"></el-input>
                                         </div>
-                                        
+
                                     </div>
                                     <div class="col-3">
                                         <el-button :style="{marginTop:'1.82rem'}" :loading="loadingProducto" type="primary" @click="agregarProducto">Agregar</el-button>
-                                    </div>                                 
+                                    </div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-12">
@@ -408,7 +408,7 @@
                     :configuration="configuration"
                 >
     </document-options>
-    </div>            
+    </div>
 </template>
 
 <script>
@@ -641,8 +641,8 @@ export default {
                 // if(this.document.payments.length > 0){
                 //     this.document.payments[0].payment = this.total;
                 // }
-                
-            
+
+
             }else {
                if(this.configuration.legend_footer==1){ // zona selva
                      this.initProductoExonerado();
@@ -722,7 +722,7 @@ export default {
                 this.encomienda.estado_pago_id=2;//2 = pago en destino
                 //this.controlPago();
             }
-        
+
             this.cleanCustomer();
             this.filterCustomers();
         },
@@ -788,7 +788,7 @@ export default {
                 const { data } = await this.$http.get(`/transportes/encomiendas/get-productos?search=${q}`);
                 this.loadingSProducto = false;
                 this.items = data;
-                
+
 
             },
 
@@ -839,7 +839,7 @@ export default {
                 this.$http
                     .put(`/transportes/choferes/${this.chofer.id}/update`, this.form)
                     .then((response) => {
-                        
+
                         this.$emit("onUpdateItem", response.data.data);
                         this.onClose();
                     })
@@ -859,7 +859,7 @@ export default {
                     .then( ({data}) => {
                         this.loading = false;
                         this.$emit('onAddItem',data.encomienda);
-      
+
                         if (this.document.document_type_id === "nv") {
                             this.modalNote();
                         } else {
@@ -895,7 +895,7 @@ export default {
                 this.encomienda.programacion_id = programacion.id;
             },
             async agregarProducto(evt){
-                if(this.producto.item.description && this.producto.unit_price){                
+                if(this.producto.item.description && this.producto.unit_price){
                     let precio = parseFloat(this.producto.unit_price);
                     let valorventa = parseFloat(precio/1.18);
                     let igv = parseFloat(precio-valorventa);
@@ -934,9 +934,9 @@ export default {
                     }else {
                         this.producto.item_id = this.producto.item.id;
                     }
-                    
+
                     let p =  JSON.parse(JSON.stringify(this.producto));
-                    
+
                     this.document.items.push( p );
                     // this.document.payments.push(this.payment);
                     //this.document.customer_id=this.pasajeroId;
@@ -967,7 +967,7 @@ export default {
                  else{
                      this.initProducto();
                  }
-                
+
                 this.total = 0;
 
                 this.terminalId = this.userTerminal.terminal_id;
@@ -1005,11 +1005,11 @@ export default {
                 this.onCalculateTotals();
                 // this.validateIdentityDocumentType();
                 this.load = true;
-                
+
                 await this.initializeSelects();
                 await this.searchTerminales();
                 await this.searchProducto();
-                
+
                 this.load = false;
 
                 const date = moment().format("YYYY-MM-DD");
@@ -1083,7 +1083,7 @@ export default {
                             else{
                                 this.form_cash_document.document_id = response.data.data.id;
                             }
-                            
+
 
                             this.$emit("update:showDialog", false);
                             await this.onStore();// guardando encomienda
@@ -1180,7 +1180,12 @@ export default {
                         stock_min:1,
                         unit_price: "0", //cambiado
                         unit_type_id: "ZZ",
-                        is_set: false
+                        is_set: false,
+                        series_enabled: false,
+                        purchase_has_igv: true,
+                        web_platform_id:null,
+                        has_plastic_bag_taxes: false,
+                        item_warehouse_prices: [],
                     },
                     item_id: 1,
                     percentage_igv: 18,
@@ -1255,7 +1260,12 @@ export default {
                         stock_min:1,
                         unit_price: 0, //cambiado
                         unit_type_id: "ZZ",
-                        is_set: false
+                        is_set: false,
+                        series_enabled: false,
+                        purchase_has_igv: true,
+                        web_platform_id:null,
+                        has_plastic_bag_taxes: false,
+                        item_warehouse_prices: [],
                     },
                     item_id: null,
                     percentage_igv: 18,
@@ -1449,7 +1459,7 @@ export default {
                 } else {
                     this.tempRemitentes = this.remitentes
                 }
-            
+
             },
             async createItem(item){
                 try{

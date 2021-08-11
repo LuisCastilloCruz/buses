@@ -14,7 +14,7 @@
                     </el-select>
                     <span v-if="errors.serie" class="invalid-feedback" :style="{display:'block'}">{{ errors.serie[0] }}</span>
                 </div>
-                
+
             </div>
             <div class="col-3">
                 <div class="form-group">
@@ -54,36 +54,36 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="">Chofer</label>
-                     <el-select v-model="manifiesto.chofer_id" >
-                        <el-option
+                     <select v-model="manifiesto.chofer_id" class="form-control">
+                        <option
                         v-for="chofer in choferes"
                         :key="chofer.id"
                         :label="chofer.nombre"
                         :value="chofer.id">
-                        </el-option>
-                    </el-select>
+                        </option>
+                    </select>
                     <span v-if="errors.chofer_id" class="invalid-feedback" :style="{display:'block'}">{{ errors.chofer_id[0] }}</span>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="">Copiloto</label>
-                     <el-select v-model="manifiesto.copiloto_id" >
+                     <select v-model="manifiesto.copiloto_id" class="form-control">
                         <template  v-for="copiloto in choferes">
-                            <el-option
+                            <option
                             v-if="manifiesto.chofer_id != copiloto.id"
                             :key="copiloto.id"
                             :label="copiloto.nombre"
                             :value="copiloto.id">
-                            </el-option>
+                            </option>
 
                         </template>
-                        
-                    </el-select>
+
+                    </select>
                     <span v-if="errors.copiloto_id" class="invalid-feedback" :style="{display:'block'}">{{ errors.copiloto_id[0] }}</span>
                 </div>
             </div>
-           
+
             <div class="col-6">
                 <label for="">Observaciones</label>
                 <div class="form-group">
@@ -106,7 +106,7 @@
                         </el-option>
                     </el-select>
                 </div>
-               
+
             </div>
             <div class="col-md-4">
                  <div class="form-group">
@@ -145,7 +145,7 @@
                                 <td>{{ programacion.destino.nombre }}</td>
                                 <td>{{ programacion.hora_salida }}</td>
                                 <td class="text-center">
-                                    
+
                                     <el-button v-if="manifiesto.programacion_id == programacion.id"  type="danger" @click="manifiesto.programacion_id = null">
                                         <i class="fa fa-trash"></i>
                                     </el-button>
@@ -154,7 +154,7 @@
                                     </el-button>
                                 </td>
                             </tr>
-                        
+
                         </tbody>
                     </template>
                     <template v-else>
@@ -169,24 +169,24 @@
                             </td>
                         </tr>
                     </template>
-                    
-                       
-                        
+
+
+
                 </table>
             </div>
         </div>
         <div v-if="manifiesto.programacion_id" class="row mt-2">
             <div class="col-12 text-center">
-                <el-button v-if="!itemManifiesto" :loading="loading" type="primary" @click="onStore"> 
+                <el-button v-if="!itemManifiesto" :loading="loading" type="primary" @click="onStore">
                     <i class="fa fa-save"></i>
                     Generar manifiesto
                 </el-button>
-                <el-button v-else :loading="loading" type="primary" @click="onUpdate"> 
+                <el-button v-else :loading="loading" type="primary" @click="onUpdate">
                     <i class="fa fa-save"></i>
                     Actualizar
                 </el-button>
             </div>
-            
+
         </div>
     </el-dialog>
 </template>
@@ -310,8 +310,8 @@ export default {
                 this.all_series = _.filter(this.series, {'document_type_id': '100'});
             }
             else{// pasajes
-               this.all_series = _.filter(this.series, {'document_type_id': '33'}); 
-            } 
+               this.all_series = _.filter(this.series, {'document_type_id': '33'});
+            }
             this.manifiesto.serie = (this.all_series.length > 0)?this.all_series[0].number:null
 
             console.log(this.all_series);
@@ -346,7 +346,7 @@ export default {
                 this.buscando = false;
                 this.listProgramaciones = programaiones.programaciones;
             }
-           
+
         },
         cleanForm(){
             this.manifiesto.id = null;
@@ -384,6 +384,6 @@ export default {
 
         }
     }
-    
+
 }
 </script>

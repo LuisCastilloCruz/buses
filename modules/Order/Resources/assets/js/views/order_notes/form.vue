@@ -195,6 +195,7 @@
                            :typeUser="typeUser"
                            :recordItem="recordItem"
                            :isEditItemNote="false"
+                           :configuration="configuration"
                            @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -206,11 +207,12 @@
                           :recordId="orderNoteNewId"
                           :typeUser="typeUser"
                           :showGenerate="false"
-                          :showClose="false"></order-note-options>
+                          :showClose="false"
+                          :configuration="configuration"></order-note-options>
     </div>
 </template>
 
-<script type="text/babel">
+<script>
     import OrderNoteFormItem from './partials/item.vue'
     import PersonForm from '@views/persons/form.vue'
     import OrderNoteOptions from './partials/options.vue'
@@ -219,7 +221,7 @@
     import Logo from '@views/companies/logo.vue'
 
     export default {
-        props:['typeUser'],
+        props:['typeUser','configuration'],
         components: {OrderNoteFormItem, PersonForm, OrderNoteOptions, Logo},
         mixins: [functions, exchangeRate],
         data() {

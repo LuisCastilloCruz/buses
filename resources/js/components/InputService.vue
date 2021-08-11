@@ -26,7 +26,7 @@
         data() {
             return {
                 loading: false,
-                resource_base: 'services',
+                resource_base: 'service',
                 resource: null,
                 maxLength: 20,
                 buttonText: null

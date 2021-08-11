@@ -1,6 +1,8 @@
 <?php
 
 
+use Illuminate\Support\Facades\Route;
+
 $current_hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if($current_hostname) {
@@ -128,6 +130,14 @@ if($current_hostname) {
             Route::post('', 'TechnicalServicePaymentController@store');
             Route::delete('/{record_payment}', 'TechnicalServicePaymentController@destroy');
 
+        });
+
+        Route::prefix('generate-document')->group(function () {
+            Route::get('/record/{table}/{record}', 'GenerateDocumentController@record');
+            Route::get('/tables', 'GenerateDocumentController@tables');
+            Route::post('/', 'GenerateDocumentController@store');
+            Route::post('/customers', 'GenerateDocumentController@customers');
+//            Route::post('/store_item', 'GenerateDocumentController@storeItem');
         });
     });
 }

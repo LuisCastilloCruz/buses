@@ -5,7 +5,7 @@
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Productos</span></li>
+                <li class="active"><span>{{ titleTopBar }}</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <template v-if="typeUser === 'admin'">
@@ -87,19 +87,20 @@
                             >
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        class="btn btn-custom btn-sm mt-2 mr-2"
-                        @click.prevent="clickCreate()"
-                    >
-                        <i class="fa fa-plus-circle"></i> Nuevo
-                    </button>
                 </template>
+                <button
+                    type="button"
+                    class="btn btn-custom btn-sm mt-2 mr-2"
+                    @click.prevent="clickCreate()"
+                    v-if="can_add_new_product"
+                >
+                    <i class="fa fa-plus-circle"></i> Nuevo
+                </button>
             </div>
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de productos</h3>
+                <h3 class="my-0">{{ title }}</h3>
             </div>
             <div class="data-table-visible-columns">
                 <el-dropdown :hide-on-click="false">
@@ -107,21 +108,28 @@
                         Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
-                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                        <el-dropdown-item v-for="(column, index) in columnsComputed" :key="index">
+                            <el-checkbox
+                                v-if="column.title !== undefined && column.visible !== undefined"
+                                v-model="column.visible"
+                            >{{ column.title }}</el-checkbox>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
             <div class="card-body">
-                <data-table :resource="resource">
+                <data-table :resource="resource" :productType="type">
                     <tr slot="heading" width="100%">
                         <th>#</th>
                         <th>Cód. Interno</th>
                         <th>Unidad</th>
                         <th>Nombre</th>
                         <th v-if="columns.description.visible">Descripción</th>
+                        <th v-if="columns.model.visible">Modelo</th>
+                        <th v-if="columns.brand.visible">Marca</th>
                         <th v-if="columns.item_code.visible">Cód. SUNAT</th>
+                        <th v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">R.S.</th>
+                        <th v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">DIGEMID</th>
                         <th class="text-left">Stock</th>
                         <th class="text-right">P.Unitario (Venta)</th>
                         <th v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
@@ -141,8 +149,12 @@
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
                         <td>{{ row.description }}</td>
+                        <td v-if="columns.model.visible">{{ row.model }}</td>
+                        <td v-if="columns.brand.visible">{{ row.brand }}</td>
                         <td v-if="columns.description.visible">{{ row.name }}</td>
                         <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
+                        <td v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">{{ row.sanitary }}</td>
+                        <td v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">{{ row.cod_digemid }}</td>
                         <td>
                             <div v-if="config.product_only_location == true">
                                 {{ row.stock }}
@@ -253,6 +265,7 @@
             <items-form
                 :showDialog.sync="showDialog"
                 :recordId="recordId"
+                :type="type"
             ></items-form>
 
             <items-import :showDialog.sync="showImportDialog"></items-import>
@@ -289,7 +302,10 @@ import DataTable from "../../../components/DataTable.vue";
 import { deletable } from "../../../mixins/deletable";
 
 export default {
-    props: ["typeUser"],
+    props: [
+        "configuration",
+        "typeUser",
+        "type"],
     mixins: [deletable],
     components: {
         ItemsForm,
@@ -303,6 +319,7 @@ export default {
     },
     data() {
         return {
+            can_add_new_product: false,
             showDialog: false,
             showImportDialog: false,
             showExportDialog: false,
@@ -331,17 +348,62 @@ export default {
                     title: 'Tiene Igv (Compra)',
                     visible: false
                 },
-
+                model: {
+                    title: 'Modelo',
+                    visible: false
+                },
+                brand: {
+                    title: 'Marca',
+                    visible: false
+                },
+                sanitary: {
+                    title: 'N° Sanitario',
+                    visible: false
+                },
+                cod_digemid: {
+                    title: 'DIGEMID',
+                    visible: false
+                },
             },
             item_unit_types: [],
+            titleTopBar: '',
+            title: ''
         };
     },
     created() {
+         if(this.configuration.is_pharmacy !== true){
+            delete this.columns.sanitary;
+            delete this.columns.cod_digemid;
+         }
+        if (this.type === 'ZZ') {
+            this.titleTopBar = 'Servicios';
+            this.title = 'Listado de servicios';
+        } else {
+            this.titleTopBar = 'Productos';
+            this.title = 'Listado de productos';
+        }
         this.$http.get(`/configurations/record`).then((response) => {
             this.config = response.data.data;
         });
+        this.canCreateProduct();
+    },
+    computed:{
+        columnsComputed:function(){
+            return this.columns;
+        }
     },
     methods: {
+        canCreateProduct()
+        {
+            if (this.typeUser === 'admin') {
+                this.can_add_new_product = true
+            } else if (this.typeUser === 'seller') {
+                if (this.configuration !== undefined && this.configuration.seller_can_create_product !== undefined) {
+                    this.can_add_new_product = this.configuration.seller_can_create_product;
+                }
+            }
+            return this.can_add_new_product;
+        },
         duplicate(id) {
             this.$http
                 .post(`${this.resource}/duplicate`, { id })

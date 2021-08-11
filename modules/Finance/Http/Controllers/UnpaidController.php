@@ -19,11 +19,12 @@ use Carbon\Carbon;
 use App\Models\Tenant\Person;
 use Modules\Dashboard\Helpers\DashboardView;
 use App\Exports\AccountsReceivable;
+use App\Models\Tenant\Configuration;
 use Modules\Finance\Exports\UnpaidPaymentMethodDayExport;
 use App\Models\Tenant\User;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Http\Resources\UnpaidCollection;
-use Modules\Finance\Traits\UnpaidTrait; 
+use Modules\Finance\Traits\UnpaidTrait;
 
 class UnpaidController extends Controller
 {
@@ -37,7 +38,7 @@ class UnpaidController extends Controller
 
     public function filter()
     {
-        $customers = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
+        $customer_temp = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
@@ -46,6 +47,15 @@ class UnpaidController extends Controller
                 'identity_document_type_id' => $row->identity_document_type_id,
             ];
         });
+        $customer= [];
+        $customer[]=[
+            'id' => null,
+            'description' => 'Todos',
+            'name' => 'Todos',
+            'number' => '',
+            'identity_document_type_id' => '',
+        ];
+        $customers = array_merge($customer,$customer_temp->toArray());
 
         $establishments = DashboardView::getEstablishments();
 
@@ -65,8 +75,10 @@ class UnpaidController extends Controller
     {
 
         $records = (new DashboardView())->getUnpaidFilterUser($request->all());
-
-        return new UnpaidCollection($records->paginate(config('tenant.items_per_page')));
+        $config = Configuration::first();
+        return (new UnpaidCollection($records->paginate(config('tenant.items_per_page'))))->additional([
+            'configuration' => $config->finances
+        ]);
 
     }
 
@@ -95,13 +107,13 @@ class UnpaidController extends Controller
 
     }
 
-    
+
     public function pdf(Request $request) {
 
         $records = $this->transformRecords((new DashboardView())->getUnpaidFilterUser($request->all())->get());
 
         $company = Company::first();
-        
+
         $pdf = PDF::loadView('finance::unpaid.reports.report_pdf', compact("records", "company"));
 
         $filename = 'Reporte_Cuentas_Por_Cobrar_'.date('YmdHis');

@@ -1,0 +1,16 @@
+export default {
+    userType: '',
+    config: {},
+    currencys: [],
+    warehouses: {},
+    all_items:{},
+    office:{},
+    file: {},
+    files:[],
+    processes:[],
+    actions:[],
+    offices:[],
+    documentTypes:[],
+    customers:[],
+    workers:[],
+}

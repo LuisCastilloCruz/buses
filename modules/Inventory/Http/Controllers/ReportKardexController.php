@@ -23,6 +23,7 @@ use Modules\Item\Models\ItemLot;
 use Modules\Inventory\Http\Resources\ReportKardexLotsGroupCollection;
 use Modules\Inventory\Http\Resources\ReportKardexItemLotCollection;
 use Modules\Inventory\Models\Devolution;
+use App\Models\Tenant\Dispatch;
 
 
 class ReportKardexController extends Controller
@@ -39,7 +40,8 @@ class ReportKardexController extends Controller
         "App\Models\Tenant\SaleNote",
         "Modules\Inventory\Models\Inventory",
         "Modules\Order\Models\OrderNote",
-        Devolution::class
+        Devolution::class,
+        Dispatch::class
     ];
 
     public function index() {
@@ -106,22 +108,16 @@ class ReportKardexController extends Controller
 
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-        if($date_start && $date_end){
-
-            $data = InventoryKardex::with(['inventory_kardexable'])
-                        ->where([['warehouse_id', $warehouse->id]])
-                        ->whereBetween('date_of_issue', [$date_start, $date_end])
-                        ->orderBy('item_id')->orderBy('id');
-
-        }else{
-
-            $data = InventoryKardex::with(['inventory_kardexable'])
-                        ->where([['warehouse_id', $warehouse->id]])
-                        ->orderBy('item_id')->orderBy('id');
+        $data = InventoryKardex::with(['inventory_kardexable'])
+            ->where('warehouse_id', $warehouse->id);
+        if ($date_start) {
+            $data->where('date_of_issue', '>=', $date_start);
         }
-
-        if($item_id){
-            $data = $data->where('item_id', $item_id);
+        if ($date_end) {
+            $data->where('date_of_issue', '<=', $date_end);
+        }
+        if ($item_id) {
+            $data->where('item_id', $item_id);
         }
 
 
@@ -138,6 +134,7 @@ class ReportKardexController extends Controller
         //                 ->where([['item_id', $item_id],['warehouse_id', $warehouse->id]])
         //                 ->orderBy('id');
         // }
+        $data->orderBy('item_id')->orderBy('id');
 
         return $data;
 

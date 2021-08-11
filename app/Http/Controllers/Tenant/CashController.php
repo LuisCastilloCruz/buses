@@ -26,9 +26,14 @@ use Modules\Finance\Traits\FinanceTrait;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\SaleNoteItem;
 use App\Exports\CashProductExport;
-use App\Models\Tenant\Document;
-use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\PurchaseItem;
 
+/**
+ * Class CashController
+ *
+ * @package App\Http\Controllers\Tenant
+ * @mixin  Controller
+ */
 class CashController extends Controller
 {
 
@@ -43,7 +48,6 @@ class CashController extends Controller
     {
         return [
             'income' => 'Ingresos',
-            // 'expense' => 'Egresos',
         ];
     }
 
@@ -233,6 +237,11 @@ class CashController extends Controller
                 // $final_balance -= $cash_document->expense_payment->payment;
 
             }
+            else if($cash_document->purchase){
+                if(in_array($cash_document->purchase->state_type_id, ['01','03','05','07','13'])){
+                    $final_balance -= ($cash_document->purchase->currency_type_id == 'PEN') ? $cash_document->purchase->total : ($cash_document->purchase->total * $cash_document->purchase->exchange_rate_sale);
+                }
+            }
 
             // else if($cash_document->purchase){
             //     $final_balance -= $cash_document->purchase->total;
@@ -255,11 +264,19 @@ class CashController extends Controller
 
     }
 
-
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return array
+     */
     public function cash_document(Request $request) {
 
-        $cash = Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
-        $cash->cash_documents()->create($request->all());
+        $cash = Cash::where([
+                                ['user_id', auth()->user()->id],
+                                ['state', true],
+                            ])->first();
+
+        $cash->cash_documents()->updateOrCreate($request->all());
 
         return [
             'success' => true,
@@ -310,8 +327,8 @@ class CashController extends Controller
 
     public function report($cash) {
 
-        $cash = Cash::findOrFail($cash);
-        $company = Company::first();
+        $cash = Cash::query()->findOrFail($cash);
+        $company = Company::query()->first();
 
         $methods_payment = collect(PaymentMethodType::all())->transform(function($row){
             return (object)[
@@ -334,6 +351,7 @@ class CashController extends Controller
     {
         $cashes = Cash::select('id')->whereDate('date_opening', date('Y-m-d'))->pluck('id');
         $cash_documents =  CashDocument::whereIn('cash_id', $cashes)->get();
+        // dd($cash_documents);
 
         $company = Company::first();
         set_time_limit(0);
@@ -346,86 +364,11 @@ class CashController extends Controller
 
     public function report_products($id)
     {
-        $cash = Cash::findOrFail($id);
-        $company = Company::first();
-        $cash_documents =  CashDocument::select('document_id')->where('cash_id', $cash->id)->get();
-        $cash_documents2 =  CashDocument::select('sale_note_id')->where('cash_id', $cash->id)->get();
 
-        $source = DocumentItem::with('document')->whereIn('document_id', $cash_documents)->get();
-        $source2 = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cash_documents2)->get();
+        $data = $this->getDataReport($id);
+        $pdf = PDF::loadView('tenant.cash.report_product_pdf', $data);
 
-        $documents = collect($source)->transform(function($row){
-            return [
-                'id' => $row->id,
-                'number_full' =>$row->document->number_full,
-                'description' => $row->item->description,
-                'quantity' => $row->quantity,
-            ];
-        });
-        $sale_notes = collect($source2)->transform(function($row){
-            return [
-                'id' => $row->id,
-                'number_full' => $row->sale_note->series . '-' .str_pad($row->sale_note->number,8,'0',STR_PAD_LEFT),
-                'description' => $row->item->description,
-                'quantity' => $row->quantity,
-            ];
-        });
-
-
-        $pdf = PDF::loadView('tenant.cash.report_product_pdf', compact("cash", "company", "documents","sale_notes"));
-
-        $filename = "Reporte_POS_PRODUCTOS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
-
-        return $pdf->stream($filename.'.pdf');
-
-    }
-    public function enc_x_pagar($id)
-    {
-        $cash = Cash::findOrFail($id);
-        $company = Company::first();
-
-        $sale_notes =  CashDocument::with('sale_note')
-        ->join('transporte_encomiendas', 'transporte_encomiendas.document_id', '=', 'cash_documents.sale_note_id')
-        ->join('transporte_destinos','transporte_destinos.id','=','transporte_encomiendas.destino_id')
-        ->join('sale_notes','sale_notes.id','=','transporte_encomiendas.document_id')
-        ->where('transporte_encomiendas.estado_pago_id', 2) //2=pago en destino
-        ->where('cash_id', $cash->id)
-        ->get();
-
-        $pdf = PDF::loadView('tenant.cash.report_enc_x_pagar_pdf', compact("cash", "company","sale_notes"));
-
-        $filename = "Reporte_ENC_X_PAGAR- {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
-
-        return $pdf->stream($filename.'.pdf');
-
-    }
-    public function enc_x_pagar_items($id)
-    {
-        $cash = Cash::findOrFail($id);
-        $company = Company::first();
-
-        $cash_documents2 =  CashDocument::select('sale_note_id')
-        ->join('transporte_encomiendas', 'transporte_encomiendas.document_id', '=', 'cash_documents.sale_note_id')
-        ->where('transporte_encomiendas.estado_pago_id', 2) //2=pago en destino
-        ->where('cash_id', $cash->id)
-        ->get();
-
-
-        $source2 = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cash_documents2)->get();
-
-        $sale_notes = collect($source2)->transform(function($row){
-            return [
-                'id' => $row->id,
-                'number_full' => $row->sale_note->series . '-' .str_pad($row->sale_note->number,8,'0',STR_PAD_LEFT),
-                'description' => $row->item->description,
-                'quantity' => $row->quantity,
-            ];
-        });
-
-
-        $pdf = PDF::loadView('tenant.cash.report_enc_x_pagar_pdf', compact("cash", "company","sale_notes"));
-
-        $filename = "Reporte_ENC_X_PAGAR- {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
+        $filename = "Reporte_POS_PRODUCTOS - {$data['cash']->user->name} - {$data['cash']->date_opening} {$data['cash']->time_opening}";
 
         return $pdf->stream($filename.'.pdf');
 
@@ -467,6 +410,8 @@ class CashController extends Controller
 
         $documents = $documents->merge($this->getSaleNotesReportProducts($cash));
 
+        $documents = $documents->merge($this->getPurchasesReportProducts($cash));
+
         return compact("cash", "company", "documents");
 
     }
@@ -486,6 +431,75 @@ class CashController extends Controller
                 'quantity' => $row->quantity,
             ];
         });
+
+    }
+
+
+    public function getPurchasesReportProducts($cash){
+
+        $cd_purchases =  CashDocument::select('purchase_id')->where('cash_id', $cash->id)->get();
+        $purchase_items = PurchaseItem::with('purchase')->whereIn('purchase_id', $cd_purchases)->get();
+
+        return collect($purchase_items)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->purchase->number_full,
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+
+    }
+
+    public function enc_x_pagar($id)
+    {
+        $cash = Cash::findOrFail($id);
+        $company = Company::first();
+
+        $sale_notes =  CashDocument::with('sale_note')
+            ->join('transporte_encomiendas', 'transporte_encomiendas.document_id', '=', 'cash_documents.sale_note_id')
+            ->join('transporte_destinos','transporte_destinos.id','=','transporte_encomiendas.destino_id')
+            ->join('sale_notes','sale_notes.id','=','transporte_encomiendas.document_id')
+            ->where('transporte_encomiendas.estado_pago_id', 2) //2=pago en destino
+            ->where('cash_id', $cash->id)
+            ->get();
+
+        $pdf = PDF::loadView('tenant.cash.report_enc_x_pagar_pdf', compact("cash", "company","sale_notes"));
+
+        $filename = "Reporte_ENC_X_PAGAR- {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
+
+        return $pdf->stream($filename.'.pdf');
+
+    }
+    public function enc_x_pagar_items($id)
+    {
+        $cash = Cash::findOrFail($id);
+        $company = Company::first();
+
+        $cash_documents2 =  CashDocument::select('sale_note_id')
+            ->join('transporte_encomiendas', 'transporte_encomiendas.document_id', '=', 'cash_documents.sale_note_id')
+            ->where('transporte_encomiendas.estado_pago_id', 2) //2=pago en destino
+            ->where('cash_id', $cash->id)
+            ->get();
+
+
+        $source2 = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cash_documents2)->get();
+
+        $sale_notes = collect($source2)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->sale_note->series . '-' .str_pad($row->sale_note->number,8,'0',STR_PAD_LEFT),
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+
+
+        $pdf = PDF::loadView('tenant.cash.report_enc_x_pagar_pdf', compact("cash", "company","sale_notes"));
+
+        $filename = "Reporte_ENC_X_PAGAR- {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
+
+        return $pdf->stream($filename.'.pdf');
 
     }
     public function getIncomeTotal($cash){

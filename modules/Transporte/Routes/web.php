@@ -8,13 +8,15 @@ if ($hostname) {
 		Route::middleware(['auth', 'redirect.module', 'locked.tenant'])
 			->prefix('transportes')
 			->group(function () {
+			    //index
+                Route::get('/', 'TransporteSalesController@index') ->name('tenant.transportes.index');
 			    //Bus
                 Route::get('sales/{pasaje?}', 'TransporteSalesController@index');
 				Route::get('sales/get-ciudades', 'TransporteSalesController@getCiudades');
 				Route::post('sales/programaciones-disponibles', 'TransporteSalesController@getProgramacionesDisponibles');
 				Route::post('sales/realizar-venta-boleto', 'TransporteSalesController@realizarVenta');
 				Route::put('sales/{pasaje}/actualizar-boleto', 'TransporteSalesController@updateVenta');
-				
+
 				// Vehiculos
 				Route::get('vehiculos', 'TransporteVehiculoController@index');
 				Route::post('vehiculos/store', 'TransporteVehiculoController@store');
@@ -47,7 +49,7 @@ if ($hostname) {
 				Route::put('encomiendas/{encomienda}/update','TransporteEncomiendaController@update');
 				Route::delete('encomiendas/{encomienda}/delete','TransporteEncomiendaController@destroy');
 				Route::get('encomiendas/get-productos','TransporteEncomiendaController@getProductos');
-				
+
 				//terminales
 				Route::get('terminales','TransporteTerminalesController@index');
 				Route::post('terminales/store','TransporteTerminalesController@store');
@@ -78,7 +80,7 @@ if ($hostname) {
 				Route::post('manifiestos/asignacion-encomienda','TransporteManifiestosController@asignarEncomienda');
 				Route::post('manifiestos/desasignar-encomienda','TransporteManifiestosController@desasignarEncomienda');
 				Route::get('manifiestos/get-manifiestos','TransporteManifiestosController@getManifiestos');
-			
+
 				//usuarios terminales
 				Route::get('usuarios-terminales','TransporteUsersTerminalController@index');
 				Route::get('usuarios-terminales/get-tables','TransporteUsersTerminalController@getTables');
