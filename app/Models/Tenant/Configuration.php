@@ -389,6 +389,7 @@ class Configuration extends ModelTenant
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
+            'print_silent'=>(bool) $this->print_silent,
 
         ];
     }

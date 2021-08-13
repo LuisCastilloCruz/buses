@@ -178,6 +178,22 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6 mt-4">
+                                        <label class="control-label">Imprimir Ticket en forma silenciosa</label>
+                                        <div class="form-group" :class="{'has-danger': errors.print_silent}">
+                                            <el-switch v-model="form.print_silent" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.print_silent" v-text="errors.print_silent[0]"></small>
+                                            <a href="https://www.aqpfact.pe/soporte" target="_blank"> Descargar programa</a>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <el-input v-if="form.print_silent" v-model="printer_silent" type="text" placeholder="TM-T20III" ></el-input>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <el-button type="primary" icon="fas fa-save" @click="guardar_printer_silent"></el-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mt-4">
                                         <label class="control-label">Productos de una ubicación</label>
                                         <div class="form-group" :class="{'has-danger': errors.product_only_location}">
                                             <el-switch v-model="form.product_only_location" active-text="Si" inactive-text="No" @change="submit"></el-switch>
@@ -432,6 +448,8 @@
             await this.$http.get(`/${this.resource}/record`) .then(response => {
                 if (response.data !== ''){
                     this.form = response.data.data;
+                    console.log(response.data.data);
+                    console.log(this.form.print_silent);
                 }
                 // console.log(this.placeholder)
             });
@@ -548,10 +566,8 @@
                 });
             },
             guardar_printer_silent(){
-                console.log("guardando");
                 localStorage.printer_silent = this.printer_silent;
-
-                console.log(localStorage.printer_silent );
+                alert('La configuración se guardó correctamente.');
             }
         }
     }
