@@ -136,17 +136,6 @@ $establishment = $cash->user->establishment;
                                     $num++;
                                 @endphp
                             @endforeach
-                            @foreach($sale_notes as $item)
-                                <tr>
-                                    <td class="celda">{{ $num }}</td>
-                                    <td class="celda">{{ $item['description'] }}</td>
-                                    <td class="celda">{{ $item['quantity'] }}</td>
-                                    <td class="celda">{{ $item['number_full'] }}</td>
-                                </tr>
-                                @php
-                                    $num++;
-                                @endphp
-                            @endforeach
                         </tbody>
                     </table>
                 </div>
