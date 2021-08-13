@@ -33,7 +33,7 @@
                 <div class="invalid-feedback">{{ $errors->first('password') }}</div>
                 @endif
             </div>
-            <button type="submit" class="btn btn-signin btn-block">INICIAR SESIÓN</button>
+            <button type="submit" class="btn btn-signin btn-block" style="background: #6EB23F">INICIAR SESIÓN</button>
             @include('tenant.auth.partials.socials')
         </form>
     </article>
