@@ -32,6 +32,21 @@ docker-compose exec -T fpm$SERVICE_NUMBER chmod -R 777 vendor/mpdf/mpdf
 npm i vuedraggable
 npm i --save v-movable
 
+# Actualizacion de 3 a 4
+# acciones para actualizar correctamente
+1.- ejecutar composer install
+ instalará todas als dependencias, si falta algo ejecutar
+ composer require mckenziearts/laravel-notify 1.*
+
+2.- ejecutar las migraciones
+
+ php artisan migrate
+ php artisan tenancy:migrate --path=database/migrations/tenant/2021_03_9_123548_tenant_fix_module_to_modules.php
+ php artisan tenancy:migrate
+
+3.-  npm install vuex --save
+	esto solo en la pc de desarrollo, en el vps, no
+
 
 
 
