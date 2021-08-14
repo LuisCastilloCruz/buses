@@ -14,8 +14,9 @@ class TenantFixModuleToModules extends Migration
     public function up()
     {
         Schema::table('modules', function (Blueprint $table) {
-            DB::table('modules')->where('id', 15)->delete();//borrar hotel
-            DB::table('modules')->where('id', 16)->delete(); //borrar transporte
+            //haabilitar para actualizar si ya tiene datos, empresas, comentar luego para crear nuevos clientes o cuentas
+//            DB::table('modules')->where('id', 15)->delete();//borrar hotel
+//            DB::table('modules')->where('id', 16)->delete(); //borrar transporte
         });
     }
 
