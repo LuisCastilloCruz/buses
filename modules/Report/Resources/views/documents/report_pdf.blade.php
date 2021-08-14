@@ -49,7 +49,7 @@ function getLocationData($value)
         <style>
             html {
                 font-family: sans-serif;
-                font-size: 12px;
+                font-size: 10px;
             }
 
             table {
@@ -166,7 +166,7 @@ function getLocationData($value)
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
-                                <th class="">Moneda</th>
+                                <th class="">Mon.</th>
                                 <th>Orden de compra</th>
                                 <!-- <th>Total Exonerado</th>
                                 <th>Total Inafecto</th>
