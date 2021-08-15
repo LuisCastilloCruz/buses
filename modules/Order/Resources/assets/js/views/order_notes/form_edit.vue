@@ -198,6 +198,7 @@
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :recordItem="recordItem"
                            :isEditItemNote="false"
+                           :configuration="configuration"
                            @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -209,6 +210,7 @@
                           :recordId="orderNoteNewId"
                           :showGenerate="false"
                           :typeUser="typeUser"
+                          :configuration="configuration"
                           :showClose="false"></order-note-options>
     </div>
 </template>

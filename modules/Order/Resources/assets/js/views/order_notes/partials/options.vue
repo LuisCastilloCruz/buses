@@ -658,6 +658,8 @@ export default {
       this.$emit("update:showDialog", false);
       this.initForm();
       this.resetDocument();
+
+        window.location ="/order-notes/create";
     },
     clickToPrint(format) {
       window.open(
