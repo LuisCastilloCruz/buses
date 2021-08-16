@@ -26,7 +26,7 @@ class TransporteUserTerminalRequest extends FormRequest
     {
         return [
             'terminal_id' => ['required'],
-            'user_id' => ['required','exists:tenant.transporte_destinos,id']
+            'user_id' => ['required']
             //
         ];
     }
