@@ -51,12 +51,12 @@ class TransporteEncomiendaController extends Controller
         }
 
         $terminal = $user_terminal->terminal;
-
+        $persons = Person::where('type','customers')->get();
 
         $estadosEnvios = TransporteEstadoEnvio::all();
 
         $document_type_03_filter = config('tenant.document_type_03_filter');
-        
+
 
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
         $series = Series::where('establishment_id', $establishment->id)->get();
@@ -77,7 +77,8 @@ class TransporteEncomiendaController extends Controller
             'user_terminal',
             'configuration',
             'document_type_03_filter',
-            'isCashOpen'
+            'isCashOpen',
+            'persons'
         ));
     }
 
@@ -118,9 +119,9 @@ class TransporteEncomiendaController extends Controller
                 'message' => 'Lo sentimos ocurrio un error en su petición'
             ],500);
         }
-        
 
-        
+
+
     }
     public function getEncomiendasNotes(){
 
@@ -151,9 +152,9 @@ class TransporteEncomiendaController extends Controller
                 'message' => 'Lo sentimos ocurrio un error en su petición '.$e
             ],500);
         }
-        
 
-        
+
+
     }
 
 

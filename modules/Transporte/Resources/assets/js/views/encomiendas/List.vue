@@ -195,6 +195,7 @@
             :document_type_03_filter="document_type_03_filter"
             @onSuccessVenta="onSuccessVenta"
             :is-cash-open="isCashOpen"
+            :persons="persons"
         ></ModalAddEdit>
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
@@ -211,7 +212,7 @@
                 >
         </sale-note-options>
 
-        <documents-voided 
+        <documents-voided
         :showDialog.sync="showDialogVoided"
         :recordId="recordId">
         </documents-voided>
@@ -273,6 +274,10 @@ export default {
             required:true,
             default:false,
         },
+        persons:{
+            type:Array,
+            default:() => []
+        }
     },
     components: {
         ModalAddEdit,
@@ -352,7 +357,7 @@ export default {
                     if(error.response){
                         this.axiosError(error)
                     }
-                    
+
                 });
             }).catch();
         },
@@ -383,7 +388,7 @@ export default {
         },
         anularDocument(encomienda) {
             this.recordId = encomienda.document_id;
-            this.showDialogVoided = true;   
+            this.showDialogVoided = true;
         },
         anularNota(id) {
              this.$confirm(`¿Estás seguro de anular este registro ?`, 'Atención', {
@@ -397,7 +402,7 @@ export default {
                 .then(response => {
                     this.getEncomiendasNotes();
                 });
-                
+
             });
 
         },

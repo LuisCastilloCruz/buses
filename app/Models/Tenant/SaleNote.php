@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use Carbon\Carbon;
 use Modules\Transporte\Models\TransporteEncomienda;
+use Modules\Transporte\Models\TransportePasaje;
 
 /**
  * Class SaleNote
@@ -465,5 +466,12 @@ class SaleNote extends ModelTenant
                 'payment_filename' => ($row->payment_file) ? $row->payment_file->filename:null,
             ];
         });
+    }
+    public function encomienda(){
+        return $this->hasOne(TransporteEncomienda::class,'document_id','id');
+    }
+
+    public function pasaje(){
+        return $this->hasOne(TransportePasaje::class,'document_id','id');
     }
 }

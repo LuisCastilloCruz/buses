@@ -30,7 +30,7 @@
               <tr>
                 <th></th>
                 <th>Placa</th>
-                <th>Nombre</th>
+                <th class="text-center">Nombre</th>
                 <th>Asientos</th>
                 <th>Pisos</th>
                 <th></th>
@@ -70,7 +70,7 @@
       <div class="card-body">
 
         <config-vehiculo :seats.sync="asientos" :vehiculo.sync="vehiculo" @input-transporte="onUpdateItem" />
-        
+
       </div>
     </div>
     <ModalAddEdit
