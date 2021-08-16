@@ -16,7 +16,7 @@ class TransporteChoferRequest extends FormRequest
 	{
 		return [
 			'dni' => ['required', 'max:8', Rule::unique('tenant.transporte_choferes', 'dni')->ignore($this->id)],
-            'licencia' => ['required', 'max:9'],
+            'licencia' => ['required', 'max:10'],
 		];
 	}
 }
