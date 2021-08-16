@@ -871,7 +871,7 @@
                                     <a class="nav-link" href="{{ url('transportes/vehiculos') }}">Vehículos</a>
                                 </li>
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'destinos')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ url('transportes/destinos') }}">Destinos</a>
+                                    <a class="nav-link" href="{{ url('transportes/destinos') }}">Ciudades</a>
                                 </li>
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'terminales')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/terminales') }}">Terminales</a>
