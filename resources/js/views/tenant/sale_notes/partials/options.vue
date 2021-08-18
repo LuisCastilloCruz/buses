@@ -9,6 +9,9 @@
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 container-tabs">
                     <el-tabs v-model="activeName">
+                        <el-tab-pane label="Imprimir Ticket" name="fourth">
+                            <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
+                        </el-tab-pane>
                         <el-tab-pane label="Imprimir A4" name="first">
                             <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
@@ -17,9 +20,6 @@
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir Ticket 58MM" name="third" v-if="Ticket58">
                             <embed :src="form.print_ticket_58" type="application/pdf" width="100%" height="400px"/>
-                        </el-tab-pane>
-                        <el-tab-pane label="Imprimir Ticket" name="fourth">
-                            <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                     </el-tabs>
                 </div>
@@ -87,7 +87,7 @@ export default {
             loading_submit:false,
             showDialogOptions: false,
             documentNewId: null,
-            activeName: 'first',
+            activeName: 'fourth',
         }
     },
     created() {
@@ -124,7 +124,7 @@ export default {
             this.$http.get(`/${this.resource}/record/${this.recordId}`)
                 .then(response => {
                     this.form = response.data.data
-                    this.titleDialog = `Nota de venta registrada:  ${this.form.serie}-${this.form.number}`
+                    this.titleDialog = `Nota de venta registrada: ${this.form.number}`
                 })
         },
         clickFinalize() {

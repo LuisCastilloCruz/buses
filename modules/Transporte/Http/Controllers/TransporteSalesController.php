@@ -68,7 +68,7 @@ class TransporteSalesController extends Controller
 
         $establishment =  Establishment::where('id', $user->establishment_id)->first();
         $series = Series::where('establishment_id', $establishment->id)->get();
-        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80',100,33])->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::first();
@@ -134,7 +134,7 @@ class TransporteSalesController extends Controller
         if($date->isSameDay($today)){
             /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
             $time = date('H:i:s');
-            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%I:%S') >= '{$time}'");
+            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
         }
 
         $listProgramaciones = $programaciones->get();
@@ -174,7 +174,7 @@ class TransporteSalesController extends Controller
             });
 
             $asientos = $this->getAsientosPasajesEnRuta($programacion,$asiendosDisponible,$request->fecha_salida);
-           
+
 
             $listSeats = $asientosOcupados->merge($asientos);
 
@@ -198,7 +198,7 @@ class TransporteSalesController extends Controller
         ->where('vehiculo_id',$programacion->vehiculo_id)
         ->get();
 
-        
+
         //válido si tengo alguna, si no retorno la misma lista si alterar los valores que ya tiene
         if(count($programaciones) <= 0) return $listSeats;
 
@@ -206,7 +206,7 @@ class TransporteSalesController extends Controller
         $ocupados = collect([]); //aqui los ocupados
 
         foreach($programaciones as $ruta){ // itero las programaciones en las que la terminal destino es una ruta
-            
+
             /** Obtengo lista temporal de los asientos disponibles */
             $tempList = $listSeats->whereNotIn('id',$ocupados->pluck('id'));
             foreach($tempList as $seat){
@@ -218,7 +218,7 @@ class TransporteSalesController extends Controller
                 ->where('programacion_id',$ruta->id)
                 ->where('estado_asiento_id','!=',4) //diferente de cancelado
                 ->first();
-    
+
                 if(!is_null($isState)){
                     $seat->estado_asiento_id = $isState->estado_asiento_id;
                     $seat->transporte_pasaje = $isState;
@@ -230,7 +230,7 @@ class TransporteSalesController extends Controller
                     });
                 }else {
 
-                    /** Verifico si existe ya en la lista de disponibles 
+                    /** Verifico si existe ya en la lista de disponibles
                      * si ya existe continuo con la iteración
                      */
                     $exist = $disponibles->first(function($asiento) use($seat){
@@ -248,11 +248,11 @@ class TransporteSalesController extends Controller
         }
 
 
-        /** Hago merge con la lista de ocupados que se encontró y 
+        /** Hago merge con la lista de ocupados que se encontró y
          * disponibles
          */
-        
-        $newList = $disponibles->merge($ocupados); 
+
+        $newList = $disponibles->merge($ocupados);
         return $newList;
     }
 
@@ -263,6 +263,7 @@ class TransporteSalesController extends Controller
 
             $attributes = $request->only([
                 'document_id',
+                'note_id',
                 'cliente_id',
                 'pasajero_id',
                 'asiento_id',
@@ -308,7 +309,7 @@ class TransporteSalesController extends Controller
         DB::connection('tenant')->beginTransaction();
         try {
 
-            
+
             $attributes = $request->only([
                 'asiento_id',
                 'precio',

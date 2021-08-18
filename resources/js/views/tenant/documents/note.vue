@@ -188,6 +188,7 @@
 
         <document-options :showDialog.sync="showDialogOptions"
                           :recordId="documentNewId"
+                          :configuration="configuration"
                           :showClose="false"></document-options>
     </div>
 </template>

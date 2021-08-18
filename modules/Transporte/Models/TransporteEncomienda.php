@@ -13,6 +13,7 @@ class TransporteEncomienda extends ModelTenant
     protected $table = 'transporte_encomiendas';
     protected $fillable = [
         'document_id',
+        'note_id',
         'remitente_id',
         'destinatario_id',
         'fecha_salida',
@@ -40,7 +41,7 @@ class TransporteEncomienda extends ModelTenant
         return $this->belongsTo(Document::class,'document_id','id');
     }
     public function saleNote() : BelongsTo{
-        return $this->belongsTo(SaleNote::class,'document_id','id');
+        return $this->belongsTo(SaleNote::class,'note_id','id');
     }
 
     public function estadoPago() : BelongsTo{

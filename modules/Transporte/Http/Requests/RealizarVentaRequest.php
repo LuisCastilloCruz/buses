@@ -24,8 +24,6 @@ class RealizarVentaRequest extends FormRequest
     public function rules()
     {
         return [
-            //
-            'document_id' => ['required'],
             'cliente_id'=> ['required'],
             'estado_asiento_id' => ['required'],
             'fecha_salida' => ['required'],

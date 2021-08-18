@@ -32,6 +32,7 @@
                                                 :value="option.id"
                                                 :label="option.description"
                                             ></el-option>
+                                            <el-option key="nv" value="nv" label="NOTA DE VENTA"></el-option>
                                         </el-select>
                                     </div>
                                 </div>
@@ -41,7 +42,7 @@
                                         <!-- <el-input v-model="document.serie" disabled></el-input> -->
                                         <el-select v-model="document.series_id" :disabled="transportePasaje ? true : false">
                                             <el-option
-                                                v-for="option in allSeries"
+                                                v-for="option in series"
                                                 :key="option.id"
                                                 :value="option.id"
                                                 :label="option.number"
@@ -211,7 +212,7 @@
                         </div>
                         <div id="manifiesto" class="tab-pane">
                             <div>Vista de manifiestos</div>
-                            <a href="http://demo.facturador-mayo.local/transportes/manifiestos" target="_blank">Abrir en otra ventana</a>
+                            <a href="/transportes/manifiestos" target="_blank">Abrir en otra ventana</a>
                         </div>
                     </div>
 
@@ -219,6 +220,13 @@
             </div>
         </div>
 
+        <sale-note-options
+            :showDialog.sync="showDialogSaleNoteOptions"
+            :recordId="documentId"
+            :configuration="configuration"
+            :showClose="true"
+        >
+        </sale-note-options>
 
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
@@ -253,6 +261,7 @@
 <script>
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 import DocumentOptions from "@views/documents/partials/options.vue";
+import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import PersonForm from "@views/persons/form2.vue";
 
 export default {
@@ -260,7 +269,7 @@ export default {
     components:{
         DocumentOptions,
         PersonForm,
-
+        SaleNoteOptions
     },
     props:{
         document_type_03_filter:{
@@ -290,7 +299,7 @@ export default {
             type:Object,
             required:true
         },
-        series:{
+        allSeries:{
             type:Array,
             default:() => []
         },
@@ -349,10 +358,10 @@ export default {
         this.initDocument();
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
-        this.document.document_type_id = '03';
-        this.allSeries = this.series;
+        this.series  = this.allSeries;
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
+        //this.document.document_type_id = '03';
         this.onCreate();
         this.$eventHub.$on('reloadDataPersons', (clienteId) => {
                 this.reloadDataCustomers(clienteId)
@@ -393,7 +402,7 @@ export default {
         return ({
 
             tabs:'venta',
-            resource: "documents",
+            resource_documents: "documents",
             input_person:{},
             showDialogNewPerson:false,
             clientes:[],
@@ -413,14 +422,16 @@ export default {
 
             //document
             documentId:null,
+            sale_note_id:null,
             document: {
                 payments: [],
             },
             producto:{},
             all_document_types: [],
             document_types: [],
-            allSeries:[],
+            series:[],
             showDialogDocumentOptions:false,
+            showDialogSaleNoteOptions: false,
             payment:{
                 payment_method_type_id:null,
                 payment_destination_id:null,
@@ -432,11 +443,16 @@ export default {
             activeNames:[1],
             tempPasajeros:[],
             tempClientes:[],
+            is_document_type_invoice: true
 
         });
     },
     methods:{
-         modalPerson(buscar_pasajero){
+        modalNote(){
+            this.$eventHub.$emit('reloadDataNotes')
+            this.showDialogSaleNoteOptions= true
+        },
+        modalPerson(buscar_pasajero){
             this.showDialogNewPerson=true;
             this.buscar_pasajero = buscar_pasajero
 
@@ -495,8 +511,17 @@ export default {
                 this.clienteId = this.transportePasaje.cliente_id;
                 this.estadoAsiento = this.transportePasaje.estado_asiento_id;
                 this.documentId = this.transportePasaje.document_id;
+                this.sale_note_id=this.transportePasaje.note_id;
                 this.numeroAsiento = this.transportePasaje.numero_asiento;
             }
+
+            this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
+
+            this.changeDocumentType();
+            this.document.document_type_id = '03';
+            this.filterSeries();
+            this.filterSeries();
+            this.filterCustomers();
         },
 
         async saveDocument(){
@@ -543,14 +568,29 @@ export default {
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error("El destino del pago es obligatorio");
             }
+            if (this.document.document_type_id === "nv") {
+                this.document.prefix = "NV";
+                this.resource_documents = "sale-notes";
+            } else {
+                this.document.prefix = null;
+                this.resource_documents = "documents";
+            }
 
 
             await this.$http
-                .post(`/documents`, this.document)
+                .post(`/${this.resource_documents}`, this.document)
                 .then(async (response) => {
                     if (response.data.success) {
                         this.documentId = response.data.data.id;
-                        this.form_cash_document.document_id = response.data.data.id;
+
+                        if (this.document.document_type_id === "nv"){
+                            this.form_cash_document.sale_note_id = response.data.data.id;
+                            this.sale_note_id = response.data.data.id;
+                        }
+                        else{
+                            this.form_cash_document.document_id = response.data.data.id;
+                        }
+
                         await this.saveCashDocument();
                         await this.guardarPasaje();
                     } else {
@@ -569,9 +609,10 @@ export default {
         },
         async guardarPasaje(){
             let data = {
-                document_id:this.documentId,
+                document_id:(this.document.document_type_id==='nv')? null: this.documentId,
+                note_id: (this.document.document_type_id==='nv') ? this.sale_note_id : null,
                 cliente_id:this.clienteId,
-                pasajero_id:(this.document.document_type_id==='03') ? this.clienteId : this.pasajeroId,
+                pasajero_id:(this.document.document_type_id==='03' || this.document.document_type_id==='nv') ? this.clienteId : this.pasajeroId,
                 asiento_id:this.tipoVenta == 2 ? this.asiento.id : null,
                 numero_asiento:this.numeroAsiento,
                 estado_asiento_id:this.estadoAsiento,
@@ -586,6 +627,13 @@ export default {
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
             .then( ({data}) => {
                 this.loading = false;
+
+                if (this.document.document_type_id === "nv") {
+                    this.modalNote();
+                } else {
+                    this.$emit('onSuccessVenta',this.documentId);
+                }
+
                 this.precio = null;
                 this.clienteId=null;
                 this.pasajeroId = null;
@@ -594,7 +642,8 @@ export default {
                 this.filterSeries();
                 this.filterCustomers();
                 this.initProducto();
-                this.$emit('onSuccessVenta',this.documentId);
+                this.document.payments= [];
+
                 this.$emit('onUpdateItem');
                 this.$message({
                     type: 'success',
@@ -686,6 +735,7 @@ export default {
                     stock_min:1,
                     unit_price: 0, //cambiado
                     unit_type_id: "ZZ",
+                    is_set: false,
                     series_enabled: false,
                     purchase_has_igv: true,
                     web_platform_id:null,
@@ -868,8 +918,21 @@ export default {
                 });
         },
         changeDocumentType() {
-            this.clienteId=null;
-            this.filterSeries();
+            //this.clienteId=null;
+            this.series = [];
+            if (this.document.document_type_id !== "nv") {
+                this.filterSeries();
+                this.is_document_type_invoice = true;
+            } else {
+                this.series = _.filter(this.allSeries, {
+                    document_type_id: "80",
+                });
+                this.document.series_id =
+                    this.series.length > 0 ? this.series[0].id : null;
+
+                this.is_document_type_invoice = false;
+            }
+
             this.cleanCustomer();
             this.filterCustomers();
         },
@@ -919,11 +982,11 @@ export default {
         },
         filterSeries() {
             this.document.series_id = null
-            this.allSeries = _.filter(this.series, {
+            this.series = _.filter( this.allSeries, {
                 'establishment_id': this.document.establishment_id,
                 'document_type_id': this.document.document_type_id,
                 'contingency': this.is_contingency});
-            this.document.series_id = (this.allSeries.length > 0)?this.allSeries[0].id:null
+            this.document.series_id = (this.series.length > 0)?this.series[0].id:null
         },
         filterCustomers() {
 

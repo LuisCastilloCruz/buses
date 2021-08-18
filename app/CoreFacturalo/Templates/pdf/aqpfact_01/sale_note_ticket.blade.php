@@ -7,6 +7,9 @@
     $payments = $document->payments;
     $accounts = \App\Models\Tenant\BankAccount::all();
 
+    $encomienda = $document->encomienda;
+    $pasaje = $document->pasaje;
+
 @endphp
 <html>
 <head>
@@ -24,12 +27,17 @@
         {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo_ticket contain">--}}
     {{--</div>--}}
 @endif
+@if($document->state_type->id == '11')
+    <div class="company_logo_box" style="position: absolute; text-align: center; top:500px">
+        <img src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")))}}" alt="anulado" class="" style="opacity: 0.6;">
+    </div>
+@endif
 <table class="full-width">
     <tr>
-        <td class="text-center"><h4>{{ $company->name }}</h4></td>
+        <td class="text-center"><h4><b>{{ $company->name }}</b></h4></td>
     </tr>
     <tr>
-        <td class="text-center"><h5>{{ 'RUC '.$company->number }}</h5></td>
+        <td class="text-center"><h5><b>{{ 'RUC '.$company->number }}</b></h5></td>
     </tr>
     <tr>
         <td class="text-center" style="text-transform: uppercase;">
@@ -46,7 +54,7 @@
         <td class="text-center pb-3">{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</td>
     </tr>
     <tr>
-        <td class="text-center pt-3 border-top"><h4>NOTA DE VENTA</h4></td>
+        <td class="text-center pt-3 border-top"><h4><b>NOTA DE VENTA</b></h4></td>
     </tr>
     <tr>
         <td class="text-center pb-3 border-bottom"><h3>{{ $tittle }}</h3></td>
@@ -54,22 +62,22 @@
 </table>
 <table class="full-width">
     <tr>
-        <td width="" class="pt-3"><p class="desc">F. Emisión:</p></td>
+        <td width="" class="pt-3"><p class="desc"><b>F. Emisión:</b></p></td>
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
 
 
     <tr>
-        <td class="align-top"><p class="desc">Cliente:</p></td>
+        <td class="align-top"><p class="desc"><b>Cliente:</b></p></td>
         <td><p class="desc">{{ $customer->name }}</p></td>
     </tr>
     <tr>
-        <td><p class="desc">{{ $customer->identity_document_type->description }}:</p></td>
+        <td><p class="desc"><b>{{ $customer->identity_document_type->description }}:</b></p></td>
         <td><p class="desc">{{ $customer->number }}</p></td>
     </tr>
-    @if ($customer->address !== '')
+    @if ($customer->address !== '' && $customer->identity_document_type->description== 'RUC')
         <tr>
-            <td class="align-top"><p class="desc">Dirección:</p></td>
+            <td class="align-top"><p class="desc"><b>Dirección:</b></p></td>
             <td>
                 <p class="desc">
                     {{ strtoupper($customer->address) }}
@@ -103,14 +111,107 @@
             <td class="align-top"><p class="desc">D. Referencia:</p></td>
             <td>
                 <p class="desc">
-                    {{ $document->reference_data }} 
+                    {{ $document->reference_data }}
                 </p>
             </td>
         </tr>
     @endif
 
 </table>
+@if(!is_null($encomienda))
+    <table>
+        <tr>
+            <td class="desc"><b>Destinatario: </b></td>
+            <td class="desc">{{ $encomienda->destinatario->name }}</td>
+        </tr>
+        @if ($encomienda->programacion)
+            <tr>
+                <td class="desc"><b>Origen: </b></td>
+                <td class="desc">
+                    {{ $encomienda->programacion->origen->nombre  }}
+                </td>
+            </tr>
+            <tr style="margin-top: 20px">
+                <td class="desc"><h3><b>Destino: </b></h3> </td>
+                <td class="desc">
+                    <h3>
+                        <b>{{ $encomienda->programacion->destino->nombre }}</b>
+                    </h3>
+                </td>
+            </tr>
+            {{-- <tr>
+                <td class="align-top desc"><b>Hora salida</b></td>
+                <td class="text-left desc">{{ $encomienda->programacion->hora_salida }}</td>
+            </tr>
+            <tr>
+                <td class="align-top desc"><b>Fecha Salida</b></td>
+                <td class="text-left desc">{{ $encomienda->fecha_salida }}</td>
+            </tr> --}}
+        @else
+            <tr>
+                <td class="desc"><h4><b>Origen: </b></h4></td>
+                <td class="desc">
+                    <h4><b>{{ $encomienda->terminal->nombre  }}</b></h4>
+                </td>
+            </tr>
+            <tr style="margin-top: 20px">
+                <td class="desc"><h3><b>Destino: </b></h3> </td>
+                <td class="desc">
+                    <h3>
+                        <b>{{ $encomienda->destino->nombre }}</b>
+                    </h3>
+                </td>
+            </tr>
+        @endif
+    </table>
+@endif
 
+@if(!is_null($pasaje))
+    <table>
+{{--        @if ($pasaje->pasajero->name && $document->document_type->id=='01')--}}
+{{--            <tr>--}}
+{{--                <td class="align-top desc"><h5><b>Pasajero: </b></h5></td>--}}
+{{--                <td class="text-left desc"><h4>{{ $pasaje->pasajero->name }}</h4></td>--}}
+{{--            </tr>--}}
+{{--        @endif--}}
+        @if ($pasaje->programacion)
+            <tr>
+                <td class="desc" with="40"><h3 style="padding: 0px;"><b>Origen: </b></h3> </td>
+                <td class="desc">
+                    <h3><b>{{ $pasaje->programacion->origen->nombre  }}</b></h3>
+                </td>
+            </tr>
+            <tr style="margin-top: 20px">
+                <td class="desc"><h3><b>Destino: </b></h3> </td>
+                <td class="desc">
+                    <h3><b>{{ $pasaje->programacion->destino->nombre }}</b></h3>
+                </td>
+            </tr>
+            <tr>
+                <td class="align-top desc"><h5><b>Fecha viaje: </b></h5></td>
+                <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }} <strong>{{ $pasaje->programacion->hora_salida }}</strong> </h4></td>
+            </tr>
+        @else
+            <tr>
+                <td class="align-top desc"><h5><b>Fecha viaje: </b></h5></td>
+                <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }}</h4></td>
+            </tr>
+            <tr>
+                <td class="desc"> <h5> <b>Hora viaje: </b> </h5> </td>
+                <td class="desc"> <h4> <strong>{{ $pasaje->hora_salida }}</strong></h4></td>
+            </tr>
+        @endif
+        <tr>
+            <td class="desc">
+                <h5><b>N°. Asiento: </b></h5>
+            </td>
+            <td class="desc">
+                <h1><b>{{ $pasaje->numero_asiento }}</b></h1>
+            </td>
+        </tr>
+
+    </table>
+@endif
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr>
@@ -224,7 +325,7 @@
     </tr>
 
     <tr>
-        <td class="desc pt-3">
+        <td class="desc">
             <br>
             @foreach($accounts as $account)
                 <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
@@ -247,7 +348,7 @@
     <td class="desc pt-5">
         <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
     </td>
-</tr> 
+</tr>
 </table>
 @endif
 
@@ -266,5 +367,29 @@
     <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td></tr>
 </table>
 @endif
+
+<table class="full-width">
+    @if (!is_null($pasaje))
+        <tr>
+            <td class="text-center desc">Condición</td>
+        </tr>
+        <tr>
+            <td class="text-center desc pb-2">
+               <h2><strong>{{ $pasaje->estado_pago_id == '1' ? 'PAGADO' : 'PAGO EN DESTINO' }}</strong></h2>
+            </td>
+        </tr>
+    @endif
+    @if (!is_null($encomienda))
+        <tr>
+            <td class="text-center desc">Condición</td>
+        </tr>
+        <tr>
+            <td class="text-center desc">
+                <h2><strong>{{ $encomienda->estado_pago_id == '1' ? 'PAGADO' : 'PAGO EN DESTINO' }}</strong></h2>
+            </td>
+        </tr>
+    @endif
+</table>
+
 </body>
 </html>

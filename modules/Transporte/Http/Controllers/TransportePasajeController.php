@@ -56,10 +56,10 @@ class TransportePasajeController extends Controller
 
 
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
-        
+
         /** Obtengo las series que pertencen a transporte */
         $series = Series::where('establishment_id', $establishment->id)->get();
-        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80',100,33])->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::first();
@@ -109,8 +109,38 @@ class TransportePasajeController extends Controller
                     $programacion->with('origen:id,nombre','destino:id,nombre');
                 }
             ])
+            ->whereNotNull('document_id')
             ->where('origen_id',$terminal->id)
             ->get();
+
+            return response()->json($pasajes,200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'message' => 'Lo sentimos ocurrio un error'
+            ],500);
+
+        }
+    }
+    public function getPasajesNotes(Request $request){
+        try{
+
+            $terminal = $request->user()->terminal;
+
+            $pasajes = TransportePasaje::with([
+                'saleNote',
+                'pasajero',
+                'asiento',
+                'programacion' => function($programacion){
+                    $programacion->with('origen:id,nombre','destino:id,nombre');
+                }
+            ])
+                ->whereNotNull('note_id')
+                ->where('origen_id',$terminal->id)
+                ->get();
 
             return response()->json($pasajes,200);
 
@@ -155,12 +185,12 @@ class TransportePasajeController extends Controller
     public function getDestinos(Request $request,TransporteTerminales $terminal){
 
         $destinos = TransporteDestino::all();
-            
+
         return response()->json([
             'destinos' => $destinos
         ]);
     }
-    
+
     public function getProgramacionesDisponibles(ProgramacionesDisponiblesRequest $request){
 
         $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
@@ -195,6 +225,7 @@ class TransportePasajeController extends Controller
             $encomienda = TransporteEncomienda::create(
                 $request->only(
                     'document_id',
+                    'note_id',
                     'remitente_id',
                     'destinatario_id',
                     'fecha_salida',

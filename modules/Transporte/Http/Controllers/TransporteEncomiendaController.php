@@ -98,6 +98,7 @@ class TransporteEncomiendaController extends Controller
 
             $encomiendas = TransporteEncomienda::with([
                 'document.items',
+                'document',
                 'programacion' => function($progamacion){
                     return $progamacion->with([
                         'vehiculo:id,placa',
@@ -109,8 +110,12 @@ class TransporteEncomiendaController extends Controller
                 'destinatario:id,name',
                 'estadoPago',
                 'estadoEnvio'
-            ])->orderBy('id', 'DESC')
+            ])
+            ->whereNotNull('document_id')
+            ->orderBy('id', 'DESC')
             ->get();
+
+            //dd( $encomiendas);
 
             return response()->json($encomiendas,200);
 
@@ -129,7 +134,7 @@ class TransporteEncomiendaController extends Controller
 
             $encomiendas = TransporteEncomienda::with([
                 'saleNote.items',
-                'document',
+                'saleNote',
                 'programacion' => function($progamacion){
                     return $progamacion->with([
                         'vehiculo:id,placa',
@@ -141,9 +146,12 @@ class TransporteEncomiendaController extends Controller
                 'destinatario:id,name',
                 'estadoPago',
                 'estadoEnvio'
-            ])->join('sale_notes', 'sale_notes.id', '=', 'transporte_encomiendas.document_id')
+            ])
+            ->whereNotNull('note_id')
             ->orderBy('transporte_encomiendas.id', 'DESC')
             ->get();
+
+            //dd( $encomiendas);
 
             return response()->json($encomiendas,200);
 
@@ -234,6 +242,7 @@ class TransporteEncomiendaController extends Controller
 
             $data = $request->only(
                 'document_id',
+                'note_id',
                 'remitente_id',
                 'destinatario_id',
                 'fecha_salida',
@@ -254,7 +263,13 @@ class TransporteEncomiendaController extends Controller
             $encomienda->programacion;
             $encomienda->estadoEnvio;
             $encomienda->estadoPago;
-            $encomienda->document;
+            if($request->note_id){
+                $encomienda->saleNote;
+            }
+            else{
+                $encomienda->document;
+            }
+
 
 
             return response()->json([

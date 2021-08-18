@@ -398,6 +398,7 @@
                     :showDialog.sync="showDialogSaleNoteOptions"
                     :recordId="documentId"
                     :showClose="true"
+                    :configuration="configuration"
                 >
     </sale-note-options>
     <document-options
@@ -580,7 +581,6 @@ export default {
                 this.reloadDataDestinatario(destinatario_id)
         })
 
-        console.log(this.persons);
     },
     watch:{
         terminalId(newVal){
@@ -649,6 +649,7 @@ export default {
     },
     methods: {
         modalNote(){
+            this.$eventHub.$emit('reloadDataNotes')
             this.showDialogSaleNoteOptions= true
         },
         modalPerson(buscar_destinatario){
@@ -676,7 +677,7 @@ export default {
         selectCustomer(){
             this.document.customer_id = this.encomienda.remitente_id;
             this.document.customer = this.remitentes.find( remitente => remitente.id == this.encomienda.remitente_id );
-            console.log(this.document.customer);
+
         },
         validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
@@ -830,7 +831,6 @@ export default {
                 });
         },
         async onStore() {
-            console.log('hula encomienda');
             this.loading = true;
             this.errors = {};
 
@@ -842,6 +842,7 @@ export default {
                     if (this.document.document_type_id === "nv") {
                         this.modalNote();
                     } else {
+                        this.$eventHub.$emit('reloadDataInvoices')
                         this.$emit('onSuccessVenta',this.documentId);
                     }
 
@@ -966,6 +967,7 @@ export default {
                 this.comprobante = null;
                 this.encomienda = {
                     document_id: null,
+                    note_id: null,
                     destino_id:null,
                     descripcion:null,
                     remitente_id:null,
@@ -981,6 +983,9 @@ export default {
                 this.clickAddPayment();
             }
             this.changeDocumentType();
+            this.document.document_type_id = '03';
+            this.filterSeries();
+            this.filterCustomers();
             this.onCalculateTotals();
 
             this.load = true;
@@ -1040,7 +1045,7 @@ export default {
             else{
                 this.document.payments=[];
             }
-            console.log(this.document.payments);
+
             //if(1==1) return this.$message.info('prueba');
             this.loading = true;
 
@@ -1057,12 +1062,14 @@ export default {
                 .then(async (response) => {
                     if (response.data.success) {
                         this.documentId = response.data.data.id;
-                        this.encomienda.document_id = response.data.data.id;
+
 
                         if (this.document.document_type_id === "nv"){
                             this.form_cash_document.sale_note_id = response.data.data.id;
+                            this.encomienda.note_id = response.data.data.id;
                         }
                         else{
+                            this.encomienda.document_id = response.data.data.id;
                             this.form_cash_document.document_id = response.data.data.id;
                         }
 

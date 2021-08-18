@@ -342,7 +342,7 @@ export default {
                     destino_id:this.destino,
                     fecha_salida:this.manifiesto.fecha
                 }
-                const { data:programaiones } = await this.$http.post(`/transportes/encomiendas/programaciones-disponibles`,data);
+                const { data:programaiones } = await this.$http.post(`/transportes/manifiestos/get-programaciones`,data);
                 this.buscando = false;
                 this.listProgramaciones = programaiones.programaciones;
             }

@@ -468,10 +468,10 @@ class SaleNote extends ModelTenant
         });
     }
     public function encomienda(){
-        return $this->hasOne(TransporteEncomienda::class,'document_id','id');
+        return $this->hasOne(TransporteEncomienda::class,'note_id','id');
     }
 
     public function pasaje(){
-        return $this->hasOne(TransportePasaje::class,'document_id','id');
+        return $this->hasOne(TransportePasaje::class,'note_id','id');
     }
 }

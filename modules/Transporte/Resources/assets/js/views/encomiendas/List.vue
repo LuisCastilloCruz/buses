@@ -28,9 +28,6 @@
                     <el-tabs v-model="tab" >
                             <el-tab-pane label="Facturas - Boletas" name="invoice">
                                 <div class="row">
-                                    <div class="col-md-12 d-flex justify-content-end">
-                                        <el-button type="primary" @click="onCreate(1)" >Nuevo</el-button>
-                                    </div>
                                     <div v-loading="loadingInvoices" class="col-md-12 mt-2">
                                         <div class="table-responsive">
                                             <table class="table table-bordered table-striped">
@@ -113,11 +110,7 @@
 
                             </el-tab-pane>
                             <el-tab-pane label="Notas de venta" name="notes">
-
                                 <div class="row">
-                                    <div class="col-md-12 d-flex justify-content-end">
-                                        <el-button type="primary" @click="onCreate(2)"> Nuevo </el-button>
-                                    </div>
                                     <div v-loading="loadingNotes" class="col-md-12 mt-2">
                                         <table class="table table-bordered table-striped">
                                                 <template v-if="listNotes.length > 0">
@@ -209,6 +202,7 @@
                     :showDialog.sync="showDialogSaleNoteOptions"
                     :recordId="documentNewId"
                     :showClose="true"
+                    :configuration="configuration"
                 >
         </sale-note-options>
 
@@ -288,6 +282,12 @@ export default {
     created(){
         this.getEncomiendas();
         this.getEncomiendasNotes();
+        this.$eventHub.$on('reloadDataNotes', () => {
+            this.getEncomiendasNotes();
+        })
+        this.$eventHub.$on('reloadDataInvoices', () => {
+            this.getEncomiendas();
+        })
     },
     data() {
         return {
@@ -323,6 +323,8 @@ export default {
                 this.loading = true;
                 const { data } = await this.$http.get('/transportes/encomiendas/get-encomiendas');
                 this.listInvoices = data;
+
+                //console.log(this.listInvoices );
                 this.loading = false;
 
             }catch(error){
@@ -383,7 +385,7 @@ export default {
             this.showDialogDocumentOptions = true;
         },
         verNota(encomienda){
-            this.documentNewId = encomienda.document_id;
+            this.documentNewId = encomienda.note_id;
             this.showDialogSaleNoteOptions = true;
         },
         anularDocument(encomienda) {

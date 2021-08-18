@@ -6,6 +6,7 @@ use App\Models\System\Client;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\SaleNote;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransportePasaje extends ModelTenant
@@ -15,6 +16,7 @@ class TransportePasaje extends ModelTenant
 
     protected $fillable = [
         'document_id',
+        'note_id',
         'pasajero_id',
         'asiento_id',
         'precio',
@@ -47,5 +49,8 @@ class TransportePasaje extends ModelTenant
     }
     public function cliente() : BelongsTo{
         return $this->belongsTo(Person::class,'cliente_id','id');
+    }
+    public function saleNote() : BelongsTo{
+        return $this->belongsTo(SaleNote::class,'note_id','id');
     }
 }

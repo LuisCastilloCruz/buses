@@ -13,6 +13,7 @@ use DateTime;
 use Exception;
 use Illuminate\Mail\Transport\Transport;
 use Modules\Transporte\Http\Requests\ManifiestoFormRequest;
+use Modules\Transporte\Http\Requests\ProgramacionesDisponiblesRequest;
 use Modules\Transporte\Models\TransporteChofer;
 use Modules\Transporte\Models\TransporteEncomienda;
 use Modules\Transporte\Models\TransporteManifiesto;
@@ -421,6 +422,18 @@ class TransporteManifiestosController extends Controller
                 'error' => $th->getMessage()
             ],500);
         }
+    }
+
+    public function getProgramaciones(ProgramacionesDisponiblesRequest $request){
+
+        $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
+            ->where('terminal_origen_id',$request->origen_id)
+            ->where('terminal_destino_id',$request->destino_id)
+            ->WhereEqualsOrBiggerDate($request->fecha_salida);
+
+        return response()->json([
+            'programaciones' => $programaciones->get()
+        ]);
     }
 
 

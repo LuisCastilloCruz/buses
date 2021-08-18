@@ -336,7 +336,7 @@
         <tr>
             <td class="align-top desc"><b>Fecha Salida</b></td>
             <td class="text-left desc">{{ $encomienda->fecha_salida }}</td>
-        </tr> --}}       
+        </tr> --}}
     @else
         <tr>
             <td class="desc"><h4><b>Origen: </b></h4></td>
@@ -391,7 +391,7 @@
             <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }}</h4></td>
         </tr>
         <tr>
-            <td class="desc"> <h5> <b>Hora viaje: </b> </h4> </td>
+            <td class="desc"> <h5> <b>Hora viaje: </b> </h5> </td>
             <td class="desc"> <h4> <strong>{{ $pasaje->hora_salida }}</strong></h4></td>
         </tr>
     @endif
@@ -403,7 +403,7 @@
             <h4 style="font-size: 30pt;"><b>{{ $pasaje->numero_asiento }}</b></h4>
         </td>
     </tr>
-    
+
 </table>
 @endif
 
@@ -574,13 +574,23 @@
         @endforeach
     </tr>
 
-    @if (!is_null($pasaje) || !is_null($encomienda))
+    @if (!is_null($pasaje))
         <tr>
-            <td class="text-center desc">Condición</td>
+            <td class="text-center desc"><h4>Condición</h4></td>
         </tr>
         <tr>
             <td class="text-center desc">
-                <h3><strong>{{ $document->state_type_id == '05' ? 'PAGADO' : $document->state_type->description }}</strong></h3>
+                <h2><strong>{{ $pasaje->estado_pago_id == '1' ? 'PAGADO' : 'PAGO EN DESTINO' }}</strong></h2>
+            </td>
+        </tr>
+    @endif
+    @if (!is_null($encomienda))
+        <tr>
+            <td class="text-center desc"><h4>Condición</h4></td>
+        </tr>
+        <tr>
+            <td class="text-center desc">
+                <h2><strong>{{ $encomienda->estado_pago_id == '1' ? 'PAGADO' : 'PAGO EN DESTINO' }}</strong></h2>
             </td>
         </tr>
     @endif

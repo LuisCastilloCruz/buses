@@ -25,16 +25,16 @@
                                     <el-option v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :label="terminal.nombre">
                                     </el-option>
                                 </el-select>
-                                
+
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="form-group">
                                 <label for="">Destino</label>
                                 <el-select v-model="destino"
-                                value-key="id" 
-                                :loading="loadingDestinos" 
-                                popper-class="el-select-customers" 
+                                value-key="id"
+                                :loading="loadingDestinos"
+                                popper-class="el-select-customers"
                                 placeholder="Destino"
                                 @change="getProgramaciones"
                                 >
@@ -43,7 +43,7 @@
                                          <el-option  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
                                         </el-option>
                                     </template>
-                                    
+
                                 </el-select>
                             </div>
                         </div>
@@ -51,8 +51,8 @@
                         <div class="col-md-4 row align-items-end">
                             <div class="form-group">
                                 <label for="">Tipo de venta</label>
-                                <el-select v-model="tipoVenta" 
-                                popper-class="el-select-customers" 
+                                <el-select v-model="tipoVenta"
+                                popper-class="el-select-customers"
                                 placeholder="Tipo de venta"
                                 :disabled="pasajero ? true : false"
                                 >
@@ -62,12 +62,12 @@
                                     </el-option>
                                 </el-select>
 
-                               
+
                             </div>
                         </div>
-                        
 
-                        
+
+
                         <div v-if="destino" class="col-3">
                             <div  class="form-group">
                                 <label for="">Fecha salida</label>
@@ -80,7 +80,7 @@
                                 </el-date-picker>
                             </div>
                         </div>
-                        
+
 
                         <div v-loading="loadingProgramaciones" v-if="destino && tipoVenta == 2" class="col-5">
                             <div v-if="programaciones.length > 0" class="row mt-2">
@@ -88,7 +88,7 @@
                                     <table class="table table-striped table-border">
                                         <thead>
                                         <tr>
-                                            <th>Terminal</th>    
+                                            <th>Terminal</th>
                                             <th>Vehiculo</th>
                                             <th>Hora salida</th>
                                             <th></th>
@@ -96,7 +96,7 @@
                                         </thead>
                                         <tbody>
                                         <tr v-for="programacion in programaciones" :key="programacion.id">
-                                            <td>{{ programacion.destino.nombre }}</td>   
+                                            <td>{{ programacion.destino.nombre }}</td>
                                             <td>{{ programacion.transporte.placa }}</td>
                                             <td>{{ programacion.hora_salida }}</td>
                                             <td>
@@ -139,7 +139,7 @@
                                 <el-input type="time" v-model="horaSalida" id="hora-salida"></el-input>
                             </div>
                         </div>
-                       
+
 
                         <div class="col-md-4">
                             <template v-if="asientos.length > 0 && tipoVenta == 2" >
@@ -216,7 +216,7 @@
                                 </div>
                             </div>
 
-                            
+
 
                             </template>
                         </div>
@@ -226,7 +226,7 @@
                         <bus v-if="piso == 1" :seats.sync="asientosPisoUno" @dbclick="dbClick"  />
                         <bus v-if="piso == 2" :seats.sync="asientosPisoDos" @dbclick="dbClick"  />
                     </div>
-                    
+
 
                     <venta-asiento-libre
                     :asiento="asiento"
@@ -237,7 +237,7 @@
                     :fecha-salida="fecha_salida"
                     @onUpdateItem="onUpdateItem"
                     :establishment="establishment"
-                    :series="series"
+                    :allSeries="series"
                     :document-types-invoice="documentTypesInvoice"
                     :payment-method-types="paymentMethodTypes"
                     :payment-destinations="paymentDestinations"
@@ -250,19 +250,19 @@
                     :origen="origen"
                     :horaSalida="horaSalida"
                     />
-                   
 
 
-                    
 
-                    
+
+
+
 
 
                 </el-card>
             </div>
 
         </div>
-        
+
 
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
@@ -272,11 +272,11 @@
         :configuration="configuration"
         ></document-options>
 
-        <documents-voided 
+        <documents-voided
         :showDialog.sync="showDialogVoided"
         :recordId="documentId"></documents-voided>
-        
-        <detalle-boleto 
+
+        <detalle-boleto
         :document-types-invoice="documentTypesInvoice"
         :visible.sync="visible"
         :programacion="selectProgramacion"
@@ -292,10 +292,10 @@
         />
 
 
-        <documents-voided 
+        <documents-voided
         :showDialog.sync="showDialogVoided"
         :recordId="documentId"></documents-voided>
-    
+
     </div>
 
 
@@ -380,7 +380,7 @@ export default {
         this.$eventHub.$on('reloadData',async() => {
             this.cancelarBoleto();
         });
-      
+
         await this.searchTerminales();
         this.terminalId = this.terminal.id;
         await this.searchDestinos();
@@ -403,7 +403,7 @@ export default {
             loadingCiudades:false,
             ciudades:[],
             ciudad:null,
-            
+
 
             terminales:[],
             ruta:null,
@@ -434,7 +434,7 @@ export default {
         });
     },
     computed:{
-        
+
 
         asientosPisoUno:function(){
             return this.asientos.filter(  asiento => asiento.piso == 1);
@@ -469,7 +469,7 @@ export default {
                     let programacion = this.programaciones.find( p  => p.id === this.itemPasajero.programacion.id)
                     this.seleccionar(programacion);
                 }
-               
+
             }
 
         },
@@ -493,7 +493,7 @@ export default {
             //     this.$emit('onSuccessVenta',documentId);
             //     this.$emit('update:sale',false);
             // }
-            
+
         },
         stateAsiento(estado,config={}){
 
@@ -564,7 +564,7 @@ export default {
         },
 
         dbClick(asiento){
-            
+
             if(asiento.type != 'ss') return;
             if(asiento.estado_asiento_id == 2) {
                 this.asiento = asiento;
@@ -602,7 +602,7 @@ export default {
                 this.vehiculo = programacion.transporte;
                 this.asientos = programacion.transporte.asientos;
             }
-            
+
         },
         async onUpdateItem(){
             if(this.tipoVenta == 2){
@@ -613,7 +613,7 @@ export default {
                 this.asientos = this.selectProgramacion.transporte.asientos;
                 this.vehiculo = this.selectProgramacion.transporte;
             }
-            
+
         },
 
         anularBoleto(pasaje){
@@ -639,7 +639,7 @@ export default {
                 });
 
                 this.onUpdateItem();
-                
+
             }catch(error){
 
                 this.$message({
