@@ -268,6 +268,9 @@
                 Route::get('cash/report/income-summary/{cash}', 'ReportIncomeSummaryController@pdf')
                      ->name('tenant.reports.income_summary.pdf');
 
+                Route::get('transportes/cash/report/income-summary/{cash}', 'ReportIncomeSummaryController@pdf')
+                    ->name('tenant.reports.income_summary.pdf');
+
 
             });
         });

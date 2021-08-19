@@ -539,6 +539,8 @@ if ($hostname) {
             Route::get('/transportes/cash', 'Tenant\CashController@index')->name('tenant.transportes.cash.index');
             Route::get('/transportes/cash/report/porpagar/{cash}', 'Tenant\CashController@enc_x_pagar');
             Route::get('/transportes/cash/modules', 'Tenant\CashController@modules');
+            Route::get('transportes/cash/report/products/{cash}', 'Tenant\CashController@report_products');
+            Route::get('transportes/cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
 
             //Tags
             Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');

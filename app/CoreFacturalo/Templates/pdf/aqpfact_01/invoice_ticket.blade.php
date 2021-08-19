@@ -574,16 +574,16 @@
         @endforeach
     </tr>
 
-    @if (!is_null($pasaje))
-        <tr>
-            <td class="text-center desc"><h4>Condición</h4></td>
-        </tr>
-        <tr>
-            <td class="text-center desc">
-                <h2><strong>{{ $pasaje->estado_pago_id == '1' ? 'PAGADO' : 'PAGO EN DESTINO' }}</strong></h2>
-            </td>
-        </tr>
-    @endif
+{{--    @if (!is_null($pasaje))--}}
+{{--        <tr>--}}
+{{--            <td class="text-center desc"><h4>Condición</h4></td>--}}
+{{--        </tr>--}}
+{{--        <tr>--}}
+{{--            <td class="text-center desc">--}}
+{{--                <h2><strong>{{ $pasaje->estado_pago_id == '1' ? 'PAGADO' : 'PAGO EN DESTINO' }}</strong></h2>--}}
+{{--            </td>--}}
+{{--        </tr>--}}
+{{--    @endif--}}
     @if (!is_null($encomienda))
         <tr>
             <td class="text-center desc"><h4>Condición</h4></td>
