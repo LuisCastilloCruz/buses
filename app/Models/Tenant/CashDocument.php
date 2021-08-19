@@ -6,6 +6,7 @@ use Modules\Expense\Models\Expense;
 use Modules\Expense\Models\ExpensePayment;
 use Modules\Sale\Models\TechnicalService;
 use Modules\Finance\Models\IncomePayment;
+use Modules\Transporte\Models\TransporteEncomienda;
 
 class CashDocument extends ModelTenant
 {
@@ -65,5 +66,10 @@ class CashDocument extends ModelTenant
     // {
     //     return $this->belongsTo(Expense::class);
     // }
+
+    public function transporte_encomienda()
+    {
+        return $this->belongsTo(TransporteEncomienda::class,'sale_note_id','note_id');
+    }
 
 }

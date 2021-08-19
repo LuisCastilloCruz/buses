@@ -638,6 +638,8 @@ export default {
                 this.clienteId=null;
                 this.pasajeroId = null;
                 this.numeroAsiento = null;
+                this.form_cash_document.document_id=null;
+                this.form_cash_document.sale_note_id=null;
                 this.document.document_type_id = '03';
                 this.filterSeries();
                 this.filterCustomers();

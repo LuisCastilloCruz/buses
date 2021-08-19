@@ -24,6 +24,7 @@ use App\Models\Tenant\PaymentMethodType;
 use Modules\Pos\Models\CashTransaction;
 use Modules\Finance\Traits\FinanceTrait;
 use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\SaleNoteItem;
 use App\Exports\CashProductExport;
 use App\Models\Tenant\PurchaseItem;
@@ -456,13 +457,32 @@ class CashController extends Controller
         $cash = Cash::findOrFail($id);
         $company = Company::first();
 
-        $sale_notes =  CashDocument::with('sale_note')
-            ->join('transporte_encomiendas', 'transporte_encomiendas.document_id', '=', 'cash_documents.sale_note_id')
-            ->join('transporte_destinos','transporte_destinos.id','=','transporte_encomiendas.destino_id')
-            ->join('sale_notes','sale_notes.id','=','transporte_encomiendas.document_id')
+//        $sale_notes =  CashDocument::with('sale_note')
+//            ->join('transporte_encomiendas', 'transporte_encomiendas.document_id', '=', 'cash_documents.sale_note_id')
+//            ->join('transporte_destinos','transporte_destinos.id','=','transporte_encomiendas.destino_id')
+//            ->join('sale_notes','sale_notes.id','=','transporte_encomiendas.document_id')
+//            ->where('transporte_encomiendas.estado_pago_id', 2) //2=pago en destino
+//            ->where('cash_id', $cash->id)
+//            ->get();
+        $cash_documents = CashDocument::select('sale_note_id','cash_id')
+            ->join('transporte_encomiendas', 'transporte_encomiendas.note_id', '=', 'cash_documents.sale_note_id')
+            ->join('sale_notes','sale_notes.id','=','transporte_encomiendas.note_id')
             ->where('transporte_encomiendas.estado_pago_id', 2) //2=pago en destino
             ->where('cash_id', $cash->id)
             ->get();
+
+        $sale_notes = SaleNote::with([
+            'transporte_encomienda' => function($progamacion){
+                return $progamacion->with([
+                    'destino:id,nombre'
+                ]);
+            },
+        ])
+        ->whereIn('id', $cash_documents)
+        ->get();
+
+
+
 
         $pdf = PDF::loadView('tenant.cash.report_enc_x_pagar_pdf', compact("cash", "company","sale_notes"));
 

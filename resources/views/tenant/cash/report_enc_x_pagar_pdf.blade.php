@@ -113,7 +113,7 @@ $establishment = $cash->user->establishment;
                                 <th>Destinatario</th>
                                 <th>Destino</th>
                                 <th>Por Cobrar</th>
-                                
+
                             </tr>
                         </thead>
                         <tbody>
@@ -124,10 +124,9 @@ $establishment = $cash->user->establishment;
                                 <tr>
                                     <td class="celda">{{ $num }}</td>
                                     <td class="celda">{{ $item['series'] }}-{{ $item['number'] }}</td>
-                                    <td class="celda">{{ json_decode($item['customer'])->name }}</td>
-                                    <td class="celda">{{ $item['nombre'] }}</td>
+                                    <td class="celda">{{ $item['customer']->name }}</td>
+                                    <td class="celda">{{ ($item['transporte_encomienda']) ?$item['transporte_encomienda']->destino->nombre :'' }}</td>
                                     <td class="celda">{{ $item['total'] }}</td>
-                                    
                                 </tr>
                                 @php
                                     $num++;

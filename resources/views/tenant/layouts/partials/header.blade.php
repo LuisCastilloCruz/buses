@@ -64,27 +64,17 @@
             @endif
         </ul>
 
-{{--        @if($vc_order > 0)--}}
-{{--        <span class="separator"></span>--}}
-{{--        <ul class="notifications">--}}
-{{--            <li class="open">--}}
-
-{{--                <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">--}}
-{{--                    <i class="fas fa-truck text-secondary"></i>--}}
-{{--                    <span class="badge badge-red">{{ $vc_order }}</span>--}}
-{{--                </a>--}}
-{{--                <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">--}}
-{{--                    <a href="{{route('tenant.order_notes.not_sent')}}">--}}
-{{--                        <div class="notification-title">--}}
-{{--                            <span class="float-right badge badge-default"><i class="fas fa-arrow-right"></i></span>Pedidos pendientes--}}
-{{--                        </div>--}}
-{{--                    </a>--}}
-{{--                    --}}{{-- <div class="content">--}}
-{{--                    </div> --}}
-{{--                </div>--}}
-{{--            </li>--}}
-{{--        </ul>--}}
-{{--        @endif--}}
+        @if($vc_order > 0)
+        <span class="separator"></span>
+        <ul class="notifications">
+            <li>
+                <a href="{{ route('tenant.order_notes.not_sent') }}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Pedidos pendientes Sistema">
+                    <i class="fas fa-truck text-secondary"></i>
+                    <span class="badge badge-info">{{ $vc_order }}</span>
+                </a>
+            </li>
+        </ul>
+        @endif
         <span class="separator"></span>
         <ul class="notifications">
             <li>
@@ -96,7 +86,7 @@
         <span class="separator"></span>
         <ul class="notifications">
             <li>
-                <a href="{{ route('tenant_orders_index') }}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Pedidos pendientes">
+                <a href="{{ route('tenant_orders_index') }}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Pedidos pendientes Tienda Virtual">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                     <span class="badge badge-pill badge-info badge-up cart-item-count">{{ $vc_orders }}</span>
                 </a>

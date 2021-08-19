@@ -1097,6 +1097,9 @@ export default {
                     if (!response.data.success) {
                         this.$message.error(response.data.message);
                     }
+
+                    this.form_cash_document.document_id=null;
+                    this.form_cash_document.sale_note_id=null;
                 })
                 .catch((error) => {
                     this.axiosError(error);
