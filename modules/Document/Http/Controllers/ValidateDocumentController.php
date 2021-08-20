@@ -2,6 +2,7 @@
 
 namespace Modules\Document\Http\Controllers;
 
+use App\CoreFacturalo\Services\Extras\ValidateCpeSunat;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -15,6 +16,7 @@ use Modules\Document\Http\Requests\ValidateDocumentsRequest;
 use App\CoreFacturalo\Services\Extras\ValidateCpe2;
 use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ValidateDocumentController extends Controller
 {
@@ -44,13 +46,13 @@ class ValidateDocumentController extends Controller
         foreach ($records_paginate->getCollection() as $document)
         {
             // evitado el buble de consulta
-            // reValidate:
-            $validate_cpe = new ValidateCpe2();
+            reValidate:
+            $validate_cpe = new ValidateCpeSunat();
             $response = $validate_cpe->search($document->company->number,
                                                 $document->document_type_id,
                                                 $document->series,
                                                 $document->number,
-                                                $document->date_of_issue,
+                                                Carbon::parse($document->date_of_issue)->format('d/m/Y'),
                                                 $document->total
                                             );
             if ($response['success']) {
@@ -64,10 +66,10 @@ class ValidateDocumentController extends Controller
                 $document->state_type_sunat_description = $response_description;
                 $document->code = $response_code;
 
-            } //else {
+            } else {
 
-                // goto reValidate;
-            //}
+                goto reValidate;
+            }
         }
 
         return $records_paginate;
@@ -115,7 +117,6 @@ class ValidateDocumentController extends Controller
 
     public function regularize(ValidateDocumentsRequest $request)
     {
-
         $document_state = [
             'ACEPTADO' => '05',
             'ENVIADO' => '03',
@@ -132,12 +133,12 @@ class ValidateDocumentController extends Controller
             foreach ($records as $document)
             {
                 reValidate:
-                $validate_cpe = new ValidateCpe2();
+                $validate_cpe = new ValidateCpeSunat();
                 $response = $validate_cpe->search($document->company->number,
                                                     $document->document_type_id,
                                                     $document->series,
                                                     $document->number,
-                                                    $document->date_of_issue,
+                                                    Carbon::parse($document->date_of_issue)->format('d/m/Y'),
                                                     $document->total
                                                 );
 
@@ -155,6 +156,8 @@ class ValidateDocumentController extends Controller
                 } else {
                     goto reValidate;
                 }
+
+                //dd($response);
             }
 
         });

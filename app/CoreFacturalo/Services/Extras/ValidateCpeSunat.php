@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
+
+use \DateTime;
 
 class ValidateCpeSunat
 {
@@ -76,15 +79,37 @@ class ValidateCpeSunat
 
     public function search($company_number, $document_type_id, $series, $number, $date_of_issue, $total)
     {
-        try {
+        $token ="";
+        if(Session::has('token_time') && Session::has('token_key')){
+            $tiempoOld = Session::get('token_time');
+            $tiempo = date("H:i:s");
+
+            $fechaUno=new DateTime($tiempoOld);
+            $fechaDos=new DateTime($tiempo);
+
+            $dateInterval = $fechaUno->diff($fechaDos);
+            $min=$dateInterval->format('%i');
+
+            if($min<30) {
+                $token = Session::get('token_key');
+            }
+            else{
+                $token = trim($this->getToken());
+            }
+        }
+
+        else{
             $token = trim($this->getToken());
+        }
+
+        try {
 
             $response = $this->client->request('POST', self::URL_CONSULT, [
                 'http_errors' => true,
                 'headers' => [
                     'Accept' =>'application/json',
                     'Content-Type' => 'application/json',
-                    'Authorization'=> 'Bearer '.$token
+                    'Authorization'=> 'Bearer '. $token
                 ],
                 'json' =>[
                     "numRuc" => $company_number,
@@ -120,7 +145,7 @@ class ValidateCpeSunat
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(). 'min= '.$min .' fecha :'. $date_of_issue
             ];
         }
     }
@@ -151,7 +176,51 @@ class ValidateCpeSunat
 
         $data = json_decode($response);
 
+        $tiempo = date("H:i:s");
+
+        Session::put('token_key', $data->access_token);
+        Session::put('token_time', $tiempo);
+
         return $data->access_token;
+    }
+
+    public function validateAndChangeDocuments($month, $year)
+    {
+        $company = Company::first();
+        for ($i = $month; $i <= $month; $i++) {
+            $date = Carbon::createFromDate($year, $i, 1);
+            $date_from = $date->format('Y-m-d');
+            $date_to = $date->endOfMonth()->format('Y-m-d');
+            $documents = Document::where('state_type_id', '01')
+                ->where('soap_type_id', '02')
+                ->where('document_type_id', '03')
+                ->where('series', 'B146')
+                ->whereBetween('date_of_issue', [$date_from, $date_to])
+                ->orderBy('number')
+                ->get();
+            Log::info('-------------------------------------------------');
+            Log::info('Periodo: ' . $date_from . ' al ' . $date_to);
+            Log::info('Documentos:' . count($documents));
+            foreach ($documents as $document) {
+                reValidate:
+                sleep(2);
+                $response = $this->search($company->number,
+                    $document->document_type_id, $document->series, $document->number,
+                    $document->date_of_issue->format('Y-m-d'), $document->total);
+                if ($response['success']) {
+                    Log::info($document->series . '-' . $document->number . '|' . 'Mensaje: ' . $response['data']['comprobante_estado_descripcion']);
+                    if ($response['data']['comprobante_estado_codigo'] === '1') {
+                        $document->update([
+                            'state_type_id' => '05'
+                        ]);
+                    }
+                } else {
+                    //Log::info($document->series.'-'.$document->number.'|'.'Mensaje: '.$response['message']);
+                    goto reValidate;
+                }
+            }
+            Log::info('-------------------------------------------------');
+        }
     }
 
 }
