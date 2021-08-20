@@ -904,32 +904,32 @@ export default {
                     this.producto.total_taxes=igv;
                 }
 
-                if(!this.producto.item.id){
+                // if(!this.producto.item.id){
                     this.loadingProducto = true;
                     let id = await this.createItem(this.producto.item);
-                    await this.searchProducto();
+                    await this.searchProducto(id);
                     this.loadingProducto = false;
                     if(!id) return this.$message.error('Lo sentimos no se pudo agregar el producto');
                     this.producto.item_id = this.producto.item.id = id;
-                }else {
-                    this.producto.item_id = this.producto.item.id;
-                }
+                // }else {
+                //     this.producto.item_id = this.producto.item.id;
+                // }
 
                 let p =  JSON.parse(JSON.stringify(this.producto));
 
                 this.document.items.push( p );
-                // this.document.payments.push(this.payment);
-                //this.document.customer_id=this.pasajeroId;
+                console.log(this.document.items);
 
-                //this.document.items.push(Object.assign({},this.producto));
                 this.total += parseFloat(this.producto.unit_price);
-                // if(this.document.payments.length > 0){
-                //     this.document.payments[0].payment = this.total;
-                // }
+
+                if(this.configuration.legend_footer==1){ // zona selva
+                    this.initProductoExonerado();
+                }
+                else{
+                    this.initProducto();
+                }
                 this.selectItem = null;
             }
-
-           // this.controlPago();
         },
 
         eliminarProducto(index){

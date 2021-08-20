@@ -459,7 +459,7 @@ export default {
         },
         reloadDataCustomers(cliente_Id) {
             this.$http
-                .get(`/${this.resource}/search/customer/${cliente_Id}`)
+                .get(`/documents/search/customer/${cliente_Id}`)
                 .then((response) => {
                     this.tempClientes = this.clientes  = response.data.customers;
                     this.clienteId = cliente_Id;
@@ -467,7 +467,7 @@ export default {
         },
         reloadDataPasajeros(pasajero_id) {
             this.$http
-                .get(`/${this.resource}/search/customer/${pasajero_id}`)
+                .get(`/documents/search/customer/${pasajero_id}`)
                 .then((response) => {
                     this.tempPasajeros = this.pasajeros  = response.data.customers;
                     this.pasajeroId = pasajero_id;
@@ -940,6 +940,7 @@ export default {
         },
         cleanCustomer(){
             this.document.customer_id = null
+            this.clienteId = null;
             this.tempPasajeros = []
         },
         clickAddPayment() {
