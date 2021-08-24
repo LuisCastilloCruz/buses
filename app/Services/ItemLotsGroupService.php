@@ -13,7 +13,7 @@ class ItemLotsGroupService
 
         if($record)
         {
-            $result = $record->code;
+            $result = $record->code. ' - ' .$record->date_of_due;
         }
 
         return $result;
