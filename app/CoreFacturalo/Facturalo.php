@@ -652,7 +652,7 @@ class Facturalo
     public function validationCodeResponse($code, $message)
     {
         //Errors
-        if($code === 'ERROR_CDR') {
+        if($code === 'ERROR_CDR' || $code === 'env:Client' || $code === 'env:Server' || $code === 'soap:Server') {
             return;
         }
         if($code === 'HTTP') {
