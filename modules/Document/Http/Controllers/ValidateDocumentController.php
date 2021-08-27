@@ -118,6 +118,7 @@ class ValidateDocumentController extends Controller
     public function regularize(ValidateDocumentsRequest $request)
     {
         $document_state = [
+            'NO EXISTE' => '01',
             'ACEPTADO' => '05',
             'ENVIADO' => '03',
             'OBSERVADO' => '07',
