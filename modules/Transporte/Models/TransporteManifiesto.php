@@ -12,6 +12,7 @@ class TransporteManifiesto extends ModelTenant
     protected $table = 'transporte_manifiesto';
 
     protected $fillable = [
+        'soap_type_id',
         'serie',
         'numero',
         'tipo',

@@ -45,6 +45,9 @@ class TransporteManifiestosController extends Controller
 
 
     public function store(ManifiestoFormRequest $request){
+        $company = Company::active();
+        $soap_type_id = $company->soap_type_id;
+
         try {
 
             $programacion = TransporteProgramacion::findOrFail($request->programacion_id);
@@ -54,6 +57,7 @@ class TransporteManifiestosController extends Controller
                 ->max('numero')+1;
 
             $manifiesto = TransporteManifiesto::create([
+                'soap_type_id'=>$soap_type_id,
                 'serie' => $request->serie,
                 'tipo' => $request->tipo,
                 'numero' => $numero,

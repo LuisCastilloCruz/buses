@@ -3,6 +3,7 @@
 namespace Modules\Transporte\Http\Controllers;
 
 use App\Models\Tenant\Cash;
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -257,6 +258,8 @@ class TransporteSalesController extends Controller
     }
 
     public function realizarVenta(RealizarVentaRequest $request){
+        $company = Company::active();
+        $soap_type_id = $company->soap_type_id;
 
         DB::connection('tenant')->beginTransaction();
         try {
@@ -280,7 +283,8 @@ class TransporteSalesController extends Controller
             TransportePasaje::create(
                 array_merge($attributes,[
                     'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
-                    'origen_id' => $request->user()->terminal->id
+                    'origen_id' => $request->user()->terminal->id,
+                    'soap_type_id'=>$soap_type_id
                     // 'fecha_llegada' => $fechaLLegada
                 ])
             );

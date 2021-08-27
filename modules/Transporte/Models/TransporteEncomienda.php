@@ -12,6 +12,7 @@ class TransporteEncomienda extends ModelTenant
 {
     protected $table = 'transporte_encomiendas';
     protected $fillable = [
+        'soap_type_id',
         'document_id',
         'note_id',
         'remitente_id',

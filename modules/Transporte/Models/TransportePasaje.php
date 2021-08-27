@@ -15,6 +15,7 @@ class TransportePasaje extends ModelTenant
     protected $table = 'transporte_pasajes';
 
     protected $fillable = [
+        'soap_type_id',
         'document_id',
         'note_id',
         'pasajero_id',

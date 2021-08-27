@@ -5,6 +5,7 @@ namespace Modules\Transporte\Http\Controllers;
 use App\Http\Resources\Tenant\ItemResource;
 use App\Models\Tenant\Cash;
 use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
@@ -237,6 +238,8 @@ class TransporteEncomiendaController extends Controller
      */
     public function store(TransporteEncomiendaRequest $request)
     {
+        $company = Company::active();
+        $soap_type_id = $company->soap_type_id;
         //
         try{
 
@@ -252,7 +255,7 @@ class TransporteEncomiendaController extends Controller
                 'destino_id'
             );
 
-            $data = array_merge($data,['terminal_id' => $request->user()->terminal->id]);
+            $data = array_merge($data,['terminal_id' => $request->user()->terminal->id,'soap_type_id'=>$soap_type_id]);
 
             // dd($data);
 
