@@ -187,6 +187,9 @@ export default {
         temp_path: null,
         unit_type_id: "ZZ",
         web_platform_id: null,
+          is_set: false,
+          has_plastic_bag_taxes: false,
+          item_warehouse_prices: [],
       };
       this.$http
         .post("/items", payload)
