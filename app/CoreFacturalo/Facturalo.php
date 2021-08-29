@@ -744,7 +744,12 @@ class Facturalo
         $extService->setCodeProvider(new XmlErrorCodeProvider());
         $res = $extService->getStatus($ticket);
         if(!$res->isSuccess()) {
-            throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
+            $this->response = [
+                'sent' => false,
+                'code' => $res->getError()->getCode(),
+                'description' => $res->getError()->getMessage(),
+            ];
+            //throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
         } else {
             $cdrResponse = $res->getCdrResponse();
             $this->uploadFile($res->getCdrZip(), 'cdr');
