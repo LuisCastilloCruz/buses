@@ -766,7 +766,7 @@ class Facturalo
                 'description' => $cdrResponse->getDescription(),
                 'notes' => $cdrResponse->getNotes(),
                 'is_accepted' => $cdrResponse->isAccepted(),
-                'status_code' => $extService->getCustomStatusCode(),
+                //'status_code' => $extService->getCustomStatusCode(),
             ];
 
             $this->validationStatusCodeResponse($extService->getCustomStatusCode());
