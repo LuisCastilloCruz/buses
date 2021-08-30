@@ -20,16 +20,16 @@ trait SummaryTrait
         });
 
         $document = $fact->getDocument();
-        
+
         return [
             'success' => true,
             'message' => "El resumen {$document->identifier} fue creado correctamente",
         ];
     }
-    
+
     public function query($id) {
         $document = Summary::find($id);
-        
+
         $fact = DB::connection('tenant')->transaction(function () use($document) {
             $facturalo = new Facturalo();
             $facturalo->setDocument($document);
@@ -37,11 +37,11 @@ trait SummaryTrait
             $facturalo->statusSummary($document->ticket);
             return $facturalo;
         });
-        
+
         $response = $fact->getResponse();
-        
+
         return [
-            'success' => ($response['status_code'] === 99) ? false : true,
+            'success' => $response["sent"],
             'message' => $response['description'],
         ];
     }
