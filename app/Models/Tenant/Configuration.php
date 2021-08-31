@@ -389,6 +389,14 @@ class Configuration extends ModelTenant
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
+            'color1'=>$this->color1,
+            'color2'=>$this->color2,
+            'PrinterNombre1'=>$this->PrinterNombre1,
+            'PrinterRuta1'=>$this->PrinterRuta1,
+            'PrinterTipoConexion1'=>$this->PrinterTipoConexion1,
+            'PrinterNombre2'=>$this->PrinterNombre2,
+            'PrinterRuta2'=>$this->PrinterRuta2,
+            'PrinterTipoConexion2'=>$this->PrinterTipoConexion2,
             'print_silent'=>(bool) $this->print_silent,
 
         ];

@@ -37,15 +37,14 @@
                                 <span v-if="form.current_format == o.formats">Activo</span>
                                 <span v-else>Activar</span>
                             </el-radio>
-
                         </div>
-                        <div v-if="form.formats == o.formats && form.formats == 'aqpfact_01'" class="row">
+                        <div v-if="form.current_format == o.formats && form.current_format == 'aqpfact_01'" class="row">
                            <div class="col-md-3">
                                <label class="control-label float-left">
                                    <el-tooltip class="item" effect="dark" content="Color primario de la plantilla." placement="top-start">
                                        <i class="fa fa-info-circle"></i>
                                    </el-tooltip>
-                                   <input type="color" id="primary_color" class="field-radio" v-bind:value="form.color1"  @change="changeColor1(o.formats,$event)">
+                                   <input type="color" id="primary_color" class="field-radio" v-bind:value="form.color1"  @change="changeColor1(o.current_format,$event)">
                                </label>
                            </div>
                             <div class="col-md-3">
@@ -53,7 +52,7 @@
                                     <el-tooltip class="item" effect="dark" content="Color secundario de la plantilla." placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
-                                    <input type="color" id="secondary_color" class="field-radio"  v-bind:value="form.color2" @change="changeColor2(o.formats,$event)">
+                                    <input type="color" id="secondary_color" class="field-radio"  v-bind:value="form.color2" @change="changeColor2(o.current_format,$event)">
                                 </label>
                             </div>
                             <div class="col-md-6">
@@ -115,18 +114,16 @@
             }
         },
         async created() {
-
-            // await this.$http.get(`/${this.resource}/record`) .then(response => {
-            //     if (response.data !== ''){
-            //         // console.log(response.data);
-            //         this.form = response.data.data;
-            //     }
-            //     // console.log(this.placeholder)
-            // });
+            await this.$http.get(`/${this.resource}/record`) .then(response => {
+                if (response.data !== ''){
+                    // console.log(response.data);
+                    this.form = response.data.data;
+                }
+                // console.log(this.placeholder)
+            });
 
             await this.$http.get(`/${this.resource}/getFormats`) .then(response => {
                 if (response.data !== '') this.formatos = response.data.filter(r => this.imageGuide(r.formats))
-                // console.log(this.formatos)
             });
 
         },
@@ -140,7 +137,6 @@
 
                 this.$http.post(`/${this.resource}/changeFormat`, this.form).then(response =>{
                     this.$message.success(response.data.message);
-                    alert('El formato se cambió corréctamente, el sitema se recargará para mostrarle las opciones de su plantilla.');
                     location.reload()
                 })
 
@@ -181,8 +177,8 @@
 
                 this.$http.post(`/${this.resource}/changeColor1`, this.formatos).then(response =>{
                     this.$message.success(response.data.message);
-                    alert('El color primario fué cambiado corréctamente, el sistema necesita recargarse.');
-                    location.reload()
+                    //alert('El color primario fué cambiado corréctamente, el sistema necesita recargarse.');
+                    //location.reload()
                     //alert('El color primario se cambió correctamente: ' +e.target.value);
                 })
                 //alert('cambiando color: '+ ' - otro: '+value+ ' color: ' +e.target.value);
@@ -196,8 +192,8 @@
 
                 this.$http.post(`/${this.resource}/changeColor2`, this.formatos).then(response =>{
                     this.$message.success(response.data.message);
-                    alert('El color secundario fué cambiado corréctamente, el sistema necesita recargarse.');
-                    location.reload()
+                    //alert('El color secundario fué cambiado corréctamente, el sistema necesita recargarse.');
+                    //location.reload()
                     //alert('El color primario se cambió correctamente: ' +e.target.value);
                 })
                 //alert('cambiando color: '+ ' - otro: '+value+ ' color: ' +e.target.value);

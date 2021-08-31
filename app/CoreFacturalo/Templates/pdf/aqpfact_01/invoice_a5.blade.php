@@ -6,7 +6,7 @@
 
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $accounts = \App\Models\Tenant\BankAccount::all();
+    $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
 
      $configuracion = \App\Models\Tenant\Configuration::all();
      foreach($configuracion as $config){
@@ -193,25 +193,8 @@
     @endif
 </table>
 
-{{--<table class="full-width mt-3">--}}
-    {{--@if ($document->purchase_order)--}}
-        {{--<tr>--}}
-            {{--<td width="25%">Orden de Compra: </td>--}}
-            {{--<td>:</td>--}}
-            {{--<td class="text-left">{{ $document->purchase_order }}</td>--}}
-        {{--</tr>--}}
-    {{--@endif--}}
-    {{--@if ($document->quotation_id)--}}
-        {{--<tr>--}}
-            {{--<td width="15%">Cotización:</td>--}}
-            {{--<td class="text-left" width="85%">{{ $document->quotation->identifier }}</td>--}}
-        {{--</tr>--}}
-    {{--@endif--}}
-{{--</table>--}}
-
 @if ($document->guides)
 <br/>
-{{--<strong>Guías:</strong>--}}
 <table>
     @foreach($document->guides as $guide)
         <tr>
@@ -265,7 +248,7 @@
             @isset($document->quotation->delivery_date)
                     <td width="120px">T. ENTREGA</td>
                     <td width="8px">:</td>
-                    <td>{{ $document->quotation->delivery_date}}</td>
+                    <td>{{ $document->date_of_issue->addDays($document->quotation->delivery_date)->format('d-m-Y') }}</td>
             @endisset
         </tr>
     @endif
@@ -540,16 +523,35 @@
     </tr>
 </table>
 
+
+
+@php
+    if($document->payment_condition_id === '01') {
+        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
+    }else{
+        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+    }
+@endphp
+{{-- Condicion de pago  Crédito / Contado --}}
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+        </td>
+    </tr>
+</table>
+
 @if($document->payment_method_type_id)
     <table class="full-width">
         <tr>
             <td>
-                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+                <strong>MÉTODO DE PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
         </tr>
     </table>
 @endif
-@if($payments->count())
+@if ($document->payment_condition_id === '01')
+    @if($payments->count())
     <table class="full-width">
         <tr>
         <td>
@@ -559,18 +561,37 @@
             @endphp
             @foreach($payments as $row)
                 <tr>
-                    <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td><td style="width: 100px"> <strong>Vendedor</strong> @if ($document->seller)
-                        <td>{{ $document->seller->name }}</td>
-                    @else
-                        <td>{{ $document->user->name }}</td>
-                        @endif</td>
+                    <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
                 </tr>
             @endforeach
         </tr>
-
+    </table>
+    @endif
+@else
+    <table class="full-width">
+            @foreach($document->fee as $key => $quote)
+                <tr>
+                    <td>&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
+                </tr>
+            @endforeach
+        </tr>
     </table>
 @endif
-
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <strong>Vendedor:</strong>
+            </td>
+        </tr>
+        <tr>
+            @if ($document->seller)
+                <td>{{ $document->seller->name }}</td>
+            @else
+                <td>{{ $document->user->name }}</td>
+            @endif
+        </tr>
+    </table>
 @if ($document->terms_condition)
     <br>
     <table class="full-width">
@@ -582,6 +603,5 @@
         </tr>
     </table>
 @endif
-
 </body>
 </html>

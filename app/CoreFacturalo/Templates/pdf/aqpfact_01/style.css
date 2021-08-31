@@ -6,6 +6,26 @@ table {
     border-spacing: 0;
     border-collapse: collapse;
 }
+
+.cell-solid{
+    border: 1px solid black;
+}
+
+.cell-solid-rl{
+    border-right: 1px solid #cccccc;
+    border-left: 1px solid #cccccc;
+}
+
+.cell-solid-bottom{
+    border-bottom: 1px solid #cccccc;
+}
+
+.cell-solid-offtop{
+    border-bottom: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    border-left: 1px solid #cccccc;
+}
+
 .font-md {
     font-size: 12px;
 }

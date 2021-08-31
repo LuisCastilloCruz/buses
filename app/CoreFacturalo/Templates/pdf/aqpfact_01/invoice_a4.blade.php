@@ -6,7 +6,7 @@
 
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $accounts = \App\Models\Tenant\BankAccount::all();
+    $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
 
     $configuracion = \App\Models\Tenant\Configuration::all();
      foreach($configuracion as $config){
@@ -118,49 +118,55 @@
        @inject('detractionType', 'App\Services\DetractionTypeService')
        <td width="220px">{{$document->detraction->detraction_type_id}} - {{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</td>
 
-   @endif
-   <tr>
-       <td><b>CLIENTE:</b></td>
-       <td>:</td>
-       <td>{{ $customer->name }}</td>
+    @endif
+    <tr>
+        <td style="vertical-align: top;">CLIENTE:</td>
+        <td style="vertical-align: top;">:</td>
+        <td style="vertical-align: top;">
+            {{ $customer->name }}
+            @if ($customer->internal_code ?? false)
+            <br>
+            <small>{{ $customer->internal_code ?? '' }}</small>
+            @endif
+        </td>
 
-       @if ($document->detraction)
-           <td width="120px"><b>MÉTODO DE PAGO</b></td>
-           <td width="8px">:</td>
-           <td width="220px">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</td>
-       @endif
+        @if ($document->detraction)
+            <td width="120px">MÉTODO DE PAGO</td>
+            <td width="8px">:</td>
+            <td width="220px">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</td>
+        @endif
 
-   </tr>
-   <tr>
-       <td><b>{{ $customer->identity_document_type->description }}</b></td>
-       <td>:</td>
-       <td>{{$customer->number}}</td>
+    </tr>
+    <tr>
+        <td>{{ $customer->identity_document_type->description }}</td>
+        <td>:</td>
+        <td>{{$customer->number}}</td>
 
-       @if ($document->detraction)
+        @if ($document->detraction)
 
-           <td width="120px"><b>P. DETRACCIÓN</b></td>
-           <td width="8px">:</td>
-           <td>{{ $document->detraction->percentage}}%</td>
-       @endif
-   </tr>
-   @if ($customer->address !== '')
-   <tr>
-       <td class="align-top"><b>DIRECCIÓN</b></td>
-       <td>:</td>
-       <td style="text-transform: uppercase;">
-           {{ $customer->address }}
-           {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
-           {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
-           {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
-       </td>
+            <td width="120px">P. DETRACCIÓN</td>
+            <td width="8px">:</td>
+            <td>{{ $document->detraction->percentage}}%</td>
+        @endif
+    </tr>
+    @if ($customer->address !== '')
+    <tr>
+        <td class="align-top">DIRECCIÓN:</td>
+        <td>:</td>
+        <td style="text-transform: uppercase;">
+            {{ $customer->address }}
+            {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
+            {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
+            {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
+        </td>
 
-       @if ($document->detraction)
-           <td width="120px"><b>MONTO DETRACCIÓN</b></td>
-           <td width="8px">:</td>
-           <td>S/ {{ $document->detraction->amount}}</td>
-       @endif
-   </tr>
-   @endif
+        @if ($document->detraction)
+            <td width="120px">MONTO DETRACCIÓN</td>
+            <td width="8px">:</td>
+            <td>S/ {{ $document->detraction->amount}}</td>
+        @endif
+    </tr>
+    @endif
 
     @if ($document->reference_data)
         <tr>
@@ -226,25 +232,8 @@
 
 </table>
 
-{{--<table class="full-width mt-3">--}}
-    {{--@if ($document->purchase_order)--}}
-        {{--<tr>--}}
-            {{--<td width="25%">Orden de Compra: </td>--}}
-            {{--<td>:</td>--}}
-            {{--<td class="text-left">{{ $document->purchase_order }}</td>--}}
-        {{--</tr>--}}
-    {{--@endif--}}
-    {{--@if ($document->quotation_id)--}}
-        {{--<tr>--}}
-            {{--<td width="15%">Cotización:</td>--}}
-            {{--<td class="text-left" width="85%">{{ $document->quotation->identifier }}</td>--}}
-        {{--</tr>--}}
-    {{--@endif--}}
-{{--</table>--}}
-
 @if ($document->guides)
 <br/>
-{{--<strong>Guías:</strong>--}}
 <table>
     @foreach($document->guides as $guide)
         <tr>
@@ -303,7 +292,7 @@
             @isset($document->quotation->delivery_date)
                     <td width="120px"><b>T. ENTREGA</b></td>
                     <td width="8px">:</td>
-                    <td>{{ $document->quotation->delivery_date}}</td>
+                    <td>{{ $document->date_of_issue->addDays($document->quotation->delivery_date)->format('d-m-Y') }}</td>
             @endisset
         </tr>
 
@@ -516,6 +505,18 @@
             <td colspan="8" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
+        @if($document->total_charge > 0)
+            @php
+                $total_factor = 0;
+                foreach($document->charges as $charge) {
+                    $total_factor = ($total_factor + $charge->factor) * 100;
+                }
+            @endphp
+            <tr>
+                <td colspan="8" class="text-right font-bold">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
+            </tr>
+        @endif
 
         @if($document->perception)
             <tr>
@@ -613,56 +614,74 @@
         </td>
     </tr>
 </table>
+@php
+    if($document->payment_condition_id === '01') {
+        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
+    }else{
+        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+    }
+@endphp
+{{-- Condicion de pago  Crédito / Contado --}}
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+        </td>
+    </tr>
+</table>
 
 @if($document->payment_method_type_id)
     <table class="full-width">
         <tr>
             <td>
-                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+                <strong>MÉTODO DE PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
         </tr>
     </table>
 @endif
 
-@if($payments->count())
-
-
+@if ($document->payment_condition_id === '01')
+    @if($payments->count())
+        <table class="full-width">
+            <tr>
+                <td><strong>PAGOS:</strong></td>
+            </tr>
+                @php $payment = 0; @endphp
+                @foreach($payments as $row)
+                    <tr>
+                        <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                    </tr>
+                @endforeach
+            </tr>
+        </table>
+    @endif
+@else
     <table class="full-width">
-        <tr>
-            <td>
-                <strong>PAGOS:</strong>
-            </td>
-        </tr>
-            @php
-                $payment = 0;
-            @endphp
-            @foreach($payments as $row)
+            @foreach($document->fee as $key => $quote)
                 <tr>
-                    <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                    <td>&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
                 </tr>
             @endforeach
         </tr>
-
     </table>
 @endif
 
 @if($document->user)
-     <br>
-    <table class="full-width">
-        <tr>
-            <td>
-                <strong>Vendedor:</strong>
-            </td>
-        </tr>
-        <tr>
-            @if ($document->seller)
-                <td>{{ $document->seller->name }}</td>
-            @else
-                <td>{{ $document->user->name }}</td>
-            @endif
-        </tr>
-
-    </table>
+<br>
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        @if ($document->seller)
+            <td>{{ $document->seller->name }}</td>
+        @else
+            <td>{{ $document->user->name }}</td>
+        @endif
+    </tr>
+</table>
 
 @endif
 

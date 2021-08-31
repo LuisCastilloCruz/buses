@@ -4,7 +4,7 @@
     $invoice = $document->invoice;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $accounts = \App\Models\Tenant\BankAccount::all();
+    $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
     $document_base = ($document->note) ? $document->note : null;
     $payments = $document->payments;
 
@@ -38,7 +38,7 @@
 
 @if($company->logo)
     <div class="text-center pt-2">
-        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="contain" style="max-height: 120px">
+        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="contain" style="max-height: 150px">
     </div>
 {{--@else--}}
     {{--<div class="text-center company_logo_box pt-5">--}}
@@ -636,22 +636,46 @@
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
 
+    @php
+        if($document->payment_condition_id === '01') {
+            $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
+        }else{
+            $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+        }
+    @endphp
+    {{-- Condicion de pago  Crédito / Contado --}}
+    <tr>
+        <td class="desc pt-5">
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+        </td>
+    </tr>
+
     @if($document->payment_method_type_id)
         <tr>
-            <td class="desc pt-2">
-                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+            <td class="desc pt-5">
+                <strong>MÉTODO DE PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
         </tr>
     @endif
-    @if($payments->count())
-        <tr>
-            <td class="desc pt-2">
-                <strong>PAGOS:</strong>
-            </td>
-        </tr>
-        @foreach($payments as $row)
+
+    @if ($document->payment_condition_id === '01')
+
+        @if($payments->count())
             <tr>
-                <td class="desc">&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                <td class="desc pt-2">
+                    <strong>PAGOS:</strong>
+                </td>
+            </tr>
+            @foreach($payments as $row)
+                <tr>
+                    <td class="desc">&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                </tr>
+            @endforeach
+        @endif
+    @else
+        @foreach($document->fee as $key => $quote)
+            <tr>
+                <td class="desc">&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
             </tr>
         @endforeach
     @endif
@@ -669,6 +693,15 @@
         @endif
     </tr>
 
+    @if ($document->terms_condition)
+        <tr>
+            <td class="desc">
+                <br>
+                <h6 style="font-size: 10px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    @endif
     <tr>
         <td class="text-center desc pt-2">
             Representación impresa del Comprobante de Pago Electrónico.

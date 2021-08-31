@@ -135,7 +135,11 @@
     <tr>
         <td class="align-top font-bold">VENDEDOR:</td>
         <td colspan="3">
-            {{ $document->user->name }}
+            @if ($document->seller->name)
+                {{ $document->seller->name }}
+            @else
+                {{ $document->user->name }}
+            @endif
         </td>
     </tr>
     @if ($document->contact)
@@ -198,14 +202,23 @@
         <th class="border-top-bottom text-center text-white py-2" style="background: {{$color1}}" width="8%">CANT.</th>
         <th class="border-top-bottom text-center text-white py-2" style="background: {{$color1}}" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left text-white py-2" style="background: {{$color1}}">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-left text-white py-2" style="background: {{$color1}}">MODELO</th>
-        <th class="border-top-bottom text-right text-white py-2" width="12%" style="background: {{$color2}}">P.UNIT</th>
+        <th class="border-top-bottom text-left text-white py-2" width="8%" style="background: {{$color1}}">MARCA</th>
+        <th class="border-top-bottom text-left text-white py-2" width="8%" style="background: {{$color2}}">MODELO</th>
+        <th class="border-top-bottom text-right text-white py-2" width="10%" style="background: {{$color2}}">P.UNIT</th>
         <th class="border-top-bottom text-right text-white py-2" width="8%" style="background: {{$color2}}">DTO.</th>
         <th class="border-top-bottom text-right text-white py-2" width="12%" style="background: {{$color2}}">TOTAL</th>
     </tr>
     </thead>
     <tbody class="items-aqp">
     @foreach($document->items as $row)
+        @php
+            $brand = (!empty($row->item) &&
+                     !empty($row->item->brand) &&
+                     !empty($row->item->brand->name)
+                     ) ?
+                $row->item->brand->name :
+                    '';
+        @endphp
         <tr>
             <td class="text-center align-top borde-gris">
                 @if(((int)$row->quantity != $row->quantity))
@@ -233,10 +246,18 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
+                @if($row->item->is_set == 1)
+                 <br>
+                    @inject('itemSet', 'App\Services\ItemSetService')
+                    @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                        {{$item}}<br>
+                    @endforeach
+                @endif
                 @if($row->item->extra_attr_value != '')
                     <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
                 @endif
             </td>
+            <td class="text-left align-top borde-gris">{{ $brand }}</td>
             <td class="text-left align-top borde-gris">{{ $row->item->model ?? '' }}</td>
             <td class="text-right align-top borde-gris">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top borde-gris">
@@ -260,46 +281,46 @@
     @endforeach
         @if($document->total_exportation > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exportation, 2) }}</td>
             </tr>
         @endif
         @if($document->total_free > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_free, 2) }}</td>
             </tr>
         @endif
         @if($document->total_unaffected > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
             </tr>
         @endif
         @if($document->total_exonerated > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
         @if($document->total_taxed > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif
         @if($document->total_discount > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         <tr>
-            <td colspan="6" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
+            <td colspan="7" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>

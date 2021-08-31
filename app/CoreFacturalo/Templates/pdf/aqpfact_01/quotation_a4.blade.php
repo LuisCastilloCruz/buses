@@ -3,19 +3,18 @@
     $customer = $document->customer;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $accounts = \App\Models\Tenant\BankAccount::all();
-    $configuracion = \App\Models\Tenant\Configuration::all();
-     foreach($configuracion as $config){
-        $color1= $config['color1'];
-        $color2= $config['color2'];
-        $formato=$config['formats'];
-        $fondo=$config['fondo'];
-     }
+    $configuracion = \App\Models\Tenant\Configuration::get();
+
+    $color1= $configuracion[0]['color1'];
+    $color2= $configuracion[0]['color2'];
+    $formato=$configuracion[0]['formats'];
+    $fondo=$configuracion[0]['fondo'];
 
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
     $config = \App\Models\Tenant\Configuration::first();
     $miimage = null;
 
-        if($formato == "aqpfact_01")
+        if($formato == "aqpfact_01" &&  $fondo!='')
         {
             $miimage = public_path("storage/uploads/fondos/{$fondo}");
         }
@@ -27,7 +26,7 @@
 </head>
 <body>
 <div class="" style="position: absolute; text-align: center; z-index: 0; top: -5px; left: -10px;">
-   @if($miimage)
+   @if(file_exists($miimage))
     <img src="data:{{mime_content_type($miimage)}};base64, {{base64_encode(file_get_contents($miimage))}}" alt="fondo" class="">
     @endif
 </div>
@@ -144,7 +143,11 @@
     <tr>
         <td class="align-top"><b>Vendedor:</b></td>
         <td colspan="3">
-            {{ $document->user->name }}
+            @if ($document->seller->name)
+                {{ $document->seller->name }}
+            @else
+                {{ $document->user->name }}
+            @endif
         </td>
     </tr>
     @if ($document->contact)
@@ -198,14 +201,23 @@
         <th class="text-center text-white py-2" width="8%" style="background: {{$color1}}">CANT.</th>
         <th class="text-center text-white py-2" width="10%" style="background: {{$color1}}">UNIDAD</th>
         <th class="text-left text-white py-2" style="background: {{$color1}}">DESCRIPCIÓN</th>
-        <th class="text-left text-white py-2" style="background: {{$color1}}">MODELO</th>
+        <th class="text-left text-white py-2" width="8%" style="background: {{$color1}}">MARCA</th>
+        <th class="text-left text-white py-2" width="9%" style="background: {{$color2}}">MODELO</th>
         <th class="text-right text-white py-2" width="12%" style="background: {{$color2}}">P.UNIT</th>
         <th class="text-right text-white py-2" width="8%" style="background: {{$color2}}">DTO.</th>
-        <th class="text-right text-white py-2" width="12%" style="background: {{$color2}}">TOTAL</th>
+        <th class="text-right text-white py-2" width="10%" style="background: {{$color2}}">TOTAL</th>
     </tr>
     </thead>
     <tbody>
     @foreach($document->items as $row)
+        @php
+        $brand = (!empty($row->item) &&
+                 !empty($row->item->brand) &&
+                 !empty($row->item->brand->name)
+                 ) ?
+            $row->item->brand->name :
+                '';
+        @endphp
         <tr>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
@@ -240,11 +252,14 @@
 
                 @if($row->item->is_set == 1)
                  <br>
-                @inject('itemSet', 'App\Services\ItemSetService')
-                    {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
+                    @inject('itemSet', 'App\Services\ItemSetService')
+                    @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                        {{$item}}<br>
+                    @endforeach
                 @endif
 
             </td>
+            <td class="text-left">{{ $brand }}</td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">
@@ -263,51 +278,51 @@
             <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="7" class="border-bottom"></td>
+            <td colspan="8" class="border-bottom"></td>
         </tr>
     @endforeach
         @if($document->total_exportation > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exportation, 2) }}</td>
             </tr>
         @endif
         @if($document->total_free > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_free, 2) }}</td>
             </tr>
         @endif
         @if($document->total_unaffected > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
             </tr>
         @endif
         @if($document->total_exonerated > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
         @if($document->total_taxed > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif
        @if($document->total_discount > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         <tr>
-            <td colspan="6" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
+            <td colspan="7" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>

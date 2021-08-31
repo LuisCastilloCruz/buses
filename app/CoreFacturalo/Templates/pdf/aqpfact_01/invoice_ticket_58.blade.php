@@ -4,7 +4,7 @@
     $invoice = $document->invoice;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $accounts = \App\Models\Tenant\BankAccount::all();
+    $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
     $document_base = ($document->note) ? $document->note : null;
     $payments = $document->payments;
 
@@ -449,25 +449,43 @@
     <tr>
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
-
-    @if($document->payment_method_type_id)
+    @if ($document->payment_condition_id === '01')
+        @if($document->payment_method_type_id)
         <tr>
             <td class="desc pt-1">
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
         </tr>
-    @endif
-    @if($payments->count())
-        <tr>
-            <td class="desc pt-1">
-                <strong>PAGOS:</strong>
-            </td>
-        </tr>
-        @foreach($payments as $row)
+        @endif
+        @if($payments->count())
             <tr>
-                <td class="desc">&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                <td class="desc pt-1">
+                    <strong>PAGOS:</strong>
+                </td>
             </tr>
-        @endforeach
+            @foreach($payments as $row)
+                <tr>
+                    <td class="desc">&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                </tr>
+            @endforeach
+        @endif
+    @else
+        @php
+            $paymentMethod = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+        @endphp
+        <table class="full-width">
+            <tr>
+                <td class="desc pt-5">
+                    <strong>PAGOS: {{ $paymentMethod->description }}</strong>
+                </td>
+            </tr>
+                @foreach($document->fee as $key => $quote)
+                    <tr>
+                        <td class="desc">&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
+                    </tr>
+                @endforeach
+            </tr>
+        </table>
     @endif
     <tr>
         <td class="desc">
@@ -492,13 +510,8 @@
     @endif
 
     <tr>
-        <td class="text-center desc pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
+        <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
-    @if ($legend_footer==1)
-    <tr>
-        <td class="text-center desc pt-2">BIENES TRANSFERIDOS Y/O SERVICIOS PRESTADOS EN LA AMAZONIA PARA SER CONSUMIDOS EN LA MISMA</td>
-    </tr>
-    @endif
 </table>
 
 </body>
