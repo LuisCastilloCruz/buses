@@ -616,16 +616,27 @@
 </table>
 @php
     if($document->payment_condition_id === '01') {
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
-    }else{
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+        //$paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
+        $paymentCondition = "CONTADO";
     }
+    else if($document->payment_condition_id === '02') {
+        $paymentCondition = "CRÉDITO";
+    }
+    else if($document->payment_condition_id === '03') {
+        $paymentCondition = "CRÉDITO CON CUOTAS";
+    }
+
+    //else{
+        //$paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+        //$paymentCondition = "CRÉDITO CON CUOTAS";
+   // }
 @endphp
 {{-- Condicion de pago  Crédito / Contado --}}
 <table class="full-width">
     <tr>
         <td>
-            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+{{--            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>--}}
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition}} </strong>
         </td>
     </tr>
 </table>
