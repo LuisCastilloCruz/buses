@@ -165,7 +165,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
             discount.percentage = parseFloat(discount.percentage)
             discount.factor = discount.percentage / 100
             discount.base = _.round(total_value_partial, 2)
-            discount.amount = _.round(discount.base * discount.factor, 2)
+            discount.amount = _.round(discount.base * discount.factor, 4)
             if (discount.discount_type.base) {
                 discount_base += discount.amount
             } else {
@@ -189,8 +189,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     row.charges.forEach((charge, index) => {
         charge.percentage = parseFloat(charge.percentage)
         charge.factor = charge.percentage / 100
-        charge.base = _.round(total_value_partial, 2)
-        charge.amount = _.round(charge.base * charge.factor, 2)
+        charge.base = _.round(total_value_partial, 4)
+        charge.amount = _.round(charge.base * charge.factor, 4)
         if (charge.charge_type.base) {
             charge_base += charge.amount
         } else {
@@ -226,14 +226,14 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     let total_taxes = total_igv + total_isc + total_other_taxes
     let total = total_value + total_taxes
 
-    row.total_charge = _.round(total_charge, 2)
-    row.total_discount = _.round(total_discount, 2)
-    row.total_charge = _.round(total_charge, 2)
-    row.total_value = _.round(total_value, 2)
-    row.total_base_igv = _.round(total_base_igv, 2)
-    row.total_igv =  _.round(total_igv, 2)
-    row.total_taxes = _.round(total_taxes, 2)
-    row.total = _.round(total, 2)
+    row.total_charge = _.round(total_charge, 4)
+    row.total_discount = _.round(total_discount, 4)
+    row.total_charge = _.round(total_charge, 4)
+    row.total_value = _.round(total_value, 4)
+    row.total_base_igv = _.round(total_base_igv, 4)
+    row.total_igv =  _.round(total_igv, 4)
+    row.total_taxes = _.round(total_taxes, 4)
+    row.total = _.round(total, 4)
 
 
     if(row.discounts.length > 0){
@@ -262,7 +262,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
         }
 
-        row.total_discount = _.round(sum_discount_no_base, 2)
+        row.total_discount = _.round(sum_discount_no_base, 4)
     }
 
 
