@@ -2,6 +2,24 @@
     $invoice = $document->invoice;
     $establishment = $document->establishment;
     $customer = $document->customer;
+
+    $tot_charges = 0;
+
+    if($document->charges){
+        foreach($document->charges as $charge){
+            if($charge->charge_type_id == '50'){
+                $tot_charges += $charge->amount;
+            }
+        }
+    }
+
+    $tot_discount_no_base = $document->items->sum(function($row){
+        return $row->discounts ? collect($row->discounts)->sum(function($discount){
+            return $discount->discount_type_id == '01' ? $discount->amount : 0;
+        }) : 0;
+    });
+
+
 @endphp
 {!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -168,6 +186,27 @@
             <cbc:PaymentPercent>{{ $detraction->percentage }}</cbc:PaymentPercent>
             <cbc:Amount currencyID="PEN">{{ $detraction->amount }}</cbc:Amount>
         </cac:PaymentTerms>
+    @endif
+    @if($document->payment_condition_id === '01')
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Contado</cbc:PaymentMeansID>
+    </cac:PaymentTerms>
+    @endif
+    @if($document->payment_condition_id === '02')
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Credito</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{ $document->fee()->sum('amount') }}</cbc:Amount>
+    </cac:PaymentTerms>
+    @foreach($document->fee as $fee)
+        <cac:PaymentTerms>
+            <cbc:ID>FormaPago</cbc:ID>
+            <cbc:PaymentMeansID>Cuota{{ sprintf("%03d", $loop->iteration) }}</cbc:PaymentMeansID>
+            <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{ $fee->amount }}</cbc:Amount>
+            <cbc:PaymentDueDate>{{ $fee->date->format('Y-m-d') }}</cbc:PaymentDueDate>
+        </cac:PaymentTerms>
+    @endforeach
     @endif
     @if($document->perception)
     @php($perception = $document->perception)
@@ -360,17 +399,27 @@
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_value }}</cbc:LineExtensionAmount>
+        {{-- no incluye cargos globales que no afectan a la base imponible --}}
+        @if($tot_charges > 0)
+        <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total - $tot_charges}}</cbc:TaxInclusiveAmount>
+        @else
         <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:TaxInclusiveAmount>
+        @endif
         @if($document->total_discount > 0)
         <cbc:AllowanceTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_discount }}</cbc:AllowanceTotalAmount>
         @endif
-        @if($document->total_charges > 0)
-        <cbc:ChargeTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_charges }}</cbc:ChargeTotalAmount>
+        @if($document->total_charge > 0)
+        <cbc:ChargeTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_charge }}</cbc:ChargeTotalAmount>
         @endif
         @if($document->total_prepayment > 0)
         <cbc:PrepaidAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_prepayment }}</cbc:PrepaidAmount>
         @endif
+        @if($tot_discount_no_base > 0)
+        <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total - $tot_discount_no_base}}</cbc:PayableAmount>
+        @else
         <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:PayableAmount>
+        @endif
+
     </cac:LegalMonetaryTotal>
     @foreach($document->items as $row)
     <cac:InvoiceLine>
