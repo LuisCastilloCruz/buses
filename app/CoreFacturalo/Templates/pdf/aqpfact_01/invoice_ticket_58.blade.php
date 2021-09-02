@@ -341,6 +341,26 @@
             <td colspan="5" class="border-bottom"></td>
         </tr>
     @endforeach
+
+    @if ($document->prepayments)
+        @foreach($document->prepayments as $p)
+        <tr>
+            <td class="text-center desc-9 align-top">
+                1
+            </td>
+            <td class="text-center desc-9 align-top">NIU</td>
+            <td class="text-left desc-9 align-top">
+                ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
+            </td>
+            <td class="text-right  desc-9 align-top">-{{ number_format($p->total, 2) }}</td>
+            <td class="text-right  desc-9 align-top">-{{ number_format($p->total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="border-bottom"></td>
+        </tr>
+        @endforeach
+    @endif
+
         @if($document->total_exportation > 0)
             <tr>
                 <td colspan="4" class="text-right font-bold desc">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
@@ -449,17 +469,44 @@
     <tr>
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
-    @if ($document->payment_condition_id === '01')
-        @if($document->payment_method_type_id)
+
+    @php
+        if($document->payment_condition_id === '01') {
+            //$paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
+            $paymentCondition = "CONTADO";
+        }
+        else if($document->payment_condition_id === '02') {
+            $paymentCondition = "CRÉDITO";
+        }
+        else if($document->payment_condition_id === '03') {
+            $paymentCondition = "CRÉDITO CON CUOTAS";
+        }
+
+        //else{
+            //$paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+            //$paymentCondition = "CRÉDITO CON CUOTAS";
+       // }
+    @endphp
+    {{-- Condicion de pago  Crédito / Contado --}}
+    <tr>
+        <td class="desc pt-5">
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition}} </strong>
+        </td>
+    </tr>
+
+    @if($document->payment_method_type_id)
         <tr>
-            <td class="desc pt-1">
-                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+            <td class="desc pt-5">
+                <strong>MÉTODO DE PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
         </tr>
-        @endif
+    @endif
+
+    @if ($document->payment_condition_id === '01')
+
         @if($payments->count())
             <tr>
-                <td class="desc pt-1">
+                <td class="desc pt-2">
                     <strong>PAGOS:</strong>
                 </td>
             </tr>
@@ -470,23 +517,13 @@
             @endforeach
         @endif
     @else
-        @php
-            $paymentMethod = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-        @endphp
-        <table class="full-width">
+        @foreach($document->fee as $key => $quote)
             <tr>
-                <td class="desc pt-5">
-                    <strong>PAGOS: {{ $paymentMethod->description }}</strong>
-                </td>
+                <td class="desc">&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
             </tr>
-                @foreach($document->fee as $key => $quote)
-                    <tr>
-                        <td class="desc">&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
-                    </tr>
-                @endforeach
-            </tr>
-        </table>
+        @endforeach
     @endif
+
     <tr>
         <td class="desc">
             <strong>Vendedor:</strong>
@@ -508,11 +545,23 @@
             </td>
         </tr>
     @endif
+    <tr>
+        <td class="text-center desc pt-2">
+            Representación impresa del Comprobante de Pago Electrónico.
+        </td>
+    </tr>
 
     <tr>
-        <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
+        <td class="text-center desc pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
+    @if ($legend_footer==1)
+    <tr>
+        <td class="text-center desc pt-2">BIENES TRANSFERIDOS Y/O SERVICIOS PRESTADOS EN LA AMAZONIA PARA SER CONSUMIDOS EN LA MISMA</td>
+    </tr>
+    @endif
 </table>
+
+
 
 </body>
 </html>
