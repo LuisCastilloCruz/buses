@@ -39,7 +39,6 @@ class TransportePasajeController extends Controller
     {
 
         $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
-
         if(is_null($user_terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
@@ -98,6 +97,7 @@ class TransportePasajeController extends Controller
 
     public function getPasajes(Request $request){
         try{
+            extract($request->only(['page','limit']));
 
             $terminal = $request->user()->terminal;
 
@@ -111,9 +111,13 @@ class TransportePasajeController extends Controller
             ])
             ->whereNotNull('document_id')
             ->where('origen_id',$terminal->id)
-            ->get();
+            ->take($limit)->skip($limit * ($page - 1) );
 
-            return response()->json($pasajes,200);
+
+            return response()->json([
+                'count' => $pasajes->count(),
+                'data' => $pasajes->get()
+            ],200);
 
         }catch(Exception $e){
 

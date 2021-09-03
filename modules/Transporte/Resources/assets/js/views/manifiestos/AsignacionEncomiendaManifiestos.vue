@@ -211,7 +211,7 @@ export default {
                 form.append('fecha',this.manifiesto.fecha);
                 form.append('programacion',this.programacion.id);
                 this.loadingEncomiendas = true;
-                const { data } = await this.$http.post('/transportes/manifiestos/get-encomiendas',form);
+                const { data } = await this.$http.post(`/transportes/manifiestos/get-encomiendas`,form);
                 this.loadingEncomiendas = false;
                 this.listEncomiendas = data;
 
