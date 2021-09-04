@@ -118,7 +118,7 @@
             </div>
 
             <!-- Parte de atras del autobus -->
-            <div :style="{position:'absolute',left:'2%',top:'17%'}">
+            <div :style="{position:'absolute',left:'2%',top:'17%'}" @click="onClickBack">
                 <svg id="60611b2ba5fdf" gc-seat-static="1" gc-seat-element-id="11" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50px" height="210px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 50 210" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Capa_x0020_1">
                         <metadata id="CorelCorpID_0Corel-Layer"></metadata>
@@ -301,6 +301,39 @@ export default {
 
         onDelete(asiento,index){
             this.$emit('onDelete',asiento,index);
+        },
+        onClickBack(event){
+            this.openFileDialog();
+        },
+
+        openFileDialog(){
+
+            return new Promise( (resolve,reject) => {
+                
+                let inputElement = document.createElement("input");
+                inputElement.hidden = true;
+                document.body.appendChild(inputElement);
+
+                inputElement.type = "file";
+                const onCancelListener = async () => {
+                    document.body.removeChild(inputElement);
+                    resolve(null);
+                };
+
+               
+                inputElement.accept = 'image/*';
+
+                
+                inputElement.addEventListener("change", event =>{
+                    window.removeEventListener('focus', onCancelListener);
+                    let file = event.files[0];
+                    resolve(file);
+                });
+
+                window.addEventListener('focus',onCancelListener,{once:true});
+            });
+            
+
         }
 
     }
