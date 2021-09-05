@@ -93,9 +93,10 @@ class TransporteEncomiendaController extends Controller
     }
 
 
-    public function getEncomiendas(){
+    public function getEncomiendas(Request $request){
 
         try{
+            extract($request->only(['page','limit']));
 
             $encomiendas = TransporteEncomienda::with([
                 'document.items',
@@ -114,11 +115,12 @@ class TransporteEncomiendaController extends Controller
             ])
             ->whereNotNull('document_id')
             ->orderBy('id', 'DESC')
-            ->get();
+            ->take($limit)->skip($limit * ($page - 1) );
 
-            //dd( $encomiendas);
-
-            return response()->json($encomiendas,200);
+            return response()->json([
+                'count' => $encomiendas->count(),
+                'data' => $encomiendas->get()
+            ],200);
 
         }catch(Exception $e){
             return response()->json([

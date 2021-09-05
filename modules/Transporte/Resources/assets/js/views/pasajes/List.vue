@@ -46,61 +46,82 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr v-for="pasaje in listPasajes" :key="pasaje.id" :class="{'text-danger': (pasaje.document.state_type_id === '11'),
-                                                'text-warning': (pasaje.document.state_type_id === '13'),
-                                                'border-light': (pasaje.document.state_type_id === '01'),
-                                                'border-left border-info': (pasaje.document.state_type_id === '03'),
-                                                'border-left border-success': (pasaje.document.state_type_id === '05'),
-                                                'border-left border-secondary': (pasaje.document.state_type_id === '07'),
-                                                'border-left border-dark': (pasaje.document.state_type_id === '09'),
-                                                'border-left border-danger': (pasaje.document.state_type_id === '11'),
-                                                'border-left border-warning': (pasaje.document.state_type_id === '13')}">
-                                                <td class="text-right">{{ pasaje.id }}</td>
-                                                <td>{{ pasaje.document.series }}-{{pasaje.document.number}}</td>
-                                                <td>{{ pasaje.fecha_salida }} {{ pasaje.hora_salida }}</td>
-                                                <td>{{ pasaje.pasajero.name }}</td>
-                                                <td>{{ pasaje.document.total_taxed }}</td>
-                                                <td>{{ pasaje.document.total_igv }}</td>
-                                                <td>{{ pasaje.document.total }}</td>
-                                                <td>
-                                                    <el-tooltip v-if="tooltip(pasaje.document, false)"  class="item" effect="dark" placement="bottom">
-                                                        <div slot="content">{{tooltip(pasaje.document)}}</div>
-                                                        <span class="badge bg-secondary text-white" :class="{'bg-danger': (pasaje.document.state_type_id === '11'), 'bg-warning': (pasaje.document.state_type_id === '13'), 'bg-secondary': (pasaje.document.state_type_id === '01'), 'bg-info': (pasaje.document.state_type_id === '03'), 'bg-success': (pasaje.document.state_type_id === '05'), 'bg-secondary': (pasaje.document.state_type_id === '07'), 'bg-dark': (pasaje.document.state_type_id === '09')}">
-                                                            {{pasaje.document.state_type.description}}
-                                                        </span>
-                                                    </el-tooltip>
-                                                    <span v-else class="badge bg-secondary text-white" :class="{'bg-danger': (pasaje.document.state_type_id === '11'), 'bg-warning': (pasaje.document.state_type_id === '13'), 'bg-secondary': (pasaje.document.state_type_id === '01'), 'bg-info': (pasaje.document.state_type_id === '03'), 'bg-success': (pasaje.document.state_type_id === '05'), 'bg-secondary': (pasaje.document.state_type_id === '07'), 'bg-dark': (pasaje.document.state_type_id === '09')}">
-                                                        {{pasaje.document.state_type.description}}
-                                                    </span>
-                                                    <template v-if="pasaje.document.regularize_shipping && pasaje.document.state_type_id === '01'">
-                                                        <el-tooltip class="item" effect="dark" :content="pasaje.document.message_regularize_shipping" placement="top-start">
-                                                            <i class="fas fa-exclamation-triangle fa-lg" style="color: #d2322d !important"></i>
-                                                        </el-tooltip>
-                                                    </template>
-                                                </td>
-                                                <td class="text-center">
-                                                    <!-- <el-tooltip class="item" effect="dark" content="Editar" placement="top-start">
-                                                        <el-button type="success" @click="onEdit(pasaje)">
-                                                            <i class="fa fa-edit"></i>
-                                                        </el-button>
-                                                    </el-tooltip> -->
+                                                <template v-if="listPasajes.length > 0">
+                                                    <tr v-for="pasaje in listPasajes" :key="pasaje.id" :class="{'text-danger': (pasaje.document.state_type_id === '11'),
+                                                        'text-warning': (pasaje.document.state_type_id === '13'),
+                                                        'border-light': (pasaje.document.state_type_id === '01'),
+                                                        'border-left border-info': (pasaje.document.state_type_id === '03'),
+                                                        'border-left border-success': (pasaje.document.state_type_id === '05'),
+                                                        'border-left border-secondary': (pasaje.document.state_type_id === '07'),
+                                                        'border-left border-dark': (pasaje.document.state_type_id === '09'),
+                                                        'border-left border-danger': (pasaje.document.state_type_id === '11'),
+                                                        'border-left border-warning': (pasaje.document.state_type_id === '13')}">
+                                                        <td class="text-right">{{ pasaje.id }}</td>
+                                                        <td>{{ pasaje.document.series }}-{{pasaje.document.number}}</td>
+                                                        <td>{{ pasaje.fecha_salida }} {{ pasaje.hora_salida }}</td>
+                                                        <td>{{ pasaje.pasajero.name }}</td>
+                                                        <td>{{ pasaje.document.total_taxed }}</td>
+                                                        <td>{{ pasaje.document.total_igv }}</td>
+                                                        <td>{{ pasaje.document.total }}</td>
+                                                        <td>
+                                                            <el-tooltip v-if="tooltip(pasaje.document, false)"  class="item" effect="dark" placement="bottom">
+                                                                <div slot="content">{{tooltip(pasaje.document)}}</div>
+                                                                <span class="badge bg-secondary text-white" :class="{'bg-danger': (pasaje.document.state_type_id === '11'), 'bg-warning': (pasaje.document.state_type_id === '13'), 'bg-secondary': (pasaje.document.state_type_id === '01'), 'bg-info': (pasaje.document.state_type_id === '03'), 'bg-success': (pasaje.document.state_type_id === '05'), 'bg-secondary': (pasaje.document.state_type_id === '07'), 'bg-dark': (pasaje.document.state_type_id === '09')}">
+                                                                    {{pasaje.document.state_type.description}}
+                                                                </span>
+                                                            </el-tooltip>
+                                                            <span v-else class="badge bg-secondary text-white" :class="{'bg-danger': (pasaje.document.state_type_id === '11'), 'bg-warning': (pasaje.document.state_type_id === '13'), 'bg-secondary': (pasaje.document.state_type_id === '01'), 'bg-info': (pasaje.document.state_type_id === '03'), 'bg-success': (pasaje.document.state_type_id === '05'), 'bg-secondary': (pasaje.document.state_type_id === '07'), 'bg-dark': (pasaje.document.state_type_id === '09')}">
+                                                                {{pasaje.document.state_type.description}}
+                                                            </span>
+                                                            <template v-if="pasaje.document.regularize_shipping && pasaje.document.state_type_id === '01'">
+                                                                <el-tooltip class="item" effect="dark" :content="pasaje.document.message_regularize_shipping" placement="top-start">
+                                                                    <i class="fas fa-exclamation-triangle fa-lg" style="color: #d2322d !important"></i>
+                                                                </el-tooltip>
+                                                            </template>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <!-- <el-tooltip class="item" effect="dark" content="Editar" placement="top-start">
+                                                                <el-button type="success" @click="onEdit(pasaje)">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </el-button>
+                                                            </el-tooltip> -->
 
-                                                    <el-tooltip class="item" effect="dark" content="Imprimir comprobante" placement="top-start">
-                                                        <el-button type="primary" @click="verComprobante(pasaje)">
-                                                            <i class="fa fa-file-alt"></i>
-                                                        </el-button>
-                                                    </el-tooltip>
+                                                            <el-tooltip class="item" effect="dark" content="Imprimir comprobante" placement="top-start">
+                                                                <el-button type="primary" @click="verComprobante(pasaje)">
+                                                                    <i class="fa fa-file-alt"></i>
+                                                                </el-button>
+                                                            </el-tooltip>
 
-                                                    <el-tooltip class="item" effect="dark" content="Anular" placement="top-start">
-                                                        <el-button type="danger" @click="anular(pasaje)">
-                                                            <i class="fa fa-trash"></i>
-                                                        </el-button>
-                                                    </el-tooltip>
+                                                            <el-tooltip class="item" effect="dark" content="Anular" placement="top-start">
+                                                                <el-button type="danger" @click="anular(pasaje)">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </el-button>
+                                                            </el-tooltip>
 
-                                                </td>
-                                            </tr>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                                <template v-else>
+                                                    <tr>
+                                                        <td colspan="9">
+                                                            <el-alert type="info" title="No hay pasajes"  center/>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            
                                             </tbody>
                                         </table>
+                                    </div>
+                                    <div class="row justify-content-center">
+                                        
+                                        <el-pagination
+                                            v-if="total > 0"
+                                            :page-size="limit"
+                                            @current-change="changePage"
+                                            :current-page.sync="page"
+                                            :total="total"
+                                            layout="prev, pager, next">
+                                        </el-pagination>
                                     </div>
                                 </div>
                             </div>
@@ -269,6 +290,13 @@ export default {
     },
     data() {
         return {
+
+            //paginacion
+            page:1,
+            total:0,
+            limit:25,
+            
+
             sale:false,
             recordId:null,
             pasajeId:null,
@@ -293,9 +321,10 @@ export default {
         async getPasajes(){
             try{
                 this.loading = true;
-                const { data } = await this.$http.get('/transportes/pasajes/get-pasajes');
+                const { data } = await this.$http.get(`/transportes/pasajes/get-pasajes?page=${this.page}&limit=${this.limit}`);
                 this.loading = false;
-                this.listPasajes = data;
+                this.listPasajes = data.data;
+                this.total = data.count;
 
 
             }catch(error){
@@ -421,6 +450,10 @@ export default {
                 });
 
             }
+        },
+        changePage(val) {
+            this.page = val;
+            this.getPasajes();
         }
     },
 };

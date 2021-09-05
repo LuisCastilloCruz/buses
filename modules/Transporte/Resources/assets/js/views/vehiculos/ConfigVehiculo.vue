@@ -2,12 +2,14 @@
     <div>
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
+                <el-button type="info" @click="addImageBack">Agregar imagen trasera</el-button>
                 <el-button type="info" @click="agregarItem('sb')">Baño</el-button>
                 
                 <el-button type="info" @click="agregarItem('ses')">Scalera</el-button>
                 <el-button type="info" @click="agregarItem('sv')">Televisión</el-button>
                 <el-button v-if="!remove" type="danger" @click="remove = true">Eliminar</el-button>
                 <el-button v-else @click="remove = false">Cancelar</el-button>
+                <el-button type="info" @click="addImageFront">Agregar imagen trasera</el-button>
 
             </div>
             <div class="col-12 d-flex justify-content-center">
@@ -34,8 +36,21 @@
                 
             </div>
         </div>
-        <bus v-if="piso == 1" :seats.sync="asientosPisoUno" drag :remove="remove" @onDelete="eliminar" />
-        <bus v-if="piso == 2" :seats.sync="asientosPisoDos" drag :remove="remove" @onDelete="eliminar" />
+        <bus v-if="piso == 1" 
+        :seats.sync="asientosPisoUno" 
+        drag 
+        :remove="remove" 
+        @onDelete="eliminar" 
+        :image-back="imageBack" 
+        :image-front="imageFront" />
+        
+        <bus v-if="piso == 2" 
+        :seats.sync="asientosPisoDos" 
+        drag 
+        :remove="remove"
+        @onDelete="eliminar"
+        :image-back="imageBack" 
+        :image-front="imageFront" />
 
         <div class="row mt-2">
             <div class="col-12 d-flex justify-content-center">
@@ -68,7 +83,9 @@ export default {
         this.asientos = this.seats;
         this.piso = 1;
         this.pisos = parseInt(this.vehiculo.pisos);
-        this.initAsiento()
+        this.initAsiento();
+        this.imageBack = this.vehiculo.img_back;
+        this.imageFront = this.vehiculo.img_front;
     },
     data(){
         return({
@@ -79,7 +96,12 @@ export default {
             remove:false,
             pisos:null,
             numeroAsiento:null,
-            asiento:null
+            asiento:null,
+            imageBack:null,
+            fileImageBack:null,
+            imageFront:null,
+            fileImageFront:null
+            
         });
     },
     watch:{
@@ -119,66 +141,15 @@ export default {
 
             this.asientos.push(Object.assign({},this.asiento));
             this.initAsiento();
-            // switch(type){
-            //     case 'ss':
-            //         /** Obtengo solo los que son asientos normales */
-            //         // let posicion = this.asientos.filter( asiento => asiento.type == 'ss');
-                    
             
-                    
-                    
-            //         this.asiento.
-            //         this.asientos.push({
-            //             id:null,
-            //             top:'50px',
-            //             left:'50px',
-            //             type:'ss',
-            //             estado_asiento_id:1,
-            //             piso:this.piso,
-            //             numero_asiento:this.numeroAsiento
-            //         });
-            //         this.numeroAsiento = null;
-            //         break;
-            //     case 'sb':
-            //         this.asientos.push({
-            //             id:null,
-            //             top:'50px',
-            //             left:'50px',
-            //             type:'sb',
-            //             piso:this.piso,
-            //             estado_asiento_id:1,
-            //             numero_asiento:0
-            //         });
-            //         break;
-            //     case 'ses':
-            //         this.asientos.push({
-            //             id:null,
-            //             top:'50px',
-            //             left:'50px',
-            //             type:'ses',
-            //             piso:this.piso,
-            //             estado_asiento_id:1,
-            //             numero_asiento:0
-            //         });
-            //         break;
-            //     case 'sv':
-            //         this.asientos.push({
-            //             id:null,
-            //             top:'50px',
-            //             left:'50px',
-            //             type:'sv',
-            //             piso:this.piso,
-            //             estado_asiento_id:1,
-            //             numero_asiento:0
-            //         });
-            //         break;
-            // }
         },
         guardar(evt){
             this.loading = true;
-            this.$http.put(`/transportes/vehiculos/${this.vehiculo.id}/guardar-asientos`,{
-                asientos:this.asientos,
-            }).then( response => {
+            let form = new FormData();
+            form.append('asientos',JSON.stringify(this.asientos));
+            form.append('image_front',this.fileImageFront);
+            form.append('image_back',this.fileImageBack);
+            this.$http.post(`/transportes/vehiculos/${this.vehiculo.id}/guardar-asientos`,form).then( response => {
                 this.transporte = response.data.vehiculo;
                 this.asientos = response.data.vehiculo.seats;
                 this.$message({
@@ -250,6 +221,14 @@ export default {
 
 
         },
+        async addImageBack(){
+            this.fileImageBack = await this.openFileDialog();
+            this.imageBack = URL.createObjectURL(this.fileImageBack);
+        },
+        async addImageFront(){
+            this.fileImageFront = await this.openFileDialog();
+            this.imageFront = URL.createObjectURL(this.fileImageFront);
+        },
         initAsiento(){
             this.asiento = {
                 id:null,
@@ -260,6 +239,41 @@ export default {
                 piso:1,
                 numero_asiento:null
             };
+        },
+        openFileDialog(event){
+            return new Promise( (resolve,reject) => {
+                let inputElement = document.createElement("input");
+                inputElement.hidden = true;
+                inputElement.type = "file";
+                inputElement.accept = 'image/*';
+                inputElement.dispatchEvent(new MouseEvent("click"));
+                const onCancelListener = async function() {
+                    const sleep = () => {
+                        return new Promise( (resolve,reject) => {
+                            setTimeout(() => {
+                                console.log('entra 1');
+                                resolve();
+                            }, 150);
+                        });
+                    } 
+                    await sleep();
+                    window.onfocus = null;
+                    resolve(null);
+                };
+                
+                
+                inputElement.addEventListener("change", evt =>{
+                    window.onfocus = null;
+                    let input = evt.path[0];
+                    let file = input.files[0];
+                    resolve(file);
+                });
+
+                window.onfocus = onCancelListener;
+                
+            });
+            
+
         }
 
     }

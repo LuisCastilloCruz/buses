@@ -46,6 +46,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    
                                                     <tr v-for="(invoice, index) in listInvoices" :key="invoice.id" :class="{'text-danger': (invoice.document.state_type_id === '11'),
                                                     'text-warning': (invoice.document.state_type_id === '13'),
                                                     'border-light': (invoice.document.state_type_id === '01'),
@@ -104,6 +105,17 @@
 
                                             </table>
                                         </div>
+                                        <div class="row justify-content-center">
+                                        
+                                         <el-pagination
+                                            v-if="total > 0"
+                                            :page-size="25"
+                                            @current-change="changePage"
+                                            :current-page.sync="page"
+                                            :total="total"
+                                            layout="prev, pager, next">
+                                        </el-pagination>
+                                    </div>
                                     </div>
                                 </div>
 
@@ -291,6 +303,11 @@ export default {
     },
     data() {
         return {
+            //pagination 
+            page:1,
+            limit:25,
+            total:0,
+
             listInvoices: [],
             listNotes: [],
             openModalAddEdit: false,
@@ -321,8 +338,9 @@ export default {
         async getEncomiendas(){
             try{
                 this.loading = true;
-                const { data } = await this.$http.get('/transportes/encomiendas/get-encomiendas');
-                this.listInvoices = data;
+                const { data } = await this.$http.get(`/transportes/encomiendas/get-encomiendas?page=${this.page}&limit=${this.limit}`);
+                this.listInvoices = data.data;
+                this.total = data.count;
 
                 //console.log(this.listInvoices );
                 this.loading = false;
@@ -421,6 +439,10 @@ export default {
 
                 return false;
             },
+        changePage(val) {
+            this.page = val;
+            this.getEncomiendas();
+        }
     },
 };
 </script>
