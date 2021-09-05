@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Modules\Transporte\Models\TransporteVehiculo;
 use Modules\Transporte\Http\Requests\TransporteVehiculoRequest;
 use Modules\Transporte\Models\TransporteAsiento;
@@ -130,8 +131,36 @@ class TransporteVehiculoController extends Controller
 
             DB::connection('tenant')->beginTransaction();
 
-            $asientos = $request->input('asientos');
+            $asientos = json_decode($request->input('asientos'));
 
+            $imageFront = $request->file('image_front');
+            $imageBack = $request->file('image_back');
+
+            if(!is_null($imageFront)){
+                $path = 'public\\images\\'.$vehiculo->image_front;
+                if(Storage::exists($path)){
+                    Storage::delete($path);
+                }
+                $imageFront->store('public\\images');
+                $vehiculo->update([
+                    'image_front' => $imageFront->hashName()
+                ]);
+            }
+
+            if(!is_null($imageBack)){
+                $path = 'public\\images\\'.$vehiculo->image_back;
+                if(Storage::exists($path)){
+                    Storage::delete($path);
+                }
+               
+                $imageBack->store('public\\images');
+                $vehiculo->update([
+                    'image_back' => $imageBack->hashName()
+                ]);
+
+
+            }
+          
             // return $asientos;
             foreach($asientos as $asiento){
                 $asiento = (object) $asiento;

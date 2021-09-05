@@ -118,8 +118,9 @@
             </div>
 
             <!-- Parte de atras del autobus -->
-            <div :style="{position:'absolute',left:'2%',top:'17%'}" @click="onClickBack">
-                <svg id="60611b2ba5fdf" gc-seat-static="1" gc-seat-element-id="11" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50px" height="210px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 50 210" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <div :style="{position:'absolute',left:'2%',top:'17%'}" >
+                <img v-if="imageBack" :src="imageBack"  height="210" alt="">
+                <svg v-else id="60611b2ba5fdf" gc-seat-static="1" gc-seat-element-id="11" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50px" height="210px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 50 210" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Capa_x0020_1">
                         <metadata id="CorelCorpID_0Corel-Layer"></metadata>
                         <g id="_2938788358864">
@@ -134,8 +135,45 @@
                 </svg>
             </div>
             <!-- Parte de enfrente -->
+            <!-- <moveable init-x="calc(100% - 141px)" init-y="17%">
+                <img v-if="imageFront" :src="imageFront" alt="" style="height:100%" />
+                <svg v-else id="60611b2ba6d1b" gc-seat-static="1" gc-seat-element-id="9" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="141px" height="209px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 141 209" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Capa_x0020_1">
+                    <metadata id="CorelCorpID_0Corel-Layer"></metadata>
+                        <path class="fil09 str09" d="M120 15c2,3 2,3 3,9 7,35 6,53 6,81 0,23 1,48 -5,80 -1,3 -2,8 -4,10 -4,6 -6,8 -13,8l0 -4c9,0 12,-6 13,-14 4,-32 4,-56 4,-80 0,-24 0,-49 -5,-81 -2,-8 -3,-12 -12,-13l0 -4c6,0 10,3 13,8z"></path>
+                        <rect class="fil19 str09" transform="matrix(-8.36377E-014 3.01874 -1.57888 -3.99724E-014 106.784 7.03962)" width="1.43009" height="1.05701"></rect>
+                        <rect class="fil19 str09" transform="matrix(-8.36377E-014 3.01874 -1.57888 -3.99724E-014 106.784 198.953)" width="1.43009" height="1.05701"></rect>
+                        <line class="fil19 str09" x1="105" y1="203" x2="-1" y2="203"></line>
+                        <path class="fil19 str09" d="M106 199l0 -66c0,0 1,-4 -3,-4 -3,0 -14,0 -14,0 0,0 -3,0 -3,-4 0,-4 0,-19 0,-19l38 0"></path>
+                        <path class="fil19 str09" d="M105 11l-24 0c-9,4 -2,12 -1,17 0,3 3,20 0,37 -2,7 -3,13 -3,18 -1,6 -1,12 -1,19 0,0 15,5 16,-5 2,-26 4,-51 -3,-77l-12 0"></path>
+                        <line class="fil19 str09" x1="90" y1="27" x2="79" y2="27"></line>
+                        <line class="fil19 str09" x1="94" y1="66" x2="79" y2="66"></line>
+                        <line class="fil19 str09" x1="93" y1="84" x2="77" y2="84"></line>
+                        <ellipse class="fil29 str19" transform="matrix(-9.93232E-014 3.58488 -3.75023 -9.4944E-014 67.7808 46.2415)" rx="6" ry="4"></ellipse>
+                        <line class="fil19 str09" x1="105" y1="7" x2="-1" y2="7"></line>
+                        <ellipse class="fil19 str19" transform="matrix(-8.36377E-014 3.01874 -3.15798 -7.99501E-014 67.7514 46.0626)" rx="6" ry="4"></ellipse>
+                        <circle class="fil19 str29" transform="matrix(-7.96057E-014 2.87322 -3.00377 -7.6046E-014 67.7133 46.1349)" r="1"></circle>
+                        <circle class="fil19 str29" transform="matrix(-1.43551E-013 5.18121 -5.41663 -1.37132E-013 67.738 46.0875)" r="1"></circle>
+                        <path class="fil19 str09" d="M67 27l0 11c0,0 -1,1 -2,1 -1,-1 -5,-7 -5,-7"></path>
+                        <path class="fil19 str09" d="M67 65l0 -11c0,0 -1,-1 -2,-1 -1,1 -5,7 -5,7"></path>
+                        <path class="fil19 str09" d="M57 37c6,7 7,12 0,18"></path>
+                        <path class="fil19 str09" d="M80 41l-8 0c0,0 -1,0 -1,-2 0,-2 0,-11 0,-11"></path>
+                        <path class="fil19 str09" d="M80 51l-8 0c0,0 -1,0 -1,2 0,2 0,11 0,11"></path>
+                        <line class="fil19 str39" x1="85" y1="106" x2="47" y2="106"></line>
+                        <path class="fil19 str49" d="M49 46c0,-6 0,-11 -2,-12 -3,-1 -10,0 -18,0 -7,0 -15,-1 -17,0 -4,1 -5,6 -5,12 0,7 2,11 6,12 3,0 8,0 16,0 8,0 15,0 18,0 2,-1 2,-6 2,-12z"></path>
+                        <path class="fil19 str49" d="M48 54c-2,0 -5,0 -8,0 -1,0 -2,0 -3,0 -12,0 -21,0 -23,-1 -2,0 0,-3 0,-7 0,-3 -2,-6 0,-7 4,-1 18,-1 23,-1 1,0 2,0 2,0 4,0 7,0 10,0 0,6 0,10 -1,16z"></path>
+                        <path class="fil19 str49" d="M15 34c1,1 1,4 0,5 2,7 2,7 0,14 1,2 1,4 0,5l2 0c1,-1 1,-3 0,-5 2,-6 2,-7 0,-14 1,-2 1,-4 0,-5l-2 0z"></path>
+                        <path class="fil19 str49" d="M21 34c0,2 0,3 0,5 2,8 1,7 0,14 0,2 0,3 0,5l4 0c0,-1 0,-3 -1,-4 2,-7 2,-8 1,-15 0,-2 0,-4 0,-5l-4 0z"></path>
+                        <path class="fil29 str49" d="M44 58l-17 0c0,0 0,0 0,0l0 2c0,0 0,0 0,0l17 0c0,0 0,0 0,0l0 -2c0,0 0,0 0,0z"></path>
+                        <path class="fil29 str49" d="M43 32l-17 0c0,0 0,0 0,0l0 2c0,0 0,0 0,0l17 0c0,0 0,0 0,0l0 -2c0,0 0,0 0,0z"></path>
+                    </g>
+                </svg>
+
+            </moveable> -->
             <div :style="{position:'absolute',left:'calc(100% - 141px)',top:'17%'}">
-                <svg id="60611b2ba6d1b" gc-seat-static="1" gc-seat-element-id="9" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="141px" height="209px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 141 209" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+                <img v-if="imageFront" :src="imageFront" alt="" style="hight:100%" />
+                <svg v-else id="60611b2ba6d1b" gc-seat-static="1" gc-seat-element-id="9" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="141px" height="209px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 141 209" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Capa_x0020_1">
                     <metadata id="CorelCorpID_0Corel-Layer"></metadata>
                         <path class="fil09 str09" d="M120 15c2,3 2,3 3,9 7,35 6,53 6,81 0,23 1,48 -5,80 -1,3 -2,8 -4,10 -4,6 -6,8 -13,8l0 -4c9,0 12,-6 13,-14 4,-32 4,-56 4,-80 0,-24 0,-49 -5,-81 -2,-8 -3,-12 -12,-13l0 -4c6,0 10,3 13,8z"></path>
@@ -172,8 +210,9 @@
     </div>
 </template>
 <script>
+import Moveable from './Moveable.vue';
 export default {
-
+    components:{Moveable},
     props:{
         seats:{
             type:Array,
@@ -187,6 +226,14 @@ export default {
         remove:{
             type:Boolean,
             default:false
+        },
+        imageBack:{
+            type:String,
+            default:null
+        },
+        imageFront:{
+            type:String,
+            default:null
         }
     },
     created(){
@@ -301,40 +348,7 @@ export default {
 
         onDelete(asiento,index){
             this.$emit('onDelete',asiento,index);
-        },
-        onClickBack(event){
-            this.openFileDialog();
-        },
-
-        openFileDialog(){
-
-            return new Promise( (resolve,reject) => {
-                
-                let inputElement = document.createElement("input");
-                inputElement.hidden = true;
-                document.body.appendChild(inputElement);
-
-                inputElement.type = "file";
-                const onCancelListener = async () => {
-                    document.body.removeChild(inputElement);
-                    resolve(null);
-                };
-
-               
-                inputElement.accept = 'image/*';
-
-                
-                inputElement.addEventListener("change", event =>{
-                    window.removeEventListener('focus', onCancelListener);
-                    let file = event.files[0];
-                    resolve(file);
-                });
-
-                window.addEventListener('focus',onCancelListener,{once:true});
-            });
-            
-
-        }
+        },        
 
     }
     
@@ -353,4 +367,5 @@ export default {
     justify-content: center;
     color: #ffff;
 }
+
 </style>
