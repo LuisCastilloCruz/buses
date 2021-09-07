@@ -4,12 +4,12 @@
             <div class="col-12 d-flex justify-content-center">
                 <el-button type="info" @click="addImageBack">Agregar imagen trasera</el-button>
                 <el-button type="info" @click="agregarItem('sb')">Baño</el-button>
-                
+
                 <el-button type="info" @click="agregarItem('ses')">Scalera</el-button>
                 <el-button type="info" @click="agregarItem('sv')">Televisión</el-button>
                 <el-button v-if="!remove" type="danger" @click="remove = true">Eliminar</el-button>
                 <el-button v-else @click="remove = false">Cancelar</el-button>
-                <el-button type="info" @click="addImageFront">Agregar imagen trasera</el-button>
+                <el-button type="info" @click="addImageFront">Agregar imagen delantera</el-button>
 
             </div>
             <div class="col-12 d-flex justify-content-center">
@@ -29,27 +29,27 @@
                         <el-button class="mt-2" type="info" @click="agregarItem('ss')">+</el-button>
                     </div>
                     <!-- <div class="form-group row">
-                        
+
 
                     </div> -->
                 </div>
-                
+
             </div>
         </div>
-        <bus v-if="piso == 1" 
-        :seats.sync="asientosPisoUno" 
-        drag 
-        :remove="remove" 
-        @onDelete="eliminar" 
-        :image-back="imageBack" 
-        :image-front="imageFront" />
-        
-        <bus v-if="piso == 2" 
-        :seats.sync="asientosPisoDos" 
-        drag 
+        <bus v-if="piso == 1"
+        :seats.sync="asientosPisoUno"
+        drag
         :remove="remove"
         @onDelete="eliminar"
-        :image-back="imageBack" 
+        :image-back="imageBack"
+        :image-front="imageFront" />
+
+        <bus v-if="piso == 2"
+        :seats.sync="asientosPisoDos"
+        drag
+        :remove="remove"
+        @onDelete="eliminar"
+        :image-back="imageBack"
         :image-front="imageFront" />
 
         <div class="row mt-2">
@@ -101,7 +101,7 @@ export default {
             fileImageBack:null,
             imageFront:null,
             fileImageFront:null
-            
+
         });
     },
     watch:{
@@ -126,7 +126,7 @@ export default {
             //ss = asiento
             //sb = baño
             //ses = escalera
-            //sv = televisión   
+            //sv = televisión
 
             if(type === 'ss') {
                 if(!this.asiento.numero_asiento) return this.$message.info('Debe agregar número de asiento');
@@ -134,14 +134,14 @@ export default {
                 if(exist) return this.$message.info('Numero de asiento ya existe');
             }
 
-            
+
             this.asiento.piso = this.piso;
             this.asiento.type = type;
             this.asiento.numero_asiento = type === 'ss' ? this.asiento.numero_asiento : 0;
 
             this.asientos.push(Object.assign({},this.asiento));
             this.initAsiento();
-            
+
         },
         guardar(evt){
             this.loading = true;
@@ -179,11 +179,11 @@ export default {
                                 try{
                                     const { data } = await this.$http.delete(`/transportes/vehiculos/${asiento.id}/eliminar`);
                                     instance.confirmButtonLoading = false;
-                                    if(!data.success){ 
+                                    if(!data.success){
                                         this.$message({
                                             type: 'error',
                                             message: data.message
-                                        }); 
+                                        });
                                         done();
                                         return;
                                     }
@@ -191,7 +191,7 @@ export default {
                                     this.$message({
                                         type: 'success',
                                         message: data.message
-                                    }); 
+                                    });
 
                                     done();
 
@@ -206,18 +206,18 @@ export default {
                                 this.$message({
                                     type: 'success',
                                     message: 'Se ha eliminado el asiento'
-                                }); 
+                                });
                                 done();
-                            } 
+                            }
                         }, 1000);
-                       
-                        
+
+
                     } else {
                         done();
                     }
                 }
             }).then(() => this.remove = false);
-           
+
 
 
         },
@@ -255,13 +255,13 @@ export default {
                                 resolve();
                             }, 150);
                         });
-                    } 
+                    }
                     await sleep();
                     window.onfocus = null;
                     resolve(null);
                 };
-                
-                
+
+
                 inputElement.addEventListener("change", evt =>{
                     window.onfocus = null;
                     let input = evt.path[0];
@@ -270,13 +270,13 @@ export default {
                 });
 
                 window.onfocus = onCancelListener;
-                
+
             });
-            
+
 
         }
 
     }
-    
+
 }
 </script>
