@@ -655,7 +655,7 @@
     @endphp
     {{-- Condicion de pago  Crédito / Contado --}}
     <tr>
-        <td class="desc pt-5">
+        <td class="desc pt-3">
             <strong>CONDICIÓN DE PAGO: {{ $paymentCondition}} </strong>
         </td>
     </tr>
@@ -722,13 +722,10 @@
         <td class="text-center desc pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
     @if ($legend_footer==1)
-    <tr>
-        <td class="text-center desc pt-2">BIENES TRANSFERIDOS Y/O SERVICIOS PRESTADOS EN LA AMAZONIA PARA SER CONSUMIDOS EN LA MISMA</td>
-    </tr>
+        <tr>
+            <td class="text-center desc pt-2"><b>BIENES TRANSFERIDOS Y/O SERVICIOS PRESTADOS EN LA AMAZONIA PARA SER CONSUMIDOS EN LA MISMA</b></td>
+        </tr>
     @endif
 </table>
-
-
-
 </body>
 </html>

@@ -553,7 +553,7 @@ class Facturalo
                     $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
                 }
 
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+                //$pdf->SetHTMLFooter($html_footer.$html_footer_legend);  genera esacio en blanco
 
             }
 //            $html_footer = $template->pdfFooter();
