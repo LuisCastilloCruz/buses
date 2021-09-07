@@ -180,7 +180,7 @@
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.origin}">
                                 <label class="control-label">Dirección</label>
-                                <el-input v-model="form.origin.address" :maxlength="100" placeholder="Dirección..."></el-input>
+                                <el-input v-model="form.origin.address" :maxlength="200" placeholder="Dirección..."></el-input>
                                 <small class="form-control-feedback" v-if="errors.origin" v-text="errors.origin.address[0]"></small>
                             </div>
                         </div>
@@ -226,7 +226,7 @@
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.delivery}">
                                 <label class="control-label">Dirección</label>
-                                <el-input v-model="form.delivery.address" :maxlength="100" placeholder="Dirección..."></el-input>
+                                <el-input v-model="form.delivery.address" :maxlength="200" placeholder="Dirección..."></el-input>
                                 <small class="form-control-feedback" v-if="errors.delivery" v-text="errors.delivery.address[0]"></small>
                             </div>
                         </div>
