@@ -319,7 +319,7 @@ export default {
             this.pasajeros = data.clientes;
         },
         async onCreate(){
-            this.estadoAsiento = 2;
+            this.estadoAsiento = this.asiento.estado_asiento_id;
             this.transportePasaje = this.asiento.transporte_pasaje || null;
             await this.searchPasajero();
             this.initProducto();

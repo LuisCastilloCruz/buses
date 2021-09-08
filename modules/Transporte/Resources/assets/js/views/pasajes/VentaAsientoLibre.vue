@@ -15,7 +15,7 @@
                     <div class="tab-content">
                         <div id="boleto" class="tab-pane active">
                             <div class="row mt-2">
-                                <div class="col-5">
+                                <div v-if="!isReserva" class="col-5">
                                     <div class="form-group">
                                         <label for="">Tipo de comprobante</label>
                                         <el-select
@@ -73,7 +73,7 @@
 
                                 </div>
 
-                                <div class="col-5">
+                                <div v-if="!isReserva" class="col-5">
                                     <div class="form-group">
                                         <label for="dni">
                                             Cliente
@@ -90,6 +90,16 @@
 
                                             </el-option>
                                         </el-select>
+                                    </div>
+                                </div>
+                                <div v-else class="col-5">
+                                    <div class="form-group">
+                                        <label for="dni">
+                                            Cliente
+                                            
+                                        </label>
+                                        <el-input ref="nombrePasajero" v-model="nombrePasajero" type="text" placeholder="Nombre del cliente" ></el-input>
+                                        
                                     </div>
                                 </div>
 
@@ -396,11 +406,14 @@ export default {
         nameItem(){
             if(this.tipoVenta == 2) return `${this.programacion.origen.nombre}-${this.programacion.destino.nombre}`
             else if(this.tipoVenta == 1) return `${this.origen.nombre}-${this.destino.nombre}`;
+        },
+        isReserva(){
+            return this.estadoAsiento == 3;
         }
     },
     data(){
         return ({
-
+            nombrePasajero:null,
             tabs:'venta',
             resource_documents: "documents",
             input_person:{},
@@ -528,17 +541,26 @@ export default {
 
            let validator = this.validate();
 
-           if(validator.fails){
+           console.log(validator);
+
+            if(validator.fails){
                return this.$message.info(validator.first);
             }
+            
 
-
-            this.document.items.length=0;
+            
+           
             let precio = parseFloat(this.precio);
             if(!precio) {
                 this.$message.info('Por favor indique el precio de el asiento');
                 return;
             }
+
+            this.loading = true;
+
+            if(this.isReserva) return this.guardarPasaje() 
+            
+            this.document.items.length=0;
 
             this.producto.input_unit_price_value=precio;
             this.producto.item.description = 'Pasaje -'+this.nameItem;
@@ -551,7 +573,7 @@ export default {
             this.producto.unit_price=precio;
             this.producto.unit_value=precio;
 
-            this.loading = true;
+            
 
             const id = await this.createItem(this.producto.item);
             if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
@@ -608,11 +630,22 @@ export default {
 
         },
         async guardarPasaje(){
+            let doc = null;
+            let note = null;
+            let client = null;
+            if(!this.isReserva){
+                doc = (this.document.document_type_id==='nv')? null: this.documentId;
+                note = (this.document.document_type_id==='nv') ? this.sale_note_id : null
+                client = (this.document.document_type_id==='03' || this.document.document_type_id==='nv') ? this.clienteId : this.pasajeroId;
+
+            }
+           
             let data = {
-                document_id:(this.document.document_type_id==='nv')? null: this.documentId,
-                note_id: (this.document.document_type_id==='nv') ? this.sale_note_id : null,
-                cliente_id:this.clienteId,
-                pasajero_id:(this.document.document_type_id==='03' || this.document.document_type_id==='nv') ? this.clienteId : this.pasajeroId,
+                document_id: doc,
+                note_id: note,
+                cliente_id:client,
+                nombre_pasajero: this.nombrePasajero,
+                pasajero_id: client,
                 asiento_id:this.tipoVenta == 2 ? this.asiento.id : null,
                 numero_asiento:this.numeroAsiento,
                 estado_asiento_id:this.estadoAsiento,
@@ -631,7 +664,7 @@ export default {
                 if (this.document.document_type_id === "nv") {
                     this.modalNote();
                 } else {
-                    this.$emit('onSuccessVenta',this.documentId);
+                    if(!this.isReserva) this.$emit('onSuccessVenta',this.documentId);
                 }
 
                 this.precio = null;
@@ -641,6 +674,7 @@ export default {
                 this.form_cash_document.document_id=null;
                 this.form_cash_document.sale_note_id=null;
                 this.document.document_type_id = '03';
+                this.nombrePasajero = null;
                 this.filterSeries();
                 this.filterCustomers();
                 this.initProducto();
@@ -1035,7 +1069,15 @@ export default {
             if(!this.isCashOpen) {
                 valid = false;
                 errors.push('La caja no esta abierta');
-                this.$message.info('La caja no esta abierta');
+                // this.$message.info('La caja no esta abierta');
+            }
+            if(this.isReserva){
+                
+                if(!this.nombrePasajero || this.nombrePasajero == ''){
+                    valid = false;
+                    this.$refs.nombrePasajero.focus();
+                    errors.push('Debe poner el nombre del pasajero');
+                }
             }
 
 
@@ -1065,20 +1107,23 @@ export default {
                     let element = document.getElementById('hora-salida');
                     element.focus();
                 }
-                else if(!this.precio){
+                
+                if(!this.precio){
                     valid = false;
                     errors.push('Debe poner un precio');
 
                     let element = document.getElementById('precio-boleto');
                     element.focus();
                 }
-                else if(!this.clienteId){
+                
+                if(!this.clienteId && !this.isReserva){
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');
                     element.focus();
                 }
-                else if(!this.numeroAsiento){
+                
+                if(!this.numeroAsiento){
                     valid = false;
                     errors.push('Debe ingresar un asiento');
 
@@ -1101,13 +1146,13 @@ export default {
                     let element = document.getElementById('precio-boleto');
                     element.focus();
                 }
-                 else if(!this.clienteId){
+                if(!this.clienteId && !this.isReserva){
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');
                     element.focus();
                 }
-                else if(!this.asiento) {
+                if(!this.asiento) {
                     valid = false;
                     errors.push('Debe seleccionar un asiento');
                 }

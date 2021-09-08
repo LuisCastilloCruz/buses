@@ -566,7 +566,7 @@ export default {
         dbClick(asiento){
 
             if(asiento.type != 'ss') return;
-            if(asiento.estado_asiento_id == 2) {
+            if(asiento.estado_asiento_id == 2 || asiento.estado_asiento_id == 3) {
                 this.asiento = asiento;
                 this.visible = true;
                 return;

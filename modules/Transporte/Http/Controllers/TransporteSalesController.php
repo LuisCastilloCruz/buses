@@ -270,6 +270,7 @@ class TransporteSalesController extends Controller
                 'cliente_id',
                 'pasajero_id',
                 'asiento_id',
+                'nombre_pasajero',
                 'precio',
                 'fecha_salida',
                 'programacion_id',
