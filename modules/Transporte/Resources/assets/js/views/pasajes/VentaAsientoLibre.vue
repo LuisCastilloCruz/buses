@@ -634,7 +634,7 @@ export default {
                     this.$emit('onSuccessVenta',this.documentId);
                 }
 
-                this.precio = null;
+                //this.precio = null;
                 this.clienteId=null;
                 this.pasajeroId = null;
                 this.numeroAsiento = null;
