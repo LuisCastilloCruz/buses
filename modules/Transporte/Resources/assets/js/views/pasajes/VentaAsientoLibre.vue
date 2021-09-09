@@ -57,7 +57,7 @@
                                                    placeholder="Estado asiento"
                                                    :disabled=" (transportePasaje) ? true : false"
                                         >
-                                            <el-option v-for="estado in estadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
+                                            <el-option v-for="estado in tempEstadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
 
                                             </el-option>
                                         </el-select>
@@ -146,7 +146,7 @@
 
                             </div>
 
-                            <div v-if="!transportePasaje" class="row mt-2">
+                            <div v-if="!transportePasaje && !isReserva" class="row mt-2">
                                 <div class="col-md-12">
                                     <el-collapse v-model="activePanel" accordion>
                                         <el-collapse-item name="1" >
@@ -400,6 +400,14 @@ export default {
                 this.clienteId =null;
             }
 
+        },
+        tipoVenta(newVal){
+            if(newVal == 1) {
+
+                this.estadoAsiento = 2;
+                this.tempEstadosAsientos = this.estadosAsientos.filter(  estado => estado.id != 3 )
+            }
+            else this.tempEstadosAsientos = this.estadosAsientos;
         }
     },
     computed:{
@@ -432,7 +440,7 @@ export default {
             buscar_destinatario:false,
             buscar_pasajero:false,
             loading:false,
-
+            tempEstadosAsientos:this.estadosAsientos, 
             //document
             documentId:null,
             sale_note_id:null,
@@ -486,7 +494,7 @@ export default {
                     this.pasajeroId = pasajero_id;
                 });
         },
-         async searchCliente(input=''){
+        async searchCliente(input=''){
             this.loadingCliente = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
             this.loadingCliente = false;
@@ -505,8 +513,7 @@ export default {
         async onCreate(){
             this.estadoAsiento = 2;
             // this.transportePasaje = this.asiento.transporte_pasaje || null;
-            await this.searchCliente();
-            await this.searchPasajero();
+          
             this.initProducto();
             //this.initDocument();
             this.clickAddPayment();
@@ -530,18 +537,17 @@ export default {
 
             this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
 
+            await this.searchCliente();
+            await this.searchPasajero();
             this.changeDocumentType();
             this.document.document_type_id = '03';
             this.filterSeries();
-            this.filterSeries();
-            this.filterCustomers();
+            // this.filterCustomers();
         },
 
         async saveDocument(){
 
            let validator = this.validate();
-
-           console.log(validator);
 
             if(validator.fails){
                return this.$message.info(validator.first);
@@ -643,7 +649,7 @@ export default {
             let data = {
                 document_id: doc,
                 note_id: note,
-                cliente_id:client,
+                cliente_id:this.clienteId,
                 nombre_pasajero: this.nombrePasajero,
                 pasajero_id: client,
                 asiento_id:this.tipoVenta == 2 ? this.asiento.id : null,
@@ -667,6 +673,9 @@ export default {
                     if(!this.isReserva) this.$emit('onSuccessVenta',this.documentId);
                 }
 
+
+                this.estadoAsiento = 2;
+               
                 this.precio = null;
                 this.clienteId=null;
                 this.pasajeroId = null;
@@ -674,6 +683,7 @@ export default {
                 this.form_cash_document.document_id=null;
                 this.form_cash_document.sale_note_id=null;
                 this.document.document_type_id = '03';
+                this.document.cliente_id =
                 this.nombrePasajero = null;
                 this.filterSeries();
                 this.filterCustomers();
@@ -751,7 +761,7 @@ export default {
                     category: "",
                     currency_type_id: "PEN",
                     currency_type_symbol: "S/",
-                    description: "PASAJE AREQUIPA CUSCO",
+                    description:null,
                     full_description: "",
                     has_igv: false,
                     has_plastic_bag_taxes: false,
@@ -1071,6 +1081,10 @@ export default {
                 errors.push('La caja no esta abierta');
                 // this.$message.info('La caja no esta abierta');
             }
+            if(!this.destino){
+                valid = false;
+                errors.push('Debe seleccionar un destino');
+            }
             if(this.isReserva){
                 
                 if(!this.nombrePasajero || this.nombrePasajero == ''){
@@ -1100,7 +1114,8 @@ export default {
             }
 
             if(this.tipoVenta == 1){//venta libre
-                if(!this.horaSalida){
+                
+                if(this.destino && !this.horaSalida){
                     valid = false;
                     errors.push('Debe ingresar hora de salida');
 
@@ -1117,6 +1132,7 @@ export default {
                 }
                 
                 if(!this.clienteId && !this.isReserva){
+                    
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');
@@ -1147,6 +1163,7 @@ export default {
                     element.focus();
                 }
                 if(!this.clienteId && !this.isReserva){
+                    
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');

@@ -227,6 +227,7 @@ export default {
         },
         async addImageFront(){
             this.fileImageFront = await this.openFileDialog();
+            console.log(this.fileImageFront);
             this.imageFront = URL.createObjectURL(this.fileImageFront);
         },
         initAsiento(){
@@ -251,9 +252,8 @@ export default {
                     const sleep = () => {
                         return new Promise( (resolve,reject) => {
                             setTimeout(() => {
-                                console.log('entra 1');
                                 resolve();
-                            }, 150);
+                            }, 200);
                         });
                     } 
                     await sleep();
@@ -264,8 +264,10 @@ export default {
                 
                 inputElement.addEventListener("change", evt =>{
                     window.onfocus = null;
-                    let input = evt.path[0];
-                    let file = input.files[0];
+                    console.log(evt);
+                   
+                    let file = evt.target.files[0];
+                   
                     resolve(file);
                 });
 

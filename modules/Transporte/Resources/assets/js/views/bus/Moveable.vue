@@ -1,5 +1,5 @@
 <template>
-<div ref="moveable" :style="getStyle" @click="e => e.stopPropagation()" @mousedown="onMouseDown" :class="{'select-item':selected,'':!selected}" >
+<div ref="moveable" :style="getStyle" @click="e => e.stopPropagation()" @mousedown="moveable ? onMouseDown : null" :class="{'select-item':selected,'':!selected}" >
     
     <div class="point point-left" @mousedown="mouseDownResize($event,'point-left')"></div>
     <div class="point point-top" @mousedown="mouseDownResize($event,'point-top')"></div>
@@ -20,7 +20,8 @@ export default {
         initY:{
             type:String,
             default:'0'
-        }
+        },
+        moveable:false
     },
     created(){
         this.posX = this.initX;
@@ -32,6 +33,8 @@ export default {
                 position:'absolute',
                 left:this.posX,
                 top:this.posY,
+                width:'100%',
+                height:'100%'
             };
 
             
@@ -122,8 +125,8 @@ export default {
 
 
         },
-        mouseMoveResize(evt,point){
-            let px =this.px = this.$refs.moveable.offsetLeft;
+        mouseMoveResize(evt){
+            let px = this.$refs.moveable.offsetLeft;
             let py = this.$refs.moveable.offsetTop;
             let sizeWidth = this.$refs.moveable.offsetWidth;
             let sizeHeight = this.$refs.moveable.offsetHeight;
@@ -136,7 +139,7 @@ export default {
 
             if(this.point == 'point-left'){
                 this.$refs.moveable.style.width = `${sizeWidth + x}px`;
-                this.posX = `${px - x}px`;
+                this.posX = `${px + x}px`;
             }
             if(this.point == 'point-right'){
                 this.$refs.moveable.style.width = `${sizeWidth - x}px`;

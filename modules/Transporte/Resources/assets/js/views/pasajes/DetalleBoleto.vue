@@ -10,7 +10,7 @@
                         popper-class="el-select-document_type"
                         dusk="document_type_id"
                         class="border-left rounded-left border-info"
-                        :disabled="transportePasaje ? true : false"
+                        :disabled="(transportePasaje && !isReserva) ? true : false"
                     >
                         <el-option
                             v-for="option in documentTypesInvoice"
@@ -18,6 +18,7 @@
                             :value="option.id"
                             :label="option.description"
                         ></el-option>
+                        <el-option key="nv" value="nv" label="NOTA DE VENTA"></el-option>
                     </el-select>
                 </div>
             </div>
@@ -25,7 +26,7 @@
                 <div class="form-group">
                     <label for="">Serie</label>
                     <!-- <el-input v-model="document.serie" disabled></el-input> -->
-                    <el-select v-model="document.series_id" :disabled="transportePasaje ? true : false">
+                    <el-select v-model="document.series_id" :disabled="(transportePasaje && !isReserva) ? true : false">
                         <el-option
                             v-for="option in allSeries"
                             :key="option.id"
@@ -40,9 +41,9 @@
                     <label for="dni">Estado de asiento</label>
                     <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
                                placeholder="Estado asiento"
-                               :disabled=" (transportePasaje) ? true : false"
+                               :disabled="transportePasaje ? true : false"
                     >
-                        <el-option v-for="estado in estadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
+                        <el-option v-for="estado in tempEstadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
 
                         </el-option>
                     </el-select>
@@ -53,22 +54,23 @@
             <div class="col-5">
                 <div class="form-group">
                     <label for="dni">
-                        Pasajero
-                        <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
+                        Cliente
+                        <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>
                     </label>
-                    <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
-                        dusk="pasajeroId"
-                        placeholder="Buscar remitente"
-                        :remote-method="searchPasajero"
-                        :loading="loadingPasajero"
-                        :disabled=" (transportePasaje) ? true : false"
+                    <el-select v-model="clienteId" filterable remote  popper-class="el-select-customers"
+                        dusk="clienteId"
+                        placeholder="Buscar cliente"
+                        :remote-method="searchCliente"
+                        :loading="loadingCliente"
+                        :disabled="(transportePasaje && !isReserva) ? true : false"
                         >
-                        <el-option v-for="pasaje in pasajeros" :key="pasaje.id" :value="pasaje.id" :label="pasaje.name">
+                        <el-option v-for="pasaje in tempClientes" :key="pasaje.id" :value="pasaje.id" :label="pasaje.name">
 
                         </el-option>
                     </el-select>
                 </div>
             </div>
+            
             <div class="col-3">
                 <div class="form-group">
                     <label for="dni">Precio</label>
@@ -76,14 +78,26 @@
                 </div>
                
             </div>
+            
             <div v-if="asiento" class="col-3">
                 <div class="form-group">
                     <label for="dni">Asiento</label>
                     <el-input disabled :value="asiento.numero_asiento"></el-input>
                 </div>
             </div>
+            <div v-if="isReserva" class="col-5">
+                <div class="form-group">
+                    <label for="dni">
+                        Nombre del pasajero
+                        
+                    </label>
+                    <el-input disabled v-model="nombrePasajero" type="text" placeholder="Nombre del pasajero" ></el-input>
+                    
+                </div>
+            </div>
+            
         </div>
-        <div v-if="transportePasaje" class="row justify-content-center">
+        <div v-if="(transportePasaje && !isReserva)" class="row justify-content-center">
 
             <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
                 Comprobante
@@ -95,14 +109,37 @@
             </el-button>
             
         </div>
-        <div class="row mt-2">
+        <div class="row pt-2" v-if="document.document_type_id === '01'">
+
+            <div class="col-5">
+                <div class="form-group">
+                    <label for="dni">
+                        Pasajero
+                        <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>
+                    </label>
+                    <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
+                        dusk="pasajeroId"
+                        placeholder="Buscar pasajero"
+                        :remote-method="searchPasajero"
+                        :loading="loadingPasajero"
+                        :disabled="(transportePasaje && !isReserva) ? true : false"
+                    >
+                        <el-option v-for="persona in tempPasajeros" :key="persona.id" :value="persona.id" :label="persona.name">
+
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+
+        </div>
+        <div v-if="!transportePasaje || isReserva" class="row mt-2">
             <div class="col-md-12">
                 <el-collapse v-model="activePanel" accordion>
                     <el-collapse-item name="1" >
                         <template slot="title">
                             <i class="fa fa-plus text-info"></i> &nbsp;Pagos<i class="header-icon el-icon-information"></i>
                         </template>
-                        <div v-if="!transportePasaje" class="row mt-2">
+                        <div  class="row mt-2">
                             <div class="col-12">
                                 <div class="row mt-2">
                                     <div class="col-12">
@@ -177,17 +214,27 @@
         :configuration="configuration"
         ></document-options>
 
+        <sale-note-options
+        :showDialog.sync="showDialogSaleNoteOptions"
+        :recordId="documentId"
+        :configuration="configuration"
+        :showClose="true"
+        >
+        </sale-note-options>
+
         
 
         <person-form :showDialog.sync="showDialogNewPerson"
         type="customers"
         :external="true"
         :input_person="input_person"
+        :buscar_pasajero="buscar_pasajero"
+        :buscar_destinatario="buscar_destinatario"
         :document_type_id="document.document_type_id"></person-form>
 
         <div class="row mt-4">
             <div class="col-12 d-flex justify-content-center">
-                <el-button :disabled=" (transportePasaje) ? true : false" :loading="loading" type="primary" @click="saveDocument">Guardar</el-button>
+                <el-button v-if="transportePasaje && isReserva" :loading="loading" type="primary" @click="saveDocument">Guardar</el-button>
                 <el-button type="secondary" @click="onClose">Cancelar</el-button>
             </div>
         </div>
@@ -196,12 +243,14 @@
 <script>
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 import DocumentOptions from "@views/documents/partials/options.vue";
+import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import PersonForm from "@views/persons/form.vue";
 export default {
     mixins: [exchangeRate],
     components:{
         DocumentOptions,
         PersonForm,
+        SaleNoteOptions
         
     },
     props:{
@@ -253,7 +302,11 @@ export default {
         configuration:{
             type: Object,
             required: true,
-        }
+        },
+        tipoVenta:{
+            type:Number,
+            default:null
+        },
     },
     created(){
         this.initDocument();
@@ -262,7 +315,7 @@ export default {
         this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
         this.allSeries = this.series;
         this.document.establishment_id = this.establishment.id;
-        this.changeDocumentType();
+        this.changeDocumentType();        
        
     },
     watch:{
@@ -270,11 +323,21 @@ export default {
             if(this.document.payments.length > 0){
                 this.document.payments[0].payment = newVal ? newVal : 0;
             }
-        }
+        },
+    },
+    mounted(){
+
+        this.$eventHub.$on('reloadDataPersons', (clienteId) => {
+            this.reloadDataCustomers(clienteId)
+        })
+
+        this.$eventHub.$on('reloadDataPasajeros', (pasajeroId) => {
+            this.reloadDataPasajeros(pasajeroId)
+        });
     },
     data(){
         return ({
-            
+            buscar_destinatario:false,
             input_person:{},
             showDialogNewPerson:false,
             pasajeros:[],
@@ -303,9 +366,40 @@ export default {
             },
             is_contingency: 0,
             activePanel: 0,
+            tempPasajeros:[],
+            clientes:[],
+            tempClientes:[],
+            loadingCliente:false,
+            buscar_pasajero:false,
+            clienteId:null,
+            sale_note_id:null,
+            showDialogSaleNoteOptions:false,
+            nombrePasajero:null,
+            tempEstadosAsientos: this.estadosAsientos
         });
     },
+    computed:{
+        isReserva(){
+            return this.asiento && this.asiento.estado_asiento_id === 3;
+        },
+        nameItem(){
+            if(this.transportePasaje.tipo_venta == 2) return `${this.programacion.origen.nombre}-${this.programacion.destino.nombre}`
+            else if(this.transportePasaje.tipo_venta == 1) return `${this.origen.nombre}-${this.destino.nombre}`;
+        },
+    },
     methods:{
+
+        async reloadDataCustomers(clienteId){
+            
+            await this.searchCliente();
+            this.clienteId = clienteId;
+            
+        },
+        async reloadDataPasajeros(pasajeroId){
+            
+            await this.searchPasajero();
+            this.pasajeroId = pasajeroId;
+        },
         onClose(){
             this.$emit("update:visible", false);
             this.pasajeroId = null;
@@ -316,36 +410,73 @@ export default {
             this.loadingPasajero = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
             this.loadingPasajero = false;
-            this.pasajeros = data.clientes;
+            this.tempPasajeros = this.pasajeros  = data.clientes;
+        },
+        async searchCliente(input=''){
+            this.loadingCliente = true;
+            const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
+            this.loadingCliente = false;
+            this.tempClientes = this.clientes  = data.clientes;
         },
         async onCreate(){
-            this.estadoAsiento = this.asiento.estado_asiento_id;
+            
+           
             this.transportePasaje = this.asiento.transporte_pasaje || null;
-            await this.searchPasajero();
+           
             this.initProducto();
             //this.initDocument();
             this.clickAddPayment();
             this.onCalculateTotals();
             //this.validateIdentityDocumentType();
+            
+            
+            if(this.transportePasaje){
+                this.nombrePasajero = this.transportePasaje.nombre_pasajero;
+                this.pasajero = this.transportePasaje.pasajero;
+                this.precio = this.transportePasaje.precio;
+                this.pasajeroId = this.pasajero ? this.pasajero.id : null;
+                this.estadoAsiento = 2;
+                this.documentId = this.transportePasaje.document_id;
+            }
+
             const date = moment().format("YYYY-MM-DD");
             await this.searchExchangeRateByDate(date).then((res) => {
                 this.document.exchange_rate_sale = res;
             });
-            if(this.transportePasaje){
-                this.pasajero = this.transportePasaje.pasajero;
-                this.precio = this.transportePasaje.precio;
-                this.pasajeroId = this.pasajero.id;
-                this.estadoAsiento = this.transportePasaje.estado_asiento_id;
-                this.documentId = this.transportePasaje.document_id;
-            }
+
+            await this.searchPasajero();
+            await this.searchCliente();
+
+            this.changeDocumentType();
         },
         async saveDocument(){
+
+            if(this.document.document_type_id == '01'){
+                if(!this.clienteId && !this.pasajeroId ){
+                    return this.$message.error('Debe llenar el cliente y el pasajero');
+                }
+            }
+
+            if(this.document.document_type_id == '03' || this.document.document_type_id == 'nv'){
+                if(!this.clienteId ){
+                    return this.$message.error('Debe llenar el cliente');
+                }
+
+            }
+
+            
+
+            
+
+
             this.loading = true;
             this.document.items.length=0;
             let precio = parseFloat(this.precio);
             if(!precio) return;
             this.producto.input_unit_price_value=precio;
             this.producto.item.unit_price=precio;
+            this.producto.item.description = 'Pasaje -'+this.nameItem;
+            this.producto.item.name = 'Pasaje -'+this.nameItem;
             this.producto.total=precio;
             this.producto.total_base_igv=precio;
             this.producto.total_value=precio;
@@ -354,17 +485,49 @@ export default {
             this.document.items.push(this.producto);
             this.document.payments.push(this.payment);
             this.document.customer_id=this.pasajeroId;
+
+            const id = await this.createItem(this.producto.item);
+            if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
+            this.producto.item_id = this.producto.item.id = id;
+
+            this.document.items.push(this.producto);
+            this.payment.payment= precio;
+            this.document.payments.push(this.payment);
+
+            this.document.customer_id=this.clienteId;
             this.onCalculateTotals();
             let validate_payment_destination = this.validatePaymentDestination();
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error("El destino del pago es obligatorio");
             }
+
+            let resourceDocuments;
+
+            if (this.document.document_type_id === "nv") {
+                this.document.prefix = "NV";
+                resourceDocuments = "sale-notes";
+            } else {
+                this.document.prefix = null;
+                resourceDocuments = "documents";
+            }
+
+
+
             await this.$http
-                .post(`/documents`, this.document)
+                .post(`/${resourceDocuments}`, this.document)
                 .then(async (response) => {
                     if (response.data.success) {
                         this.documentId = response.data.data.id;
                         this.form_cash_document.document_id = response.data.data.id;
+                        
+                         if (this.document.document_type_id === "nv"){
+                            this.form_cash_document.sale_note_id = response.data.data.id;
+                            this.sale_note_id = response.data.data.id;
+                        }
+                        else{
+                            this.form_cash_document.document_id = response.data.data.id;
+                        }
+                        
                         await this.saveCashDocument();
                         await this.guardarPasaje();
                     } else {
@@ -380,20 +543,47 @@ export default {
                 });
         },
         async guardarPasaje(){
+            let doc = (this.document.document_type_id==='nv')? null: this.documentId;
+            let note = (this.document.document_type_id==='nv') ? this.sale_note_id : null
+            let client = (this.document.document_type_id==='03' || this.document.document_type_id==='nv') ? this.clienteId : this.pasajeroId;
+
+
             let data = {
-                document_id:this.documentId,
-                pasajero_id:this.pasajeroId,
-                asiento_id:this.asiento.id,
-                estado_asiento_id:this.estadoAsiento,
+                document_id: doc,
+                note_id: note,
+                cliente_id:this.clienteId,
+                pasajero_id:client,
+                // asiento_id:this.asiento.id,
+                estado_asiento_id:this.estadoAsiento, 
                 programacion_id:this.programacion.id,
                 fecha_salida:this.fechaSalida,
                 precio:this.precio
             };
-            this.$http.post('/transportes/sales/realizar-venta-boleto',data)
+            this.$http.put(`/transportes/sales/${this.transportePasaje.id}/venta-boleto-reservado`,data)
             .then( ({data}) => {
                 this.loading = false;
-                this.$emit('onSuccessVenta',this.documentId);
-                this.$emit('')
+
+                if (this.document.document_type_id === "nv") {
+                    this.$eventHub.$emit('reloadDataNotes')
+                    this.showDialogSaleNoteOptions= true
+                } else {
+                    console.log('entra');
+                    this.$emit('onSuccessVenta',this.documentId);
+                }
+
+                this.precio = null;
+                this.clienteId=null;
+                this.pasajeroId = null;
+                this.numeroAsiento = null;
+                this.form_cash_document.document_id=null;
+                this.form_cash_document.sale_note_id=null;
+                this.document.document_type_id = '03';
+
+                this.filterSeries();
+                this.filterCustomers();
+                this.initProducto();
+                this.document.payments= [];
+                this.$emit('onUpdateItem');
                 this.$message({
                     type: 'success',
                     message: data.message
@@ -424,6 +614,9 @@ export default {
                 document_item_id: null,
                 input_unit_price_value: "100",//cambiado
                 item: {
+                    id:null,
+                    name:null,
+                    second_name:null,
                     amount_plastic_bag_taxes: "0.10",
                     attributes: [],
                     barcode: "",
@@ -432,7 +625,7 @@ export default {
                     category: "",
                     currency_type_id: "PEN",
                     currency_type_symbol: "S/",
-                    description: "PASAJE AREQUIPA CUSCO",
+                    description: null,
                     full_description: "",
                     has_igv: false,
                     has_plastic_bag_taxes: false,
@@ -448,9 +641,16 @@ export default {
                     sale_affectation_igv_type_id: "20",
                     sale_unit_price: 35,
                     series_enabled: false,
-                    stock: "",
-                    unit_price: "100", //cambiado
+                    stock: 1,
+                    stock_min:1,
+                    unit_price: 0, //cambiado
                     unit_type_id: "ZZ",
+                    is_set: false,
+                    series_enabled: false,
+                    purchase_has_igv: true,
+                    web_platform_id:null,
+                    has_plastic_bag_taxes: false,
+                    item_warehouse_prices: [],
                 },
                 item_id: 2,
                 percentage_igv: 18,
@@ -617,13 +817,26 @@ export default {
                 });
         },
         changeDocumentType() {
-            this.filterSeries();
+
+            this.allSeries = [];
+            if (this.document.document_type_id !== "nv") {
+                this.filterSeries();
+                this.is_document_type_invoice = true;
+            } else {
+                this.allSeries = _.filter(this.series, {
+                    document_type_id: "80",
+                });
+                this.document.series_id =
+                    this.allSeries.length > 0 ? this.allSeries[0].id : null;
+
+                this.is_document_type_invoice = false;
+            }
             this.cleanCustomer();
             this.filterCustomers();
         },
         cleanCustomer(){
             this.document.customer_id = null
-            this.pasajeros = []
+            this.tempPasajeros = [];
         },
         clickAddPayment() {
             const payment = this.document.payments.length == 0 ? this.document.total : 0;
@@ -674,23 +887,36 @@ export default {
         filterCustomers() {
             if (['0101', '1001', '1004'].includes(this.document.operation_type_id)) {
                 if(this.document.document_type_id === '01') {
-                    this.pasajeros = _.filter(this.pasajeros, {'identity_document_type_id': '6'})
+                    this.tempClientes = _.filter(this.pasajeros, {'identity_document_type_id': '6'})
                 } else {
-                    if(this.document_type_03_filter) {
-                        this.pasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
-                    } else {
-                        this.pasajeros = this.pasajeros
-                    }
+
+                    this.tempClientes = _.filter(this.clientes, (c) => { return c.identity_document_type_id !== '6' })
+                    
                 }
+                this.tempPasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
             } else {
-                this.pasajeros = this.pasajeros
+                this.tempPasajeros = this.pasajeros
             }
         },
         anularBoleto(){
             
             this.$emit('anularBoleto',this.transportePasaje);
             
-        }
+        },
+        modalPerson(buscar_pasajero){
+            this.showDialogNewPerson=true;
+            this.buscar_pasajero = buscar_pasajero
+
+        },
+        async createItem(item){
+            try{
+                const { data } = await this.$http.post('/items',item);
+                return data.id;
+
+            }catch(error){
+                return null;
+            }
+        },
     }
 }
 </script>
