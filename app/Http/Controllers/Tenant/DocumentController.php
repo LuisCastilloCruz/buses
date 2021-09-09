@@ -476,45 +476,29 @@ class DocumentController extends Controller
      */
     public function storeWithData($data)
     {
-        DB::beginTransaction();
-        try {
-            $fact = DB::connection('tenant')->transaction(function () use ($data) {
-                $facturalo = new Facturalo();
-                $facturalo->save($data);
-                $facturalo->createXmlUnsigned();
-                $facturalo->signXmlUnsigned();
-                $facturalo->updateHash();
-                $facturalo->updateQr();
-                $facturalo->createPdf();
-                $facturalo->senderXmlSignedBill();
+        $fact = DB::connection('tenant')->transaction(function () use ($data) {
+            $facturalo = new Facturalo();
+            $facturalo->save($data);
+            $facturalo->createXmlUnsigned();
+            $facturalo->signXmlUnsigned();
+            $facturalo->updateHash();
+            $facturalo->updateQr();
+            $facturalo->createPdf();
+            $facturalo->senderXmlSignedBill();
 
-                return $facturalo;
-            });
+            return $facturalo;
+        });
 
-            $document = $fact->getDocument();
-            $response = $fact->getResponse();
+        $document = $fact->getDocument();
+        $response = $fact->getResponse();
 
-            DB::commit();
-            return [
-              'success' => true,
-              'data' => [
-                  'id' => $document->id,
-                  'response' =>$response
-              ]
-            ];
-
-        } catch (\Exception $e) {
-            DB::rollback();
-
-            return [
-                'success' => false,
-                'data' => [
-                    'message' => $e->getMessage(),
-                    'code' => $e->getCode(),
-                    'sent' => false
-                ]
-            ];
-        }
+        return [
+          'success' => true,
+          'data' => [
+              'id' => $document->id,
+              'response' =>$response
+          ]
+        ];
     }
 
     private function associateSaleNoteToDocument(Request $request, int $documentId)
