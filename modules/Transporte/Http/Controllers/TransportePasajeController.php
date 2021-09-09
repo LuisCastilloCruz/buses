@@ -110,6 +110,7 @@ class TransportePasajeController extends Controller
                 }
             ])
             ->whereNotNull('document_id')
+            ->whereNotNull('pasajero_id')
             ->where('origen_id',$terminal->id)
             ->take($limit)->skip($limit * ($page - 1) );
 

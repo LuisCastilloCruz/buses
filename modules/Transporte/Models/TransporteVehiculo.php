@@ -16,11 +16,17 @@ class TransporteVehiculo extends ModelTenant
 
 
     public function getImgFrontAttribute(){
-        return asset('storage\\images\\'.$this->image_front);
+
+        if(!is_null($this->image_front)) return asset('storage\\images\\'.$this->image_front);
+        return null;
+        
     }
 
     public function getImgBackAttribute(){
-        return asset('storage\\images\\'.$this->image_back);
+        if(!is_null($this->image_back)) return asset('storage\\images\\'.$this->image_back);
+
+        return null;
+        
     }
 
     public function seats() : HasMany{

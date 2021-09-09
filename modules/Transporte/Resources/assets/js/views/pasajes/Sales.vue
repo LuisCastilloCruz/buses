@@ -52,6 +52,7 @@
                             <div class="form-group">
                                 <label for="">Tipo de venta</label>
                                 <el-select v-model="tipoVenta"
+                                id="tipo-venta"
                                 popper-class="el-select-customers"
                                 placeholder="Tipo de venta"
                                 :disabled="pasajero ? true : false"
@@ -277,6 +278,7 @@
         :recordId="documentId"></documents-voided>
 
         <detalle-boleto
+        :tipo-venta.sync="tipoVenta"
         :document-types-invoice="documentTypesInvoice"
         :visible.sync="visible"
         :programacion="selectProgramacion"
@@ -289,6 +291,8 @@
         :configuration="configuration"
         :asiento="asiento"
         @anularBoleto="anularBoleto"
+        @onSuccessVenta="onSuccessVenta"
+        @onUpdateItem="onUpdateItem"
         />
 
 
@@ -566,7 +570,7 @@ export default {
         dbClick(asiento){
 
             if(asiento.type != 'ss') return;
-            if(asiento.estado_asiento_id == 2) {
+            if(asiento.estado_asiento_id == 2 || asiento.estado_asiento_id == 3) {
                 this.asiento = asiento;
                 this.visible = true;
                 return;
@@ -612,6 +616,9 @@ export default {
                 .find(  programacion => programacion.id == program.id );
                 this.asientos = this.selectProgramacion.transporte.asientos;
                 this.vehiculo = this.selectProgramacion.transporte;
+            }else if(this.tipoVenta == 1){
+                this.destino = null;
+                this.horaSalida = null;
             }
 
         },

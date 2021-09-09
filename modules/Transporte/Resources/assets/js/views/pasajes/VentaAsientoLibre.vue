@@ -15,7 +15,7 @@
                     <div class="tab-content">
                         <div id="boleto" class="tab-pane active">
                             <div class="row mt-2">
-                                <div class="col-5">
+                                <div v-if="!isReserva" class="col-5">
                                     <div class="form-group">
                                         <label for="">Tipo de comprobante</label>
                                         <el-select
@@ -57,7 +57,7 @@
                                                    placeholder="Estado asiento"
                                                    :disabled=" (transportePasaje) ? true : false"
                                         >
-                                            <el-option v-for="estado in estadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
+                                            <el-option v-for="estado in tempEstadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
 
                                             </el-option>
                                         </el-select>
@@ -73,7 +73,7 @@
 
                                 </div>
 
-                                <div class="col-5">
+                                <div v-if="!isReserva" class="col-5">
                                     <div class="form-group">
                                         <label for="dni">
                                             Cliente
@@ -90,6 +90,16 @@
 
                                             </el-option>
                                         </el-select>
+                                    </div>
+                                </div>
+                                <div v-else class="col-5">
+                                    <div class="form-group">
+                                        <label for="dni">
+                                            Cliente
+                                            
+                                        </label>
+                                        <el-input ref="nombrePasajero" v-model="nombrePasajero" type="text" placeholder="Nombre del cliente" ></el-input>
+                                        
                                     </div>
                                 </div>
 
@@ -136,7 +146,7 @@
 
                             </div>
 
-                            <div v-if="!transportePasaje" class="row mt-2">
+                            <div v-if="!transportePasaje && !isReserva" class="row mt-2">
                                 <div class="col-md-12">
                                     <el-collapse v-model="activePanel" accordion>
                                         <el-collapse-item name="1" >
@@ -390,17 +400,28 @@ export default {
                 this.clienteId =null;
             }
 
+        },
+        tipoVenta(newVal){
+            if(newVal == 1) {
+
+                this.estadoAsiento = 2;
+                this.tempEstadosAsientos = this.estadosAsientos.filter(  estado => estado.id != 3 )
+            }
+            else this.tempEstadosAsientos = this.estadosAsientos;
         }
     },
     computed:{
         nameItem(){
             if(this.tipoVenta == 2) return `${this.programacion.origen.nombre}-${this.programacion.destino.nombre}`
             else if(this.tipoVenta == 1) return `${this.origen.nombre}-${this.destino.nombre}`;
+        },
+        isReserva(){
+            return this.estadoAsiento == 3;
         }
     },
     data(){
         return ({
-
+            nombrePasajero:null,
             tabs:'venta',
             resource_documents: "documents",
             input_person:{},
@@ -419,7 +440,7 @@ export default {
             buscar_destinatario:false,
             buscar_pasajero:false,
             loading:false,
-
+            tempEstadosAsientos:this.estadosAsientos, 
             //document
             documentId:null,
             sale_note_id:null,
@@ -473,7 +494,7 @@ export default {
                     this.pasajeroId = pasajero_id;
                 });
         },
-         async searchCliente(input=''){
+        async searchCliente(input=''){
             this.loadingCliente = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
             this.loadingCliente = false;
@@ -492,8 +513,7 @@ export default {
         async onCreate(){
             this.estadoAsiento = 2;
             // this.transportePasaje = this.asiento.transporte_pasaje || null;
-            await this.searchCliente();
-            await this.searchPasajero();
+          
             this.initProducto();
             //this.initDocument();
             this.clickAddPayment();
@@ -517,28 +537,36 @@ export default {
 
             this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
 
+            await this.searchCliente();
+            await this.searchPasajero();
             this.changeDocumentType();
             this.document.document_type_id = '03';
             this.filterSeries();
-            this.filterSeries();
-            this.filterCustomers();
+            // this.filterCustomers();
         },
 
         async saveDocument(){
 
            let validator = this.validate();
 
-           if(validator.fails){
+            if(validator.fails){
                return this.$message.info(validator.first);
             }
+            
 
-
-            this.document.items.length=0;
+            
+           
             let precio = parseFloat(this.precio);
             if(!precio) {
                 this.$message.info('Por favor indique el precio de el asiento');
                 return;
             }
+
+            this.loading = true;
+
+            if(this.isReserva) return this.guardarPasaje() 
+            
+            this.document.items.length=0;
 
             this.producto.input_unit_price_value=precio;
             this.producto.item.description = 'Pasaje -'+this.nameItem;
@@ -551,7 +579,7 @@ export default {
             this.producto.unit_price=precio;
             this.producto.unit_value=precio;
 
-            this.loading = true;
+            
 
             const id = await this.createItem(this.producto.item);
             if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
@@ -608,11 +636,22 @@ export default {
 
         },
         async guardarPasaje(){
+            let doc = null;
+            let note = null;
+            let client = null;
+            if(!this.isReserva){
+                doc = (this.document.document_type_id==='nv')? null: this.documentId;
+                note = (this.document.document_type_id==='nv') ? this.sale_note_id : null
+                client = (this.document.document_type_id==='03' || this.document.document_type_id==='nv') ? this.clienteId : this.pasajeroId;
+
+            }
+           
             let data = {
-                document_id:(this.document.document_type_id==='nv')? null: this.documentId,
-                note_id: (this.document.document_type_id==='nv') ? this.sale_note_id : null,
+                document_id: doc,
+                note_id: note,
                 cliente_id:this.clienteId,
-                pasajero_id:(this.document.document_type_id==='03' || this.document.document_type_id==='nv') ? this.clienteId : this.pasajeroId,
+                nombre_pasajero: this.nombrePasajero,
+                pasajero_id: client,
                 asiento_id:this.tipoVenta == 2 ? this.asiento.id : null,
                 numero_asiento:this.numeroAsiento,
                 estado_asiento_id:this.estadoAsiento,
@@ -631,9 +670,12 @@ export default {
                 if (this.document.document_type_id === "nv") {
                     this.modalNote();
                 } else {
-                    this.$emit('onSuccessVenta',this.documentId);
+                    if(!this.isReserva) this.$emit('onSuccessVenta',this.documentId);
                 }
 
+
+                this.estadoAsiento = 2;
+               
                 //this.precio = null;
                 this.clienteId=null;
                 this.pasajeroId = null;
@@ -641,6 +683,8 @@ export default {
                 this.form_cash_document.document_id=null;
                 this.form_cash_document.sale_note_id=null;
                 this.document.document_type_id = '03';
+                this.document.cliente_id =
+                this.nombrePasajero = null;
                 this.filterSeries();
                 this.filterCustomers();
                 this.initProducto();
@@ -717,7 +761,7 @@ export default {
                     category: "",
                     currency_type_id: "PEN",
                     currency_type_symbol: "S/",
-                    description: "PASAJE AREQUIPA CUSCO",
+                    description:null,
                     full_description: "",
                     has_igv: false,
                     has_plastic_bag_taxes: false,
@@ -1035,7 +1079,19 @@ export default {
             if(!this.isCashOpen) {
                 valid = false;
                 errors.push('La caja no esta abierta');
-                this.$message.info('La caja no esta abierta');
+                // this.$message.info('La caja no esta abierta');
+            }
+            if(!this.destino){
+                valid = false;
+                errors.push('Debe seleccionar un destino');
+            }
+            if(this.isReserva){
+                
+                if(!this.nombrePasajero || this.nombrePasajero == ''){
+                    valid = false;
+                    this.$refs.nombrePasajero.focus();
+                    errors.push('Debe poner el nombre del pasajero');
+                }
             }
 
 
@@ -1058,27 +1114,32 @@ export default {
             }
 
             if(this.tipoVenta == 1){//venta libre
-                if(!this.horaSalida){
+                
+                if(this.destino && !this.horaSalida){
                     valid = false;
                     errors.push('Debe ingresar hora de salida');
 
                     let element = document.getElementById('hora-salida');
                     element.focus();
                 }
-                else if(!this.precio){
+                
+                if(!this.precio){
                     valid = false;
                     errors.push('Debe poner un precio');
 
                     let element = document.getElementById('precio-boleto');
                     element.focus();
                 }
-                else if(!this.clienteId){
+                
+                if(!this.clienteId && !this.isReserva){
+                    
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');
                     element.focus();
                 }
-                else if(!this.numeroAsiento){
+                
+                if(!this.numeroAsiento){
                     valid = false;
                     errors.push('Debe ingresar un asiento');
 
@@ -1101,13 +1162,14 @@ export default {
                     let element = document.getElementById('precio-boleto');
                     element.focus();
                 }
-                 else if(!this.clienteId){
+                if(!this.clienteId && !this.isReserva){
+                    
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');
                     element.focus();
                 }
-                else if(!this.asiento) {
+                if(!this.asiento) {
                     valid = false;
                     errors.push('Debe seleccionar un asiento');
                 }

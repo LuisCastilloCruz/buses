@@ -1,22 +1,22 @@
 .bus{
-    width:1100px;
-    height:256px;
-    position:relative;
-    overflow-y: hidden;
+    width:100%;
+    height:100%;
+    position:absolute;
+    overflow: hidden;
     background-color: #ffff;
+    display: flex;
+    padding: 20px;
+    
 }
 
+
+
 .content-bus{
-    position: absolute;
-    left: 3%;
-    top: 19%;
-    width: 943px;
-    height: 201px;
-    border-radius: 21px;
-    border-bottom: 1px solid #dcdcdc;
-    border-top: 1px solid #dcdcdc;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    position: relative;
+    width:100%;
+    height:100%;
+    border-bottom: 1px solid #bebdbd;
+    border-top: 1px solid #a6a4a4;
 }
 
 .element {

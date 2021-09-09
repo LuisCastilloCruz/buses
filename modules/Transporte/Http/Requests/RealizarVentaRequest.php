@@ -24,12 +24,13 @@ class RealizarVentaRequest extends FormRequest
     public function rules()
     {
         return [
-            'cliente_id'=> ['required'],
+            // 'cliente_id'=> ['required'],
             'estado_asiento_id' => ['required'],
             'fecha_salida' => ['required'],
-            'pasajero_id' => ['required'],
+            // 'pasajero_id' => ['required'],
             // 'programacion_id' => ['required'],
             'destino_id' => ['required'],
+            'numero_asiento' => ['required'],
             'hora_salida' => ['required']
         ];
     }

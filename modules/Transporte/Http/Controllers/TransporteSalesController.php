@@ -270,6 +270,7 @@ class TransporteSalesController extends Controller
                 'cliente_id',
                 'pasajero_id',
                 'asiento_id',
+                'nombre_pasajero',
                 'precio',
                 'fecha_salida',
                 'programacion_id',
@@ -323,6 +324,52 @@ class TransporteSalesController extends Controller
                 'hora_salida',
                 'origen_id',
                 'destino_id'
+            ]);
+
+            $pasaje->update(
+                array_merge($attributes,[
+                    'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
+                ])
+            );
+
+            DB::connection('tenant')->commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Éxito!!'
+            ],200);
+
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al procesar su petición',
+                'error' => $th->getMessage()
+            ],500);
+        }
+
+    }
+
+    public function ventaReservado(Request $request,TransportePasaje $pasaje){
+
+        DB::connection('tenant')->beginTransaction();
+        try {
+
+
+            $attributes = $request->only([
+                // 'asiento_id',
+                'document_id',
+                'note_id',
+                'cliente_id',
+                'pasajero_id',
+                'precio',
+                'fecha_salida',
+                'programacion_id',
+                'estado_asiento_id',
+                // 'numero_asiento',
+                'hora_salida',
+                // 'origen_id',
+                // 'destino_id'
             ]);
 
             $pasaje->update(
