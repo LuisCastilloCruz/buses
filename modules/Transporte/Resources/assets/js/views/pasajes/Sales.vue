@@ -223,9 +223,9 @@
                         </div>
 
                     </div>
-                    <div v-if="asientos.length > 0 && tipoVenta == 2" class="row">
-                        <bus v-if="piso == 1" :seats.sync="asientosPisoUno" @dbclick="dbClick"  />
-                        <bus v-if="piso == 2" :seats.sync="asientosPisoDos" @dbclick="dbClick"  />
+                    <div v-if="asientos.length > 0 && tipoVenta == 2 && vehiculo" class="row">
+                        <bus v-if="piso == 1" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back" :seats.sync="asientosPisoUno" @dbclick="dbClick"  />
+                        <bus v-if="piso == 2" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back"  :seats.sync="asientosPisoDos" @dbclick="dbClick"  />
                     </div>
 
 
@@ -305,7 +305,7 @@
 
 </template>
 <script>
-import Bus from './Bus';
+import Bus from '../bus/Bus';
 import VentaAsientoLibre from './VentaAsientoLibre.vue';
 import DocumentOptions from "@views/documents/partials/options.vue";
 import DocumentsVoided from '@views/documents/partials/voided.vue';
