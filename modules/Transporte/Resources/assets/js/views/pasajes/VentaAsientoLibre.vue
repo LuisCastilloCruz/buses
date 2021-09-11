@@ -36,7 +36,7 @@
                                         </el-select>
                                     </div>
                                 </div>
-                                <div class="col-3">
+                                <div v-if="!isReserva" class="col-3">
                                     <div class="form-group">
                                         <label for="">Serie</label>
                                         <!-- <el-input v-model="document.serie" disabled></el-input> -->
@@ -96,10 +96,10 @@
                                     <div class="form-group">
                                         <label for="dni">
                                             Cliente
-                                            
+
                                         </label>
                                         <el-input ref="nombrePasajero" v-model="nombrePasajero" type="text" placeholder="Nombre del cliente" ></el-input>
-                                        
+
                                     </div>
                                 </div>
 
@@ -440,7 +440,7 @@ export default {
             buscar_destinatario:false,
             buscar_pasajero:false,
             loading:false,
-            tempEstadosAsientos:this.estadosAsientos, 
+            tempEstadosAsientos:this.estadosAsientos,
             //document
             documentId:null,
             sale_note_id:null,
@@ -513,7 +513,7 @@ export default {
         async onCreate(){
             this.estadoAsiento = 2;
             // this.transportePasaje = this.asiento.transporte_pasaje || null;
-          
+
             this.initProducto();
             //this.initDocument();
             this.clickAddPayment();
@@ -552,10 +552,10 @@ export default {
             if(validator.fails){
                return this.$message.info(validator.first);
             }
-            
 
-            
-           
+
+
+
             let precio = parseFloat(this.precio);
             if(!precio) {
                 this.$message.info('Por favor indique el precio de el asiento');
@@ -564,8 +564,8 @@ export default {
 
             this.loading = true;
 
-            if(this.isReserva) return this.guardarPasaje() 
-            
+            if(this.isReserva) return this.guardarPasaje()
+
             this.document.items.length=0;
 
             this.producto.input_unit_price_value=precio;
@@ -579,7 +579,7 @@ export default {
             this.producto.unit_price=precio;
             this.producto.unit_value=precio;
 
-            
+
 
             const id = await this.createItem(this.producto.item);
             if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
@@ -645,7 +645,7 @@ export default {
                 client = (this.document.document_type_id==='03' || this.document.document_type_id==='nv') ? this.clienteId : this.pasajeroId;
 
             }
-           
+
             let data = {
                 document_id: doc,
                 note_id: note,
@@ -675,7 +675,7 @@ export default {
 
 
                 this.estadoAsiento = 2;
-               
+
                 //this.precio = null;
                 this.clienteId=null;
                 this.pasajeroId = null;
@@ -1086,7 +1086,7 @@ export default {
                 errors.push('Debe seleccionar un destino');
             }
             if(this.isReserva){
-                
+
                 if(!this.nombrePasajero || this.nombrePasajero == ''){
                     valid = false;
                     this.$refs.nombrePasajero.focus();
@@ -1114,7 +1114,7 @@ export default {
             }
 
             if(this.tipoVenta == 1){//venta libre
-                
+
                 if(this.destino && !this.horaSalida){
                     valid = false;
                     errors.push('Debe ingresar hora de salida');
@@ -1122,7 +1122,7 @@ export default {
                     let element = document.getElementById('hora-salida');
                     element.focus();
                 }
-                
+
                 if(!this.precio){
                     valid = false;
                     errors.push('Debe poner un precio');
@@ -1130,15 +1130,15 @@ export default {
                     let element = document.getElementById('precio-boleto');
                     element.focus();
                 }
-                
+
                 if(!this.clienteId && !this.isReserva){
-                    
+
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');
                     element.focus();
                 }
-                
+
                 if(!this.numeroAsiento){
                     valid = false;
                     errors.push('Debe ingresar un asiento');
@@ -1163,7 +1163,7 @@ export default {
                     element.focus();
                 }
                 if(!this.clienteId && !this.isReserva){
-                    
+
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');
