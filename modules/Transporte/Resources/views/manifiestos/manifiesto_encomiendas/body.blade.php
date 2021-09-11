@@ -172,7 +172,7 @@
             <?php $itemEncomienda = $item->item  ?>
             <tr>
                 <td>{{ $encomienda->id }}</td>
-                <td>{{ $document->number }}</td>
+                <td>{{ $document->remitente->number }}</td>
                 <td>{{ $itemEncomienda->description }}</td>
                 <td>{{ number_format($item->total_value,2,'.','') }}</td>
                 <td>{{ $encomienda->destinatario->name }}</td>

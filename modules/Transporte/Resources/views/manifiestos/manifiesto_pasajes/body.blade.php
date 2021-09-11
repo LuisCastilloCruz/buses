@@ -195,7 +195,7 @@
             <td>{{ $pasajero->name }}</td>
             <td>{{ $pasaje->programacion->destino->nombre }}</td>
             <td>{{ $pasajero->identity_document_type->description }}</td>
-            <td>{{ $document->number  }}</td>
+            <td>{{ $pasajero->number  }}</td>
             <td>{{ $pasaje->numero_asiento }}</td>
             <td>{{ $document->series }} - {{ $document->number }}</td>
             <td>{{  number_format($pasaje->precio,2,'.','')   }}</td>
