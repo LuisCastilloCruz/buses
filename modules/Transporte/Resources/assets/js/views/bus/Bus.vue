@@ -1,6 +1,6 @@
 <template>
-<div style="overflow-x:auto;overflow-y:hidden">
-    <div class="mt-2" :style="{position:'relative',width:'1100px',height:'300px'}">
+<div style="overflow-x:auto;overflow-y:hidden;padding:10px">
+    <div class="mt-2" :style="{position:'relative',width:'1073px',height:'210px'}">
         
         <div ref="bus" class="bus" >
             <!-- <div class="point point-left" @mousedown="mouseDownResize($event,'point-left')"></div>
