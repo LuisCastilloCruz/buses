@@ -269,17 +269,17 @@ class PleController extends Controller
                 'col_11'=>($estado =='11' ) ? '' : $row->supplier->identity_document_type_id,
                 'col_12'=>($estado =='11' ) ? '' : $row->supplier->number,
                 'col_13' =>($estado =='11' ) ? '' : $detail,
-                'col_14' =>($estado =='11') ? ''  : $basimp1,
-                'col_15' =>($estado =='11') ? '' : $igv1,
-                'col_16' =>($estado =='11')  ? '' : $basimp2, //BI 2 compra destinado a operación no grabada
-                'col_17' =>($estado =='11') ? '' : $igv2, //IGV 2
-                'col_18' =>($estado =='11') ? '' : $basimp3, //BI 3 compra destinado a exportación
-                'col_19' =>($estado =='11') ? '' : $igv3,//IGV 3
-                'col_20' =>($estado =='11') ? '' : $total_no_grabado,
+                'col_14' =>($estado =='11') ? ''  : round($basimp1,2),
+                'col_15' =>($estado =='11') ? '' : round($igv1,2),
+                'col_16' =>($estado =='11')  ? '' : round($basimp2,2), //BI 2 compra destinado a operación no grabada
+                'col_17' =>($estado =='11') ? '' : round($igv2,2), //IGV 2
+                'col_18' =>($estado =='11') ? '' : round($basimp3,2), //BI 3 compra destinado a exportación
+                'col_19' =>($estado =='11') ? '' : round($igv3,2),//IGV 3
+                'col_20' =>($estado =='11') ? '' : round($total_no_grabado,2),
                 'col_21' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '',
                 'col_22' =>'0.00',//bolsas
                 'col_23' =>'',
-                'col_24' =>($estado =='11' ) ? '' : $total,
+                'col_24' =>($estado =='11' ) ? '' : round($total,2),
                 'col_25' =>($estado =='11' ) ? '' : $row->currency_type_id,
                 'col_26' =>($tc <1 || $estado =='11' || $row->currency_type_id =='PEN') ? '' : $tc,
                 'col_27' =>$fechaMod,
@@ -316,8 +316,11 @@ class PleController extends Controller
         {
 
             $date_of_issue = Carbon::parse($row->date_of_issue);
+            $date_doc= strtotime($row->date_of_issue->format('Y-m'));
+            $date_periodo= strtotime($row->date_periodo->format('Y-m'));
             $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
             $detail = $row->supplier->name;
+            $tip_doc =$row->document_type_id;
 
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
             $regimen="";
@@ -340,6 +343,34 @@ class PleController extends Controller
 
                 $type_basimp= $row->type_basimp;
                 $estado=$row->state_type_id;
+
+                $estado_libro ="";
+                // SIN RECHAZAR, SIN ANULAR RH, boleta -- NO DAN CREDITO FIZCAL
+                if(($estado!='09' && $estado!='11') && $tip_doc  == '02' || $tip_doc == '03'){
+                    $estado_libro="0";
+                }
+
+                // SIN RECHAZAR, SIN ANULAR , DEL PERIODO, FACTURA, LIQ COMPRA, NC, ND, SERVICIOS PUBLICOS -- SI DAN CREDITO FIZCAL
+                elseif(($estado!='09' && $estado!='11') && ($date_doc==$date_periodo) && $tip_doc == '01' || $tip_doc == '04' || $tip_doc == '07' || $tip_doc == '08' || $tip_doc == '14'){
+                    $estado_libro="1";
+                }
+
+                //sin rechazar sin anular, factura de fecha pasada, mas de 12 meses
+                elseif(($estado!='09' && $estado!='11')  && ($date_doc<$date_periodo) ){
+
+                    $firstDate  = new DateTime($row->date_of_issue->format('Y-m'));
+                    $secondDate = new DateTime($row->date_periodo->format('Y-m'));
+                    $intvl = $firstDate->diff($secondDate);
+                    $anio=  $intvl->y;
+                    $meses=  $intvl->m;
+                    $tot_mes=($anio*12)+$meses;
+                    if($tot_mes <12){//sin rechazar sin anular, factura de fecha pasada, menos de 12 meses
+                        $estado_libro="6";
+                    }
+                    else{
+                        $estado_libro="7";  //sin rechazar sin anular, factura de fecha pasada, mas de 12 meses
+                    }
+                }
                 $tc    = $row->exchange_rate_sale;
                 $total_taxed = $row->total_taxed;
                 $total_igv =$row->total_igv;
@@ -381,7 +412,7 @@ class PleController extends Controller
                 }
 
                 $rows[] = [
-                    'col_1' => str_pad($row->date_of_issue->format('Ym'), 8,'00', STR_PAD_RIGHT),
+                    'col_1' => str_pad($row->date_periodo->format('Ym'), 8,'00', STR_PAD_RIGHT),
                     'col_2' =>$number_index,
                     'col_3' =>'M'.$number_index,
                     'col_4' =>$row->date_of_issue->format('d/m/Y'),
@@ -395,16 +426,16 @@ class PleController extends Controller
                     'col_12'=>($estado =='11' ) ? '' : $row->supplier->number,
                     'col_13' =>($estado =='11' ) ? '' : $detail,
 
-                    'col_14' =>($estado =='11') ? ''  : $basimp1,
-                    'col_15' =>($estado =='11') ? '' : $igv1,
-                    'col_16' =>($estado =='11')  ? '' : $basimp2, //BI 2 compra destinado a operación no grabada
-                    'col_17' =>($estado =='11') ? '' : $igv2, //IGV 2
-                    'col_18' =>($estado =='11') ? '' : $basimp3, //BI 3 compra destinado a exportación
-                    'col_19' =>($estado =='11') ? '' : $igv3,//IGV 3
-                    'col_20' =>($estado =='11') ? '' : $total_no_grabado,
+                    'col_14' =>($estado =='11') ? ''  : round($basimp1,2),
+                    'col_15' =>($estado =='11') ? '' : round($igv1,2),
+                    'col_16' =>($estado =='11')  ? '' : round($basimp2,2), //BI 2 compra destinado a operación no grabada
+                    'col_17' =>($estado =='11') ? '' : round($igv2,2), //IGV 2
+                    'col_18' =>($estado =='11') ? '' : round($basimp3,2), //BI 3 compra destinado a exportación
+                    'col_19' =>($estado =='11') ? '' : round($igv3,2),//IGV 3
+                    'col_20' =>($estado =='11') ? '' : round($total_no_grabado,2),
                     'col_21' =>($row->total_isc>0 && $estado !='11') ? $row->total_isc : '',
                     'col_22' =>'',
-                    'col_23' =>($estado =='11' ) ? '' : $total,
+                    'col_23' =>($estado =='11' ) ? '' : round($total,2),
                     'col_24' =>($estado =='11' ) ? '' : $row->currency_type_id,
                     'col_25' =>($tc >1 && $estado !='11') ? $tc :  '',
                     'col_26' =>$fechaMod,
@@ -422,7 +453,7 @@ class PleController extends Controller
                     'col_38' =>'',
                     'col_39' =>'',
                     'col_40' =>'',
-                    'col_41' =>($estado=='11') ? '2' : '1',
+                    'col_41' =>$estado_libro,
                     'col_42' =>''
                 ];
 
