@@ -199,7 +199,7 @@ class PleController extends Controller
 
             //sin rechazar sin anular, factura de fecha pasada, mas de 12 meses
             elseif(($estado!='09' && $estado!='11')  && ($date_doc<$date_periodo) ){
-                
+
                 $firstDate  = new DateTime($row->date_of_issue->format('Y-m'));
                 $secondDate = new DateTime($row->date_periodo->format('Y-m'));
                 $intvl = $firstDate->diff($secondDate);
@@ -207,14 +207,14 @@ class PleController extends Controller
                 $meses=  $intvl->m;
                 $tot_mes=($anio*12)+$meses;
                 if($tot_mes <12){//sin rechazar sin anular, factura de fecha pasada, menos de 12 meses
-                    $estado_libro="6";    
+                    $estado_libro="6";
                 }
                 else{
                     $estado_libro="7";  //sin rechazar sin anular, factura de fecha pasada, mas de 12 meses
                 }
             }
 
-        
+
             $tc    = $row->exchange_rate_sale;
             $total_taxed = $row->total_taxed;
             $total_igv =$row->total_igv;
@@ -256,7 +256,7 @@ class PleController extends Controller
             }
 
             $rows[] = [
-                'col_1' => str_pad($row->date_of_issue->format('Ym'), 8,'00', STR_PAD_RIGHT),
+                'col_1' => str_pad($row->date_periodo->format('Ym'), 8,'00', STR_PAD_RIGHT),
                 'col_2' =>$number_index,
                 'col_3' =>'M'.$number_index,
                 'col_4' =>$row->date_of_issue->format('d/m/Y'),
