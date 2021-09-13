@@ -527,6 +527,7 @@ class Purchase extends ModelTenant
                 ];
             }),
             'print_a4'                       => url('')."/purchases/print/{$this->external_id}/a4",
+            'date_periodo'                  => $this->date_periodo->format('Y-m'),
         ];
     }
 
