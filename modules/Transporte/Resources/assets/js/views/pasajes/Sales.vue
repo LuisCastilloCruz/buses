@@ -216,16 +216,13 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
                             </template>
                         </div>
 
                     </div>
-                    <div v-if="asientos.length > 0 && tipoVenta == 2 && vehiculo" class="row">
-                        <bus v-if="piso == 1" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back" :seats.sync="asientosPisoUno" @dbclick="dbClick"  />
-                        <bus v-if="piso == 2" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back"  :seats.sync="asientosPisoDos" @dbclick="dbClick"  />
+                    <div v-if="asientos.length > 0 && tipoVenta == 2 && vehiculo">
+                        <bus v-if="piso == 1" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back" :seats.sync="asientosPisoUno" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
+                        <bus v-if="piso == 2" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back"  :seats.sync="asientosPisoDos" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
                     </div>
 
 
@@ -251,14 +248,6 @@
                     :origen="origen"
                     :horaSalida="horaSalida"
                     />
-
-
-
-
-
-
-
-
                 </el-card>
             </div>
 
