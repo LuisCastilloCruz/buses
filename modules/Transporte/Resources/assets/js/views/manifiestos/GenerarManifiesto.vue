@@ -53,7 +53,7 @@
         <div class="row mt-2">
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="">Chofer</label>
+                    <label for="">Conductor</label>
                      <select v-model="manifiesto.chofer_id" class="form-control">
                         <option
                         v-for="chofer in choferes"

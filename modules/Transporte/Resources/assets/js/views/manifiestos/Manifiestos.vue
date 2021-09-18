@@ -30,7 +30,7 @@
                                                     <tr>
                                                         <th>Serie</th>
                                                         <th>Número</th>
-                                                        <th>Chofer</th>
+                                                        <th>Conductor</th>
                                                         <th>Copiloto</th>
                                                         <th>Fecha salida</th>
                                                         <th>Hora salida</th>
@@ -68,7 +68,7 @@
                                                                     <i class="fa fa-arrow-right"></i>
                                                                 </el-button>
                                                             </el-tooltip>
-                                                            
+
                                                             <!-- <el-button type="danger" @click="onDelete(encomienda)">
                                                                 <i class="fa fa-trash"></i>
                                                             </el-button> -->
@@ -140,8 +140,8 @@
                                                                     <i class="fa fa-file-alt"></i>
                                                                 </el-button>
                                                             </el-tooltip>
-                                                            
-                                                            
+
+
                                                             <!-- <el-button type="danger" @click="onDelete(encomienda)">
                                                                 <i class="fa fa-trash"></i>
                                                             </el-button> -->
@@ -170,16 +170,16 @@
                             </el-tab-pane>
                         </el-tabs>
                     </div>
-                    
+
                 </div>
-                
+
             </div>
         </div>
 
-        <generar-manifiesto 
+        <generar-manifiesto
         :tipo="tipo"
-        :visible.sync="visible" 
-        :series="series" 
+        :visible.sync="visible"
+        :series="series"
         :programacion="programacion"
         :choferes="choferes"
         @onAddUpdateManifiesto="onAddUpdateManifiesto"
@@ -244,7 +244,7 @@ export default {
                 const { data } = await this.$http.get('/transportes/manifiestos/get-manifiestos?tipo=1');
                 this.loadingEncomiendas = false;
                 this.listManifiestos = data;
-                
+
             } catch (error) {
                 this.loadingEncomiendas = false;
                 if(error.response) this.axiosError(error);
@@ -257,13 +257,13 @@ export default {
                 const { data } = await this.$http.get('/transportes/manifiestos/get-manifiestos?tipo=2');
                 this.loadingPasajes = false;
                 this.listPasajes = data;
-                
+
             } catch (error) {
                 this.loadingPasajes = false;
                 if(error.response) this.axiosError(error);
             }
         },
-        
+
         asignarEncomiendas(manifiesto){
             window.location.replace(`/transportes/manifiestos/${manifiesto.id}/asignar-encomiendas`);
         },

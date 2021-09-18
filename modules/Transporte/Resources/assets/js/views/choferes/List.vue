@@ -5,7 +5,7 @@
         <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
       </h2>
       <ol class="breadcrumbs">
-        <li class="active"><span>REGISTRO DE CHOFERES</span></li>
+        <li class="active"><span>REGISTRO DE CONDUCTORES</span></li>
       </ol>
       <div class="right-wrapper pull-right">
         <div class="btn-group flex-wrap">
@@ -21,7 +21,7 @@
     </div>
     <div class="card mb-0">
       <div class="card-header bg-info">
-        <h3 class="my-0">Listado de choferes</h3>
+        <h3 class="my-0">Listado de conductores</h3>
       </div>
       <div class="card-body">
         <div class="table-responsive">

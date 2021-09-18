@@ -865,7 +865,7 @@
                                     <a class="nav-link" href="{{route('tenant.transportes.cash.index')}}">Caja chica</a>
                                 </li>
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'choferes')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ url('transportes/choferes') }}">Choferes</a>
+                                    <a class="nav-link" href="{{ url('transportes/choferes') }}">Conductores</a>
                                 </li>
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'vehiculos')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/vehiculos') }}">Vehículos</a>

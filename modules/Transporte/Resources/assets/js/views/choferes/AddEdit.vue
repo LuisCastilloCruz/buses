@@ -117,9 +117,9 @@ export default {
     onCreate() {
       if (this.chofer) {
         this.form = this.chofer;
-        this.title = "Editar chofer";
+        this.title = "Editar conductor";
       } else {
-        this.title = "Crear chofer";
+        this.title = "Crear conductor";
         this.form = {
           active: true,
         };
