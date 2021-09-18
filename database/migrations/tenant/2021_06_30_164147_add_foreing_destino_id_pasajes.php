@@ -19,7 +19,7 @@ class AddForeingDestinoIdPasajes extends Migration
             $table->unsignedInteger('origen_id');
             $table->foreign('origen_id')->references('id')->on('transporte_terminales');
             $table->unsignedInteger('destino_id');
-            $table->foreign('destino_id')->references('id')->on('transporte_terminales');
+            $table->foreign('destino_id')->references('id')->on('transporte_destinos');
 
         });
     }
