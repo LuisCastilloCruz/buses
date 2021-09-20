@@ -3,7 +3,7 @@
         <div v-if="loading_form">
             <form autocomplete="off" @submit.prevent="submit" class="row no-gutters">
                 <div class="col-xl-9 col-md-9 col-12">
-                    <div class="row card-header no-gutters align-items-start" style="background-color: #fff;">
+                    <div class="row card-header no-gutters align-items-start">
                         <div class="col-xl-2 col-md-2 col-12">
                             <logo url="/" :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''" :position_class="'text-left'"></logo>
                         </div>
