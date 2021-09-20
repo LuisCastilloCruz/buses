@@ -382,7 +382,7 @@
             <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }}</h4></td>
         </tr>
         <tr>
-            <td class="desc"> <h5> <b>Hora viaje: </b> </h4> </td>
+            <td class="desc"> <h5> <b>Hora viaje: </b> </h5> </td>
             <td class="desc"> <h4> <strong>{{ $pasaje->programacion->hora_salida }}</strong></h4></td>
         </tr>
     @else
@@ -731,11 +731,14 @@
             QR Solo control interno
         </td>
     </tr>
-    <tr>
-        <td class="text-center">
-            <barcode code="Text goes here" size="0.8" type="QR" error="M" class="barcode" />
-        </td>
-    </tr>
+
+     @if(!is_null($pasaje))
+        <tr>
+            <td class="text-center">
+                <barcode code="{{ $pasaje->pasajero->name }} | {{ $pasaje->numero_asiento }}" size="0.8" type="QR" error="M" class="barcode" />
+            </td>
+        </tr>
+    @endif
 </table>
 </body>
 </html>
