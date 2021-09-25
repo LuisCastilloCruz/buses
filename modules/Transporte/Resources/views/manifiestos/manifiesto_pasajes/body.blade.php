@@ -59,7 +59,7 @@
             <table class="bordered" style="width: 100%">
                 <tr>
                     <td style="width: 100%;text-align:center">
-                        <h1>RUC: {{ $company->number }}</h3>
+                        <h1>RUC: {{ $company->number }}</h1>
                     </td>
                 </tr>
                 <tr style="background-color: #0088cc;">
@@ -190,16 +190,32 @@
     @foreach ($pasajes  as $index => $pasaje)
         <?php $pasajero = $pasaje->pasajero; ?>
         <?php $document = $pasaje->document; ?>
-        <tr>
-            <td>{{$index+1}}</td>
-            <td>{{ $pasajero->name }}</td>
-            <td>{{ $pasaje->programacion->destino->nombre }}</td>
-            <td>{{ $pasajero->identity_document_type->description }}</td>
-            <td>{{ $pasajero->number  }}</td>
-            <td>{{ $pasaje->numero_asiento }}</td>
-            <td>{{ $document->series }} - {{ $document->number }}</td>
-            <td>{{  number_format($pasaje->precio,2,'.','')   }}</td>
-        </tr>
+        <?php $sale_note = $pasaje->saleNote; ?>
+        @if($document)
+            <tr>
+                <td>{{$index+1}}</td>
+                <td>{{ $pasajero->name }}</td>
+                <td>{{ $pasaje->programacion->destino->nombre }}</td>
+                <td>{{ $pasajero->identity_document_type->description }}</td>
+                <td>{{ $pasajero->number  }}</td>
+                <td>{{ $pasaje->numero_asiento }}</td>
+                <td>{{ $document->series }} - {{ $document->number }}</td>
+                <td>{{  number_format($pasaje->precio,2,'.','')   }}</td>
+            </tr>
+        @endif
+
+        @if($sale_note)
+            <tr>
+                <td>{{$index+1}}</td>
+                <td>{{ $pasajero->name }}</td>
+                <td>{{ $pasaje->programacion->destino->nombre }}</td>
+                <td>{{ $pasajero->identity_document_type->description }}</td>
+                <td>{{ $pasajero->number  }}</td>
+                <td>{{ $pasaje->numero_asiento }}</td>
+                <td>{{ $sale_note->series }} - {{ $sale_note->number }}</td>
+                <td>{{  number_format($pasaje->precio,2,'.','')   }}</td>
+            </tr>
+        @endif
 
     @endforeach
 </table>

@@ -135,6 +135,7 @@ class TransporteVehiculoController extends Controller
 
             $imageFront = $request->file('image_front');
             $imageBack = $request->file('image_back');
+            $anchoVehiculo = $request->input('ancho_vehiculo');
 
             if(!is_null($imageFront)){
                 $path = 'public\\images\\'.$vehiculo->image_front;
@@ -152,7 +153,7 @@ class TransporteVehiculoController extends Controller
                 if(Storage::exists($path)){
                     Storage::delete($path);
                 }
-               
+
                 $imageBack->store('public\\images');
                 $vehiculo->update([
                     'image_back' => $imageBack->hashName()
@@ -160,7 +161,13 @@ class TransporteVehiculoController extends Controller
 
 
             }
-          
+
+            if($anchoVehiculo){
+                $vehiculo->update([
+                    'ancho_vehiculo' => $anchoVehiculo
+                ]);
+            }
+
             // return $asientos;
             foreach($asientos as $asiento){
                 $asiento = (object) $asiento;
@@ -213,7 +220,7 @@ class TransporteVehiculoController extends Controller
             ], 500);
 
         }
-        
+
     }
 
     public function eliminarAsiento(TransporteAsiento $asiento){

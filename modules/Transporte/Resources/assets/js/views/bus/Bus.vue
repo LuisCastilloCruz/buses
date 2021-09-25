@@ -1,31 +1,33 @@
 <template>
-<div style="overflow-x:auto;overflow-y:hidden;padding:10px">
-    <div class="mt-2" :style="{position:'relative',width:'1073px',height:'210px'}">
-        
-        <div ref="bus" class="bus" >
-            <!-- <div class="point point-left" @mousedown="mouseDownResize($event,'point-left')"></div>
-            <div class="point point-top" @mousedown="mouseDownResize($event,'point-top')"></div>
-            <div class="point point-right" @mousedown="mouseDownResize($event,'point-right')"></div>
-            <div class="point point-bottom" @mousedown="mouseDownResize($event,'point-bottom')"></div> -->
-            
-            <img :src="imageBack || '/storage/bus/bus-back.png'" :style="{userSelect:'none'}">
-            <div style="flex:1">
-                <div ref="content" class="content-bus">
-                    <div class="element" v-for="(asiento,index) in asientos" :key="'el-'+index"
-                        :id="'seat-'+index"
-                        :style="{left:asiento.left,top:asiento.top,cursor: drag ? 'move' : 'pointer'}"
-                        v-on:dblclick="dbClick(asiento)"
-                        >
-                            <div v-if="remove" class="remove-element" @click="onDelete(asiento,index)">
-                                <el-tooltip class="item" effect="dark" content="Eliminar" placement="top-start">
-                                    <i class="fa fa-minus"></i>
-                                </el-tooltip>
-                                
-                            </div>
-                            <!-- Asiento normal -->
-                            <template v-if="asiento.type == 'ss'">
-                                <svg  @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
-                                    
+<div class="row">
+    <div class="col-md-12">
+        <div style="overflow-x:auto;overflow-y:hidden;padding:10px">
+            <div class="mt-2" :style="{position:'relative',width:anchoVehiculo+'px',height:'210px',margin:' 0 auto'}">
+
+                <div ref="bus" class="bus" >
+                    <!-- <div class="point point-left" @mousedown="mouseDownResize($event,'point-left')"></div>
+                    <div class="point point-top" @mousedown="mouseDownResize($event,'point-top')"></div>
+                    <div class="point point-right" @mousedown="mouseDownResize($event,'point-right')"></div>
+                    <div class="point point-bottom" @mousedown="mouseDownResize($event,'point-bottom')"></div> -->
+
+                    <img :src="imageBack || '/storage/bus/bus-back.png'" :style="{userSelect:'none'}">
+                    <div style="flex:1">
+                        <div ref="content" class="content-bus">
+                            <div class="element" v-for="(asiento,index) in asientos" :key="'el-'+index"
+                                 :id="'seat-'+index"
+                                 :style="{left:asiento.left,top:asiento.top,cursor: drag ? 'move' : 'pointer'}"
+                                 v-on:dblclick="dbClick(asiento)"
+                            >
+                                <div v-if="remove" class="remove-element" @click="onDelete(asiento,index)">
+                                    <el-tooltip class="item" effect="dark" content="Eliminar" placement="top-start">
+                                        <i class="fa fa-minus"></i>
+                                    </el-tooltip>
+
+                                </div>
+                                <!-- Asiento normal -->
+                                <template v-if="asiento.type == 'ss'">
+                                    <svg  @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
+
                                     <g id="Capa_x0020_1">
                                         <metadata id="CorelCorpID_0Corel-Layer"></metadata>
                                         <path class="fil0 str0" :style="stateAsiento(asiento)"  d="M12 34c1,0 1,0 2,0l-2 0z"></path>
@@ -39,12 +41,12 @@
                                         <path class="fil4 str1" :style="stateAsiento(asiento)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
                                     </g>
                                 </svg>
-                                <span @mousedown="childOnMouseDown($event,asiento,index)">{{ asiento.numero_asiento }}</span>
-                            </template>
+                                    <span @mousedown="childOnMouseDown($event,asiento,index)">{{ asiento.numero_asiento }}</span>
+                                </template>
 
-                            <!-- Baño -->
-                            <template v-else-if="asiento.type == 'sb'">
-                                <svg @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba69a4" gc-seat-static="1" gc-seat-element-id="7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="35px" viewBox="0 0 80 80" style="z-index: 100;enable-background:new 0 0 40 40;" xml:space="preserve">
+                                <!-- Baño -->
+                                <template v-else-if="asiento.type == 'sb'">
+                                    <svg @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba69a4" gc-seat-static="1" gc-seat-element-id="7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="35px" viewBox="0 0 80 80" style="z-index: 100;enable-background:new 0 0 40 40;" xml:space="preserve">
                                     <g>
                                         <path style="fill:#010002;" d="M17.256,50.212v19.387c0,0.762-0.251,1.394-0.723,1.85c-0.471,0.476-1.087,0.703-1.843,0.703
                                             c-0.764,0-1.416-0.228-1.921-0.703c-0.541-0.456-0.79-1.088-0.79-1.85V50.212H4.715l7.558-25.522h-1.3
@@ -72,24 +74,24 @@
                                             c0,1.6,0.507,2.925,1.584,3.993C61.159,15.053,62.5,15.553,64.089,15.553z M44.822,0h-5.486v79.536h5.486V0z"></path>
                                     </g>
                                 </svg>
-                            </template>
-                            <!-- Televisión -->
-                            <template v-else-if="asiento.type == 'sv'">
-                                <svg @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba6894" gc-seat-static="1" gc-seat-element-id="3" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="60px" height="38px" version="1.1" style="z-index: 100;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 60 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
+                                </template>
+                                <!-- Televisión -->
+                                <template v-else-if="asiento.type == 'sv'">
+                                    <svg @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba6894" gc-seat-static="1" gc-seat-element-id="3" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="60px" height="38px" version="1.1" style="z-index: 100;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 60 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
                                     <metadata id="CorelCorpID_0Corel-Layer3"></metadata>
-                                    <line class="fil03 str03" x1="41" y1="3" x2="32" y2="10"></line>
-                                    <line class="fil03 str03" x1="17" y1="3" x2="27" y2="10"></line>
-                                    <path class="fil13 str13" d="M44 12l-1 0c-2,-2 -10,-2 -13,-2 -7,0 -12,1 -14,2 -1,0 -2,5 -2,11 0,5 1,10 2,11 1,1 7,1 14,1 7,0 13,0 13,-1 2,-1 3,-6 3,-11 0,-6 -1,-10 -2,-11z"></path>
-                                    <path class="fil23 str13" d="M40 15l0 0c-2,-1 -8,-1 -10,-1 -5,0 -9,0 -10,1 -1,0 -1,3 -1,8 0,4 0,7 1,8 0,0 5,1 10,1 5,0 9,0 10,-1 1,0 2,-4 2,-8 0,-4 -1,-8 -2,-8z"></path>
-                                    <line class="fil03 str23" x1="23" y1="19" x2="30" y2="19"></line>
-                                    <line class="fil03 str23" x1="27" y1="27" x2="27" y2="20"></line>
-                                    <line class="fil03 str23" x1="34" y1="27" x2="32" y2="19"></line>
-                                    <line class="fil03 str23" x1="34" y1="27" x2="38" y2="19"></line>
+                                        <line class="fil03 str03" x1="41" y1="3" x2="32" y2="10"></line>
+                                        <line class="fil03 str03" x1="17" y1="3" x2="27" y2="10"></line>
+                                        <path class="fil13 str13" d="M44 12l-1 0c-2,-2 -10,-2 -13,-2 -7,0 -12,1 -14,2 -1,0 -2,5 -2,11 0,5 1,10 2,11 1,1 7,1 14,1 7,0 13,0 13,-1 2,-1 3,-6 3,-11 0,-6 -1,-10 -2,-11z"></path>
+                                        <path class="fil23 str13" d="M40 15l0 0c-2,-1 -8,-1 -10,-1 -5,0 -9,0 -10,1 -1,0 -1,3 -1,8 0,4 0,7 1,8 0,0 5,1 10,1 5,0 9,0 10,-1 1,0 2,-4 2,-8 0,-4 -1,-8 -2,-8z"></path>
+                                        <line class="fil03 str23" x1="23" y1="19" x2="30" y2="19"></line>
+                                        <line class="fil03 str23" x1="27" y1="27" x2="27" y2="20"></line>
+                                        <line class="fil03 str23" x1="34" y1="27" x2="32" y2="19"></line>
+                                        <line class="fil03 str23" x1="34" y1="27" x2="38" y2="19"></line>
                                 </svg>
-                            </template>
-                            <!-- Escaleras -->
-                            <template v-else-if="asiento.type == 'ses'">
-                                <svg :style="{position:'relative',left:'11px',top:'10px'}" @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba6920" gc-seat-static="1" gc-seat-element-id="4" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="38px" height="38px" version="1.1" style="z-index: 100;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 38 38" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                </template>
+                                <!-- Escaleras -->
+                                <template v-else-if="asiento.type == 'ses'">
+                                    <svg :style="{position:'relative',left:'11px',top:'10px'}" @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba6920" gc-seat-static="1" gc-seat-element-id="4" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="38px" height="38px" version="1.1" style="z-index: 100;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 38 38" xmlns:xlink="http://www.w3.org/1999/xlink">
                                     <g id="Capa_x0020_1">
                                         <metadata id="CorelCorpID_0Corel-Layer"></metadata>
                                         <rect class="fil05" x="3" y="6" width="4.99865" height="27.0028"></rect>
@@ -98,13 +100,13 @@
                                         <rect class="fil05" x="30" y="6" width="4.99865" height="27.0028"></rect>
                                     </g>
                                 </svg>
-                                <svg @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba694c" gc-seat-static="1" gc-seat-element-id="6" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="38px" height="38px" version="1.1" style="z-index: 100;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 38 38" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <svg @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba694c" gc-seat-static="1" gc-seat-element-id="6" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="38px" height="38px" version="1.1" style="z-index: 100;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 38 38" xmlns:xlink="http://www.w3.org/1999/xlink">
                                     <g id="Capa_x0020_1">
                                         <metadata id="CorelCorpID_0Corel-Layer"></metadata>
                                         <rect class="fil07" transform="matrix(1.56185 -1.56185 0.577983 0.577983 5.99776 9.40493)" width="2.50065" height="36.5034"></rect>
                                     </g>
                                 </svg>
-                                <svg :style="{position:'relative',left:'-31px',top:'-30px'}" @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba6920" gc-seat-static="1" gc-seat-element-id="4" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="38px" height="38px" version="1.1" style="z-index: 100;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 38 38" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <svg :style="{position:'relative',left:'-31px',top:'-30px'}" @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba6920" gc-seat-static="1" gc-seat-element-id="4" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="38px" height="38px" version="1.1" style="z-index: 100;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 38 38" xmlns:xlink="http://www.w3.org/1999/xlink">
                                     <g id="Capa_x0020_1">
                                         <metadata id="CorelCorpID_0Corel-Layer"></metadata>
                                         <rect class="fil05" x="3" y="6" width="4.99865" height="27.0028"></rect>
@@ -113,21 +115,22 @@
                                         <rect class="fil05" x="30" y="6" width="4.99865" height="27.0028"></rect>
                                     </g>
                                 </svg>
-                            </template>
+                                </template>
 
+                            </div>
                         </div>
+
+                    </div>
+                    <img :src="imageFront || '/storage/bus/bus-front.png'" height="101%" alt="">
+
                 </div>
-                
+
+
+
             </div>
-            <img :src="imageFront || '/storage/bus/bus-front.png'" height="101%" alt="">
-
         </div>
-        
-
-        
     </div>
 </div>
-    
 </template>
 <script>
 import Moveable from './Moveable.vue';
@@ -154,12 +157,14 @@ export default {
         imageFront:{
             type:String,
             default:null
+        },
+        anchoVehiculo:{
+            type:Number,
+            default:null
         }
     },
     created(){
         this.asientos = this.seats;
-
-        console.log(this.imageBack);
     },
     watch:{
         seats(newVal){
@@ -169,9 +174,9 @@ export default {
     data(){
         return ({
             idElement:+ new Date(),
-            initX:0, 
-            initY:0, 
-            firstX:0, 
+            initX:0,
+            initY:0,
+            firstX:0,
             firstY:0,
             asientos:[],
             selectAsiento:null,
@@ -209,7 +214,7 @@ export default {
                     fill:'#1b99a5',
                     animation:'none'
                 }
-                
+
             }else if(asiento.estado_asiento_id == 3){ //Reservado
 
                 if(config.isSeat){
@@ -224,8 +229,8 @@ export default {
                     animation:'none'
                 }
 
-                
-                
+
+
             }else if(asiento.estado_asiento_id == 4){ //Seleccionado
 
                 if(config.isSeat){
@@ -239,7 +244,7 @@ export default {
                     fill:'#003c71',
                     animation:'none'
                 }
-                
+
             }
         },
         childOnMouseDown(evt,asiento,index){
@@ -290,12 +295,12 @@ export default {
            if( x < 0 || y < 0
             || ((x + this.target.offsetWidth) > busWidth)
             || ((y + this.target.offsetHeight) > busHeight )
-           
-           ) return; 
+
+           ) return;
 
             //seteo las nuevas posiciones
-            this.target.style.left = x + 'px'; 
-            this.target.style.top = y + 'px'; 
+            this.target.style.left = x + 'px';
+            this.target.style.top = y + 'px';
         },
 
         onDelete(asiento,index){
@@ -338,7 +343,7 @@ export default {
             //cálculo la nueva posición de mi elemento en el eje y
             let y = this.fy - evt.pageY;
 
-            
+
 
             if(this.point == 'point-left'){
                 this.$refs.bus.style.width = `${sizeWidth + x}px`;
@@ -359,11 +364,11 @@ export default {
             this.fx = evt.pageX;
             this.fy = evt.pageY;
 
-            
-        }     
+
+        }
 
     }
-    
+
 }
 </script>
 <style >

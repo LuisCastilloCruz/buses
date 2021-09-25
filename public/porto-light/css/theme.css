@@ -20303,10 +20303,12 @@ html.dark .search-content .search-results-list a:hover {
 }
 
 /* dark */
-html.dark .body-sign .card-sign .card-body {
+html.dark .body-sign .card-sign .card-body, html.dark .tab-content,html.dark .box-card {
     background-color: #2e353e;
 }
-
+html.dark p, html.dark address,html.dark .box-card{
+    color: #e8e5e5;
+}
 html.dark .body-sign .line-thru:before {
     background-color: #2e353e;
 }

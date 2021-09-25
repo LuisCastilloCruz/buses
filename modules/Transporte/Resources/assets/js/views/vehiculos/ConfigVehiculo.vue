@@ -12,26 +12,31 @@
                 <el-button type="info" @click="addImageFront">Agregar imagen delantera</el-button>
 
             </div>
-            <div class="col-12 d-flex justify-content-center">
-                <div class="col-3">
-                    <div class="form-group">
-                        <label for="">Piso</label>
-                        <el-select v-model="piso" placeholder="Piso">
-                            <el-option v-for="floor in pisos" :label="floor" :key="floor" :value="floor" >
-                            </el-option>
-                        </el-select>
+            <div class="col-12 d-flex justify-content-center text-center mt-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Piso</label>
+                            <el-select v-model="piso" placeholder="Piso">
+                                <el-option v-for="floor in pisos" :label="floor" :key="floor" :value="floor" >
+                                </el-option>
+                            </el-select>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="row text-center justify-content-center">
-                        <label for="">Asiento</label>
-                        <el-input type="number" v-model="asiento.numero_asiento"></el-input>
-                        <el-button class="mt-2" type="info" @click="agregarItem('ss')">+</el-button>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="" class="d-block">Asiento</label>
+                            <el-input type="number" v-model="asiento.numero_asiento" style="width: 65%"></el-input>
+                            <el-button type="info" @click="agregarItem('ss')">+</el-button>
+                        </div>
                     </div>
-                    <!-- <div class="form-group row">
-
-
-                    </div> -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="" class="d-block">Tamaño del vehículo</label>
+                            <el-button type="info" @click="pequeno" style="width: 45%">Disminuir</el-button>
+                            <el-button type="info" @click="grande" style="width: 45%">Aumentar</el-button>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -42,7 +47,8 @@
         :remove="remove"
         @onDelete="eliminar"
         :image-back="imageBack"
-        :image-front="imageFront" />
+        :image-front="imageFront"
+        :ancho-vehiculo="anchoVehiculo"/>
 
         <bus v-if="piso == 2"
         :seats.sync="asientosPisoDos"
@@ -50,7 +56,8 @@
         :remove="remove"
         @onDelete="eliminar"
         :image-back="imageBack"
-        :image-front="imageFront" />
+        :image-front="imageFront"
+        :ancho-vehiculo="anchoVehiculo"/>
 
         <div class="row mt-2">
             <div class="col-12 d-flex justify-content-center">
@@ -86,6 +93,7 @@ export default {
         this.initAsiento();
         this.imageBack = this.vehiculo.img_back;
         this.imageFront = this.vehiculo.img_front;
+        this.anchoVehiculo = this.vehiculo.ancho_vehiculo;
     },
     data(){
         return({
@@ -100,7 +108,8 @@ export default {
             imageBack:null,
             fileImageBack:null,
             imageFront:null,
-            fileImageFront:null
+            fileImageFront:null,
+            anchoVehiculo:null
 
         });
     },
@@ -149,6 +158,8 @@ export default {
             form.append('asientos',JSON.stringify(this.asientos));
             form.append('image_front',this.fileImageFront);
             form.append('image_back',this.fileImageBack);
+            form.append('ancho_vehiculo',this.anchoVehiculo);
+            console.log(this.anchoVehiculo);
             this.$http.post(`/transportes/vehiculos/${this.vehiculo.id}/guardar-asientos`,form).then( response => {
                 this.transporte = response.data.vehiculo;
                 this.asientos = response.data.vehiculo.seats;
@@ -264,9 +275,9 @@ export default {
                 inputElement.addEventListener("change", evt =>{
                     window.onfocus = null;
                     console.log(evt);
-                   
+
                     let file = evt.target.files[0];
-                   
+
                     resolve(file);
                 });
 
@@ -275,6 +286,15 @@ export default {
             });
 
 
+        },
+        pequeno(){
+            this.anchoVehiculo -=10;
+
+            console.log(this.anchoVehiculo);
+        },
+        grande(){
+            this.anchoVehiculo +=10;
+            console.log(this.anchoVehiculo);
         }
 
     }

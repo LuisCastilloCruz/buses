@@ -538,27 +538,17 @@ class Facturalo
         $stylesheet = file_get_contents($path_css);
 
 
-        // if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
-            // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
-            if(config('tenant.pdf_template_footer')) {
-                $html_footer = '';
-                if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
-                    $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
-                    $html_footer_legend = "";
-                }
-                // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
-                // se quiere visuzalizar ahora la legenda amazona en todos los formatos
+        if(config('tenant.pdf_template_footer')) {
+            if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+                $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
                 $html_footer_legend = '';
                 if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
                     $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
                 }
 
-                //$pdf->SetHTMLFooter($html_footer.$html_footer_legend);  genera esacio en blanco
-
+                $pdf->SetHTMLFooter($html_footer.$html_footer_legend); // genera esacio en blanco
             }
-//            $html_footer = $template->pdfFooter();
-//            $pdf->SetHTMLFooter($html_footer);
-        // }
+        }
 
         if ($base_pdf_template === 'brand') {
 

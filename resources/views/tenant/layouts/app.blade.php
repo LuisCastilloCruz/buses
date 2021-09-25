@@ -64,7 +64,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('porto-light/master/style-switcher/style-switcher.css')}}">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=4') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=6') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=4') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=4') }}" />
 

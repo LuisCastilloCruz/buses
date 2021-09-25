@@ -556,11 +556,7 @@ export default {
             this.changeDocumentType();
             this.document.document_type_id = '03';
             this.filterSeries();
-
-            
-
-           
-            // this.filterCustomers();
+            this.filterCustomers();
         },
 
         async saveDocument(){
@@ -998,7 +994,6 @@ export default {
 
                 this.is_document_type_invoice = false;
             }
-
             this.cleanCustomer();
             this.filterCustomers();
         },

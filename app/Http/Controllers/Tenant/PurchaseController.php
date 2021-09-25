@@ -75,6 +75,7 @@ class PurchaseController extends Controller
     {
         return [
             'number' => 'Número',
+            'date_periodo' => 'Periodo',
             'date_of_issue' => 'Fecha de emisión',
             'date_of_due' => 'Fecha de vencimiento',
             'date_of_payment' => 'Fecha de pago',
