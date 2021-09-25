@@ -227,7 +227,6 @@ export default {
         },
         async addImageFront(){
             this.fileImageFront = await this.openFileDialog();
-            console.log(this.fileImageFront);
             this.imageFront = URL.createObjectURL(this.fileImageFront);
         },
         initAsiento(){

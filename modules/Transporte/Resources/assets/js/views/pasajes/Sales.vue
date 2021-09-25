@@ -40,7 +40,7 @@
                                 >
                                     <template v-for="destino in destinos">
                                        <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
-                                         <el-option  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
+                                         <el-option v-if="terminalId != destino.id"  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
                                         </el-option>
                                     </template>
 
@@ -141,6 +141,12 @@
                             </div>
                         </div>
 
+                         <div v-if="destino && tipoVenta == 1" class="col-md-4">
+                            <div class="from-group" :style="{marginTop:'1.85rem'}">
+                                <el-button type="primary" @click="openModal = true" >Realizar venta</el-button>
+                            </div>
+                        </div>
+
 
                         <div class="col-md-4">
                             <template v-if="asientos.length > 0 && tipoVenta == 2" >
@@ -230,6 +236,8 @@
 
 
                     <venta-asiento-libre
+                    @onCancel=" onCancel  "
+                    :visible.sync="openModal"
                     :asiento="asiento"
                     :tipo-venta="tipoVenta"
                     :transporte-pasaje="pasajero"
@@ -373,6 +381,9 @@ export default {
         terminalId(newVal){
             this.origen = this.terminales.find( ter => ter.id == this.terminalId );
         },
+        // tipoVenta(){
+        //     this.asiento = null;
+        // }
         // destinoId(newVal){
         //     let exist = this.destinos.find( destino => destino.destino.id == newVal );
         //     if(exist) this.destino = exist.destino;
@@ -394,6 +405,7 @@ export default {
     },
     data(){
         return ({
+            openModal:false,
             load:false,
             tipoVenta:2,
             visibleAsientoLibre:false,
@@ -582,10 +594,10 @@ export default {
                 return seat;
             } );
             asiento.estado_asiento_id = 4;
+            this.openModal = true;
             this.asiento = asiento;
 
-            let element = document.getElementById('precio-boleto');
-            element.focus();
+            
         },
 
         searchCiudad(value= ''){
@@ -662,7 +674,12 @@ export default {
             this.loadingDestinos = false;
             this.destinos = data.destinos;
         },
-
+        onCancel(){
+            if(this.asiento){
+                this.asiento.estado_asiento_id = 1;
+                this.asiento = null;
+            } 
+        }
 
 
 
