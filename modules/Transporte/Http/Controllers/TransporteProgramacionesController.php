@@ -29,13 +29,24 @@ class TransporteProgramacionesController extends Controller
             return redirect()->back();
         }
 
-        $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
-        ->where('terminal_origen_id',$user_terminal->terminal_id)
-        ->get()
-        ->map(function($programacion){
-            $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
-            return $programacion;
-        });
+        if(auth()->user()->type=='admin'){
+
+            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
+                ->get()
+                ->map(function($programacion){
+                    $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
+                    return $programacion;
+                });
+        }
+        else{
+            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
+                ->where('terminal_origen_id',$user_terminal->terminal_id)
+                ->get()
+                ->map(function($programacion){
+                    $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
+                    return $programacion;
+                });
+        }
         $vehiculos = TransporteVehiculo::all();
 
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
@@ -72,7 +83,7 @@ class TransporteProgramacionesController extends Controller
             'vehiculo',
             'rutas'
         ]);
-        
+
 
         return response()->json([
             'success' => true,
