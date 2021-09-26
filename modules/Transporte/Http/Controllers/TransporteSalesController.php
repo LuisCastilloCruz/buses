@@ -197,7 +197,11 @@ class TransporteSalesController extends Controller
             $rutas->where('transporte_rutas.terminal_id',$programacion->terminal_destino_id);
         })
         ->where('vehiculo_id',$programacion->vehiculo_id)
+        ->where('terminal_origen_id','!=',$programacion->terminal_origen_id)
+        // ->where('terminal_destino_id','!=',$programacion->terminal_destino_id)
         ->get();
+
+
 
 
         //válido si tengo alguna, si no retorno la misma lista si alterar los valores que ya tiene
@@ -215,6 +219,7 @@ class TransporteSalesController extends Controller
                 /** Busco si hay algun asiento ocupado con esa programación y esa fecha asi como tambien el asiento */
                 $isState = TransportePasaje::with('pasajero','asiento','document:id,document_type_id')
                 ->whereDate('fecha_salida',$fecha)
+                // ->whereTime('hora_salida',$programacion->hora_salida)
                 ->where('asiento_id',$seat->id)
                 ->where('programacion_id',$ruta->id)
                 ->where('estado_asiento_id','!=',4) //diferente de cancelado
