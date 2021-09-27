@@ -8266,8 +8266,8 @@ html:not(.sidebar-left-collapsed).boxed
 
 /* Dark - Cards */
 html.dark .card-header {
-    background: #282d36;
-    border-bottom-color: #1d2127;
+    background: #283046;
+    border-bottom-color: #dee2e6;
 }
 
 html.dark .card-actions a:hover {
@@ -8279,8 +8279,8 @@ html.dark .card-body {
 }
 
 html.dark .card-footer {
-    background: #242830;
-    border-top-color: #191c21;
+    background: #283046;
+    border-top-color: #dee2e6;
 }
 
 html .card-primary .card-header {
@@ -9360,7 +9360,7 @@ html.dark .CodeMirror pre {
 
 /* Colorpicker */
 html.dark .colorpicker {
-    background-color: #282d36;
+    background-color: #283046;
 }
 
 html.dark .colorpicker:before {
@@ -20304,11 +20304,15 @@ html.dark .search-content .search-results-list a:hover {
 
 /* dark */
 html.dark .body-sign .card-sign .card-body, html.dark .tab-content,html.dark .box-card {
-    background-color: #2e353e;
+    background-color: #283046;
 }
-html.dark p, html.dark address,html.dark .box-card{
+html.dark address{
     color: #e8e5e5;
 }
+html.dark p.claro{
+    color: #fff1f3;
+}
+
 html.dark .body-sign .line-thru:before {
     background-color: #2e353e;
 }

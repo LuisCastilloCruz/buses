@@ -410,7 +410,7 @@
                         </div>
                     </div>
                     <div class="card-footer text-right">
-                        <button style="min-width: 180px" class="btn btn-default" @click.prevent="close()">Cancelar</button>
+                        <el-button style="min-width: 180px" class="btn btn-danger" @click.prevent="close()">Cancelar</el-button>
                         <el-button style="min-width: 180px" class="submit btn btn-primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">{{ btnText }}</el-button>
                     </div>
                 </div>
