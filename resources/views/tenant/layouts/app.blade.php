@@ -29,6 +29,7 @@
         || $path[0] === 'purchase-quotations' && $path[1] === 'create'
         || $path[0] === 'purchase-orders' && $path[1] === 'create'
         || $path[0] === 'dispatches' && $path[1] === 'create'
+        || $path[0] === 'transportes' && $path[1] === 'sales'
         || $path[0] === 'purchases' && $path[1] === 'create') ? 'newinvoice' : ''}}
         ">
 <head>

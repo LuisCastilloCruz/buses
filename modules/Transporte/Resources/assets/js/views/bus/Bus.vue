@@ -1,10 +1,10 @@
 <template>
 <div class="row">
-    <div class="col-md-12">
-        <div style="overflow-x:auto;overflow-y:hidden;padding:10px">
-            <div class="mt-2" :style="{position:'relative',width:anchoVehiculo+'px',height:'210px',margin:' 0 auto'}">
+    <div class="col-md-12 pt-2">
+        <div style="overflow-x:auto;overflow-y:hidden;">
+            <div class="mt-2" :style="{position:'relative',width:anchoVehiculo+'px',height:'210px',margin:' 0 auto',zoom:'96%'}">
 
-                <div ref="bus" class="bus" >
+                <div ref="bus" class="bus">
                     <!-- <div class="point point-left" @mousedown="mouseDownResize($event,'point-left')"></div>
                     <div class="point point-top" @mousedown="mouseDownResize($event,'point-top')"></div>
                     <div class="point point-right" @mousedown="mouseDownResize($event,'point-right')"></div>

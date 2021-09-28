@@ -1,46 +1,60 @@
 <template>
+    <div>
+        <div v-loading="load">
+        <div class="row pt-3">
+            <div class="col-md-12 text-center card-header">
+                <span class="mr-2"><a class="btn btn-primary btn-sm" href="/transportes/pasajes"> <i class="fa fa-arrow-left"></i>  </a></span>
+                <span class="claro">Venta de boletos terminal  <el-tag >{{ terminal.nombre }}</el-tag></span>
+            </div>
 
-    <div v-loading="load">
+            <div class="col-xl-3 col-md-3 col-12 card card-transparent card-body">
 
-        <div class="row">
-            <div class="col-12">
-                <el-card class="box-card">
-                    <div slot="header" class="row justify-content-between">
-                        <!-- <el-button  type="primary" @click="$emit('update:sale',false)"><i class="fa fa-arrow-left"></i></el-button> -->
-                        <span class="mr-2"><a class="btn btn-primary btn-sm" href="/transportes/pasajes"> <i class="fa fa-arrow-left"></i>  </a></span>
-                        <span>Venta de boletos terminal  <el-tag >{{ terminal.nombre }}</el-tag></span>
-                        <el-button type="primary" @click="nuevaVenta">Nuevo</el-button>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4">
+                <div class="row card-body d-flex align-items-start no-gutters">
+                        <div class="col-md-12">
                             <div class="form-group">
-                               <label for="">Origen</label>
+                                <label for="" class="control-label">Tipo de venta</label>
+                                <el-select v-model="tipoVenta"
+                                           id="tipo-venta"
+                                           popper-class="el-select-customers"
+                                           placeholder="Tipo de venta"
+                                           :disabled="pasajero ? true : false"
+                                >
+                                    <el-option :value="1" label="Venta Libre">
+                                    </el-option>
+                                    <el-option  :value="2" label="Venta Normal">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="" class="control-label">Origen</label>
                                 <el-select v-model="terminalId" filterable remote disabled  popper-class="el-select-customers"
-                                    placeholder="Buscar origen"
-                                    :remote-method="searchTerminales"
-                                    :loading="loadingTerminales"
-                                    @change="searchDestinos"
-                                    >
+                                           placeholder="Buscar origen"
+                                           :remote-method="searchTerminales"
+                                           :loading="loadingTerminales"
+                                           @change="searchDestinos"
+                                >
                                     <el-option v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :label="terminal.nombre">
                                     </el-option>
                                 </el-select>
 
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                             <div class="form-group">
-                                <label for="">Destino</label>
+                                <label for="" class="control-label">Destino</label>
                                 <el-select v-model="destino"
-                                value-key="id"
-                                :loading="loadingDestinos"
-                                popper-class="el-select-customers"
-                                placeholder="Destino"
-                                @change="getProgramaciones"
+                                           value-key="id"
+                                           :loading="loadingDestinos"
+                                           popper-class="el-select-customers"
+                                           placeholder="Destino"
+                                           @change="getProgramaciones"
                                 >
                                     <template v-for="destino in destinos">
-                                       <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
-                                         <el-option v-if="terminalId != destino.id"  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
+                                        <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
+                                        <el-option v-if="terminalId != destino.id"  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
                                         </el-option>
                                     </template>
 
@@ -48,44 +62,23 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4 row align-items-end">
-                            <div class="form-group">
-                                <label for="">Tipo de venta</label>
-                                <el-select v-model="tipoVenta"
-                                id="tipo-venta"
-                                popper-class="el-select-customers"
-                                placeholder="Tipo de venta"
-                                :disabled="pasajero ? true : false"
-                                >
-                                    <el-option :value="1" label="Venta Libre">
-                                    </el-option>
-                                    <el-option  :value="2" label="Venta Normal">
-                                    </el-option>
-                                </el-select>
-
-
-                            </div>
-                        </div>
-
-
-
-                        <div v-if="destino" class="col-3">
+                        <div v-if="destino" class="col-md-12">
                             <div  class="form-group">
-                                <label for="">Fecha salida</label>
+                                <label for="" class="control-label">Fecha salida</label>
                                 <el-date-picker
-                                v-model="fecha_salida"
-                                type="date"
-                                value-format="yyyy-MM-dd"
-                                placeholder="Fecha salida"
-                                @change="getProgramaciones">
+                                    v-model="fecha_salida"
+                                    type="date"
+                                    value-format="yyyy-MM-dd"
+                                    placeholder="Fecha salida"
+                                    @change="getProgramaciones">
                                 </el-date-picker>
                             </div>
                         </div>
 
 
-                        <div v-loading="loadingProgramaciones" v-if="destino && tipoVenta == 2" class="col-5">
+                        <div v-loading="loadingProgramaciones" v-if="destino && tipoVenta == 2" class="col-md-12">
                             <div v-if="programaciones.length > 0" class="row mt-2">
-                                <div class="col-12">
+                                <div class="col-md-12 px-0">
                                     <table class="table table-striped table-border">
                                         <thead>
                                         <tr>
@@ -99,7 +92,7 @@
                                         <tr v-for="programacion in programaciones" :key="programacion.id">
                                             <td>{{ programacion.destino.nombre }}</td>
                                             <td>{{ programacion.transporte.placa }}</td>
-                                            <td>{{ programacion.hora_salida }}</td>
+                                            <td>{{ programacion.hora_salida.substring(0,5) }}</td>
                                             <td>
                                                 <template v-if="!selectProgramacion">
                                                     <el-button type="success" size="mini" @click="seleccionar(programacion)">
@@ -136,131 +129,128 @@
 
                         <div v-if="destino && tipoVenta == 1" class="col-md-4">
                             <div class="from-group">
-                                <label for="">Hora salida</label>
+                                <label for="" class="control-label">Hora salida</label>
                                 <el-input type="time" v-model="horaSalida" id="hora-salida"></el-input>
                             </div>
                         </div>
 
-                         <div v-if="destino && tipoVenta == 1" class="col-md-4">
+                        <div v-if="destino && tipoVenta == 1" class="col-md-4">
                             <div class="from-group" :style="{marginTop:'1.85rem'}">
                                 <el-button type="primary" @click="openModal = true" >Realizar venta</el-button>
                             </div>
                         </div>
+                    </div>
 
-
-                        <div class="col-md-4">
-                            <template v-if="asientos.length > 0 && tipoVenta == 2" >
-                            <div class="row justify-content-center">
-                                <div class="col-3">
-                                    <div v-if="vehiculo" class="row justify-content-center">
-                                        <div class="form-group">
-                                            <label for="" class="pl-3 text-right pr-2" style="width:40%;float: left">Piso</label>
-                                            <div style="width: 60%;float: left">
-                                                <el-select v-model="piso" placeholder="Piso" :disabled="vehiculo.pisos == 1">
-                                                    <el-option v-for="floor in vehiculo.pisos" :label="floor" :key="floor" :value="floor" >
-                                                    </el-option>
-                                                </el-select>
-                                            </div>
+            </div>
+            <div class="col-xl-9 col-md-9 col-12 pl-1 pr-0">
+                <div class="row card-body no-gutters align-items-start px-0">
+                    <template v-if="asientos.length > 0 && tipoVenta == 2" >
+                        <div class="row justify-content-center" style="width: 100%">
+                            <div class="col-md-2">
+                                <div v-if="vehiculo" class="row justify-content-center">
+                                    <div class="form-group">
+                                        <label for="" class="pl-3 text-right pr-2 control-label" style="width:40%;float: left">Piso</label>
+                                        <div style="width: 60%;float: left">
+                                            <el-select v-model="piso" placeholder="Piso" :disabled="vehiculo.pisos == 1">
+                                                <el-option v-for="floor in vehiculo.pisos" :label="floor" :key="floor" :value="floor" >
+                                                </el-option>
+                                            </el-select>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <label for="">Disponible</label>
-                                        <svg id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
-                                            <g id="Capa_x0020_1">
-                                                <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-                                                <path class="fil0 str0" :style="stateAsiento(1)"  d="M12 34c1,0 1,0 2,0l-2 0z"></path>
-                                                <path class="fil1 str0" :style="stateAsiento(1)" d="M12 4c-2,0 -3,0 -3,0 -5,2 -6,7 -6,15 0,8 2,14 7,15 0,0 1,0 2,0 1,-1 1,-4 0,-6 2,-9 2,-9 0,-18 1,-1 1,-4 0,-6z"></path>
-                                                <path class="fil0 str0" :style="stateAsiento(1)" d="M14 4c-1,0 -2,0 -2,0l2 0z"></path>
-                                                <path class="fil0 str0" :style="stateAsiento(1)" d="M49 19c0,-8 -1,-14 -3,-15 -3,-1 -10,0 -19,0 -4,0 -9,0 -13,0 1,1 1,4 0,6 2,9 2,10 0,18 1,2 1,5 0,6 4,0 8,0 13,0 8,0 17,1 19,0 2,-1 3,-7 3,-15z"></path>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="" class="control-label">Disponible</label>
+                                    <svg id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
+                                <g id="Capa_x0020_1">
+                                    <metadata id="CorelCorpID_0Corel-Layer"></metadata>
+                                    <path class="fil0 str0" :style="stateAsiento(1)"  d="M12 34c1,0 1,0 2,0l-2 0z"></path>
+                                    <path class="fil1 str0" :style="stateAsiento(1)" d="M12 4c-2,0 -3,0 -3,0 -5,2 -6,7 -6,15 0,8 2,14 7,15 0,0 1,0 2,0 1,-1 1,-4 0,-6 2,-9 2,-9 0,-18 1,-1 1,-4 0,-6z"></path>
+                                    <path class="fil0 str0" :style="stateAsiento(1)" d="M14 4c-1,0 -2,0 -2,0l2 0z"></path>
+                                    <path class="fil0 str0" :style="stateAsiento(1)" d="M49 19c0,-8 -1,-14 -3,-15 -3,-1 -10,0 -19,0 -4,0 -9,0 -13,0 1,1 1,4 0,6 2,9 2,10 0,18 1,2 1,5 0,6 4,0 8,0 13,0 8,0 17,1 19,0 2,-1 3,-7 3,-15z"></path>
 
-                                                <path class="fil2 str1" :style="stateAsiento(1,{isSeat:true})" d="M48 29c-3,0 -6,0 -10,0 -1,0 -2,0 -3,0 -12,0 -22,-1 -24,-1 -3,-1 -1,-4 -1,-9 0,-4 -2,-8 1,-9 4,-1 19,-1 24,-1 1,0 2,0 3,0 4,0 7,0 10,0 2,2 2,18 0,20z"></path>
-                                                <path class="fil3 str2" :style="stateAsiento(1,{isBelt:true})" d="M18 4c1,2 1,4 0,6 2,10 2,9 0,18 1,3 1,3 0,6l4 0c1,-1 1,-4 0,-5 2,-9 2,-11 0,-19 1,-2 1,-5 0,-6l-4 0z"></path>
-                                                <path class="fil4 str1" :style="stateAsiento(1)" d="M42 34l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
-                                                <path class="fil4 str1" :style="stateAsiento(1)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
-                                            </g>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <label for="">Ocupado</label>
-                                        <svg id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
-                                            <g id="Capa_x0020_1">
-                                                <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-                                                <path class="fil0 str0" :style="stateAsiento(2)"  d="M12 34c1,0 1,0 2,0l-2 0z"></path>
-                                                <path class="fil1 str0" :style="stateAsiento(2)" d="M12 4c-2,0 -3,0 -3,0 -5,2 -6,7 -6,15 0,8 2,14 7,15 0,0 1,0 2,0 1,-1 1,-4 0,-6 2,-9 2,-9 0,-18 1,-1 1,-4 0,-6z"></path>
-                                                <path class="fil0 str0" :style="stateAsiento(2)" d="M14 4c-1,0 -2,0 -2,0l2 0z"></path>
-                                                <path class="fil0 str0" :style="stateAsiento(2)" d="M49 19c0,-8 -1,-14 -3,-15 -3,-1 -10,0 -19,0 -4,0 -9,0 -13,0 1,1 1,4 0,6 2,9 2,10 0,18 1,2 1,5 0,6 4,0 8,0 13,0 8,0 17,1 19,0 2,-1 3,-7 3,-15z"></path>
-
-                                                <path class="fil2 str1" :style="stateAsiento(2,{isSeat:true})" d="M48 29c-3,0 -6,0 -10,0 -1,0 -2,0 -3,0 -12,0 -22,-1 -24,-1 -3,-1 -1,-4 -1,-9 0,-4 -2,-8 1,-9 4,-1 19,-1 24,-1 1,0 2,0 3,0 4,0 7,0 10,0 2,2 2,18 0,20z"></path>
-                                                <path class="fil3 str2" :style="stateAsiento(2,{isBelt:true})" d="M18 4c1,2 1,4 0,6 2,10 2,9 0,18 1,3 1,3 0,6l4 0c1,-1 1,-4 0,-5 2,-9 2,-11 0,-19 1,-2 1,-5 0,-6l-4 0z"></path>
-                                                <path class="fil4 str1" :style="stateAsiento(2)" d="M42 34l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
-                                                <path class="fil4 str1" :style="stateAsiento(2)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
-                                            </g>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <label for="">Reservado</label>
-                                        <svg id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
-                                            <g id="Capa_x0020_1">
-                                                <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-                                                <path class="fil0 str0" :style="stateAsiento(3)"  d="M12 34c1,0 1,0 2,0l-2 0z"></path>
-                                                <path class="fil1 str0" :style="stateAsiento(3)" d="M12 4c-2,0 -3,0 -3,0 -5,2 -6,7 -6,15 0,8 2,14 7,15 0,0 1,0 2,0 1,-1 1,-4 0,-6 2,-9 2,-9 0,-18 1,-1 1,-4 0,-6z"></path>
-                                                <path class="fil0 str0" :style="stateAsiento(3)" d="M14 4c-1,0 -2,0 -2,0l2 0z"></path>
-                                                <path class="fil0 str0" :style="stateAsiento(3)" d="M49 19c0,-8 -1,-14 -3,-15 -3,-1 -10,0 -19,0 -4,0 -9,0 -13,0 1,1 1,4 0,6 2,9 2,10 0,18 1,2 1,5 0,6 4,0 8,0 13,0 8,0 17,1 19,0 2,-1 3,-7 3,-15z"></path>
-
-                                                <path class="fil2 str1" :style="stateAsiento(3,{isSeat:true})" d="M48 29c-3,0 -6,0 -10,0 -1,0 -2,0 -3,0 -12,0 -22,-1 -24,-1 -3,-1 -1,-4 -1,-9 0,-4 -2,-8 1,-9 4,-1 19,-1 24,-1 1,0 2,0 3,0 4,0 7,0 10,0 2,2 2,18 0,20z"></path>
-                                                <path class="fil3 str2" :style="stateAsiento(3,{isBelt:true})" d="M18 4c1,2 1,4 0,6 2,10 2,9 0,18 1,3 1,3 0,6l4 0c1,-1 1,-4 0,-5 2,-9 2,-11 0,-19 1,-2 1,-5 0,-6l-4 0z"></path>
-                                                <path class="fil4 str1" :style="stateAsiento(3)" d="M42 34l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
-                                                <path class="fil4 str1" :style="stateAsiento(3)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
-                                            </g>
-                                        </svg>
-                                    </div>
+                                    <path class="fil2 str1" :style="stateAsiento(1,{isSeat:true})" d="M48 29c-3,0 -6,0 -10,0 -1,0 -2,0 -3,0 -12,0 -22,-1 -24,-1 -3,-1 -1,-4 -1,-9 0,-4 -2,-8 1,-9 4,-1 19,-1 24,-1 1,0 2,0 3,0 4,0 7,0 10,0 2,2 2,18 0,20z"></path>
+                                    <path class="fil3 str2" :style="stateAsiento(1,{isBelt:true})" d="M18 4c1,2 1,4 0,6 2,10 2,9 0,18 1,3 1,3 0,6l4 0c1,-1 1,-4 0,-5 2,-9 2,-11 0,-19 1,-2 1,-5 0,-6l-4 0z"></path>
+                                    <path class="fil4 str1" :style="stateAsiento(1)" d="M42 34l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
+                                    <path class="fil4 str1" :style="stateAsiento(1)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
+                                </g>
+                            </svg>
                                 </div>
                             </div>
-                            </template>
-                        </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="" class="control-label">Ocupado</label>
+                                    <svg id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
+                                <g id="Capa_x0020_1">
+                                    <metadata id="CorelCorpID_0Corel-Layer"></metadata>
+                                    <path class="fil0 str0" :style="stateAsiento(2)"  d="M12 34c1,0 1,0 2,0l-2 0z"></path>
+                                    <path class="fil1 str0" :style="stateAsiento(2)" d="M12 4c-2,0 -3,0 -3,0 -5,2 -6,7 -6,15 0,8 2,14 7,15 0,0 1,0 2,0 1,-1 1,-4 0,-6 2,-9 2,-9 0,-18 1,-1 1,-4 0,-6z"></path>
+                                    <path class="fil0 str0" :style="stateAsiento(2)" d="M14 4c-1,0 -2,0 -2,0l2 0z"></path>
+                                    <path class="fil0 str0" :style="stateAsiento(2)" d="M49 19c0,-8 -1,-14 -3,-15 -3,-1 -10,0 -19,0 -4,0 -9,0 -13,0 1,1 1,4 0,6 2,9 2,10 0,18 1,2 1,5 0,6 4,0 8,0 13,0 8,0 17,1 19,0 2,-1 3,-7 3,-15z"></path>
 
-                    </div>
-                    <div v-if="asientos.length > 0 && tipoVenta == 2 && vehiculo">
+                                    <path class="fil2 str1" :style="stateAsiento(2,{isSeat:true})" d="M48 29c-3,0 -6,0 -10,0 -1,0 -2,0 -3,0 -12,0 -22,-1 -24,-1 -3,-1 -1,-4 -1,-9 0,-4 -2,-8 1,-9 4,-1 19,-1 24,-1 1,0 2,0 3,0 4,0 7,0 10,0 2,2 2,18 0,20z"></path>
+                                    <path class="fil3 str2" :style="stateAsiento(2,{isBelt:true})" d="M18 4c1,2 1,4 0,6 2,10 2,9 0,18 1,3 1,3 0,6l4 0c1,-1 1,-4 0,-5 2,-9 2,-11 0,-19 1,-2 1,-5 0,-6l-4 0z"></path>
+                                    <path class="fil4 str1" :style="stateAsiento(2)" d="M42 34l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
+                                    <path class="fil4 str1" :style="stateAsiento(2)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
+                                </g>
+                            </svg>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="" class="control-label">Reservado</label>
+                                    <svg id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
+                                <g id="Capa_x0020_1">
+                                    <metadata id="CorelCorpID_0Corel-Layer"></metadata>
+                                    <path class="fil0 str0" :style="stateAsiento(3)"  d="M12 34c1,0 1,0 2,0l-2 0z"></path>
+                                    <path class="fil1 str0" :style="stateAsiento(3)" d="M12 4c-2,0 -3,0 -3,0 -5,2 -6,7 -6,15 0,8 2,14 7,15 0,0 1,0 2,0 1,-1 1,-4 0,-6 2,-9 2,-9 0,-18 1,-1 1,-4 0,-6z"></path>
+                                    <path class="fil0 str0" :style="stateAsiento(3)" d="M14 4c-1,0 -2,0 -2,0l2 0z"></path>
+                                    <path class="fil0 str0" :style="stateAsiento(3)" d="M49 19c0,-8 -1,-14 -3,-15 -3,-1 -10,0 -19,0 -4,0 -9,0 -13,0 1,1 1,4 0,6 2,9 2,10 0,18 1,2 1,5 0,6 4,0 8,0 13,0 8,0 17,1 19,0 2,-1 3,-7 3,-15z"></path>
+
+                                    <path class="fil2 str1" :style="stateAsiento(3,{isSeat:true})" d="M48 29c-3,0 -6,0 -10,0 -1,0 -2,0 -3,0 -12,0 -22,-1 -24,-1 -3,-1 -1,-4 -1,-9 0,-4 -2,-8 1,-9 4,-1 19,-1 24,-1 1,0 2,0 3,0 4,0 7,0 10,0 2,2 2,18 0,20z"></path>
+                                    <path class="fil3 str2" :style="stateAsiento(3,{isBelt:true})" d="M18 4c1,2 1,4 0,6 2,10 2,9 0,18 1,3 1,3 0,6l4 0c1,-1 1,-4 0,-5 2,-9 2,-11 0,-19 1,-2 1,-5 0,-6l-4 0z"></path>
+                                    <path class="fil4 str1" :style="stateAsiento(3)" d="M42 34l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
+                                    <path class="fil4 str1" :style="stateAsiento(3)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
+                                </g>
+                            </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <div v-if="asientos.length > 0 && tipoVenta == 2 && vehiculo" style="width: 100%">
                         <bus v-if="piso == 1" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back" :seats.sync="asientosPisoUno" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
                         <bus v-if="piso == 2" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back"  :seats.sync="asientosPisoDos" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
                     </div>
+                </div>
 
-
-                    <venta-asiento-libre
-                    @onCancel=" onCancel  "
-                    :visible.sync="openModal"
-                    :asiento="asiento"
-                    :tipo-venta="tipoVenta"
-                    :transporte-pasaje="pasajero"
-                    :estados-asientos="estadoAsientos"
-                    :programacion="selectProgramacion"
-                    :fecha-salida="fecha_salida"
-                    @onUpdateItem="onUpdateItem"
-                    :establishment="establishment"
-                    :allSeries="series"
-                    :document-types-invoice="documentTypesInvoice"
-                    :payment-method-types="paymentMethodTypes"
-                    :payment-destinations="paymentDestinations"
-                    :configuration="configuration"
-                    @onSuccessVenta="onSuccessVenta"
-                    @anularBoleto="anularBoleto"
-                    :document_type_03_filter="document_type_03_filter"
-                    :is-cash-open="isCashOpen"
-                    :destino="destino"
-                    :origen="origen"
-                    :horaSalida="horaSalida"
-                    />
-                </el-card>
             </div>
-
         </div>
 
+        <venta-asiento-libre
+            @onCancel=" onCancel  "
+            :visible.sync="openModal"
+            :asiento="asiento"
+            :tipo-venta="tipoVenta"
+            :transporte-pasaje="pasajero"
+            :estados-asientos="estadoAsientos"
+            :programacion="selectProgramacion"
+            :fecha-salida="fecha_salida"
+            @onUpdateItem="onUpdateItem"
+            :establishment="establishment"
+            :allSeries="series"
+            :document-types-invoice="documentTypesInvoice"
+            :payment-method-types="paymentMethodTypes"
+            :payment-destinations="paymentDestinations"
+            :configuration="configuration"
+            @onSuccessVenta="onSuccessVenta"
+            @anularBoleto="anularBoleto"
+            :document_type_03_filter="document_type_03_filter"
+            :is-cash-open="isCashOpen"
+            :destino="destino"
+            :origen="origen"
+            :horaSalida="horaSalida"
+        />
 
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
@@ -298,8 +288,7 @@
         :recordId="documentId"></documents-voided>
 
     </div>
-
-
+    </div>
 </template>
 <script>
 import Bus from '../bus/Bus';
@@ -586,7 +575,7 @@ export default {
             this.openModal = true;
             this.asiento = asiento;
 
-            
+
         },
 
         searchCiudad(value= ''){
@@ -667,7 +656,7 @@ export default {
             if(this.asiento){
                 this.asiento.estado_asiento_id = 1;
                 this.asiento = null;
-            } 
+            }
         }
 
 

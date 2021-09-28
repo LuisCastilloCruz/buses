@@ -1,6 +1,6 @@
 <template>
     <div class="mt-2" :style="{overflowX:'auto'}">
-        <div :id="idElement" class="bus" >
+        <div :id="idElement" class="bus">
             <div class="element" v-for="(asiento,index) in asientos" :key="'el-'+index"
             :id="'seat-'+index"
             :style="{left:asiento.left,top:asiento.top,cursor: drag ? 'move' : 'pointer'}"
@@ -10,12 +10,12 @@
                     <el-tooltip class="item" effect="dark" content="Eliminar" placement="top-start">
                         <i class="fa fa-minus"></i>
                     </el-tooltip>
-                    
+
                 </div>
                 <!-- Asiento normal -->
                 <template v-if="asiento.type == 'ss'">
                     <svg  @mousedown="childOnMouseDown($event,asiento,index)" id="60611b2ba670a" gc-seat-static="0" gc-seat-element-id="2" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="51px" height="38px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;" viewBox="0 0 51 38" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 9.554 13.384 58.672 38.443">
-                        
+
                         <g id="Capa_x0020_1">
                             <metadata id="CorelCorpID_0Corel-Layer"></metadata>
                             <path class="fil0 str0" :style="stateAsiento(asiento)"  d="M12 34c1,0 1,0 2,0l-2 0z"></path>
@@ -114,7 +114,7 @@
                         <div v-for="s in 18" class="seat" :key="cs+'-'+s"></div>
                     </div>
                 </template>
-                
+
             </div>
 
             <!-- Parte de atras del autobus -->
@@ -167,7 +167,7 @@
                     </g>
                 </svg>
             </div>
-            
+
         </div>
     </div>
 </template>
@@ -200,9 +200,9 @@ export default {
     data(){
         return ({
             idElement:+ new Date(),
-            initX:0, 
-            initY:0, 
-            firstX:0, 
+            initX:0,
+            initY:0,
+            firstX:0,
             firstY:0,
             asientos:[],
             selectAsiento:null,
@@ -236,7 +236,7 @@ export default {
                     fill:'#1b99a5',
                     animation:'none'
                 }
-                
+
             }else if(asiento.estado_asiento_id == 3){ //Reservado
 
                 if(config.isSeat){
@@ -250,7 +250,7 @@ export default {
                     fill:'#fff',
                     animation:'none'
                 }
-                
+
             }else if(asiento.estado_asiento_id == 4){ //Seleccionado
 
                 if(config.isSeat){
@@ -264,7 +264,7 @@ export default {
                     fill:'#003c71',
                     animation:'none'
                 }
-                
+
             }
         },
         childOnMouseDown(evt,asiento,index){
@@ -307,8 +307,8 @@ export default {
             let y = this.initY+e.pageY-this.firstY;
 
             //seteo las nuevas posiciones
-            this.target.style.left = x + 'px'; 
-            this.target.style.top = y + 'px'; 
+            this.target.style.left = x + 'px';
+            this.target.style.top = y + 'px';
         },
 
         onDelete(asiento,index){
@@ -316,7 +316,7 @@ export default {
         }
 
     }
-    
+
 }
 </script>
 <style >

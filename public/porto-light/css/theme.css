@@ -82,7 +82,7 @@ a:active {
 /* Layout Base - Content Body */
 .content-body {
     display: table-cell;
-    padding: 40px;
+    padding: 0 20px;
     position: relative;
     vertical-align: top;
 }
@@ -8281,6 +8281,10 @@ html.dark .card-body {
 html.dark .card-footer {
     background: #283046;
     border-top-color: #dee2e6;
+}
+
+html.dark .form-group .control-label{
+    color:#fff
 }
 
 html .card-primary .card-header {
