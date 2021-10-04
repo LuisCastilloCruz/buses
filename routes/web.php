@@ -602,6 +602,9 @@ if ($hostname) {
             Route::post('login-page/update', 'Tenant\LoginConfigurationController@update');
         });
     });
+
+    Route::get('test-programaciones','TestController@test');
+
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
         Route::get('login', 'System\LoginController@showLoginForm')->name('login');

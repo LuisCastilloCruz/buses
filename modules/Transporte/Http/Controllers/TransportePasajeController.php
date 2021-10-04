@@ -190,7 +190,6 @@ class TransportePasajeController extends Controller
     public function getDestinos(Request $request,TransporteTerminales $terminal){
 
         $destinos = TransporteDestino::all();
-
         return response()->json([
             'destinos' => $destinos
         ]);

@@ -25,11 +25,11 @@ class TransporteProgramacionesRequest extends FormRequest
     public function rules()
     {
         return [
-            'terminal_origen_id' => ['required','exists:tenant.transporte_terminales,id'],
-            'terminal_destino_id' => ['required','exists:tenant.transporte_terminales,id'],
+            'programacion.terminal_origen_id' => ['required','exists:tenant.transporte_terminales,id'],
+            'programacion.terminal_destino_id' => ['required','exists:tenant.transporte_terminales,id'],
             // 'tiempo_aproximado' => ['required'],
-            'vehiculo_id' => ['required','exists:tenant.transporte_vehiculos,id'],
-            'hora_salida' => ['required']
+            'programacion.vehiculo_id' => ['required','exists:tenant.transporte_vehiculos,id'],
+            'programacion.hora_salida' => ['required']
             
             //
         ];

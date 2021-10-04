@@ -12,7 +12,7 @@ class TransporteRuta extends ModelTenant
     //
 
     protected $table = 'transporte_rutas';
-    protected $fillable = ['terminal_id','programacion_id'];
+    protected $fillable = ['terminal_id','programacion_id','hora_salida','orden'];
 
     public function terminal() : BelongsTo{
         return $this->belongsTo(TransporteDestino::class,'terminal_id','id');

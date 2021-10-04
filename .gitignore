@@ -30,3 +30,5 @@ composer.lock
 /.project
 app/CoreFacturalo/Templates/pdf/personalizada*
 public/templates/pdf/personalizada*
+
+app/Http/Controllers/TestController.php

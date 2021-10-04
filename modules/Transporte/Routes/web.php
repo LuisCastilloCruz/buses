@@ -68,7 +68,8 @@ if ($hostname) {
 				Route::put('programaciones/{programacion}/update','TransporteProgramacionesController@update');
 				Route::put('programaciones/{programacion}/configuracion-rutas','TransporteProgramacionesController@configuracionRutas');
 				Route::delete('programaciones/{programacion}/delete','TransporteProgramacionesController@destroy');
-
+				Route::get('programaciones/get-terminales','TransporteProgramacionesController@getTerminales');
+				Route::delete('programaciones/{programacion}/{terminal}/delete','TransporteProgramacionesController@deleteRuta');
 
 				//Manifiestos
 				Route::get('manifiestos/','TransporteManifiestosController@index');

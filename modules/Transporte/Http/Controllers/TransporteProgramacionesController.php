@@ -12,8 +12,11 @@ use Modules\Transporte\Models\TransporteUserTerminal;
 use Modules\Transporte\Models\TransporteVehiculo;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Modules\Transporte\Models\TransporteChofer;
 use Illuminate\Support\Facades\Session;
+use Modules\Transporte\Models\TransporteRuta;
 
 class TransporteProgramacionesController extends Controller
 {
@@ -31,16 +34,18 @@ class TransporteProgramacionesController extends Controller
 
         if(auth()->user()->type=='admin'){
 
-            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
-                ->get()
+            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
+            ->where('hidden',0)    
+            ->get()
                 ->map(function($programacion){
                     $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
                     return $programacion;
                 });
         }
         else{
-            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino')
+            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
                 ->where('terminal_origen_id',$user_terminal->terminal_id)
+                ->where('hidden',0)
                 ->get()
                 ->map(function($programacion){
                     $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
@@ -64,53 +69,329 @@ class TransporteProgramacionesController extends Controller
         ));
     }
 
+
+    public function getTerminales(Request $request){
+        try{
+
+            extract($request->only(['search']));
+
+            $terminales = TransporteTerminales::query();
+            
+            if(isset($search) && !empty($search)){
+                $terminales->where('nombre','like',"%{$search}%");
+            }
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'success',
+                'data' => $terminales->get()
+            ]);
+
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'success' => false,
+                'msg' => 'Lo sentimos ocurrio un error',
+                'data' => []
+            ],204);
+
+        }
+    }
+
+
+    private function routes(TransporteProgramacion $programacion,$terminales,$totalList = null){
+        $terminal = $terminales->shift();
+
+        $list = is_null($totalList) ? collect([]) : $totalList;
+
+        if(count($terminales) == 0) return $totalList;
+
+        foreach($terminales as $item){
+            $pro = TransporteProgramacion::create([
+                'terminal_origen_id' => $terminal->id,
+                'terminal_destino_id' => $item->id,
+                'hora_salida' => $terminal->pivot->hora_salida,
+                'vehiculo_id' => $programacion->vehiculo_id,
+                'programacion_id' => $programacion->id,
+                'hidden' => true,
+                'active' => true,
+            ]);
+            $list->push($pro);
+        }
+        return $this->routes($programacion,$terminales,$list);
+
+    }
+
+
+    private function createRoutes( TransporteProgramacion $programacion, $terminales ){
+        $tempTerminales = $terminales;
+        $totalList = collect([]);
+
+        foreach($tempTerminales as $terminal){
+
+            // if($terminal['terminal_origen_id'] == $programacion->terminal_destino_id) continue;
+
+            $pro = TransporteProgramacion::create([
+                'terminal_origen_id' => $programacion->terminal_origen_id,
+                'terminal_destino_id' => $terminal->id,
+                'hora_salida' => $programacion->hora_salida,
+                'vehiculo_id' => $programacion->vehiculo_id,
+                'programacion_id' => $programacion->id,
+                'hidden' => true,
+                'active' => true,
+            ]);
+
+            $totalList->push($pro);
+        }
+        return $totalList;
+    } 
+
+
     public function store(TransporteProgramacionesRequest $request){
 
-        $programacion = TransporteProgramacion::create($request->only(
-            'terminal_destino_id',
-            'terminal_origen_id',
-            'vehiculo_id',
-            'hora_salida'
-            // 'tiempo_aproximado'
-        ));
+        try{
+
+            DB::connection('tenant')->beginTransaction();
+
+            $formProgramacion = $request->input('programacion');
+
+          
+            $formProgramacion['hidden'] = false;
+            $programacion = TransporteProgramacion::create($formProgramacion);
+
+            $intermedios =  collect($request->input('intermedios'));
+
+            $i = 1;
+            foreach($intermedios as $intermedio){
+                $programacion->rutas()->attach($intermedio['terminal_origen_id'],[
+                    'hora_salida' => $intermedio['hora_salida'],
+                    'orden' => $i 
+                ]);
+                $i++;
+            }
 
 
-        $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
-        $programacion->syncRutas([$programacion->terminal_destino_id]);
-        $programacion->load([
-            'destino',
-            'origen',
-            'vehiculo',
-            'rutas'
-        ]);
+            $terminales = $programacion->rutas;
+
+            $this->createRoutes($programacion,$terminales);
+
+            $terminales->push($programacion->destino);
+
+            //agrego el destino para poder hacer las combinaciones
 
 
-        return response()->json([
-            'success' => true,
-            'data'    => $programacion
-        ]);
+            $this->routes($programacion,$terminales);
+
+
+            DB::connection('tenant')->commit();
+
+            $programacion->load([
+                'origen',
+                'destino',
+                'routes.destino',
+                'programacion',
+                'vehiculo'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data'    => $programacion
+            ]);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine()
+            ]);
+
+        }
+
+        
+
+    }
+
+
+
+    private function  listCombination(Collection $terminales,Collection $listMerge = null) : Collection{
+        $terminal = $terminales->shift();
+        $listMerge = is_null($listMerge) ? new Collection() : $listMerge;
+
+
+        if(count($terminales) == 0) return $listMerge;
+
+        foreach($terminales as $term){
+            $listMerge->push([$terminal->id,$term->id]);
+        }
+
+        return $this->listCombination($terminales,$listMerge);
+
+    }
+
+
+    private function getCombination(TransporteProgramacion $programacion,Collection $terminales) : Collection{
+
+        $terminales->prepend($programacion->origen);
+        $terminales->push($programacion->destino);
+
+       
+        return $this->listCombination($terminales);
+    }
+
+    private function listExcepts(Collection $list1,Collection $list2) : Collection{
+        $excepts = new Collection();
+        foreach($list1 as $item1){
+
+            $exist = $list2->first(function($item2) use($item1){
+                [$variable1,$variable2] = $item2;
+                [$variable3,$variable4] = $item1;
+                $indexVar1 = array_search($variable1,$item1);
+                $indexVar2 = array_search($variable2,$item1); 
+                $indexVar3 = array_search($variable3,$item2);
+                $indexVar4 = array_search($variable4,$item2); 
+
+                return ($variable1 == $variable3 
+                && $indexVar1 == $indexVar3
+                && $variable2 == $variable4
+                && $indexVar2 == $indexVar4);
+            });
+            if(is_null($exist)) $excepts->push($item1);
+        }
+
+        return $excepts;
+
+    }
+
+    private function updateOrCreateProgramaciones(TransporteProgramacion $programacion, Collection $collection){
+
+        foreach($collection as $item){
+            [$origen,$destino] = $item;
+
+            $oldProgramacion = TransporteProgramacion::where('terminal_origen_id',$origen)
+            ->where('terminal_destino_id',$destino)
+            ->first();
+
+            if(!is_null($oldProgramacion)) $oldProgramacion->update(['active' => !$oldProgramacion->active]);
+
+            else {
+
+                $hora_salida = null;
+                if($origen == $programacion->terminal_origen_id){
+                    $hora_salida = $programacion->hora_salida;
+                }else {
+                    $terminal = TransporteRuta::where('programacion_id',$programacion->id)
+                    ->where('terminal_id',$origen)
+                    ->first();
+                    $hora_salida = $terminal->hora_salida;
+                }
+
+                TransporteProgramacion::create([
+                    'terminal_origen_id' => $origen,
+                    'terminal_destino_id' => $destino,
+                    'hora_salida' => $hora_salida,
+                    'vehiculo_id' => $programacion->vehiculo_id,
+                    'active' => true,
+                    'hidden' => true,
+                    'programacion_id' => $programacion->id
+                ]);
+
+            }
+        }
+
 
     }
 
     public function update(TransporteProgramacionesRequest $request,TransporteProgramacion $programacion){
 
+        DB::connection('tenant')->beginTransaction();
+
+        $oldTerminales = $programacion->rutas()->get();
         // return $request->only('terminal_destino_id');
-        $programacion->update($request->only([
-            'terminal_destino_id',
-            'terminal_origen_id',
-            'vehiculo_id',
-            'hora_salida',
-            // 'tiempo_aproximado'
-        ]));
-        $programacion->destino;
-        $programacion->origen;
-        $programacion->vehiculo;
-        $programacion->rutas;
+
+        $formProgramacion = $request->input('programacion');
+        $programacion->update($formProgramacion);
+
+        $intermedios = collect($request->input('intermedios'));
+
+        TransporteRuta::where('programacion_id',$programacion->id)
+        ->delete();
+
+
+        $orden = 1;
+        foreach($intermedios as $terminal){
+            $programacion->rutas()->attach($terminal['terminal_origen_id'],[
+                'hora_salida' => $terminal['hora_salida'],
+                'orden' => $orden
+            ]);
+            $orden++;
+        }
+
+        $newTerminales = $programacion->rutas()->get();
+
+        $list1 = $this->getCombination($programacion,$oldTerminales);
+        $list2 = $this->getCombination($programacion,$newTerminales);
+
+        $collection1 = $this->listExcepts($list1,$list2);
+        $collection2 = $this->listExcepts($list2,$list1);
+
+        $newCollection = $collection1->merge($collection2);
+
+        // dd($newCollection);
+
+        $this->updateOrCreateProgramaciones($programacion,$newCollection);
+
+
+        $programacion->load([
+            'destino',
+            'origen',
+            'vehiculo',
+            'rutas',
+        ]);
+
         $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
+        
+        DB::connection('tenant')->commit();
+        
         return response()->json([
             'success' => true,
             'data'    => $programacion
         ]);
+    }
+
+    public function deleteRuta(TransporteProgramacion $programacion,$terminal){
+
+        try{
+
+            DB::connection('tenant')->beginTransaction();
+            TransporteProgramacion::where('programacion_id',$programacion->id)
+            ->where('terminal_origen_id',$terminal)
+            ->orWhere('terminal_destino_id',$terminal)
+            ->update(['active' => false]);
+
+            TransporteRuta::where('terminal_id',$terminal)
+            ->where('programacion_id',$programacion->id)
+            ->delete();
+
+            DB::connection('tenant')->commit();
+
+            return response()->json([
+                'status' => true,
+                'msg' => 'Se ha eliminado correctamente'
+            ]);
+        }catch(Exception $e){
+
+            return response()->json([
+                'status' => true,
+                'msg' => 'Ocurrio un error al realizar la petición'
+            ]);
+
+        }
+        
+
+
+
     }
 
     public function destroy(TransporteProgramacion $programacion){
@@ -165,4 +446,7 @@ class TransporteProgramacionesController extends Controller
         ]);
 
     }
+
+
+    
 }

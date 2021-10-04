@@ -4,7 +4,7 @@
         :visible="visible"
         @close="onClose"
         @open="onCreate"
-        width="500px"
+        width="50%"
     >
         <form autocomplete="off" @submit.prevent="onSubmit">
             <div class="form-body">
@@ -50,14 +50,7 @@
                     </el-select>
                     <div v-if="errors.vehiculo_id" class="invalid-feedback">{{ errors.vehiculo_id[0] }}</div>
                 </div>
-                <!-- <div class="form-group">
-                    <label for="tiempo_aproximado">Tiempo aproximado</label>
-                    <el-input
-                        type="time"
-                        placeholder="Tiempo aproximado"
-                        v-model="form.tiempo_aproximado"
-                    />
-                </div> -->
+                
                 <div class="form-group">
                     <label for="hora_salida">Hora salida</label>
                     <el-input type="time" v-model="form.hora_salida" placeholder="Hora Salida" ></el-input>
@@ -69,8 +62,57 @@
                         
                     /> -->
                 </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="" class="control-label">Seleccionar Ruta</label>
+                            <el-select v-model="selectTerminal" filterable remote value-key="id" popper-class="el-select-customers"
+                                placeholder="Buscar origen"
+                                :remote-method="getTerminales"
+                                :loading="loadingTerminales"
+                            >
+                                <template v-for="terminal in listTerminales">
+                                    <el-option  v-if="terminal.id != form.terminal_origen_id && terminal.id != form.terminal_destino_id" :key="terminal.id" :value="terminal" :label="terminal.nombre">
+                                    </el-option>
+                                   
+                                </template>
+                            </el-select>
+                                
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <el-button :style="{marginTop:'1.95rem'}" @click="addTerminal">Agregar</el-button>
+                    </div>
+                </div>
+
+                <draggable v-model="selectTerminales">
+                    <template v-for="(element,index) in selectTerminales" >
+                        <div :key="element.id" class="mt-2">
+                            <el-card>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-4">
+                                        {{element.nombre}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <el-input type="time" v-model="element.hora_salida" placeholder="Hora"></el-input>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <el-button type="danger" @click="onDelete(element,index)">Eliminar</el-button>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </div>
+                    </template>
+                   
+                    
                 
-                <div class="row text-center">
+                </draggable>
+
+
+                
+                <div class="row text-center mt-3">
                     <div class="col-6">
                         <el-button
                             native-type="submit"
@@ -91,7 +133,9 @@
 </template>
 
 <script>
+import Draggable from 'vuedraggable';
 export default {
+    components:{ Draggable },
     props: {
         visible: {
             type: Boolean,
@@ -118,6 +162,7 @@ export default {
     },
     created(){
         this.form.terminal_origen_id = this.userTerminal.terminal_id;
+        this.getTerminales()
     },
     data() {
         return {
@@ -131,15 +176,50 @@ export default {
             title: "",
             errors: {},
             loading: false,
+            listTerminales:[],
+            selectTerminal:null,
+            loadingTerminales:false,
+            selectTerminales:[],
+            onEdit:false,
         };
     },
+    watch:{
+
+        'form.vehiculo_id'(){
+            this.selectTerminales.map(  terminal => {
+                terminal.vehiculo_id = this.form.vehiculo_id;
+                return terminal;
+            })
+
+        }
+
+    },
     methods: {
+
+        async getTerminales(input = ''){
+            try{
+                this.loadingTerminales = true;
+                const {data} = await this.$http.get(`/transportes/programaciones/get-terminales?search=${input}`);
+                this.loadingTerminales = false;
+                this.listTerminales = data.data
+            }catch(error){
+                this.axiosError(error);
+            }
+            
+        },
         async onUpdate() {
             this.loading = true;
             try{
-                const { data } =  await this.$http.put(`/transportes/programaciones/${this.programacion.id}/update`,this.form);
-                this.$emit("onUpdateItem", data.data);
+
+                let data = {
+                    programacion:this.form,
+                    intermedios: this.selectTerminales
+                };
+
+                const { data:response } =  await this.$http.put(`/transportes/programaciones/${this.programacion.id}/update`,data);
+                this.$emit("onUpdateItem", response.data);
                 this.onClose();
+                this.onEdit = false;
             }catch(error){
                 this.axiosError(error);
             }finally{
@@ -165,8 +245,12 @@ export default {
         async onStore() {
             this.loading = true;
             try{
-                const { data } = await this.$http.post("/transportes/programaciones/store",this.form);
-                this.$emit("onAddItem", data.data);
+                let data = {
+                    programacion:this.form,
+                    intermedios: this.selectTerminales
+                }
+                const { data:response } = await this.$http.post("/transportes/programaciones/store",data);
+                this.$emit("onAddItem", response.data);
                 this.onClose();
             } catch(error){
                 this.axiosError(error);
@@ -202,19 +286,90 @@ export default {
         },
         onCreate() {
             if (this.programacion) {
+                this.onEdit = true;
                 this.form = this.programacion;
+                this.selectTerminales = this.mapRutas(this.programacion)
                 this.title = "Editar programación";
             } else {
                 this.title = "Crear programación";
                 this.form = {
                     terminal_origen_id:this.userTerminal.terminal_id,
                     terminal_destino_id:null,
-                    tiempo_aproximado:null,
                     hora_salida:null,
                     vehiculo_id:null
                 };
             }
         },
+        addTerminal(){
+
+            let find = this.selectTerminales.find( terminal => terminal.terminal_origen_id == this.selectTerminal.id );
+
+            if(find){
+                return this.$message({
+                    type:'info',
+                    message:'La terminal ya se encuentra agregada'
+                });
+            }
+
+
+            let ruta = {
+                nombre:this.selectTerminal.nombre,
+                terminal_origen_id: this.selectTerminal.id,
+                hora_salida: null,
+                vehiculo_id:this.form.vehiculo_id
+            };
+
+            this.selectTerminales.push(ruta);
+
+            this.selectTerminal = null;
+        },
+        mapRutas(programacion){
+            if(!programacion.rutas) return [];
+            return programacion.rutas.map( terminal => {
+                return {
+                    terminal_origen_id:terminal.id,
+                    nombre: terminal.nombre,
+                    hora_salida: terminal.pivot.hora_salida,
+                }
+            });
+        },
+        async onDelete(terminal,index){
+
+
+            if(!this.onEdit){
+
+                this.selectTerminales.splice(index,1);
+
+                return this.$message({
+                    type: 'success',
+                    message: 'Se ha eliminado correctamente'
+                });
+
+            }
+
+            this.$confirm(`¿Estás seguro de eliminar la terminal ?`, 'Atención', {
+                confirmButtonText: 'Si, continuar',
+                cancelButtonText: 'No, cerrar',
+                type: 'warning'
+            }).then(async() => {
+
+                const { data } = await axios.delete(`/transportes/programaciones/${this.programacion.id}/${terminal.id}/delete`);
+
+                if(!data.status) return this.$message({
+                    type:'error',
+                    message: data.msg
+                });
+
+                this.$message({
+                    type: 'success',
+                    message: data.message
+                });
+
+            }).catch((error) => {
+                this.axiosError(error);
+            });
+
+        }
     },
 };
 </script>

@@ -27,6 +27,7 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\PaymentMethodType;
+use Exception;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Transporte\Models\TransporteRuta;
 
@@ -121,84 +122,156 @@ class TransporteSalesController extends Controller
 
     public function getProgramacionesDisponibles(ProgramacionesDisponiblesRequest $request){
 
-        $programaciones = TransporteProgramacion::with('origen','destino')
-        ->where('terminal_origen_id',$request->origen_id)
-        ->whereHas('destino',function($destino) use($request){
-            $destino->where('destino_id',$request->destino_id);
-        })
-        // ->where('terminal_destino_id',$request->destino_id)
-        ->WhereEqualsOrBiggerDate($request->fecha_salida);
-        $date = Carbon::parse($request->fecha_salida);
-        $today = Carbon::now();
+       try{
+            $programaciones = TransporteProgramacion::with('origen','destino')
+            ->where('terminal_origen_id',$request->origen_id)
+            ->where('active',true)
+            ->whereHas('destino',function($destino) use($request){
+                $destino->where('destino_id',$request->destino_id);
+            })
+            // ->where('terminal_destino_id',$request->destino_id)
+            ->WhereEqualsOrBiggerDate($request->fecha_salida);
+            $date = Carbon::parse($request->fecha_salida);
+            $today = Carbon::now();
 
-        /* váliddo si es el mismo dia  */
-        if($date->isSameDay($today)){
-            /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
-            $time = date('H:i:s',strtotime("-60 minutes")); //doy una hora para que aún esté disponible la programación
-            $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
-        }
+            /* váliddo si es el mismo dia  */
+            if($date->isSameDay($today)){
+                /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
+                $time = date('H:i:s',strtotime("-60 minutes")); //doy una hora para que aún esté disponible la programación
+                $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
+            }
 
-        $listProgramaciones = $programaciones->get();
-        foreach($listProgramaciones as $programacion){
+            $listProgramaciones = $programaciones->get();
+            foreach($listProgramaciones as $programacion){
 
-            $programacion->transporte = TransporteVehiculo::find($programacion->vehiculo_id);
+                $programacion->transporte = TransporteVehiculo::find($programacion->vehiculo_id);
 
-            $listSeats = TransporteAsiento::where('vehiculo_id',$programacion->vehiculo_id)->get();
+                $listSeats = TransporteAsiento::where('vehiculo_id',$programacion->vehiculo_id)->get();
 
-            // $tempProgramaciones = TransporteProgramacion::all();
+                // $tempProgramaciones = TransporteProgramacion::all();
 
-            foreach($listSeats as $seat){
+                foreach($listSeats as $seat){
 
+                    $isState = TransportePasaje::with('pasajero','asiento','document:id,document_type_id')
+                    ->whereDate('fecha_salida',$request->fecha_salida)
+                    ->where('asiento_id',$seat->id)
+                    ->where('programacion_id',$programacion->id)
+                    ->where('estado_asiento_id','!=',4) //diferente de cancelado
+                    ->first();
+
+                    if(!is_null($isState)){
+                        $seat->estado_asiento_id = $isState->estado_asiento_id;
+                        $seat->transporte_pasaje = $isState;
+                    }else {
+                        $seat->estado_asiento_id = 1;
+                        $seat->pasajero = null;
+                    }
+                }
+
+                $asientosOcupados = $listSeats->filter(function($asiento){
+                    return in_array($asiento->estado_asiento_id,[2,3]);
+                });
+
+
+                $asiendosDisponible = $listSeats->filter(function($asiento){
+                    return $asiento->estado_asiento_id == 1;
+                });
+
+                $asientos = $this->buscarAsientosOcupados($programacion,$asiendosDisponible,$request->fecha_salida);
+
+
+                $listSeats = $asientosOcupados->merge($asientos);
+
+                $programacion->transporte->asientos = $listSeats;
+            }
+
+            return response()->json( [
+                'programaciones' => $listProgramaciones
+            ]);
+
+       }catch(Exception $e){
+
+        return response()->json([
+            'programaciones' => [],
+            'error' => $e->getMessage() ,
+            'line' => $e->getLine()
+        ]);
+       }
+
+    }
+
+    private function buscarAsientosOcupados(TransporteProgramacion $programacion,$listSeats,$fecha){
+        $parent = $programacion->programacion;
+
+        if(is_null($parent)) return $listSeats;
+
+        $disponibles = collect([]); // aqui almacenaré los asientos disponibles
+        $ocupados = collect([]); //aqui los ocupados
+        $list = $parent->programaciones()
+        ->where('active',true)
+        ->where('terminal_destino_id',$programacion->terminal_destino_id)
+        ->get();
+
+        $list->add($parent);
+
+
+
+        foreach($list as $program){
+            /** Obtengo lista temporal de los asientos disponibles */
+            $tempList = $listSeats->whereNotIn('id',$ocupados->pluck('id'));
+            foreach($tempList as $seat){
+
+                /** Busco si hay algun asiento ocupado con esa programación y esa fecha asi como tambien el asiento */
                 $isState = TransportePasaje::with('pasajero','asiento','document:id,document_type_id')
-                ->whereDate('fecha_salida',$request->fecha_salida)
+                ->whereDate('fecha_salida',$fecha)
+                // ->whereTime('hora_salida',$programacion->hora_salida)
                 ->where('asiento_id',$seat->id)
-                ->where('programacion_id',$programacion->id)
+                ->where('programacion_id',$program->id)
                 ->where('estado_asiento_id','!=',4) //diferente de cancelado
                 ->first();
 
                 if(!is_null($isState)){
                     $seat->estado_asiento_id = $isState->estado_asiento_id;
                     $seat->transporte_pasaje = $isState;
+                    $ocupados->push($seat); //inserto el asiento en la lista de ocupados
+
+                    /** Si existe en disponibles lo remuevo */
+                    $disponibles = $disponibles->filter(function($asiento) use($seat){
+                        return $asiento->id != $seat->id;
+                    });
                 }else {
+                    /** Verifico si existe ya en la lista de disponibles
+                     * si ya existe continuo con la iteración
+                     */
+                    $exist = $disponibles->first(function($asiento) use($seat){
+                        return $asiento->id == $seat->id;
+                    });
+
+                    if(!is_null($exist)) continue;
+
                     $seat->estado_asiento_id = 1;
                     $seat->pasajero = null;
+                    $disponibles->push($seat); //meto el asiento en la lista de disponibles
                 }
             }
-
-            $asientosOcupados = $listSeats->filter(function($asiento){
-                return in_array($asiento->estado_asiento_id,[2,3]);
-            });
-
-
-            $asiendosDisponible = $listSeats->filter(function($asiento){
-                return $asiento->estado_asiento_id == 1;
-            });
-
-            $asientos = $this->getAsientosPasajesEnRuta($programacion,$asiendosDisponible,$request->fecha_salida);
-
-
-            $listSeats = $asientosOcupados->merge($asientos);
-
-            $programacion->transporte->asientos = $listSeats;
         }
 
-        return response()->json( [
-            'programaciones' => $listProgramaciones
-        ]);
-
+        $newList = $disponibles->merge($ocupados);
+        return $newList;
     }
 
     private function getAsientosPasajesEnRuta(TransporteProgramacion $programacion,$listSeats,$fecha){
 
+        $terminal = Auth::user()->terminal;
         /** Busco todas las programaciones donde la terminal de destino de la programación seleccionada
          * sean rutas de alguna programación
          */
-        $programaciones = TransporteProgramacion::with('destino')->whereHas('rutas',function($rutas) use($programacion){
+        $programaciones = TransporteProgramacion::with('destino')->whereHas('rutas',function($rutas) use($programacion,$terminal){
             $rutas->where('transporte_rutas.terminal_id',$programacion->terminal_destino_id);
         })
         ->where('vehiculo_id',$programacion->vehiculo_id)
-        ->where('terminal_origen_id','!=',$programacion->terminal_origen_id)
-        // ->where('terminal_destino_id','!=',$programacion->terminal_destino_id)
+        // ->where('terminal_origen_id','!=',$programacion->terminal_origen_id)
+        // ->where('terminal_destino_id','!=',$terminal->id)
         ->get();
 
 

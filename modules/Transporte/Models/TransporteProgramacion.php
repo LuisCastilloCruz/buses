@@ -4,6 +4,7 @@ namespace Modules\Transporte\Models;
 
 use App\Models\Tenant\ModelTenant;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +19,10 @@ class TransporteProgramacion extends ModelTenant
         'vehiculo_id',
         'fecha_salida',
         'hora_salida',
-        'tiempo_aproximado'
+        'tiempo_aproximado',
+        'programacion_id',
+        'hidden',
+        'active'
     ];
 
 
@@ -34,9 +38,7 @@ class TransporteProgramacion extends ModelTenant
         return $this->belongsTo(TransporteVehiculo::class,'vehiculo_id','id');
     }
 
-    public function rutas() : HasMany{
-        return $this->hasMany(TransporteRuta::class,'programacion_id','id');
-    }
+    
 
     public function encomiendas() : HasMany{
         return $this->hasMany(TransporteEncomienda::class,'programacion_id','id');
@@ -59,6 +61,28 @@ class TransporteProgramacion extends ModelTenant
         $month = (int) date('m');
         return $query->whereRaw("DATE_FORMAT(NOW(),'%Y-%m-%d') <= '{$now}'")
         ->whereMonth(DB::raw("NOW()"),$month);
+    }
+
+
+    public function rutas() : BelongsToMany{
+        return $this->belongsToMany(TransporteTerminales::class,'transporte_rutas', 'programacion_id','terminal_id')
+        ->withPivot('hora_salida','orden')
+        ->orderBy('orden');
+    }
+
+    public function programacion() : BelongsTo{
+        return $this->belongsTo(self::class);
+    }
+
+    public function programaciones() : HasMany{
+        return $this->hasMany(self::class,'programacion_id');
+    }
+
+    public function routes() : HasMany{
+        DB::connection('tenant')->statement("SET sql_mode = '' ");
+        return $this->hasMany(self::class,'programacion_id')
+        ->where('terminal_destino_id','!=',$this->terminal_destino_id)
+        ->groupBy('terminal_origen_id');
     }
 
     public function syncRutas(array $rutas){

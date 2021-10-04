@@ -52,9 +52,9 @@
                             <!-- <td>{{ item.licencia }}</td>
                             <td>{{ item.categoria }}</td> -->
                             <td class="text-center">
-                                <el-button type="primary" @click="onConfigRutas(programacion)">
+                                <!-- <el-button type="primary" @click="onConfigRutas(programacion)">
                                     <i class="fa fa-cogs"></i>
-                                </el-button>
+                                </el-button> -->
                                 <!-- <el-tooltip class="item" effect="dark" content="Generar manifiesto" placement="top-start">
                                     <el-button type="secondary" @click="openModalGenerarManifiesto(programacion)">
                                         <i class="fa fa-file"></i>
