@@ -333,7 +333,7 @@
         <td width="25%" class="pl-3">
             <table class="full-width">
                 <tr>
-                    <td ><strong>PESO TOTAL:</strong> KGM: {{$total_weight}}</td>
+                    <td ><strong>PESO TOTAL:</strong> {{ $document->total_weight }}  {{ $document->unit_type_id }}</td>
                 </tr>
             </table>
         </td>
