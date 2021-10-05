@@ -159,6 +159,7 @@ class TransporteProgramacionesController extends Controller
           
             $formProgramacion['hidden'] = false;
             $programacion = TransporteProgramacion::create($formProgramacion);
+            $programacion->update(['programacion_id' => $programacion->id]);
 
             $intermedios =  collect($request->input('intermedios'));
 
@@ -271,6 +272,7 @@ class TransporteProgramacionesController extends Controller
 
             $oldProgramacion = TransporteProgramacion::where('terminal_origen_id',$origen)
             ->where('terminal_destino_id',$destino)
+            ->where('programacion_id',$programacion->id)
             ->first();
 
             if(!is_null($oldProgramacion)) $oldProgramacion->update(['active' => !$oldProgramacion->active]);
@@ -299,65 +301,124 @@ class TransporteProgramacionesController extends Controller
 
             }
         }
+    }
 
+
+    public function checkIfExistOrCreate(TransporteProgramacion $programacion, Collection $collection){
+        
+        foreach($collection as $item){
+            [$origen,$destino] = $item;
+            
+            
+
+            $exist = TransporteProgramacion::where('terminal_origen_id',$origen)
+            ->where('terminal_destino_id',$destino)
+            ->where('programacion_id',$programacion->id)
+            ->first();
+
+
+            if(!is_null($exist)) continue;
+
+            $hora_salida = null;
+            if($origen == $programacion->terminal_origen_id){
+                $hora_salida = $programacion->hora_salida;
+            }else {
+                $terminal = TransporteRuta::where('programacion_id',$programacion->id)
+                ->where('terminal_id',$origen)
+                ->first();
+                $hora_salida = $terminal->hora_salida;
+            }
+
+
+            $f = TransporteProgramacion::create([
+                'terminal_origen_id' => $origen,
+                'terminal_destino_id' => $destino,
+                'programacion_id' => $programacion->id,
+                'vehiculo_id' => $programacion->vehiculo_id,
+                'hora_salida' => $hora_salida,
+                'hidden' => true,
+                'active' => true
+            ]);
+
+        }
 
     }
 
     public function update(TransporteProgramacionesRequest $request,TransporteProgramacion $programacion){
 
-        DB::connection('tenant')->beginTransaction();
 
-        $oldTerminales = $programacion->rutas()->get();
-        // return $request->only('terminal_destino_id');
+        try{
 
-        $formProgramacion = $request->input('programacion');
-        $programacion->update($formProgramacion);
+            DB::connection('tenant')->beginTransaction();
 
-        $intermedios = collect($request->input('intermedios'));
+            $oldTerminales = $programacion->rutas()->get();
+            // return $request->only('terminal_destino_id');
 
-        TransporteRuta::where('programacion_id',$programacion->id)
-        ->delete();
+            $formProgramacion = $request->input('programacion');
+            $programacion->update($formProgramacion);
+
+            $intermedios = collect($request->input('intermedios'));
+
+            TransporteRuta::where('programacion_id',$programacion->id)
+            ->delete();
 
 
-        $orden = 1;
-        foreach($intermedios as $terminal){
-            $programacion->rutas()->attach($terminal['terminal_origen_id'],[
-                'hora_salida' => $terminal['hora_salida'],
-                'orden' => $orden
+            $orden = 1;
+            foreach($intermedios as $terminal){
+                $programacion->rutas()->attach($terminal['terminal_origen_id'],[
+                    'hora_salida' => $terminal['hora_salida'],
+                    'orden' => $orden
+                ]);
+                $orden++;
+            }
+
+            $newTerminales = $programacion->rutas()->get();
+
+            $list1 = $this->getCombination($programacion,$oldTerminales);
+            $list2 = $this->getCombination($programacion,$newTerminales);
+
+            $listUnion = $list1->union($list2);
+
+            // dd($listUnion);
+
+            $this->checkIfExistOrCreate($programacion,$listUnion);
+
+
+            $collection1 = $this->listExcepts($list1,$list2);
+            $collection2 = $this->listExcepts($list2,$list1);
+
+            $newCollection = $collection1->merge($collection2);
+
+            $this->updateOrCreateProgramaciones($programacion,$newCollection);
+
+
+            $programacion->load([
+                'destino',
+                'origen',
+                'vehiculo',
+                'rutas',
             ]);
-            $orden++;
+
+            $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
+            
+            DB::connection('tenant')->commit();
+            
+            return response()->json([
+                'success' => true,
+                'data'    => $programacion
+            ]);
+
+        }catch(Exception $e){
+            DB::connection('tenant')->rollBack();
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'data'    => null
+            ]);
+
         }
 
-        $newTerminales = $programacion->rutas()->get();
-
-        $list1 = $this->getCombination($programacion,$oldTerminales);
-        $list2 = $this->getCombination($programacion,$newTerminales);
-
-        $collection1 = $this->listExcepts($list1,$list2);
-        $collection2 = $this->listExcepts($list2,$list1);
-
-        $newCollection = $collection1->merge($collection2);
-
-        // dd($newCollection);
-
-        $this->updateOrCreateProgramaciones($programacion,$newCollection);
-
-
-        $programacion->load([
-            'destino',
-            'origen',
-            'vehiculo',
-            'rutas',
-        ]);
-
-        $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
         
-        DB::connection('tenant')->commit();
-        
-        return response()->json([
-            'success' => true,
-            'data'    => $programacion
-        ]);
     }
 
     public function deleteRuta(TransporteProgramacion $programacion,$terminal){

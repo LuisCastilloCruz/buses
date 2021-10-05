@@ -302,6 +302,8 @@ export default {
         },
         addTerminal(){
 
+            if(!this.selectTerminal) return;
+
             let find = this.selectTerminales.find( terminal => terminal.terminal_origen_id == this.selectTerminal.id );
 
             if(find){
