@@ -285,6 +285,8 @@ export default {
             this.$emit("update:visible", false);
         },
         onCreate() {
+
+            this.selectTerminales = [];
             if (this.programacion) {
                 this.onEdit = true;
                 this.form = this.programacion;
