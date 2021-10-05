@@ -6860,7 +6860,7 @@ h6 .inverted {
 }
 
 html.dark .text-muted {
-    color: #505461 !important;
+    color: #fff !important;
 }
 
 /* Colors */
@@ -8283,8 +8283,20 @@ html.dark .card-footer {
     border-top-color: #dee2e6;
 }
 
-html.dark .form-group .control-label{
+html.dark .negrita .control-label{
     color:#fff
+}
+
+html.dark .negrita{
+    color:#fff
+}
+
+html.dark .el-dialog__body h1, html.dark .el-dialog__body .h1, html.dark .el-dialog__body h2, html.dark .el-dialog__body .h2, html.dark .el-dialog__body h3, html.dark .el-dialog__body .h3, html.dark .el-dialog__body h4, html.dark .el-dialog__body .h4, html.dark .el-dialog__body h5, html.dark .el-dialog__body .h5, html.dark .el-dialog__body h6, html.dark .el-dialog__body .h6{
+    color:#606266
+}
+
+html.dark .el-dialog__body .control-label{
+    color:#606266
 }
 
 html .card-primary .card-header {

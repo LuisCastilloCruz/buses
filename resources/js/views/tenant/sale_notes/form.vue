@@ -1,5 +1,5 @@
 <template>
-    <div class="card mb-0 pt-2 pt-md-0">
+    <div class="card mb-0 pt-2 pt-md-0 negrita">
         <div class="tab-content"  v-if="company && establishment">
             <div class="invoice">
                 <header class="clearfix">
@@ -163,7 +163,7 @@
                             </div>
                             <!-- Pagos -->
                             <div class="col-12 pt-3">
-                                <table>
+                                <table class="negrita">
                                     <thead>
                                         <tr width="100%">
                                             <th>F. Pago</th>

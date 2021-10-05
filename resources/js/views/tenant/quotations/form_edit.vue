@@ -1,5 +1,5 @@
 <template>
-    <div class="card mb-0 pt-2 pt-md-0">
+    <div class="card mb-0 pt-2 pt-md-0 negrita">
         <div class="tab-content" v-if="loading_form">
             <div class="invoice">
                 <header class="clearfix">

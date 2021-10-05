@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="loading_form">
+        <div v-if="loading_form" class="negrita">
             <form autocomplete="off" @submit.prevent="submit" class="row no-gutters">
                 <div class="col-xl-9 col-md-9 col-12">
                     <div class="row card-header no-gutters align-items-start">

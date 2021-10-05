@@ -1,5 +1,5 @@
 <template>
-    <div class="card mb-0">
+    <div class="card mb-0 negrita">
         <div class="card-header bg-info">
             Nueva Nota ({{ document.series }}-{{ document.number }})
         </div>
