@@ -356,6 +356,7 @@ class TransporteProgramacionesController extends Controller
 
             $formProgramacion = $request->input('programacion');
             $programacion->update($formProgramacion);
+            $programacion->update(['programacion_id' => $programacion->id]);
 
             $intermedios = collect($request->input('intermedios'));
 
