@@ -210,9 +210,10 @@ class TransporteSalesController extends Controller
         $list = $parent->programaciones()
         ->where('active',true)
         ->where('terminal_destino_id',$programacion->terminal_destino_id)
+        ->orWhere('terminal_destino_id',$parent->terminal_destino_id)
         ->get();
 
-         $list->add($parent);
+        $list->add($parent);
 
 
 
