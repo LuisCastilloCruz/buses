@@ -212,7 +212,7 @@ class TransporteSalesController extends Controller
         ->where('terminal_destino_id',$programacion->terminal_destino_id)
         ->get();
 
-        // $list->add($parent);
+         $list->add($parent);
 
 
 
