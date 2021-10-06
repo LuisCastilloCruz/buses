@@ -203,14 +203,17 @@ class TransporteSalesController extends Controller
     private function buscarAsientosOcupados(TransporteProgramacion $programacion,$listSeats,$fecha){
         $parent = $programacion->programacion;
 
+        
+        $terminal = Auth::user()->terminal;
+
         if(is_null($parent)) return $listSeats;
 
         $disponibles = collect([]); // aqui almacenaré los asientos disponibles
         $ocupados = collect([]); //aqui los ocupados
         $list = $parent->programaciones()
         ->where('active',true)
-        // ->where('terminal_destino_id',$programacion->terminal_destino_id)
-        // ->orWhere('terminal_destino_id',$parent->terminal_destino_id)
+        ->where('terminal_destino_id','!=',$terminal->id)
+        ->where('terminal_destino_id',$programacion->terminal_destino_id)
         ->get();
 
         $list->add($parent);
