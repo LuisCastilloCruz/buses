@@ -209,8 +209,8 @@ class TransporteSalesController extends Controller
         $ocupados = collect([]); //aqui los ocupados
         $list = $parent->programaciones()
         ->where('active',true)
-        ->where('terminal_destino_id',$programacion->terminal_destino_id)
-        ->orWhere('terminal_destino_id',$parent->terminal_destino_id)
+        // ->where('terminal_destino_id',$programacion->terminal_destino_id)
+        // ->orWhere('terminal_destino_id',$parent->terminal_destino_id)
         ->get();
 
         $list->add($parent);
