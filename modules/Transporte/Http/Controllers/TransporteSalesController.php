@@ -30,10 +30,6 @@ use App\Models\Tenant\PaymentMethodType;
 use Exception;
 use Illuminate\Support\Collection;
 use Modules\Finance\Traits\FinanceTrait;
-use Modules\Transporte\Models\TransporteRuta;
-use Modules\Transporte\Models\TransporteTerminales;
-
-use function GuzzleHttp\json_decode;
 
 class TransporteSalesController extends Controller
 {
