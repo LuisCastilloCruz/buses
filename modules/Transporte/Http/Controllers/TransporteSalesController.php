@@ -28,8 +28,12 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\PaymentMethodType;
 use Exception;
+use Illuminate\Support\Collection;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Transporte\Models\TransporteRuta;
+use Modules\Transporte\Models\TransporteTerminales;
+
+use function GuzzleHttp\json_decode;
 
 class TransporteSalesController extends Controller
 {
@@ -123,6 +127,8 @@ class TransporteSalesController extends Controller
     public function getProgramacionesDisponibles(ProgramacionesDisponiblesRequest $request){
 
        try{
+           
+
             $programaciones = TransporteProgramacion::with('origen','destino')
             ->where('terminal_origen_id',$request->origen_id)
             ->where('active',true)
@@ -152,16 +158,16 @@ class TransporteSalesController extends Controller
 
                 foreach($listSeats as $seat){
 
-                    $isState = TransportePasaje::with('pasajero','asiento','document:id,document_type_id')
+                    $pasaje = TransportePasaje::with('pasajero','asiento','document:id,document_type_id')
                     ->whereDate('fecha_salida',$request->fecha_salida)
                     ->where('asiento_id',$seat->id)
                     ->where('programacion_id',$programacion->id)
                     ->where('estado_asiento_id','!=',4) //diferente de cancelado
                     ->first();
-
-                    if(!is_null($isState)){
-                        $seat->estado_asiento_id = $isState->estado_asiento_id;
-                        $seat->transporte_pasaje = $isState;
+    
+                    if(!is_null($pasaje)){
+                        $seat->estado_asiento_id = $pasaje->estado_asiento_id;
+                        $seat->transporte_pasaje = $pasaje;
                     }else {
                         $seat->estado_asiento_id = 1;
                         $seat->pasajero = null;
@@ -178,8 +184,6 @@ class TransporteSalesController extends Controller
                 });
 
                 $asientos = $this->buscarAsientosOcupados($programacion,$asiendosDisponible,$request->fecha_salida);
-
-
                 $listSeats = $asientosOcupados->merge($asientos);
 
                 $programacion->transporte->asientos = $listSeats;
@@ -200,31 +204,145 @@ class TransporteSalesController extends Controller
 
     }
 
-    private function buscarAsientosOcupados(TransporteProgramacion $programacion,$listSeats,$fecha){
+    private function combinaciones(Collection $list,Collection $result = null): Collection{
+        $item = $list->shift();
+        $result = is_null($result) ? new Collection() : $result; 
+        if(count($list) == 0) return $result;
+
+        foreach($list as $terminal){
+            $result->push([$item->id,$terminal->id]);
+        }
+        return $this->combinaciones($list,$result);
+    }
+
+    private function getCombinacionesProgramaciones(TransporteProgramacion $programacion){
+        $terminal = Auth::user()->terminal;
+        $collection = $programacion->rutas;
+
+        $ruta = $collection->first( function($term) use($terminal) {
+            return $term->id == $terminal->id;
+        });
+
+
+        $newCollection = $collection->filter(function($term) use($ruta){
+            return $term->pivot->orden >= $ruta->pivot->orden;
+        });
+
+        $newCollection->push($programacion->destino);
+        $c = $this->combinaciones($newCollection);
+
+        $newCollection1 =  $collection->filter(function($term) use($ruta){
+            return $term->id != $ruta->id;
+        });
+
+
+        $newCollection1->prepend($programacion->origen);
+        $newCollection1->push($programacion->destino);
+
+
+        $c1 = $this->combinaciones($newCollection1);
+
+        $list = $c->merge($c1)->unique();
+
+        $programaciones = new Collection();
+
+        foreach($list as $item){
+            [$origen,$destino] = $item;
+
+            $program = TransporteProgramacion::where('terminal_origen_id',$origen)
+            ->where('terminal_destino_id',$destino)
+            ->where('programacion_id',$programacion->id)
+            ->where('active',true)
+            ->first();
+
+            $programaciones->push($program);
+
+        }
+
+        return $programaciones;
+
+
+    }
+
+    private function getProgramacionesMatch(TransporteProgramacion $programacion){
+        $terminal = Auth::user()->terminal;
+        $listProgramaciones = new Collection();
+
         $parent = $programacion->programacion;
 
-        
-        $terminal = Auth::user()->terminal;
+        $listaRutas = $parent->rutas()->get();
+       
 
-        if(is_null($parent)) return $listSeats;
+        $listaRutas->prepend($parent->origen);
+        $listaRutas->push($parent->destino);
+
+        $rutaIndex = $listaRutas->search(function($r)use($terminal){
+            return $r->id == $terminal->id;
+        });
+       
+
+        $orderList = $listaRutas->filter(function($term,$index) use($rutaIndex){
+            return $index >= $rutaIndex;
+        });
+
+        $listaCombinada = $this->combinaciones($orderList);
+
+        $orderList1 = $listaRutas->filter(function($term,$index) use($rutaIndex){
+            return $index < $rutaIndex;
+        });
+
+        $orderList2 = $listaRutas->filter(function($term,$index) use($rutaIndex){
+            return $index > $rutaIndex;
+        });
+
+        $newList = $orderList1->merge($orderList2);
+
+        $listaCombinada1 = $this->combinaciones($newList);
+
+        // dd($listaCombinada1);
+
+        $totalList = $listaCombinada
+        ->merge($listaCombinada1)
+        ->unique();
+
+      
+
+        foreach($totalList as $item){
+            [$origen,$destino] = $item;
+
+            $program = TransporteProgramacion::where('terminal_origen_id',$origen)
+            ->where('terminal_destino_id',$destino)
+            ->where('programacion_id',$parent->id)
+            ->where('active',true)
+            ->first();
+
+            if($program) $listProgramaciones->push($program);
+
+
+        }
+
+        
+        return $listProgramaciones;
+    }
+
+
+    private function buscarAsientosOcupados(TransporteProgramacion $programacion,$listSeats,$fecha){
+        // $parent = $programacion->programacion;
+
+        // if(is_null($parent)) return $listSeats;
 
         $disponibles = collect([]); // aqui almacenaré los asientos disponibles
         $ocupados = collect([]); //aqui los ocupados
-        $list = $parent->programaciones()
-        ->where('active',true)
-        ->where('terminal_destino_id','!=',$terminal->id)
-        ->where('terminal_destino_id',$programacion->terminal_destino_id)
-        ->get();
+        
+        $list = $this->getProgramacionesMatch($programacion);
 
-        $list->add($parent);
+        if(count($list) == 0) return $listSeats;
 
-
-
+        // $list->add($parent);
         foreach($list as $program){
             /** Obtengo lista temporal de los asientos disponibles */
             $tempList = $listSeats->whereNotIn('id',$ocupados->pluck('id'));
             foreach($tempList as $seat){
-
                 /** Busco si hay algun asiento ocupado con esa programación y esa fecha asi como tambien el asiento */
                 $isState = TransportePasaje::with('pasajero','asiento','document:id,document_type_id')
                 ->whereDate('fecha_salida',$fecha)
@@ -233,12 +351,10 @@ class TransporteSalesController extends Controller
                 ->where('programacion_id',$program->id)
                 ->where('estado_asiento_id','!=',4) //diferente de cancelado
                 ->first();
-
                 if(!is_null($isState)){
                     $seat->estado_asiento_id = $isState->estado_asiento_id;
                     $seat->transporte_pasaje = $isState;
                     $ocupados->push($seat); //inserto el asiento en la lista de ocupados
-
                     /** Si existe en disponibles lo remuevo */
                     $disponibles = $disponibles->filter(function($asiento) use($seat){
                         return $asiento->id != $seat->id;
@@ -250,19 +366,18 @@ class TransporteSalesController extends Controller
                     $exist = $disponibles->first(function($asiento) use($seat){
                         return $asiento->id == $seat->id;
                     });
-
                     if(!is_null($exist)) continue;
-
                     $seat->estado_asiento_id = 1;
                     $seat->pasajero = null;
                     $disponibles->push($seat); //meto el asiento en la lista de disponibles
                 }
             }
         }
-
         $newList = $disponibles->merge($ocupados);
         return $newList;
     }
+
+    
 
     private function getAsientosPasajesEnRuta(TransporteProgramacion $programacion,$listSeats,$fecha){
 
@@ -343,6 +458,8 @@ class TransporteSalesController extends Controller
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
 
+        $terminal = $request->user()->terminal;
+
         DB::connection('tenant')->beginTransaction();
         try {
 
@@ -366,8 +483,9 @@ class TransporteSalesController extends Controller
             TransportePasaje::create(
                 array_merge($attributes,[
                     'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
-                    'origen_id' => $request->user()->terminal->id,
-                    'soap_type_id'=>$soap_type_id
+                    'origen_id' => $terminal->id,
+                    'soap_type_id'=>$soap_type_id,
+                    'rutas_ocupados' => json_encode([])
                     // 'fecha_llegada' => $fechaLLegada
                 ])
             );

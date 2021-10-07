@@ -22,7 +22,7 @@ class TransporteProgramacion extends ModelTenant
         'tiempo_aproximado',
         'programacion_id',
         'hidden',
-        'active'
+        'active',
     ];
 
 
