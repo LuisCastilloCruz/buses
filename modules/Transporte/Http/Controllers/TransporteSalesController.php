@@ -211,55 +211,7 @@ class TransporteSalesController extends Controller
         return $this->combinaciones($list,$result);
     }
 
-    private function getCombinacionesProgramaciones(TransporteProgramacion $programacion){
-        $terminal = Auth::user()->terminal;
-        $collection = $programacion->rutas;
-
-        $ruta = $collection->first( function($term) use($terminal) {
-            return $term->id == $terminal->id;
-        });
-
-
-        $newCollection = $collection->filter(function($term) use($ruta){
-            return $term->pivot->orden >= $ruta->pivot->orden;
-        });
-
-        $newCollection->push($programacion->destino);
-        $c = $this->combinaciones($newCollection);
-
-        $newCollection1 =  $collection->filter(function($term) use($ruta){
-            return $term->id != $ruta->id;
-        });
-
-
-        $newCollection1->prepend($programacion->origen);
-        $newCollection1->push($programacion->destino);
-
-
-        $c1 = $this->combinaciones($newCollection1);
-
-        $list = $c->merge($c1)->unique();
-
-        $programaciones = new Collection();
-
-        foreach($list as $item){
-            [$origen,$destino] = $item;
-
-            $program = TransporteProgramacion::where('terminal_origen_id',$origen)
-            ->where('terminal_destino_id',$destino)
-            ->where('programacion_id',$programacion->id)
-            ->where('active',true)
-            ->first();
-
-            $programaciones->push($program);
-
-        }
-
-        return $programaciones;
-
-
-    }
-
+    
     private function getProgramacionesMatch(TransporteProgramacion $programacion){
         $terminal = Auth::user()->terminal;
         $listProgramaciones = new Collection();
