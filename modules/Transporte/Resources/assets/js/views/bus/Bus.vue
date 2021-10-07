@@ -41,7 +41,7 @@
                                         <path class="fil4 str1" :style="stateAsiento(asiento)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
                                     </g>
                                 </svg>
-                                    <span @mousedown="childOnMouseDown($event,asiento,index)">{{ asiento.numero_asiento }}</span>
+                                    <span @mousedown="childOnMouseDown($event,asiento,index)" :style="(asiento.estado_asiento_id == 2) ? 'color:#fff':  'color:#000'">{{ asiento.numero_asiento }}</span>
                                 </template>
 
                                 <!-- Baño -->
@@ -165,6 +165,8 @@ export default {
     },
     created(){
         this.asientos = this.seats;
+
+        console.log(this.asientos);
     },
     watch:{
         seats(newVal){
@@ -196,7 +198,6 @@ export default {
     methods:{
 
         stateAsiento(asiento,config={}){
-
             /** Manejo de los estados del asiento */
             if(asiento.estado_asiento_id == 1){//Disponible
                 return {
@@ -207,12 +208,13 @@ export default {
 
                 if(config.isBelt){ //Hay un path que se pinta de azul
                     return{
-                        fill:'#00AEFF'
+                        fill:'#fff'
                     };
                 }
                 return {
-                    fill:'#1b99a5',
-                    animation:'none'
+                    fill:'#ff0000',
+                    animation:'none',
+                    color:'#fff'
                 }
 
             }else if(asiento.estado_asiento_id == 3){ //Reservado
@@ -235,13 +237,13 @@ export default {
 
                 if(config.isSeat){
                     return {
-                        fill:'#003c71',
+                        fill:'#ff6600',
                         animation:'reservado 1s infinite'
                     }
                 }
 
                 return {
-                    fill:'#003c71',
+                    fill:'#ff6600',
                     animation:'none'
                 }
 

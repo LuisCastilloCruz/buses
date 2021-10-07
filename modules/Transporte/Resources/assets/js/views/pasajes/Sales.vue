@@ -501,11 +501,11 @@ export default {
 
                 if(config.isBelt){ //Hay un path que se pinta de azul
                     return{
-                        fill:'#00AEFF'
+                        fill:'#fff'
                     };
                 }
                 return {
-                    fill:'#1b99a5',
+                    fill:'#ff0000',
                     animation:'none'
                 }
 
