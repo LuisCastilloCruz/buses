@@ -54,7 +54,7 @@
                                 >
                                     <template v-for="destino in destinos">
                                         <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
-                                        <el-option v-if="terminalId != destino.id"  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
+                                        <el-option  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
                                         </el-option>
                                     </template>
 
