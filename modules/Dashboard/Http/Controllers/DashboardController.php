@@ -3,6 +3,7 @@
 namespace Modules\Dashboard\Http\Controllers;
 
 use App\Exports\AccountsReceivable;
+use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Maatwebsite\Excel\Facades\Excel;
@@ -28,6 +29,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $configuration = Configuration::first();
+
         if(auth()->user()->type != 'admin' || !auth()->user()->searchModule('dashboard'))
             return redirect()->route('tenant.documents.index');
 
@@ -37,9 +40,13 @@ class DashboardController extends Controller
         $pendientes = Document::where('state_type_id','01')
             ->get();
 
-        if(count($pendientes)>0){
-            smilify('error', "Por favor valide sus comprobantes:==================== 1.- Dentro del botón OPCIONES, dar click en el botón CONSULTAR CDR.========  2.- Si aparece el mensaje ticket no existe o server error, debe utilizar el botón REENVIAR.======================  3.- Si después de hacer todas las acciones anteriores, aún hay comprobantes pendientes, comunicarse con 950360472");
-        }
+//        if(count($pendientes)>0){
+//            smilify('error', "Por favor valide sus comprobantes:==================== 1.- Dentro del botón OPCIONES, dar click en el botón CONSULTAR CDR.========  2.- Si aparece el mensaje ticket no existe o server error, debe utilizar el botón REENVIAR.======================  3.- Si después de hacer todas las acciones anteriores, aún hay comprobantes pendientes, comunicarse con 950360472");
+//        }
+
+        $whatsapp= $configuration->phone_whatsapp;
+        smilify('success', "El número de soporte es, " . $whatsapp);
+        //@if(strlen($phone_whatsapp) > 0)
         return view('dashboard::index', compact('soap_company'));
     }
 
