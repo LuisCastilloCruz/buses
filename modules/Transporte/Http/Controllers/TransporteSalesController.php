@@ -409,6 +409,7 @@ class TransporteSalesController extends Controller
         $terminal = $request->user()->terminal;
 
         DB::connection('tenant')->beginTransaction();
+
         try {
 
             $attributes = $request->only([
@@ -428,15 +429,49 @@ class TransporteSalesController extends Controller
                 'hora_salida'
             ]);
 
-            TransportePasaje::create(
-                array_merge($attributes,[
-                    'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
-                    'origen_id' => $terminal->id,
-                    'soap_type_id'=>$soap_type_id,
-                    'rutas_ocupados' => json_encode([])
-                    // 'fecha_llegada' => $fechaLLegada
-                ])
-            );
+            if($request->input('tipo_venta') == 1){
+                TransportePasaje::create(
+                    array_merge($attributes,[
+                        'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
+                        'origen_id' => $terminal->id,
+                        'soap_type_id'=>$soap_type_id
+                        // 'fecha_llegada' => $fechaLLegada
+                    ])
+                );
+
+            }else if($request->input('tipo_venta') == 2){
+                $programacion = TransporteProgramacion::find($request->input('programacion_id'));
+
+                $list = $this->getProgramacionesMatch($programacion)->map(function($item){
+                    return $item->id;
+                });
+
+                $exist = TransportePasaje::where('asiento_id',$request->input('asiento_id'))
+                ->whereIn('programacion_id',$list->toArray())
+                ->where('fecha_salida',$request->input('fecha_salida'))
+                ->first();
+
+                if( !is_null($exist) ) return response()->json([
+                    'success' => false,
+                    'message' => 'Lo sentimos el asiento ya ha sido ocupado'
+                ]);
+
+               
+
+                TransportePasaje::create(
+                    array_merge($attributes,[
+                        'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
+                        'origen_id' => $terminal->id,
+                        'soap_type_id'=>$soap_type_id,
+                        // 'fecha_llegada' => $fechaLLegada
+                    ])
+                );
+
+
+
+            }
+
+            
 
             DB::connection('tenant')->commit();
 

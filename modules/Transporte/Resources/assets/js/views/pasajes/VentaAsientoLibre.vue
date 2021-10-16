@@ -681,6 +681,15 @@ export default {
             .then( ({data}) => {
                 this.loading = false;
 
+                if(!data.success){
+                    this.$emit('update:visible',false);
+                    this.$emit('onUpdateItem');
+                    return this.$message({
+                        type: 'error',
+                        message: data.message
+                    });
+                }
+
                 if (this.document.document_type_id === "nv") {
                     this.modalNote();
                 } else {
@@ -714,7 +723,7 @@ export default {
 
 
             }).catch( error => {
-                alert(error);
+                // alert(error);
                 this.axiosError(error);
             }).finally(() => {
                 this.loading = false;
