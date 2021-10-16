@@ -324,6 +324,7 @@
                           :recordId="quotationNewId"
                           :typeUser="typeUser"
                           :showGenerate="false"
+                          :configuration="configuration"
                           :showClose="false"></quotation-options>
 
         <terms-condition :showDialog.sync="showDialogTermsCondition"

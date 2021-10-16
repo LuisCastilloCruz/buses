@@ -12,12 +12,8 @@
 
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
     $config = \App\Models\Tenant\Configuration::first();
-    $miimage = null;
+    $miimage = public_path("storage/uploads/fondos/{$fondo}");
 
-        if($formato == "aqpfact_01" &&  $fondo!='')
-        {
-            $miimage = public_path("storage/uploads/fondos/{$fondo}");
-        }
 @endphp
 <html>
 <head>
@@ -26,7 +22,7 @@
 </head>
 <body>
 <div class="" style="position: absolute; text-align: center; z-index: 0; top: -5px; left: -10px;">
-   @if(file_exists($miimage))
+   @if($fondo!='')
     <img src="data:{{mime_content_type($miimage)}};base64, {{base64_encode(file_get_contents($miimage))}}" alt="fondo" class="">
     @endif
 </div>

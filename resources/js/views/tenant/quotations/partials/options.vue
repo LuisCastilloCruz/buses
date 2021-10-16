@@ -405,12 +405,14 @@
             :recordId="documentNewId"
             :showClose="true"
             :showDialog.sync="showDialogDocumentOptions"
+            :configuration="configuration"
         ></document-options>
 
         <sale-note-options
             :recordId="documentNewId"
             :showClose="true"
             :showDialog.sync="showDialogSaleNoteOptions"
+            :configuration="configuration"
         ></sale-note-options>
     </div>
 </template>
@@ -431,6 +433,7 @@ export default {
         "showGenerate",
         "type",
         "typeUser",
+        "configuration"
     ],
     computed:{
     },
@@ -462,6 +465,7 @@ export default {
         };
     },
     created() {
+
         this.initForm();
         this.initDocument();
         this.clickAddPayment();

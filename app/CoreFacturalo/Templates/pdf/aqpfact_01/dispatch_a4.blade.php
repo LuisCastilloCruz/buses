@@ -60,7 +60,7 @@
         </td>
         <td width="40%" class="py-2 px-2 text-center" style="border: 1px solid {{$color1}}">
             <h3 class="font-bold">{{ 'R.U.C. '.$company->number }}</h3>
-            <h3 class="text-center text-white font-bold" style="background: {{$color1}}">{{ $document->document_type->description }}</h3>
+            <h3 class="text-center text-white font-bold" style="background: {{$color1}}">GUIA DE REMISION ELECTRÓNICA REMITENTE</h3>
             <h3 class="text-center font-bold">{{ $document_number }}</h3>
         </td>
     </tr>

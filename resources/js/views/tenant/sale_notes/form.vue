@@ -327,7 +327,7 @@
         <sale-notes-options :showDialog.sync="showDialogOptions"
                           :recordId="saleNotesNewId"
                           :showClose="false"
-                          :configuration="config"></sale-notes-options>
+                          :configuration="configuration"></sale-notes-options>
 
     </div>
 </template>

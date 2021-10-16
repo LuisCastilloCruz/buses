@@ -173,29 +173,31 @@ export default {
         },
         clickPrintSilent(format){
             const urlPdf = `${this.resource}/print/${this.form.external_id}/${format}`;
-            console.log(urlPdf);
+
             if(localStorage.printer_silent==""){
                 this.$message.error("Configure el nombre de la impresora corréctamente en Configuración, avanzado, Imprimir Ticket en forma silenciosa...");
                 return null;
             }
 
-            const nombreImpresora = localStorage.printer_silent;
-            const url = `http://localhost:8080/url?urlPdf=${urlPdf}&impresora=${nombreImpresora}`;
-            // Elemento DOM, solo es para depurar
-            this.$message.success( "Imprimiendo...");
-            fetch(url)
-                .then(respuesta => {
-                    // Si la respuesta es OK, entonces todo fue bien
-                    if (respuesta.status === 200) {
-                        this.$message.success("Se imprimió...")
-                    } else {
-                        // Si no, decodificamos el mensaje para ver el error
-                        respuesta.json()
-                            .then(mensaje => {
-                                this.$message.error("Error imprimiendo: " + mensaje);
-                            });
-                    }
-                });
+            if(localStorage.printer_silent!="") {
+                const nombreImpresora = localStorage.printer_silent;
+                const url = `http://localhost:8080/url?urlPdf=${urlPdf}&impresora=${nombreImpresora}`;
+                // Elemento DOM, solo es para depurar
+                this.$message.success("Imprimiendo...");
+                fetch(url)
+                    .then(respuesta => {
+                        // Si la respuesta es OK, entonces todo fue bien
+                        if (respuesta.status === 200) {
+                            this.$message.success("Se imprimió...")
+                        } else {
+                            // Si no, decodificamos el mensaje para ver el error
+                            respuesta.json()
+                                .then(mensaje => {
+                                    this.$message.error("Error imprimiendo: " + mensaje);
+                                });
+                        }
+                    });
+            }
         },
     }
 }
