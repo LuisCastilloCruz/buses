@@ -45,7 +45,7 @@ class DashboardController extends Controller
 //        }
 
         $whatsapp= $configuration->phone_whatsapp;
-        smilify('success', "El número de soporte es, " . $whatsapp);
+        smilify('success', "Los comprobantes del pago por el sistema, deberán ser enviados al, " . $whatsapp);
         //@if(strlen($phone_whatsapp) > 0)
         return view('dashboard::index', compact('soap_company'));
     }
