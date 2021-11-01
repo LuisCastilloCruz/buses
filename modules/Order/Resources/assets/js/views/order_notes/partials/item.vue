@@ -1,58 +1,67 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
-        <form autocomplete="off" @submit.prevent="clickAddItem">
+    <el-dialog :close-on-click-modal="false"
+               :title="titleDialog"
+               :visible="showDialog"
+               top="7vh"
+               @close="close"
+               @open="create">
+        <form autocomplete="off"
+              @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
-                        <div id="custom-select" :class="{'has-danger': errors.item_id}" class="form-group">
+                        <div id="custom-select"
+                             :class="{'has-danger': errors.item_id}"
+                             class="form-group">
                             <label class="control-label">
                                 Producto/Servicio
-                                <a
-                                    href="#" @click.prevent="showDialogNewItem = true">
+                                <a v-if="can_add_new_product"
+                                   href="#"
+                                   @click.prevent="showDialogNewItem = true">
                                     [+ Nuevo]
                                 </a>
                             </label>
-
-                            <!-- <el-select v-model="form.item_id" @change="changeItem" filterable  ref="select_item" @focus="focusSelectItem">
-                                <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
-                            </el-select> -->
-
 
                             <template id="select-append">
                                 <el-input id="custom-input">
                                     <el-select
                                         id="select-width"
-                                        ref="select_item"
+                                        ref="selectSearchNormal"
                                         slot="prepend"
                                         v-model="form.item_id"
+                                        :disabled="recordItem != null"
+                                        :loading="loading_search"
+                                        :remote-method="searchRemoteItems"
                                         filterable
                                         placeholder="Buscar"
                                         popper-class="el-select-items"
+                                        remote
                                         @change="changeItem"
                                         @focus="focusSelectItem">
 
 
-                                        <el-tooltip v-for="option in items" :key="option.id" placement="top">
-
-                                            <div slot="content">
-                                                Almacen: {{ option.warehouse_description }} <br>
-                                                Marca: {{ option.brand }} <br>
-                                                Categoria: {{ option.category }} <br>
-                                                Stock: {{ option.stock }} <br>
-                                                Precio: {{ option.currency_type_symbol }} {{ option.sale_unit_price }}
-                                                <br>
-                                            </div>
-
-                                            <el-option :label="option.full_description" :value="option.id"></el-option>
+                                        <el-tooltip
+                                            v-for="option in items"
+                                            :key="option.id"
+                                            placement="left">
+                                            <div
+                                                slot="content"
+                                                v-html="ItemSlotTooltipView(option)"
+                                            ></div>
+                                            <el-option
+                                                :label="ItemOptionDescriptionView(option)"
+                                                :value="option.id"
+                                            ></el-option>
 
                                         </el-tooltip>
-
                                     </el-select>
-                                    <el-tooltip slot="append"
-                                                class="item"
-                                                content="Ver Stock del Producto"
-                                                effect="dark"
-                                                placement="bottom">
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Ver Stock del Producto"
+                                        effect="dark"
+                                        placement="bottom">
                                         <el-button
                                             @click.prevent="clickWarehouseDetail()">
                                             <i class="fa fa-search"></i>
@@ -61,256 +70,352 @@
                                 </el-input>
                             </template>
 
-                            <small v-if="errors.item_id" class="form-control-feedback"
+                            <small v-if="errors.item_id"
+                                   class="form-control-feedback"
                                    v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
                     <div class="col-md-5">
-                        <div :class="{'has-danger': errors.affectation_igv_type_id}" class="form-group">
+                        <div :class="{'has-danger': errors.affectation_igv_type_id}"
+                             class="form-group">
                             <label class="control-label">Afectación Igv</label>
                             <el-select v-model="form.affectation_igv_type_id"
-                                       :disabled="!change_affectation_igv_type_id" filterable>
-                                <el-option v-for="option in affectation_igv_types" :key="option.id"
+                                       :disabled="!change_affectation_igv_type_id"
+                                       filterable>
+                                <el-option v-for="option in affectation_igv_types"
+                                           :key="option.id"
                                            :label="option.description"
                                            :value="option.id"></el-option>
                             </el-select>
-                            <el-checkbox v-model="change_affectation_igv_type_id">
+                            <el-checkbox v-model="change_affectation_igv_type_id"
+                                         :disabled="recordItem != null">
                                 Editar
                             </el-checkbox>
-                            <small v-if="errors.affectation_igv_type_id" class="form-control-feedback"
+                            <small v-if="errors.affectation_igv_type_id"
+                                   class="form-control-feedback"
                                    v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div :class="{'has-danger': errors.quantity}" class="form-group">
+
+                    <div class="col-md-4 col-sm-4">
+                        <div :class="{'has-danger': errors.quantity}"
+                             class="form-group">
                             <label class="control-label">Cantidad</label>
-                            <el-input v-model="form.quantity" :disabled="form.item.calculate_quantity" @blur="validateQuantity" @input.native="changeValidateQuantity" ref="inputQuantity">
-                                <el-button style="padding-right: 5px ;padding-left: 12px" slot="prepend" icon="el-icon-minus" @click="clickDecrease" :disabled="form.quantity < 0.01 || form.item.calculate_quantity"></el-button>
-                                <el-button style="padding-right: 5px ;padding-left: 12px" slot="append" icon="el-icon-plus" @click="clickIncrease"  :disabled="form.item.calculate_quantity"></el-button>
-                            </el-input>
-                            <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
+                            <el-input-number
+                                ref="inputQuantity"
+                                v-model="form.quantity"
+                                :disabled="form.item.calculate_quantity"
+                                :min="0.01"
+                                @blur="validateQuantity"
+                                @input.native="changeValidateQuantity"
+                            >
+                                <el-button slot="prepend"
+                                           :disabled="form.quantity < 0.01 || form.item.calculate_quantity"
+                                           icon="el-icon-minus"
+                                           style="padding-right: 5px ;padding-left: 12px"
+                                           @click="clickDecrease"></el-button>
+                                <el-button slot="append"
+                                           :disabled="form.item.calculate_quantity"
+                                           icon="el-icon-plus"
+                                           style="padding-right: 5px ;padding-left: 12px"
+                                           @click="clickIncrease"></el-button>
+                            </el-input-number>
+                            <small v-if="errors.quantity"
+                                   class="form-control-feedback"
+                                   v-text="errors.quantity[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div :class="{'has-danger': errors.unit_price}" class="form-group">
+                    <div class="col-md-4 col-sm-4">
+                        <div :class="{'has-danger': errors.unit_price}"
+                             class="form-group">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price" :readonly="canEditPrice"
+                            <el-input v-model="form.unit_price"
+                                      :readonly="!edit_unit_price"
                                       @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol" slot="prepend">
+                                <template v-if="form.item.currency_type_symbol"
+                                          slot="prepend">
                                     {{ form.item.currency_type_symbol }}
                                 </template>
                             </el-input>
-                            <small v-if="errors.unit_price" class="form-control-feedback"
+                            <small v-if="errors.unit_price"
+                                   class="form-control-feedback"
                                    v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
-                    <div v-if="item_unit_types.length > 0" class="col-md-12">
-                        <div class="table-responsive" style="margin:3px">
-                            <h3>Lista de Precios</h3>
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th class="text-center">Unidad</th>
-                                    <th class="text-center">Descripción</th>
-                                    <th class="text-center">Factor</th>
-                                    <th class="text-center">Precio</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="(row, index) in item_unit_types">
-                                    <td class="text-center">{{row.unit_type_id}}</td>
-                                    <td class="text-center">{{row.description}}</td>
-                                    <td class="text-center">{{row.quantity_unit}}</td>
-                                    <td class="text-center">
-                                        <select v-model="precio_var" @change="selectedPrice(row)">
-                                            <option :selected="true"> Seleccione</option>
-                                            <option v-if="row.price1" :value="row.price1" :label="row.price1"></option>
-                                            <option v-if="row.price2" :value="row.price2" :label="row.price2"></option>
-                                            <option v-if="row.price3" :value="row.price3" :label="row.price3"></option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+
+                    <div v-if="showSeries"
+                         class="col-md-3 col-sm-3"
+                         style="padding-top: 1%;">
+                        <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
+                        <a class="text-center font-weight-bold text-info"
+                           href="#"
+                           @click.prevent="clickSelectLots">[&#10004;
+                                                            Seleccionar
+                                                            series]</a>
                     </div>
-                    <div v-show="form.item.calculate_quantity" class="col-md-3 col-sm-6">
-                        <div :class="{'has-danger': errors.total_item}" class="form-group">
+                    <div v-show="form.item.calculate_quantity"
+                         class="col-md-3 col-sm-6">
+                        <div :class="{'has-danger': errors.total_item}"
+                             class="form-group">
                             <label class="control-label">Total venta producto</label>
-                            <el-input ref="total_item" v-model="total_item" :min="0.01" @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol" slot="prepend">
+                            <el-input ref="total_item"
+                                      v-model="total_item"
+                                      :min="0.01"
+                                      @input="calculateQuantity">
+                                <template v-if="form.item.currency_type_symbol"
+                                          slot="prepend">
                                     {{ form.item.currency_type_symbol }}
                                 </template>
                             </el-input>
-                            <small v-if="errors.total_item" class="form-control-feedback"
+                            <small v-if="errors.total_item"
+                                   class="form-control-feedback"
                                    v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
-
-                    <div v-if="form.item_id && form.item.series_enabled" class="col-md-3 col-sm-3"
-                         style="padding-top: 1%;">
-                        <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
-                        <a class="text-center font-weight-bold text-info" href="#" @click.prevent="clickSelectLots">[&#10004;
-                                                                                                                    Seleccionar
-                                                                                                                    series]</a>
-                    </div>
-
-                    <div v-if="configuration.edit_name_product" class="col-md-12 col-sm-12 mt-2">
+                    <div v-if="config.edit_name_product"
+                         class="col-md-12 col-sm-12 mt-2">
                         <div class="form-group">
                             <label class="control-label">Nombre producto en PDF</label>
-                            <vue-ckeditor v-model="form.name_product_pdf" :editors="editors"
+                            <vue-ckeditor v-model="form.name_product_pdf"
+                                          :editors="editors"
                                           type="classic"></vue-ckeditor>
                         </div>
                     </div>
-                    <!--<div class="col-md-6" v-show="has_list_prices">
-                        <div class="form-group" :class="{'has-danger': errors.item_unit_type_id}">
-                            <label class="control-label">Presentación</label>
-                            <el-select v-model="form.item_unit_type_id" filterable @change="changePresentation">
-                                <el-option v-for="option in item_unit_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
-                            <el-radio-group v-if="form.item_unit_type_id" v-model="item_unit_type.price_default" @change="changePresentation">
-                                <el-radio :label="1">Precio 1</el-radio>
-                                <el-radio :label="2">Precio 2</el-radio>
-                                <el-radio :label="3">Precio 3</el-radio>
-                            </el-radio-group>
-                            <small class="form-control-feedback" v-if="errors.item_unit_type_id" v-text="errors.item_unit_type_id[0]"></small>
-                        </div>
-                    </div>-->
-                    <div class="col-md-12 mt-3">
-                        <section id="card-section" class="card mb-2 card-transparent card-collapsed">
-                            <header id="card-click" class="card-header hoverable bg-light border-top rounded-0 py-1"
-                                    data-card-toggle style="cursor: pointer;">
-                                <div class="card-actions" style="margin-top: -12px;">
-                                    <a class="card-action card-action-toggle text-info" data-card-toggle=""
-                                       href="#"></a>
+                    <template v-if="!is_client">
 
-                                </div>
-
-                                <p class="pl-1">Información adicional atributos UBL 2.1</p>
-                            </header>
-                            <div class="card-body px-0 pt-2" style="display: none;">
-                                <div v-if="discount_types.length > 0" class="col-md-12 px-0">
-                                    <label class="control-label">
-                                        Descuentos
-                                        <a href="#" @click.prevent="clickAddDiscount">[+ Agregar]</a>
-                                    </label>
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th>Tipo</th>
-                                            <th>Descripción</th>
-                                            <th>Porcentaje</th>
-                                            <th></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr v-for="(row, index) in form.discounts">
-                                            <td>
-                                                <el-select v-model="row.discount_type_id"
-                                                           @change="changeDiscountType(index)">
-                                                    <el-option v-for="option in discount_types" :key="option.id"
-                                                               :label="option.description"
-                                                               :value="option.id"></el-option>
-                                                </el-select>
-                                            </td>
-                                            <td>
-                                                <el-input v-model="row.description"></el-input>
-                                            </td>
-                                            <td>
-                                                <el-input v-model="row.percentage"></el-input>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-danger" type="button"
-                                                        @click.prevent="clickRemoveDiscount(index)">x
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div v-if="charge_types.length > 0" class="col-md-12 px-0">
-                                    <label class="control-label">
-                                        Cargos
-                                        <a href="#" @click.prevent="clickAddCharge">[+ Agregar]</a>
-                                    </label>
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th>Tipo</th>
-                                            <th>Descripción</th>
-                                            <th>Porcentaje</th>
-                                            <th></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr v-for="(row, index) in form.charges">
-                                            <td>
-                                                <el-select v-model="row.charge_type_id"
-                                                           @change="changeChargeType(index)">
-                                                    <el-option v-for="option in charge_types" :key="option.id"
-                                                               :label="option.description"
-                                                               :value="option.id"></el-option>
-                                                </el-select>
-                                            </td>
-                                            <td>
-                                                <el-input v-model="row.description"></el-input>
-                                            </td>
-                                            <td>
-                                                <el-input v-model="row.percentage"></el-input>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-danger" type="button"
-                                                        @click.prevent="clickRemoveCharge(index)">x
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div v-if="attribute_types.length > 0" class="col-md-12 px-0">
-                                    <label class="control-label">
-                                        Atributos
-                                        <a href="#" @click.prevent="clickAddAttribute">[+ Agregar]</a>
-                                    </label>
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th>Tipo</th>
-                                            <th>Descripción</th>
-                                            <th></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr v-for="(row, index) in form.attributes">
-                                            <td>
-                                                <el-select v-model="row.attribute_type_id" filterable
-                                                           @change="changeAttributeType(index)">
-                                                    <el-option v-for="option in attribute_types" :key="option.id"
-                                                               :label="option.description"
-                                                               :value="option.id"></el-option>
-                                                </el-select>
-                                            </td>
-                                            <td>
-                                                <el-input v-model="row.value"></el-input>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-danger" type="button"
-                                                        @click.prevent="clickRemoveAttribute(index)">x
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                        <div v-if="item_unit_types.length > 0"
+                             class="col-md-12">
+                            <div class="table-responsive"
+                                 style="margin:3px">
+                                <h5 class="separator-title">
+                                    Lista de Precios
+                                    <el-tooltip class="item"
+                                                content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades"
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </h5>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Unidad</th>
+                                        <th class="text-center">Descripción</th>
+                                        <th class="text-center">Factor</th>
+                                        <th class="text-center">Precio</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="(row, index) in item_unit_types"
+                                        :key="index">
+                                        <td class="text-center">{{row.unit_type_id}}</td>
+                                        <td class="text-center">{{row.description}}</td>
+                                        <td class="text-center">{{row.quantity_unit}}</td>
+                                        <td class="text-center">
+                                            <select v-model="precio_var" @change="selectedPrice(row)">
+                                                <option :selected="true"> Seleccione</option>
+                                                <option v-if="row.price1" :value="row.price1" :label="row.price1"></option>
+                                                <option v-if="row.price2" :value="row.price2" :label="row.price2"></option>
+                                                <option v-if="row.price3" :value="row.price3" :label="row.price3"></option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                        </section>
-                    </div>
+                        </div>
+
+
+                        <!--<div class="col-md-6" v-show="has_list_prices">
+                            <div class="form-group" :class="{'has-danger': errors.item_unit_type_id}">
+                                <label class="control-label">Presentación</label>
+                                <el-select v-model="form.item_unit_type_id" filterable @change="changePresentation">
+                                    <el-option v-for="option in item_unit_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                                <el-radio-group v-if="form.item_unit_type_id" v-model="item_unit_type.price_default" @change="changePresentation">
+                                    <el-radio :label="1">Precio 1</el-radio>
+                                    <el-radio :label="2">Precio 2</el-radio>
+                                    <el-radio :label="3">Precio 3</el-radio>
+                                </el-radio-group>
+                                <small class="form-control-feedback" v-if="errors.item_unit_type_id" v-text="errors.item_unit_type_id[0]"></small>
+                            </div>
+                        </div>-->
+                        <div class="col-md-12 mt-2">
+                            <el-collapse v-model="activePanel">
+                                <el-collapse-item :disabled="recordItem != null"
+                                                  name="1"
+                                                  title="+ Agregar Descuentos/Cargos/Atributos especiales">
+                                    <div v-if="discount_types.length > 0">
+                                        <label class="control-label">
+                                            Descuentos
+                                            <a href="#"
+                                               @click.prevent="clickAddDiscount">[+ Agregar]</a>
+                                        </label>
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Descripción</th>
+                                                <th>Porcentaje</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-for="(row, index) in form.discounts"
+                                                :key="index">
+                                                <td>
+                                                    <el-select v-model="row.discount_type_id"
+                                                               @change="changeDiscountType(index)">
+                                                        <el-option v-for="option in discount_types"
+                                                                   :key="option.id"
+                                                                   :label="option.description"
+                                                                   :value="option.id"></el-option>
+                                                    </el-select>
+                                                </td>
+                                                <td>
+                                                    <el-input v-model="row.description"></el-input>
+                                                </td>
+                                                <td>
+                                                    <el-checkbox v-model="row.is_amount">Ingresar monto fijo
+                                                    </el-checkbox>
+                                                    <br>
+                                                    <el-input v-model="row.percentage"></el-input>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-danger"
+                                                            type="button"
+                                                            @click.prevent="clickRemoveDiscount(index)">x
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div v-if="charge_types.length > 0">
+                                        <label class="control-label">
+                                            Cargos
+                                            <a href="#"
+                                               @click.prevent="clickAddCharge">[+ Agregar]</a>
+                                        </label>
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Descripción</th>
+                                                <th>Porcentaje</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-for="(row, index) in form.charges"
+                                                :key="index">
+                                                <td>
+                                                    <el-select v-model="row.charge_type_id"
+                                                               @change="changeChargeType(index)">
+                                                        <el-option v-for="option in charge_types"
+                                                                   :key="option.id"
+                                                                   :label="option.description"
+                                                                   :value="option.id"></el-option>
+                                                    </el-select>
+                                                </td>
+                                                <td>
+                                                    <el-input v-model="row.description"></el-input>
+                                                </td>
+                                                <td>
+                                                    <el-input v-model="row.percentage"></el-input>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-danger"
+                                                            type="button"
+                                                            @click.prevent="clickRemoveCharge(index)">x
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div v-if="attribute_types.length > 0">
+                                        <label class="control-label">
+                                            Atributos
+                                            <a href="#"
+                                               @click.prevent="clickAddAttribute">[+ Agregar]</a>
+                                        </label>
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Descripción</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-for="(row, index) in form.attributes"
+                                                :key="index">
+                                                <td>
+                                                    <el-select v-model="row.attribute_type_id"
+                                                               filterable
+                                                               @change="changeAttributeType(index)">
+                                                        <el-option v-for="option in attribute_types"
+                                                                   :key="option.id"
+                                                                   :label="option.description"
+                                                                   :value="option.id"></el-option>
+                                                    </el-select>
+                                                </td>
+                                                <td>
+                                                    <el-input v-model="row.value"
+                                                              @input="inputAttribute(index)"></el-input>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-danger"
+                                                            type="button"
+                                                            @click.prevent="clickRemoveAttribute(index)">x
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </el-collapse-item>
+                            </el-collapse>
+                        </div>
+                    </template>
                 </div>
             </div>
-            <div class="form-actions text-right pt-2">
+
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+
+            <div class="row hidden-md-up form-actions text-center">
+                <div class="col-12">
+                    &nbsp;
+                </div>
+                <div class="col-6">
+                    <el-button class="form-control"
+                               @click.prevent="close()">Cerrar
+                    </el-button>
+                </div>
+                <div class="col-6">
+                    <el-button v-if="form.item_id"
+                               class="add form-control btn btn-primary"
+                               native-type="submit"
+                               type="primary">
+                        Agregar
+                    </el-button>
+                </div>
+            </div>
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Ocultar en cel -->
+
+            <div class="form-actions text-right pt-2  hidden-sm-down">
                 <el-button @click.prevent="close()">Cerrar</el-button>
-                <el-button class="add" type="primary" native-type="submit" v-if="form.item_id">{{titleAction}}</el-button>
+                <el-button v-if="form.item_id"
+                           class="add"
+                           native-type="submit"
+                           type="primary">Agregar
+                </el-button>
             </div>
         </form>
         <item-form :external="true"
@@ -332,21 +437,25 @@
 </template>
 <style>
 .el-select-dropdown {
-    max-width: 80% !important;
     margin-right: 5% !important;
+    max-width: 80% !important;
 }
 </style>
 <script>
 
-import itemForm from '@views/items/form.vue'
-import {calculateRowItem} from '@helpers/functions'
 // import WarehousesDetail from './warehouses.vue'
-import SelectLotsForm from './lots.vue'
-import WarehousesDetail from '@views/documents/partials/select_warehouses.vue'
 import ItemForm from "../../../../../../../../resources/js/views/tenant/items/form";
 import LotsGroup from "../../../../../../../../resources/js/views/tenant/documents/partials/lots_group";
-import VueCkeditor from "vue-ckeditor5";
+
+import {calculateRowItem} from '@helpers/functions'
+import WarehousesDetail from '@views/documents/partials/select_warehouses.vue'
+import SelectLotsForm from './lots.vue'
+
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import VueCkeditor from "vue-ckeditor5";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import {ItemOptionDescription, ItemSlotTooltip} from "../../../../../../../../resources/js/helpers/modal_item";
+
 
 
 export default {
@@ -374,9 +483,9 @@ export default {
             form: {},
             all_items: [],
             items: [],
-            aux_items: [],
             operation_types: [],
             all_affectation_igv_types: [],
+            aux_items: [],
             affectation_igv_types: [],
             system_isc_types: [],
             discount_types: [],
@@ -387,9 +496,13 @@ export default {
             activePanel: 0,
             total_item: 0,
             item_unit_types: [],
+            item_unit_type: {},
             showWarehousesDetail: false,
             warehousesDetail: [],
-            item_unit_type: {},
+            showListStock: false,
+            search_item_by_barcode: false,
+            isUpdateWarehouseId: null,
+            showDialogLots: false,
             showDialogSelectLots: false,
             lots: [],
             editors: {
@@ -398,7 +511,53 @@ export default {
             precio_var:'Seleccione'
         }
     },
+
+    created() {
+        this.loadConfiguration()
+        this.$store.commit('setConfiguration', this.configuration)
+        this.initForm()
+    },
+    mounted() {
+        this.getTables()
+
+
+        this.$eventHub.$on('reloadDataItems', (item_id) => {
+            this.reloadDataItems(item_id)
+        })
+
+        this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
+            this.form.warehouse_id = warehouse_id
+        })
+        this.canCreateProduct();
+    },
     computed: {
+
+        ...mapState([
+            'config',
+        ]),
+
+        showLots() {
+            // if (
+            //     this.form.item_id &&
+            //     this.form.item.lots_enabled &&
+            //     this.form.lots_group.length > 0
+            // )
+
+            if (this.form.item_id && this.form.item.lots_enabled) {
+                return true;
+            }
+
+            return false;
+        },
+        showSeries() {
+            if (
+                this.form.item_id &&
+                this.form.item.series_enabled
+            ) {
+                return true
+            }
+            return false;
+        },
         canEditPrice: function () {
             if (
                 (
@@ -412,32 +571,188 @@ export default {
                 return false;
             }
             return true;
+        },
+        documentItem() {
+            if (this.recordItem !== undefined &&
+                this.recordItem !== null &&
+                this.recordItem.id !== undefined &&
+                this.recordItem.id !== 0) {
+                this.form.document_item_id = this.recordItem.id;
+                return this.recordItem.id;
+            }
+            return this.form.document_item_id;
+        },
+        edit_unit_price() {
+            if (this.typeUser === 'admin') {
+                return true
+            }
+            if (this.typeUser === 'seller') {
+                return this.config.allow_edit_unit_price_to_seller;
+            }
+            return false;
         }
     },
-    created() {
-        this.initForm()
-        this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            this.items = response.data.items
-            this.affectation_igv_types = response.data.affectation_igv_types
-            this.system_isc_types = response.data.system_isc_types
-            this.discount_types = response.data.discount_types
-            this.charge_types = response.data.charge_types
-            this.attribute_types = response.data.attribute_types
-            // this.filterItems()
-
-        })
-
-        this.$eventHub.$on('reloadDataItems', (item_id) => {
-            this.reloadDataItems(item_id)
-        })
-        this.events()
-    },
     methods: {
-        events() {
+        ...mapActions([
+            'loadConfiguration',
+        ]),
+        hasAttributes() {
+            if (
+                this.form.item !== undefined &&
+                this.form.item.attributes !== undefined &&
+                this.form.item.attributes !== null &&
+                this.form.item.attributes.length > 0
+            ) {
+                return true
+            }
 
-            this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
-                this.form.warehouse_id = warehouse_id
+            return false;
+        },
+        ItemSlotTooltipView(item) {
+            return ItemSlotTooltip(item);
+        },
+        ItemOptionDescriptionView(item) {
+            return ItemOptionDescription(item)
+        },
+        getTables() {
+            this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                this.items = response.data.items
+                this.affectation_igv_types = response.data.affectation_igv_types
+                this.system_isc_types = response.data.system_isc_types
+                this.discount_types = response.data.discount_types
+                this.charge_types = response.data.charge_types
+                this.attribute_types = response.data.attribute_types
+                // this.filterItems()
+
             })
+        },
+        canCreateProduct() {
+            if (this.typeUser === 'admin') {
+                this.can_add_new_product = true
+            } else if (this.typeUser === 'seller') {
+                if (this.config !== undefined && this.config.seller_can_create_product !== undefined) {
+                    this.can_add_new_product = this.config.seller_can_create_product;
+                }
+            }
+            return this.can_add_new_product;
+        },
+
+        validateQuantity() {
+
+            if (!this.form.quantity) {
+                this.setMinQuantity()
+            }
+
+            if (isNaN(Number(this.form.quantity))) {
+                this.setMinQuantity()
+            }
+
+            if (typeof parseFloat(this.form.quantity) !== 'number') {
+                this.setMinQuantity()
+            }
+
+            if (this.form.quantity <= this.getMinQuantity()) {
+                this.setMinQuantity()
+            }
+
+            this.calculateTotal()
+        },
+
+        changeValidateQuantity(event) {
+            this.calculateTotal()
+        },
+        getMinQuantity() {
+            return 0.01
+        },
+        setMinQuantity() {
+            this.form.quantity = this.getMinQuantity()
+        },
+
+        clickDecrease() {
+
+            this.form.quantity = parseInt(this.form.quantity - 1)
+
+            if (this.form.quantity <= this.getMinQuantity()) {
+                this.setMinQuantity()
+                return
+            }
+
+            this.calculateTotal()
+
+        },
+        clickIncrease() {
+            this.form.quantity = parseInt(this.form.quantity + 1)
+            this.calculateTotal()
+        },
+        async searchRemoteItems(input) {
+            if (input.length > 2) {
+                this.loading_search = true
+                const params = {
+                    'input': input,
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                }
+                await this.$http.get(`/${this.resource}/search-items/`, {params})
+                    .then(response => {
+                        this.items = response.data.items
+                        this.loading_search = false
+                        this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemBySeries()
+                        if (this.items.length == 0) {
+                            this.filterItems()
+                        }
+                    })
+            } else {
+                await this.filterItems()
+            }
+
+        },
+        filterItems() {
+            this.items = this.all_items
+        },
+
+        enabledSearchItemsBarcode() {
+            if (this.search_item_by_barcode) {
+                this.$refs.selectBarcode.$data.selectedLabel = '';
+                if (this.items.length == 1) {
+                    this.form.item_id = this.items[0].id;
+                    this.$refs.selectBarcode.blur();
+                    this.changeItem();
+                }
+            }
+        },
+        async enabledSearchItemBySeries() {
+
+            if (this.config.search_item_by_series && this.items.length == 1) {
+
+                this.$notify({title: "Serie ubicada", message: "Producto añadido!", type: "success", duration: 1200});
+                this.form.item_id = this.items[0].id;
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+
+                await this.changeItem();
+
+                this.lots = await this.form.item.lots.map((lot) => {
+                    lot.has_sale = true
+                })
+
+                await this.clickAddItem()
+
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+            }
+
+            if (this.config.search_item_by_series && this.items.length == 0) {
+                this.$notify({title: "Serie no ubicada", message: "", type: "warning", duration: 1200});
+            }
+
+        },
+
+        filterMethod(query) {
+
+            let item = _.find(this.items, {'internal_id': query});
+
+            if (item) {
+                this.form.item_id = item.id
+                this.changeItem()
+            }
         },
         clickWarehouseDetail() {
 
@@ -450,13 +765,15 @@ export default {
             this.warehousesDetail = item.warehouses
             this.showWarehousesDetail = true
         },
-        filterItems() {
-            // this.items = this.items.filter(item => item.warehouses.length >0)
-        },
+        //filterItems() {
+        // this.items = this.items.filter(item => item.warehouses.length >0)
+        // },
         initForm() {
             this.errors = {};
 
             this.form = {
+                // category_id: [1],
+                // edit: false,
                 item_id: null,
                 item: {},
                 affectation_igv_type_id: null,
@@ -467,6 +784,9 @@ export default {
                 suggested_price: 0,
                 quantity: 1,
                 unit_price: 0,
+                unit_price_value: 0,
+                input_unit_price: 0,
+                input_unit_price_value: 0,
                 charges: [],
                 discounts: [],
                 attributes: [],
@@ -474,36 +794,55 @@ export default {
                 item_unit_type_id: null,
                 unit_type_id: null,
                 is_set: false,
+                item_unit_types: [],
+                has_plastic_bag_taxes: false,
+                series_enabled: false,
                 warehouse_id: null,
+                lots_group: [],
+                IdLoteSelected: null,
+                document_item_id: null,
+                name_product_pdf: ''
             };
 
+            this.activePanel = 0;
             this.total_item = 0;
             this.item_unit_type = {};
+            this.lots = []
             this.has_list_prices = false;
         },
         // initializeFields() {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
-    async create() {
+        create() {
+            /* Migrado de resources/js/views/tenant/sale_notes/partials/item.vue*/
+            /*
+
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
+            if(this.operation_types !== undefined) {
+                let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
+                if(operation_type !== undefined) {
+                    this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
+                }
+            }
+
             if (this.recordItem) {
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
-                //await this.changeItem()
+                await this.changeItem()
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
-                if(this.isEditItemNote){
+                if (this.isEditItemNote) {
                     this.form.item.currency_type_id = this.currencyTypeIdActive
-                    this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
+                    this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/' : '$'
 
-                    if(this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07'){
+                    if (this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07') {
 
-                        this.form.document_item_id =  this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
+                        this.form.document_item_id = this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
                         this.form.item.lots = this.recordItem.item.lots
                         await this.regularizeLots()
                         this.lots = this.form.item.lots
@@ -511,15 +850,59 @@ export default {
 
                 }
 
-                if(this.recordItem.name_product_pdf){
-                    this.form.name_product_pdf = this.recordItem.name_product_pdf
+                if (this.recordItem.item.name_product_pdf) {
+                    this.form.name_product_pdf = this.recordItem.item.name_product_pdf
                 }
+                // if(this.recordItem.name_product_pdf){
+                //     this.form.name_product_pdf = this.recordItem.name_product_pdf
+                // }
 
+                if(this.recordItem.item.change_free_affectation_igv){
 
+                    this.form.affectation_igv_type_id = '15'
+                    this.form.item.change_free_affectation_igv = true
+
+                }else{
+                    if(this.recordItem.item.original_affectation_igv_type_id){
+                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
+                    }
+                }
                 this.calculateQuantity()
-            }else{
+            } else {
                 this.isUpdateWarehouseId = null
             }
+
+            */
+            //     this.initializeFields()
+        },
+        async regularizeLots() {
+
+            if (this.form.document_item_id && this.form.item.lots.length > 0) {
+
+                await this.$http.get(`/${this.resource}/regularize-lots/${this.form.document_item_id}`).then((response) => {
+
+                    let all_lots = this.form.item.lots
+                    let available_lots = response.data
+
+                    all_lots.forEach((lot, index) => {
+
+                        let exist_lot = _.find(available_lots, (it) => {
+                            return it.id == lot.id
+                        })
+
+                        if (!exist_lot) {
+                            this.form.item.lots.splice(index, 1)
+                        }
+
+                    })
+                })
+                    .catch(error => {
+                    })
+                    .then(() => {
+                    })
+
+            }
+
         },
         clickAddDiscount() {
             this.form.discounts.push({
@@ -529,7 +912,8 @@ export default {
                 percentage: 0,
                 factor: 0,
                 amount: 0,
-                base: 0
+                base: 0,
+                is_amount: false
             })
         },
         clickRemoveDiscount(index) {
@@ -595,24 +979,85 @@ export default {
             (this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
 
             this.cleanTotalItem();
+        },
 
-            this.showListStock = true
-
-
-            if(this.form.item.attributes.length > 0) {
-                const contex = this
-                this.form.item.attributes.forEach((row)=>{
-
-                    contex.form.attributes.push({
-                        attribute_type_id: row.attribute_type_id,
-                        description: row.description,
-                        value: row.value,
-                        start_date: row.start_date,
-                        end_date: row.end_date,
-                        duration: row.duration ,
-                    })
-                })
+        focusTotalItem(change) {
+            if (!change && this.form.item.calculate_quantity) {
+                this.$refs.total_item.$el.getElementsByTagName('input')[0].focus()
+                this.total_item = this.form.unit_price_value
             }
+        },
+        reloadDataItems(item_id) {
+            this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                this.items = response.data
+                this.form.item_id = item_id
+                if (item_id) {
+                    this.changeItem()
+                }
+                // this.filterItems()
+
+            })
+        },
+
+        calculateTotal() {
+            this.readonly_total = _.round((this.form.quantity * this.form.unit_price_value), 4)
+        },
+        calculateQuantity() {
+            if (this.form.item.calculate_quantity) {
+                this.form.quantity = _.round((this.total_item / this.form.unit_price), 4)
+            }
+        },
+        cleanTotalItem() {
+            this.total_item = null;
+        },
+        async clickAddItem() {
+
+            let select_lots = await _.filter(this.form.item.lots, {'has_sale': true})
+
+            if (this.form.item.series_enabled) {
+                if (select_lots.length != this.form.quantity)
+                    return this.$message.error('La cantidad de series seleccionadas son diferentes a la cantidad a vender');
+            }
+
+            if (this.validateTotalItem().total_item) return;
+
+            // this.form.item.unit_price = this.form.unit_price;
+            let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price * 1.18;
+
+            // this.form.item.unit_price = this.form.unit_price
+            this.form.unit_price = unit_price;
+            this.form.item.unit_price = unit_price;
+
+            this.form.item.presentation = this.item_unit_type;
+            this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
+            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+
+            this.initForm();
+
+            // this.initializeFields()
+            this.$emit('add', this.row);
+            this.setFocusSelectItem()
+
+            if (this.recordItem)
+            {
+                this.close()
+            }
+        },
+        cleanItems() {
+            this.items = []
+            this.$refs.selectBarcode.$el.getElementsByTagName('input')[0].focus()
+            // console.log("add cart barcode")
+        },
+        validateTotalItem() {
+
+            this.errors = {}
+
+            if (this.form.item.calculate_quantity) {
+                if (this.total_item < 0.01)
+                    this.$set(this.errors, 'total_item', ['total venta producto debe ser mayor a 0']);
+            }
+
+            return this.errors
         },
         changePresentation() {
             let price = 0;
@@ -657,137 +1102,32 @@ export default {
             this.form.item.unit_type_id = row.unit_type_id
             this.form.item_unit_type_id = row.id
         },
-        async clickAddItem() {
-
-            let select_lots = await _.filter(this.form.item.lots, {'has_sale': true})
-
-            if (this.form.item.series_enabled) {
-                if (select_lots.length != this.form.quantity)
-                    return this.$message.error('La cantidad de series seleccionadas son diferentes a la cantidad a vender');
-            }
-
-            if (this.validateTotalItem().total_item) return;
-
-            // this.form.item.unit_price = this.form.unit_price;
-            let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price * 1.18;
-
-            // this.form.item.unit_price = this.form.unit_price
-            this.form.unit_price = unit_price;
-            this.form.item.unit_price = unit_price;
-
-            this.form.item.presentation = this.item_unit_type;
-            this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
-            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
-
-            this.initForm();
-
-                // this.initializeFields()
-
-                if (this.recordItem)
-                {
-                    this.row.indexi = this.recordItem.indexi
-                }
-            this.$emit('add', this.row);
-            this.setFocusSelectItem()
-            if (this.recordItem)
-            {
-                this.close()
-            }
-            },
-            focusSelectItem(){
-                console.log("foc")
-                this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
-            },
-            setFocusSelectItem(){
-                if(!this.recordItem){
-                    this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
-                }
-            },
-            calculateTotal() {
-                this.readonly_total = _.round((this.form.quantity * this.form.unit_price_value), 4)
-            },
-            cleanTotalItem(){
-                this.total_item = null;
-            },
-            calculateQuantity() {
-                if(this.form.item.calculate_quantity) {
-                    this.form.quantity = _.round((this.total_item / this.form.unit_price), 4)
-                }
-            },
-            getItems() {
-                this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                    this.items = response.data.items
-                })
-            },
-            validateTotalItem(){
-
-            this.errors = {}
-
-            if (this.form.item.calculate_quantity) {
-                if (this.total_item < 0.01)
-                    this.$set(this.errors, 'total_item', ['total venta producto debe ser mayor a 0']);
-            }
-
-            return this.errors
-        },
-        reloadDataItems(item_id) {
-            this.$http.get(`/${this.resource}/table/items`).then((response) => {
-                this.items = response.data
-                this.form.item_id = item_id
-                if (item_id) {
-                    this.changeItem()
-                }
-                // this.filterItems()
-
+        getItems() {
+            this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                this.items = response.data.items
             })
+        },
+
+
+        addRowLotGroup(id) {
+            this.form.IdLoteSelected = id
+        },
+        clickLotGroup() {
+            this.showDialogLots = true
         },
         clickSelectLots() {
             this.showDialogSelectLots = true
         },
-        validateQuantity(){
-
-            if(!this.form.quantity){
-                this.setMinQuantity()
-            }
-
-            if (isNaN(Number(this.form.quantity))) {
-                this.setMinQuantity()
-            }
-
-            if (typeof parseFloat(this.form.quantity) !== 'number'){
-                this.setMinQuantity()
-            }
-
-            if(this.form.quantity <= this.getMinQuantity()){
-                this.setMinQuantity()
-            }
-
-            this.calculateTotal()
+        addRowSelectLot(lots) {
+            this.lots = lots
         },
-        changeValidateQuantity(event) {
-            this.calculateTotal()
+        focusSelectItem() {
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
         },
-        getMinQuantity(){
-            return 0.01
-        },
-        setMinQuantity(){
-            this.form.quantity = this.getMinQuantity()
-        },
-        clickDecrease(){
+        setFocusSelectItem() {
 
-            this.form.quantity = parseInt(this.form.quantity-1)
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
-            if(this.form.quantity <= this.getMinQuantity()){
-                this.setMinQuantity()
-                return
-            }
-
-            this.calculateTotal()
-
-        },
-        clickIncrease(){
-            this.form.quantity = parseInt(this.form.quantity + 1)
-            this.calculateTotal()
         },
     }
 }

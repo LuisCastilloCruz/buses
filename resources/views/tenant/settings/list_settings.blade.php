@@ -12,7 +12,7 @@
             <span>Dashboard</span>
         </li>
         <li>
-            <span class="text-muted">Reportes</span>
+            <span class="text-muted">Configuración</span>
         </li>
     </ol>
 </div>
@@ -118,9 +118,9 @@
                     <li>
                         <a href="{{route('tenant.advanced.pdf_templates')}}">PDF</a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{route('tenant.advanced.pdf_guide_templates')}}">Guía de remisión</a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="{{route('tenant.advanced.pdf_preprinted_templates')}}">Pre Impresos</a>
                     </li>
@@ -154,6 +154,11 @@
                         <a href="{{route('tenant.inventories.configuration.index')}}">Inventarios</a>
                     </li>
                     @endif
+                        @if(auth()->user()->type === 'admin')
+                            <li>
+                                <a href="{{route('tenant.sale_notes.configuration')}}">Nota de ventas</a>
+                            </li>
+                        @endif
                 </ul>
             </div>
         </div>

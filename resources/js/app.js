@@ -20,6 +20,10 @@ export default ElementUI;
 
 Vue.use(ElementUI, { size: 'small' })
 Vue.prototype.$eventHub = new Vue()
+
+Vue.component('tenant-item-aditional-info-selector', require('./views/tenant/components/partials/item_extra_info.vue'));
+Vue.component('tenant-item-aditional-info-modal', require('./views/tenant/components/partials/modal_item_info_attributes.vue'));
+
 Vue.prototype.$http = Axios
 Vue.use(movable);
 
@@ -33,8 +37,10 @@ Vue.component('tenant-companies-logo', require('./views/tenant/companies/logo.vu
 Vue.component('tenant-certificates-index', require('./views/tenant/certificates/index.vue'));
 Vue.component('tenant-certificates-form', require('./views/tenant/certificates/form.vue'));
 Vue.component('tenant-configurations-form', require('./views/tenant/configurations/form.vue'));
+Vue.component('tenant-configurations-form-purchases', require('./views/tenant/configurations/partials/purchases.vue'));
 Vue.component('tenant-configurations-visual', require('./views/tenant/configurations/visual.vue'));
 Vue.component('tenant-configurations-pdf', require('./views/tenant/configurations/pdf_templates.vue'));
+Vue.component('tenant-configurations-sale-notes', require('./views/tenant/configurations/sale_notes.vue'));
 Vue.component('tenant-configurations-pdf-guide', require('./views/tenant/configurations/pdf_guide_templates.vue'));
 Vue.component('tenant-configurations-preprinted-pdf', require('./views/tenant/configurations/pdf_preprinted_templates.vue'));
 // Vue.component('tenant-establishments-form', require('./views/tenant/establishments/form.vue'));
@@ -50,6 +56,9 @@ Vue.component('tenant-documents-invoice', require('./views/tenant/documents/invo
 Vue.component('tenant-documents-invoicetensu', require('./views/tenant/documents/invoicetensu.vue'));
 Vue.component('tenant-documents-invoice-old', require('./views/tenant/documents/invoice_old.vue'));
 Vue.component('tenant-documents-note', require('./views/tenant/documents/note.vue'));
+
+
+Vue.component('tenant-documents-items-list', require('./views/tenant/documents/partials/item.vue'));
 Vue.component('tenant-summaries-index', require('./views/tenant/summaries/index.vue'));
 Vue.component('tenant-voided-index', require('./views/tenant/voided/index.vue'));
 Vue.component('tenant-search-index', require('./views/tenant/search/index.vue'));
@@ -69,6 +78,7 @@ Vue.component('tenant-perceptions-form', require('./views/tenant/perceptions/for
 Vue.component('tenant-dispatches-index', require('./views/tenant/dispatches/index.vue'));
 Vue.component('tenant-dispatches-form', require('./views/tenant/dispatches/form.vue'));
 Vue.component('tenant-dispatches-create', require('./views/tenant/dispatches/create.vue'));
+Vue.component('tenant-guides-modal', require('./views/tenant/components/guides.vue'));
 Vue.component('tenant-purchases-index', require('./views/tenant/purchases/index.vue'));
 Vue.component('tenant-purchases-form', require('./views/tenant/purchases/form.vue'));
 Vue.component('tenant-purchases-edit', require('./views/tenant/purchases/form_edit.vue'));
@@ -123,11 +133,22 @@ Vue.component('tenant-account-tributo', require('../../modules/Account/Resources
 //
 Vue.component('tenant-inventory-report', require('../../modules/Inventory/Resources/assets/js/inventory/reports/index.vue'));
 //
-
 //contabilidad
 Vue.component('tenant-accounting-plan', require('../../modules/Account/Resources/assets/js/views/accounting/accounting_plan/index.vue'));
 
-//otros
+
+Vue.component('tenant-inventory-color-index', require('../../modules/Inventory/Resources/assets/js/extra_info/color/index.vue'));
+Vue.component('tenant-inventory-item-units-per-package-index', require('../../modules/Inventory/Resources/assets/js/extra_info/item_units_per_package/index.vue'));
+Vue.component('tenant-inventory-item-units-business', require('../../modules/Inventory/Resources/assets/js/extra_info/item_units_business/index.vue'));
+Vue.component('tenant-inventory-item-package-measurements', require('../../modules/Inventory/Resources/assets/js/extra_info/item_package_measurements/index.vue'));
+Vue.component('tenant-inventory-mold-cavities', require('../../modules/Inventory/Resources/assets/js/extra_info/item_mold_cavities/index.vue'));
+Vue.component('tenant-inventory-mold-property', require('../../modules/Inventory/Resources/assets/js/extra_info/item_mold_property/index.vue'));
+
+Vue.component('tenant-inventory-size-property', require('../../modules/Inventory/Resources/assets/js/extra_info/item_size/index.vue'));
+Vue.component('tenant-inventory-item-status', require('../../modules/Inventory/Resources/assets/js/extra_info/item_status/index.vue'));
+Vue.component('tenant-inventory-item-product-family', require('../../modules/Inventory/Resources/assets/js/extra_info/item_product_family/index.vue'));
+Vue.component('tenant-inventory-extra-info-list', require('../../modules/Inventory/Resources/assets/js/extra_info/index.vue'));
+
 Vue.component('tenant-inventory-devolutions-index', require('../../modules/Inventory/Resources/assets/js/devolutions/index.vue'));
 Vue.component('tenant-inventory-devolutions-form', require('../../modules/Inventory/Resources/assets/js/devolutions/form.vue'));
 
@@ -136,6 +157,8 @@ Vue.component('tenant-report-purchases-index', require('../../modules/Report/Res
 Vue.component('tenant-report-documents-index', require('../../modules/Report/Resources/assets/js/views/documents/index.vue'));
 Vue.component('tenant-report-customers-index', require('../../modules/Report/Resources/assets/js/views/customers/index.vue'));
 Vue.component('tenant-report-items-index', require('../../modules/Report/Resources/assets/js/views/items/index.vue'));
+Vue.component('tenant-report-items-extra-index', require('../../modules/Report/Resources/assets/js/views/items/index_extra.vue'));
+
 /** Reporte de guias */
 Vue.component('tenant-report-guide-index', require('../../modules/Report/Resources/assets/js/views/guide/index.vue'));
 Vue.component('tenant-report-sale_notes-index', require('../../modules/Report/Resources/assets/js/views/sale_notes/index.vue'));
@@ -194,6 +217,8 @@ Vue.component('tenant-order-notes-not-sent', require('../../modules/Order/Resour
 //Finance
 Vue.component('tenant-finance-global-payments-index', require('../../modules/Finance/Resources/assets/js/views/global_payments/index.vue'));
 Vue.component('tenant-finance-balance-index', require('../../modules/Finance/Resources/assets/js/views/balance/index.vue'));
+Vue.component('tenant-finance-modal-transfer-between-accounts', require('../../modules/Finance/Resources/assets/js/views/transfer_between_accounts/options.vue'));
+
 Vue.component('tenant-finance-payment-method-types-index', require('../../modules/Finance/Resources/assets/js/views/payment_method_types/index.vue'));
 Vue.component('tenant-finance-unpaid-index', require('@viewsModuleFinance/unpaid/index.vue'));
 Vue.component('tenant-finance-to-pay-index', require('@viewsModuleFinance/to_pay/index.vue'));
@@ -337,11 +362,15 @@ Vue.component('system-backup', require('./views/system/backup/index.vue'));
 //culqi
 Vue.component('system-configuration-culqi', require('./views/system/configuration/culqi.vue'))
 
+//apk url
+Vue.component('system-configuration-apk-url', require('./views/system/configuration/apk-url.vue'))
+
 //token
 Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 
 // php info
 Vue.component('system-php-configuration', require('./views/system/configuration/php_info.vue'))
+Vue.component('system-server-status', require('./views/system/configuration/server_status.vue'))
 
 //Configuración global del login
 Vue.component('system-login-settings', require('./views/system/configuration/login.vue'))

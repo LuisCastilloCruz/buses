@@ -5,6 +5,7 @@ use App\CoreFacturalo\Facturalo;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Exports\PaymentExport;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\DocumentEmailRequest;
 use App\Http\Requests\Tenant\DocumentRequest;
 use App\Http\Requests\Tenant\DocumentUpdateRequest;
@@ -16,6 +17,14 @@ use App\Imports\DocumentsImportTwoFormat;
 use App\Mail\Tenant\DocumentEmail;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
+use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
@@ -24,6 +33,7 @@ use App\Models\Tenant\Catalogs\NoteDebitType;
 use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
+use App\Models\Tenant\CatItemSize;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Dispatch;
@@ -62,7 +72,10 @@ use Mike42\Escpos\Printer;
 
 class DocumentController extends Controller
 {
-    use StorageDocument, OfflineTrait, FinanceTrait;
+    use FinanceTrait;
+    use OfflineTrait;
+    use StorageDocument;
+
     private $max_count_payment = 0;
 
     public function __construct()
@@ -220,6 +233,7 @@ class DocumentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $document_id =  auth()->user()->document_id;
         $series_id =  auth()->user()->series_id;
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
         return compact(
             'document_id',
@@ -246,14 +260,16 @@ class DocumentController extends Controller
             'is_client',
             'select_first_document_type_03',
             'payment_destinations',
-            'payment_conditions'
+            'payment_conditions',
+            'affectation_igv_types'
         );
 
     }
 
     public function item_tables()
     {
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getItemsToDocuments();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -264,8 +280,54 @@ class DocumentController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                       'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client');
+        $configuration= Configuration::first();
+
+        /** Informacion adicional */
+        $colors = collect([]);
+        $CatItemSize=$colors;
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+
+            $colors = CatColorsItem::all();
+            $CatItemSize= CatItemSize::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
+
+
+        /** Informacion adicional */
+
+        return compact(
+            'items',
+            'categories',
+            'affectation_igv_types',
+            'system_isc_types',
+            'price_types',
+            'operation_types',
+            'discount_types',
+            'charge_types',
+            'attribute_types',
+            'is_client',
+            'colors',
+            'CatItemSize',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage');
     }
 
     public function table($table)
@@ -329,6 +391,8 @@ class DocumentController extends Controller
         }
 
         if ($table === 'items') {
+
+            return SearchItemController::getItemsToDocuments();
 
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
@@ -682,10 +746,22 @@ class DocumentController extends Controller
         $company = Company::active();
         $document = Document::find($request->input('id'));
         $customer_email = $request->input('customer_email');
+        $email = $customer_email;
+        $mailable =  new DocumentEmail($company, $document);
+        $id = (int) $request->input('id');
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 1);
+        // Centralizar el envio de correos a Email Controller
+        /*
         Configuration::setConfigSmtpMail();
-
-        Mail::to($customer_email)->send(new DocumentEmail($company, $document));
-
+        $array_customer = explode(',', $customer_email);
+        if (count($array_customer) > 1) {
+            foreach ($array_customer as $customer) {
+                Mail::to($customer)->send(new DocumentEmail($company, $document));
+            }
+        } else {
+            Mail::to($customer_email)->send(new DocumentEmail($company, $document));
+        }
+        */
         return [
             'success' => true
         ];

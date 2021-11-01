@@ -1,3 +1,4 @@
+import state from './state'
 function writeLocal(variable, data) {
     if (data === undefined || data === 'undefined') {
         localStorage.removeItem(variable)
@@ -7,6 +8,14 @@ function writeLocal(variable, data) {
 }
 export default {
     setConfiguration(state, config) {
+        if(config !== undefined && config.company !== undefined){
+            state.company = config.company
+            writeLocal('company', JSON.stringify(config.company))
+        }
+        if(config !== undefined && config.establishment !== undefined){
+            state.establishment = config.establishment
+            writeLocal('establishment', JSON.stringify(config.establishment))
+        }
         state.config = config
         if(config === undefined){
             state.config=    JSON.parse(localStorage.getItem('config'))
@@ -14,8 +23,22 @@ export default {
         }
         writeLocal('config', JSON.stringify(config))
     },
+    setEstablishment(state,establishment){
+        writeLocal('establishment', JSON.stringify(establishment))
+        return establishment;
+    },
+    setCompany(state,company){
+        writeLocal('company', JSON.stringify(company))
+        return company;
+    },
     setCustomers(state, customers) {
         state.customers = customers
+    },
+    setExchangeRate(state, exchange_rate) {
+        state.exchange_rate = exchange_rate
+    },
+    setExchangeRateSale(state, exchange_rate) {
+        state.exchange_rate_sale = exchange_rate_sale
     },
     setCurrencys(state, currencys) {
         state.currencys = currencys
@@ -41,12 +64,135 @@ export default {
         state.file = file
     },
 
-
+    canShowColorDialog(state, showColorDialog) {
+        state.showColorDialog = showColorDialog
+    },
+    setColor(state, color) {
+        state.color = color
+    },
+    setLoadingSubmit(state, loading_submit) {
+        if(loading_submit === undefined) loading_submit = false;
+        state.loading_submit = loading_submit
+    },
     setWorkers(state, workers) {
         state.workers = workers
     },
     setOffice(state, office) {
         state.office = office
+    },
+    setColors(state, colors) {
+        if(colors === undefined ) colors = [];
+        state.colors = colors
+    },
+    setCatItemStatus(state, CatItemStatus) {
+        if(CatItemStatus === undefined ) CatItemStatus = [];
+        state.CatItemStatus = CatItemStatus
+    },
+    setCatItemUnitsPerPackage(state, CatItemUnitsPerPackage) {
+        if(CatItemUnitsPerPackage === undefined ) CatItemUnitsPerPackage = [];
+        state.CatItemUnitsPerPackage = CatItemUnitsPerPackage
+    },
+    setCatItemMoldCavity(state, CatItemMoldCavity) {
+        if(CatItemMoldCavity === undefined ) CatItemMoldCavity = [];
+        state.CatItemMoldCavity = CatItemMoldCavity
+    },
+    setCatItemSize(state, CatItemSize) {
+        if(CatItemSize === undefined ) CatItemSize = [];
+        state.CatItemSize = CatItemSize
+    },
+    setCatItemMoldProperty(state, CatItemMoldProperty) {
+        if(CatItemMoldProperty === undefined ) CatItemMoldProperty = [];
+        state.CatItemMoldProperty = CatItemMoldProperty
+    },
+    setCatItemUnitBusiness(state, CatItemUnitBusiness) {
+        if(CatItemUnitBusiness === undefined ) CatItemUnitBusiness = [];
+        state.CatItemUnitBusiness = CatItemUnitBusiness
+    },
+    setCatItemPackageMeasurement(state, CatItemPackageMeasurement) {
+        if(CatItemPackageMeasurement === undefined ) CatItemPackageMeasurement = [];
+        state.CatItemPackageMeasurement = CatItemPackageMeasurement
+    },
+
+    setCatItemProductFamily(state, CatItemProductFamily) {
+        if(CatItemProductFamily === undefined ) CatItemProductFamily = [];
+        state.CatItemProductFamily = CatItemProductFamily
+    },
+    setDeb(state,debug) {
+        if(debug === undefined ) debug = {};
+        state.deb = debug
+    },
+    setFromPos(state,form_pos) {
+        if(form_pos === undefined ) form_pos = {};
+        writeLocal('form_pos', JSON.stringify(form_pos))
+        state.form_pos = form_pos
+    },
+    setPaymentMethodTypes(state,payment_method_types) {
+        if(payment_method_types === undefined ) payment_method_types = {};
+        state.payment_method_types = payment_method_types
+    },
+    setDocumentTypesGuide(state,document_types_guide) {
+        if(document_types_guide === undefined ) document_types_guide = {};
+        state.document_types_guide = document_types_guide
+    },
+
+    setExtraColors(state, extra_colors) {
+        if(extra_colors === undefined ) extra_colors = [];
+        state.extra_colors = extra_colors
+    },
+    setExtraCatItemUnitsPerPackage(state, extra_CatItemUnitsPerPackage) {
+        if(extra_CatItemUnitsPerPackage === undefined ) extra_CatItemUnitsPerPackage = [];
+        state.extra_CatItemUnitsPerPackage = extra_CatItemUnitsPerPackage
+    },
+    setExtraCatItemSize(state, extra_CatItemSize) {
+        if(extra_CatItemSize === undefined ) extra_CatItemSize = [];
+        state.extra_CatItemSize = extra_CatItemSize
+    },
+    setExtraCatItemMoldProperty(state, extra_CatItemMoldProperty) {
+        if(extra_CatItemMoldProperty === undefined ) extra_CatItemMoldProperty = [];
+        state.extra_CatItemMoldProperty = extra_CatItemMoldProperty
+    },
+    setExtraCatItemUnitBusiness(state, extra_CatItemUnitBusiness) {
+        if(extra_CatItemUnitBusiness === undefined ) extra_CatItemUnitBusiness = [];
+        state.extra_CatItemUnitBusiness = extra_CatItemUnitBusiness
+    },
+    setExtraCatItemStatus(state, extra_CatItemStatus) {
+        if(extra_CatItemStatus === undefined ) extra_CatItemStatus = [];
+        state.extra_CatItemStatus = extra_CatItemStatus
+    },
+    setExtraCatItemPackageMeasurement(state, extra_CatItemPackageMeasurement) {
+        if(extra_CatItemPackageMeasurement === undefined ) extra_CatItemPackageMeasurement = [];
+        state.extra_CatItemPackageMeasurement = extra_CatItemPackageMeasurement
+    },
+    setExtraCatItemMoldCavity(state, extra_CatItemMoldCavity) {
+        if(extra_CatItemMoldCavity === undefined ) extra_CatItemMoldCavity = [];
+        state.extra_CatItemMoldCavity = extra_CatItemMoldCavity
+    },
+    setExtraCatItemProductFamily(state, extra_CatItemProductFamily) {
+        if(extra_CatItemProductFamily === undefined ) extra_CatItemProductFamily = [];
+        state.extra_CatItemProductFamily = extra_CatItemProductFamily
+    },
+
+
+    setRecords(state, records) {
+        if(records === undefined ) records = [];
+        state.records = records
+    },
+
+    setItems(state, items) {
+        if(items === undefined ) items = [];
+        state.items = items
+    },
+    setItem(state, item) {
+        if(item === undefined ) item = {};
+        state.item = item
+    },
+    setPagination(state, pagination) {
+        if(pagination === undefined ) pagination = {
+            current_page : 1,
+            total : 0,
+            per_page : 25,
+        };
+        state.pagination = pagination
     },
     setTypeUser(state, userType) {
         state.userType = userType
@@ -54,6 +200,18 @@ export default {
     },
     setWarehouses(state, warehouses) {
         state.warehouses = warehouses
+    },
+    sethasGlobalIgv(state, hasGlobalIgv) {
+        if(hasGlobalIgv === undefined) hasGlobalIgv = false;
+        state.hasGlobalIgv = hasGlobalIgv
+    },
+    setEnabledGlobalIgvToPurchase(state, enabled_global_igv_to_purchase) {
+        if(enabled_global_igv_to_purchase === undefined) enabled_global_igv_to_purchase = false;
+        state.config.enabled_global_igv_to_purchase = enabled_global_igv_to_purchase
+    },
+    setCurrencyTypes(state, currency_types) {
+        if(currency_types === undefined) currency_types = [];
+        state.currency_types = currency_types
     },
     setAllItems(state, all_items) {
         if(state.all_items !== undefined) {

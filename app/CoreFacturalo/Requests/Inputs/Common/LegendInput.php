@@ -4,6 +4,7 @@ namespace App\CoreFacturalo\Requests\Inputs\Common;
 
 use App\CoreFacturalo\Helpers\Number\NumberLetter;
 use App\Models\Tenant\Company;
+// use Modules\Document\Services\DocumentXmlService;
 
 class LegendInput
 {
@@ -24,7 +25,7 @@ class LegendInput
                 }
             }
         }
-        
+
         if(Company::active()->operation_amazonia && in_array($inputs['document_type_id'], ['01', '03'])){
 
             $legends[] = [
@@ -38,6 +39,7 @@ class LegendInput
             ];
 
         }
+
 
         if(array_key_exists('total', $inputs)) {
             $legends[] = [

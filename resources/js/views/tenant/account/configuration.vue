@@ -1,31 +1,42 @@
 <template>
-  <div class="card col-md-5">
-    <div class="card-header bg-info">
-      <h3 class="my-0">Tipo de Plan de la Empresa</h3>
+  <div>
+    <div class="page-header pr-0">
+      <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
+      <ol class="breadcrumbs">
+          <li class="active"><span>Pagos</span></li>
+      </ol>
+      <div class="right-wrapper pull-right">
+
+      </div>
     </div>
-    <div class="card-body">
-      <form autocomplete="off" > <!-- @submit.prevent="submit" -->
-        <div class="form-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label class="control-label">Plan</label>
-                <el-select  @change="alertPlan" v-model="form.plan_id">
-                  <el-option
-                    v-for="(option, index) in plans"
-                    :key="index"
-                    :value="option.id"
-                    :label="option.name"
-                  ></el-option>
-                </el-select>
+    <div class="card col-md-5">
+      <div class="card-header bg-info">
+        <h3 class="my-0">Tipo de Plan de la Empresa</h3>
+      </div>
+      <div class="card-body">
+        <form autocomplete="off" > <!-- @submit.prevent="submit" -->
+          <div class="form-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="control-label">Plan</label>
+                  <el-select  @change="alertPlan" v-model="form.plan_id">
+                    <el-option
+                      v-for="(option, index) in plans"
+                      :key="index"
+                      :value="option.id"
+                      :label="option.name"
+                    ></el-option>
+                  </el-select>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="form-actions text-right pt-2">
-          <!-- <el-button type="primary" native-type="submit" :loading="loading_submit">Actualizar</el-button> -->
-        </div>
-      </form>
+          <div class="form-actions text-right pt-2">
+            <!-- <el-button type="primary" native-type="submit" :loading="loading_submit">Actualizar</el-button> -->
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -39,7 +50,7 @@ export default {
       form: {},
       configuration: {},
       plans:[]
-    
+
     };
   },
   async created() {
@@ -53,7 +64,7 @@ export default {
       }
 
     });
-   
+
   },
   methods: {
     alertPlan()
@@ -65,9 +76,9 @@ export default {
           type: 'warning',
           showCancelButton: false
         }).then(() => {
-         
+
         }).catch(() => {
-                   
+
         });
 
     },
@@ -99,7 +110,7 @@ export default {
           this.loading_submit = false;
         });
     }*/
-   
+
   }
 };
 </script>

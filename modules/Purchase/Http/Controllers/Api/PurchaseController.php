@@ -2,6 +2,8 @@
 
 namespace Modules\Purchase\Http\Controllers\Api;
 
+use App\Http\Controllers\SearchItemController;
+use App\Http\Controllers\Tenant\EmailController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
@@ -110,6 +112,8 @@ class PurchaseController extends Controller
     {
 
         $items = $this->table('items');
+        // $items = SearchItemController::getNotServiceItemToModal();
+
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
         return compact('items', 'affectation_igv_types');
@@ -147,6 +151,7 @@ class PurchaseController extends Controller
             'data' => [
                 'id' => $purchase->id,
                 'number_full' => "{$purchase->series}-{$purchase->number}",
+                'external_id' => $purchase->external_id,
             ],
         ];
     }
@@ -305,8 +310,23 @@ class PurchaseController extends Controller
         $record = Purchase::find($request->input('id'));
         $supplier_email = $request->input('email');
 
-        Configuration::setConfigSmtpMail();
-        Mail::to($supplier_email)->send(new PurchaseEmail($company, $record));
+        $email = $supplier_email;
+        $mailable = new  PurchaseEmail($company, $record);
+        $id = (int)$record->id;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 5);
+        /*
+         Configuration::setConfigSmtpMail();
+        $array_email = explode(',', $supplier_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new  PurchaseEmail($company, $record));
+                }
+            }
+        } else {
+            Mail::to($supplier_email)->send(new  PurchaseEmail($company, $record));
+        }*/
 
         return [
             'success' => true,

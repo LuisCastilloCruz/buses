@@ -50,11 +50,11 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ## API
 
-[Documentación](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
+[Descargar colección para Postman](https://drive.google.com/file/d/1A0EWMLVrgx6S0AWiXSgD5uwjBz5GZikb/view?usp=sharing "Clic")<br>
+[Documentación - Ver json con respuestas](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
+[Documentación - Ver ejemplos para Lenguajes](https://documenter.getpostman.com/view/1431398/U16onhgw "Clic")<br>
 
-[Colección para Postman](https://drive.google.com/file/d/1_gaJTzcq9lc6uX2DN5cSO__ut2BT1_xz/view?usp=sharing "Clic")
-
-## Antes de realizar actualizaciones obligatoriamente debe hacer pruebas online (bajo responsabilidad)
+## Pruebas online
 
 ### Panel de administración
 
@@ -151,5 +151,5 @@ Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suR
 
 Proyecto final<br>
 soporte<br>
-WatsApp: +51950360472<br>
+WatsApp: +51947474096<br>
  Sugerencias y/o cambios contactar

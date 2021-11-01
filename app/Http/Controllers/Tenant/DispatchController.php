@@ -10,8 +10,10 @@ use App\Http\Resources\Tenant\DispatchCollection;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\Country;
 use App\Models\Tenant\Catalogs\Department;
+use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
+use App\Models\Tenant\Catalogs\Province;
 use App\Models\Tenant\Catalogs\TransferReasonType;
 use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\UnitType;
@@ -40,9 +42,17 @@ use Modules\Order\Models\Dispatcher;
 use Modules\Order\Models\Driver;
 use Modules\Order\Models\OrderNote;
 
+/**
+ * Class DispatchController
+ *
+ * @package App\Http\Controllers\Tenant
+ * @mixin Controller
+ */
 class DispatchController extends Controller
 {
-    use StorageDocument, FinanceTrait, SearchTrait;
+    use FinanceTrait;
+    use SearchTrait;
+    use StorageDocument;
 
     public function __construct()
     {
@@ -64,12 +74,58 @@ class DispatchController extends Controller
 
     public function records(Request $request)
     {
-        $records = Dispatch::where($request->column, 'like', "%{$request->value}%")
-            ->orderBy('series')
-            ->orderBy('number', 'desc');
+        $records = $this->getRecords($request);
 
         return new DispatchCollection($records->paginate(config('tenant.items_per_page')));
     }
+
+
+    public function getRecords($request){
+
+        $d_end = $request->d_end;
+        $d_start = $request->d_start;
+        $number = $request->number;
+        $series = $request->series;
+        $customer_id = $request->customer_id;
+
+
+        if($d_start && $d_end){
+            $records = Dispatch::where('series', 'like', '%' . $series . '%')->whereBetween('date_of_issue', [$d_start , $d_end]);
+        }else{
+            $records = Dispatch::where('series', 'like', '%' . $series . '%');
+        }
+
+        if($number){
+            $records = $records->where('number', $number);
+        }
+
+        if($customer_id){
+            $records = $records->where('customer_id', $customer_id);
+        }
+
+        return $records->latest();
+
+    }
+
+
+    public function data_table()
+    {
+        $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+            ];
+        });
+
+        $series = Series::where('document_type_id', '09')->get();
+
+        return compact( 'customers','series');
+
+    }
+
 
     public function create($document_id = null, $type = null, $dispatch_id = null)
     {
@@ -87,9 +143,7 @@ class DispatchController extends Controller
         }
 
         $dispatch = Dispatch::find($dispatch_id);
-        $sale_note = null;
-
-        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch', 'sale_note'));
+        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch'));
     }
 
     public function generate($sale_note_id)
@@ -155,7 +209,6 @@ class DispatchController extends Controller
             $document = $fact->getDocument();
             // $response = $fact->getResponse();
         }
-        $configuration = Configuration::first();
 
         if(!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
             $reference = Document::find($document->reference_document_id);
@@ -260,7 +313,7 @@ class DispatchController extends Controller
                 ];
             });
 
-        $identities = ['6', '1'];
+        $identities = ['6', '4', '1'];
 
         // $dni_filter = config('tenant.document_type_03_filter');
         // if($dni_filter){
@@ -295,6 +348,9 @@ class DispatchController extends Controller
 
         $locations = [];
         $departments = Department::whereActive()->get();
+        /** @var Department $department */
+        /** @var Province $province */
+        /** @var District $district */
         foreach ($departments as $department) {
             $children_provinces = [];
             foreach ($department->provinces as $province) {
@@ -302,7 +358,7 @@ class DispatchController extends Controller
                 foreach ($province->districts as $district) {
                     $children_districts[] = [
                         'value' => $district->id,
-                        'label' => $district->description
+                        'label' => $district->id." - ".$district->description
                     ];
                 }
                 $children_provinces[] = [
@@ -391,9 +447,25 @@ class DispatchController extends Controller
     {
         $record = Dispatch::find($request->input('id'));
         $customer_email = $request->input('customer_email');
+        $email = $customer_email;
+        $mailable =new DispatchEmail($record);
+        $id =  $request->input('id');
+        $model = __FILE__.";;".__LINE__;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 4);
+        /*
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new DispatchEmail($record));
-
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new DispatchEmail($record));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new DispatchEmail($record));
+        }
+        */
         return [
             'success' => true
         ];
@@ -549,4 +621,25 @@ class DispatchController extends Controller
             'data' => $items,
         ], 200);
     }
+
+    /**
+     * Devuelve un conjuto de tipo de documento 9 y 31 para Guías
+     *
+     * @return DocumentType[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     */
+    public function getDocumentTypeToDispatches(){
+        $doc_type = ['09', '31'];
+        $document_types_guide = DocumentType::whereIn('id',$doc_type )->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'active' => (bool) $row->active,
+                'short' => $row->short,
+                'description' => ucfirst(mb_strtolower(str_replace('REMITENTE ELECTRÓNICA','REMITENTE',$row->description))),
+            ];
+        });
+
+        return $document_types_guide;
+    }
+
+
 }

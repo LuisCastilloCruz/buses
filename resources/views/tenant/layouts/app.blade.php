@@ -42,7 +42,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css?id=4') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css?id=5') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/5.11/css/all.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2/css/select2.css') }}" />
@@ -65,12 +65,12 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('porto-light/master/style-switcher/style-switcher.css')}}">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=6') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=4') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=4') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=7') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=5') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=6') }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=4') }}" />
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=5') }}" />
     @endif
 
     {{-- @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))

@@ -5,11 +5,13 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
+use App\Traits\AttributePerItems;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\Warehouse;
 
 class SaleNoteItem extends ModelTenant
 {
+    use AttributePerItems;
     protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type'];
     public $timestamps = false;
 
@@ -134,6 +136,7 @@ class SaleNoteItem extends ModelTenant
             return $query->whereHas('sale_note', function($q) use($params){
                             $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                                 ->where('customer_id', $params['person_id'])
+                                ->whereStateTypeAccepted()
                                 ->whereTypeUser();
                         })
                         ->join('sale_notes', 'sale_note_items.sale_note_id', '=', 'sale_notes.id')
@@ -146,6 +149,7 @@ class SaleNoteItem extends ModelTenant
         $data = $query->whereHas('sale_note', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         // ->where('user_id', $params['seller_id'])
+                        ->whereStateTypeAccepted()
                         ->whereTypeUser();
                 })
                 ->join('sale_notes', 'sale_note_items.sale_note_id', '=', 'sale_notes.id')

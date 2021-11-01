@@ -207,7 +207,9 @@
                                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                                     <label class="control-label">Observación
                                                     </label>
-                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
+                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"
+                                                        maxlength="1000"
+                                                        show-word-limit></el-input>
                                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                                 </div>
                                             </div>
@@ -319,15 +321,15 @@
 </template>
 
 <script>
-    import TermsCondition from './partials/terms_condition.vue'
-    import QuotationFormItem from './partials/item.vue'
-    import PersonForm from '../persons/form.vue'
-    import QuotationOptions from '../quotations/partials/options.vue'
-    import {functions, exchangeRate} from '../../../mixins/functions'
-    import {calculateRowItem} from '../../../helpers/functions'
-    import Logo from '../companies/logo.vue'
+import TermsCondition from './partials/terms_condition.vue'
+import QuotationFormItem from './partials/item.vue'
+import PersonForm from '../persons/form.vue'
+import QuotationOptions from '../quotations/partials/options.vue'
+import {exchangeRate, functions} from '../../../mixins/functions'
+import {calculateRowItem} from '../../../helpers/functions'
+import Logo from '../companies/logo.vue'
 
-    export default {
+export default {
         components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition},
         props: {
             'resourceId': {
@@ -418,20 +420,33 @@
 
                 this.customer_addresses = [];
                 let customer = _.find(this.customers, {'id': this.form.customer_id});
+                if(customer === undefined){
+                    let parameters = `customer_id=${this.form.customer_id}`
+                    let obj = this;
+                    this.$http.get(`/${this.resource}/search/customers?${parameters}`)
+                        .then(response => {
+                             response.data.customers.forEach((row)=>{
+                                this.customers.push(row)
+                            })
+                        })
+                        .then(() => {
+                            customer = _.find(this.customers, {'id': this.form.customer_id});
+                            this.setCustomerAddress(customer)
+                        })
+
+                }else{
+                    this.setCustomerAddress(customer)
+                }
+            },
+            setCustomerAddress(customer){
                 this.customer_addresses = customer.addresses;
-
-                if(customer.address)
-                {
-
+                if(customer.address){
                     if(_.find(this.customer_addresses, {id:null})) return
-
                     this.customer_addresses.unshift({
                         id:null,
                         address: customer.address
                     })
-
                 }
-
             },
             selectDestinationSale() {
 
@@ -495,20 +510,20 @@
                 // return unit_price.toFixed(6)
             },
             async changePaymentMethodType(flag_submit = true){
-                let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
-                if(payment_method_type){
+                // let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
+                // if(payment_method_type){
 
-                    if(payment_method_type.number_days){
-                        this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
-                        this.changeDateOfIssue()
-                    }
+                //     if(payment_method_type.number_days){
+                //         this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
+                //         this.changeDateOfIssue()
+                //     }
                     // else{
                     //     if(flag_submit){
                     //         this.form.date_of_issue = moment().format('YYYY-MM-DD')
                     //         this.changeDateOfIssue()
                     //     }
                     // }
-                }
+                // }
             },
             initRecord()
             {
@@ -580,6 +595,7 @@
                     total_taxed: 0,
                     total_unaffected: 0,
                     total_exonerated: 0,
+                    total_igv_free: 0,
                     total_igv: 0,
                     total_base_isc: 0,
                     total_isc: 0,
@@ -674,6 +690,8 @@
                 let total_igv = 0
                 let total_value = 0
                 let total = 0
+                let total_igv_free = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -698,8 +716,22 @@
                         total += parseFloat(row.total)
                     }
                     total_value += parseFloat(row.total_value)
+
+                    if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+
+                        let unit_value = row.total_value / row.quantity
+                        let total_value_partial = unit_value * row.quantity
+                        row.total_taxes = row.total_value - total_value_partial
+                        row.total_igv = total_value_partial * (row.percentage_igv / 100)
+                        row.total_base_igv = total_value_partial
+                        total_value -= row.total_value
+                        total_igv_free += row.total_igv
+
+                    }
+
                 });
 
+                this.form.total_igv_free = _.round(total_igv_free, 2)
                 this.form.total_exportation = _.round(total_exportation, 2)
                 this.form.total_taxed = _.round(total_taxed, 2)
                 this.form.total_exonerated = _.round(total_exonerated, 2)

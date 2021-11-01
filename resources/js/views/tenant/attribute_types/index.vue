@@ -1,5 +1,5 @@
 <template>
-    <div class="card card-collapsed">
+    <div class="card">
         <div class="card-header bg-info">
             <h3 class="my-0">Listado de Atributos</h3>
         </div>

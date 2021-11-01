@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use App\Traits\AttributePerItems;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\Warehouse;
@@ -12,18 +13,18 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 /**
  * App\Models\Tenant\DocumentItem
  *
- * @property-read AffectationIgvType $affectation_igv_type
- * @property-read \App\Models\Tenant\Document $document
- * @property-read mixed $additional_information
+ * @property AffectationIgvType $affectation_igv_type
+ * @property \App\Models\Tenant\Document $document
+ * @property mixed $additional_information
  * @property mixed $attributes
  * @property mixed $charges
  * @property mixed $discounts
  * @property mixed $item
- * @property-read \App\Models\Tenant\Item $m_item
- * @property-read PriceType $price_type
- * @property-read \App\Models\Tenant\Item $relation_item
- * @property-read SystemIscType $system_isc_type
- * @property-read Warehouse $warehouse
+ * @property \App\Models\Tenant\Item $m_item
+ * @property PriceType $price_type
+ * @property \App\Models\Tenant\Item $relation_item
+ * @property SystemIscType $system_isc_type
+ * @property Warehouse $warehouse
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem query()
@@ -32,9 +33,9 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
  */
 class DocumentItem extends ModelTenant
 {
+    use AttributePerItems;
     protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type'];
     public $timestamps = false;
-
     protected $fillable = [
         'document_id',
         'item_id',
@@ -79,9 +80,20 @@ class DocumentItem extends ModelTenant
         static::creating(function (self $item) {
             $document = $item->document;
             if ($document !== null && empty($item->warehouse_id)) {
-                $item->warehouse_id = $document->establishment_id;
+                $warehouse = Warehouse::find($document->establishment_id) ;
+                if($warehouse !== null) {
+                    $item->warehouse_id = $document->establishment_id;
+                }
             }
         });
+        /*
+        static::saved(function (self $item){
+             self::adsjustItemMovementTable($item,'saved');
+        });
+        static::deleted(function (self $item){
+             self::adsjustItemMovementTable($item,'deleted');
+        });
+        */
     }
 
     /**
@@ -138,6 +150,7 @@ class DocumentItem extends ModelTenant
             $newKardex->push();
         }
     }
+
     public function getItemAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);
@@ -267,6 +280,7 @@ class DocumentItem extends ModelTenant
             return $query->whereHas('document', function($q) use($params){
                             $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                                 ->where('customer_id', $params['person_id'])
+                                ->whereStateTypeAccepted()
                                 ->whereTypeUser();
                         })
                         ->join('documents', 'document_items.document_id', '=', 'documents.id')
@@ -279,6 +293,7 @@ class DocumentItem extends ModelTenant
         $data = $query->whereHas('document', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         // ->where('user_id', $params['seller_id'])
+                        ->whereStateTypeAccepted()
                         ->whereTypeUser();
                 })
                 ->join('documents', 'document_items.document_id', '=', 'documents.id')
@@ -298,6 +313,28 @@ class DocumentItem extends ModelTenant
 
     }
 
+    /**
+     * Devuelve un array de los items para el documento
+     * @return Item
+     */
+    public function getArrayItem()
+    {
+        /** @var Item $item */
+        $item = (array)$this->item;
+        $item['extra'] = isset($item['extra']) ? (array)$item['extra'] : [];
+
+        $item['unit_type_id'] = $item['unit_type_id'] ?? '';
+
+        $item['sale_affectation_igv_type'] = isset($item['sale_affectation_igv_type']) ? (array)$item['sale_affectation_igv_type'] : [];
+        $item['description'] = $item['description'] ?? '';
+        $item['item_type_id'] = $item['item_type_id'] ?? '';
+        $item['presentation'] = $item['presentation'] ?? [];
+        $item['IdLoteSelected'] = $item['IdLoteSelected'] ?? null;
+        $item['has_igv'] = $item['has_igv'] ?? false;
+        $item['unit_price'] = $item['unit_price'] ?? 0;
+        return $item;
+
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -311,4 +348,43 @@ class DocumentItem extends ModelTenant
      * @return Item|Item[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed|null
      */
     public function getModelItem(){ return Item::find($this->item_id);}
+
+    /**
+     * Devuelve una estructura en conjunto para datos extra al momento de generar un pdf
+     *
+     * @return array
+     */
+    public function getPrintExtraData()
+    {
+
+
+        $item = $this->item;
+        $extra = (property_exists($item, 'extra')) ? $item->extra : null;
+        $extra_string = ($extra != null && property_exists($extra, 'string')) ? $extra->string : null;
+        $colors = ($extra_string != null && property_exists($extra_string, 'colors')) ? $extra_string->colors : null;
+        $CatItemUnitsPerPackage = ($extra_string != null && property_exists($extra_string, 'CatItemUnitsPerPackage')) ? $extra_string->CatItemUnitsPerPackage : null;
+        $CatItemMoldProperty = ($extra_string != null && property_exists($extra_string, 'CatItemMoldProperty')) ? $extra_string->CatItemMoldProperty : null;
+        $CatItemProductFamily = ($extra_string != null && property_exists($extra_string, 'CatItemProductFamily')) ? $extra_string->CatItemProductFamily : null;
+        $CatItemMoldCavity = ($extra_string != null && property_exists($extra_string, 'CatItemMoldCavity')) ? $extra_string->CatItemMoldCavity : null;
+        $CatItemPackageMeasurement = ($extra_string != null && property_exists($extra_string, 'CatItemPackageMeasurement')) ? $extra_string->CatItemPackageMeasurement : null;
+        $CatItemStatus = ($extra_string != null && property_exists($extra_string, 'CatItemStatus')) ? $extra_string->CatItemStatus : null;
+        $CatItemSize = ($extra_string != null && property_exists($extra_string, 'CatItemSize')) ? $extra_string->CatItemSize : null;
+        $CatItemUnitBusiness = ($extra_string != null && property_exists($extra_string, 'CatItemUnitBusiness')) ? $extra_string->CatItemUnitBusiness : null;
+        $data = [
+            'colors' => (!empty($colors)) ? $colors : null,
+            'CatItemUnitsPerPackage' => (!empty($CatItemUnitsPerPackage)) ? $CatItemUnitsPerPackage : null,
+            'CatItemMoldProperty' => (!empty($CatItemMoldProperty)) ? $CatItemMoldProperty : null,
+            'CatItemProductFamily' => (!empty($CatItemProductFamily)) ? $CatItemProductFamily : null,
+            'CatItemMoldCavity' => (!empty($CatItemMoldCavity)) ? $CatItemMoldCavity : null,
+            'CatItemPackageMeasurement' => (!empty($CatItemPackageMeasurement)) ? $CatItemPackageMeasurement : null,
+            'CatItemStatus' => (!empty($CatItemStatus)) ? $CatItemStatus : null,
+            'CatItemUnitBusiness' => (!empty($CatItemUnitBusiness)) ? $CatItemUnitBusiness : null,
+            'CatItemSize' => (!empty($CatItemSize)) ? $CatItemSize : null,
+        ];
+        // Se añaden campos extra desde el item
+        $itemModel = $this->getModelItem();
+        $itemModel->getExtraDataToPrint($data);
+        return $data;
+    }
+
 }

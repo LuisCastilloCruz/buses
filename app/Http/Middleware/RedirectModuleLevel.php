@@ -190,6 +190,7 @@
                 case 'incentives':
                     return redirect()->route('tenant.incentives.create');
 
+
                 case 'sale-opportunity':
                     return redirect()->route('tenant.sale_opportunities.index');
 

@@ -34,6 +34,8 @@
                         <th>Pedido</th>
                         <th>Comprobantes</th>
                         <th v-if="columns.sale_notes.visible">Notas de venta</th>
+                        <th v-if="columns.quotation.visible">Cotizacion</th>
+                        <th v-if="columns.dispatches.visible">Guías</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
@@ -64,6 +66,20 @@
                                 <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
                             </template>
                         </td>
+
+
+                    <td v-if="columns.quotation.visible">
+                        <!-- Cotizacion -->
+                        <template v-if="row.quotation !== undefined && row.quotation.full_number !== undefined">
+                            <label  class="d-block">{{row.quotation.full_number}}  </label>
+                        </template>
+                    </td>
+                    <td v-if="columns.dispatches.visible">
+                        <!-- Pedidos -->
+                        <template v-for="(dispach,i) in row.dispatches">
+                            <label :key="i" v-text="dispach.number" class="d-block"></label>
+                        </template>
+                    </td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
@@ -170,6 +186,14 @@
                     sale_notes: {
                         title: 'Notas de venta',
                         visible: true
+                    },
+                    quotation: {
+                        title: 'Cotizacion',
+                        visible: false,
+                    },
+                    dispatches: {
+                        title: 'Guías de Remisión',
+                        visible: false,
                     },
                 }
             }

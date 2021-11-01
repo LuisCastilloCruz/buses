@@ -22,8 +22,8 @@
                                 </el-option>
                             </el-select>
                         </div>
-                    </div> 
-                </div> 
+                    </div>
+                </div>
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -32,9 +32,9 @@
         </form>
     </el-dialog>
 </template>
- 
-<script type="text/babel">
- 
+
+<script>
+
 
     export default {
         props: ['showDialog', 'recordId'],
@@ -42,19 +42,19 @@
             return {
                 loading_submit: false,
                 titleDialog: null,
-                resource: 'categories', 
-                errors: {}, 
+                resource: 'categories',
+                errors: {},
                 form: {},
                 business_turns: [],
                 printers:{}
             }
         },
         created() {
-            this.initForm() 
+            this.initForm()
         },
         methods: {
-            initForm() { 
-                this.errors = {} 
+            initForm() {
+                this.errors = {}
 
                 this.form = {
                     id: null,
@@ -83,10 +83,10 @@
                     })
                 }
             },
-            submit() {   
- 
+            submit() {
 
-                this.loading_submit = true  
+
+                this.loading_submit = true
                 this.$http.post(`${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
@@ -99,7 +99,7 @@
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
-                            this.errors = error.response.data 
+                            this.errors = error.response.data
                         } else {
                             console.log(error.response)
                         }
@@ -107,8 +107,8 @@
                     .then(() => {
                         this.loading_submit = false
                     })
-                    
-            },  
+
+            },
             close() {
                 this.$emit('update:showDialog', false)
                 this.initForm()

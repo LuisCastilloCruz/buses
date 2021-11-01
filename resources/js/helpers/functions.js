@@ -10,13 +10,11 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
     // console.log(row_old)
 
-    if (currency_type_id_old === 'PEN' && currency_type_id_old !== currency_type_id_new)
-    {
+    if (currency_type_id_old === 'PEN' && currency_type_id_old !== currency_type_id_new) {
         unit_price = unit_price / exchange_rate_sale;
     }
 
-    if (currency_type_id_new === 'PEN' && currency_type_id_old !== currency_type_id_new)
-    {
+    if (currency_type_id_new === 'PEN' && currency_type_id_old !== currency_type_id_new) {
         unit_price = unit_price * exchange_rate_sale;
     }
 
@@ -54,6 +52,9 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     // $table->json('charges')->nullable();
     // $table->json('discounts')->nullable();
 
+    // fixed for update sale_note
+    let record_id = (row_old.record_id) ? row_old.record_id : (row_old.id ? row_old.id : null)
+
     let row = {
         item_id: row_old.item.id,
         // item_description: row_old.item.description,
@@ -86,7 +87,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         charges: row_old.charges,
         discounts: row_old.discounts,
         warehouse_id: warehouse_id,
-        name_product_pdf: row_old.name_product_pdf
+        name_product_pdf: row_old.name_product_pdf,
+        record_id: record_id, // fixed for update sale_note
     };
 
     let percentage_igv = 18
@@ -118,86 +120,102 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     //     }
     //     row.discounts.splice(index, discount)
     // })
+    if (row.discounts.length > 0) {
+        row.discounts.forEach((discount, index) => {
 
-    row.discounts.forEach((discount, index) => {
+            let affectation_igv_type_exonerated = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37']
 
-        if(discount.is_amount){
+            if (discount.is_amount) {
+                if (discount.discount_type.base) {
 
-            if (discount.discount_type.base) {
+                    discount.base = _.round(total_value_partial, 2)
+                    //amount and percentage are equals in input
+                    discount.amount = _.round(discount.percentage, 2)
 
-                discount.base = _.round(total_value_partial, 2)
-                //amount and percentage are equals in input
-                discount.amount = _.round(discount.percentage, 2)
+                    discount.percentage = _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)), 5)
+                    // discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
 
-                discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),5)
-                // discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
+                    discount.factor = _.round(discount.percentage / 100, 5)
+                    // discount.factor = _.round(discount.percentage / 100, 2)
 
-                discount.factor = _.round(discount.percentage / 100, 5)
-                // discount.factor = _.round(discount.percentage / 100, 2)
+                    discount_base += discount.amount
 
-                discount_base += discount.amount
+                } else {
 
-            } else {
+                    let aux_total_line = row.unit_price * row.quantity
 
-                let aux_total_line = row.unit_price * row.quantity
-                let affectation_igv_type_exonerated = ['20','21','30','31','32','33','34','35','36','37']
+                    // if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
+                    //     total_value_partial = (aux_total_line - discount.percentage) / (1 + percentage_igv / 100)
+                    // } else {
+                    //     total_value_partial = aux_total_line - discount.percentage
+                    // }
 
-                if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
-                    total_value_partial = (aux_total_line - discount.percentage) / (1 + percentage_igv / 100)
-                }else{
-                    total_value_partial = aux_total_line - discount.percentage
+                    discount.base = _.round(aux_total_line, 2)
+                    //amount and percentage are equals in input
+                    discount.amount = _.round(discount.percentage, 2)
+                    discount.percentage = _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)), 2)
+                    discount.factor = _.round(discount.percentage / 100, 5)
+                    // discount.factor = _.round(discount.percentage / 100, 2)
+                    // discount_no_base += discount.amount
                 }
 
-                discount.base = _.round(aux_total_line, 2)
-                //amount and percentage are equals in input
-                discount.amount = _.round(discount.percentage, 2)
-
-                discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
-
-                discount.factor = _.round(discount.percentage / 100, 5)
-                // discount.factor = _.round(discount.percentage / 100, 2)
-
-                // discount_no_base += discount.amount
-            }
-
-        }else{
-
-            discount.percentage = parseFloat(discount.percentage)
-            discount.factor = discount.percentage / 100
-            discount.base = _.round(total_value_partial, 2)
-            discount.amount = _.round(discount.base * discount.factor, 4)
-            if (discount.discount_type.base) {
-                discount_base += discount.amount
             } else {
-                discount_no_base += discount.amount
+
+                if (discount.discount_type.base) {
+
+                    discount.percentage = parseFloat(discount.percentage)
+                    discount.factor = discount.percentage / 100
+                    discount.base = _.round(total_value_partial, 2)
+                    discount.amount = _.round(discount.base * discount.factor, 2)
+                    // if (discount.discount_type.base) {
+                    discount_base += discount.amount
+                    // } else {
+                    //     discount_no_base += discount.amount
+                    // }
+
+                } else {
+
+
+                    let aux_total_line = row.unit_price * row.quantity
+                    discount.factor = _.round(discount.percentage / 100, 5)
+                    discount.amount = _.round(aux_total_line * discount.factor, 2)
+
+                    // if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
+                    //     total_value_partial = (aux_total_line - discount.amount) / (1 + percentage_igv / 100)
+                    // } else {
+                    //     total_value_partial = aux_total_line - discount.amount
+                    // }
+
+                    discount.base = _.round(aux_total_line, 2)
+
+                }
+
             }
 
-        }
-
-        row.discounts.splice(index, discount)
-    })
-
+            row.discounts.splice(index, discount)
+        })
+    }
     // console.log('total base discount:'+discount_base)
     // console.log('total no base discount:'+discount_no_base)
-
-
 
 
     /* Charges */
     let charge_base = 0
     let charge_no_base = 0
-    row.charges.forEach((charge, index) => {
-        charge.percentage = parseFloat(charge.percentage)
-        charge.factor = charge.percentage / 100
-        charge.base = _.round(total_value_partial, 4)
-        charge.amount = _.round(charge.base * charge.factor, 4)
-        if (charge.charge_type.base) {
-            charge_base += charge.amount
-        } else {
-            charge_no_base += charge.amount
-        }
-        row.charges.splice(index, charge)
-    })
+    if (row.charges.length > 0) {
+        row.charges.forEach((charge, index) => {
+            charge.percentage = parseFloat(charge.percentage)
+            charge.factor = charge.percentage / 100
+            charge.base = _.round(total_value_partial, 2)
+            charge.amount = _.round(charge.base * charge.factor, 2)
+            if (charge.charge_type.base) {
+                charge_base += charge.amount
+            } else {
+                charge_no_base += charge.amount
+            }
+            row.charges.splice(index, charge)
+        })
+    }
     // console.log('total base charge:'+charge_base)
     // console.log('total no base charge:'+charge_no_base)
 
@@ -226,17 +244,17 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     let total_taxes = total_igv + total_isc + total_other_taxes
     let total = total_value + total_taxes
 
-    row.total_charge = _.round(total_charge, 4)
-    row.total_discount = _.round(total_discount, 4)
-    row.total_charge = _.round(total_charge, 4)
-    row.total_value = _.round(total_value, 4)
-    row.total_base_igv = _.round(total_base_igv, 4)
-    row.total_igv =  _.round(total_igv, 4)
-    row.total_taxes = _.round(total_taxes, 4)
-    row.total = _.round(total, 4)
+    row.total_charge = _.round(total_charge, 2)
+    row.total_discount = _.round(total_discount, 2)
+    row.total_charge = _.round(total_charge, 2)
+    row.total_value = _.round(total_value, 2)
+    row.total_base_igv = _.round(total_base_igv, 2)
+    row.total_igv = _.round(total_igv, 2)
+    row.total_taxes = _.round(total_taxes, 2)
+    row.total = _.round(total, 2)
 
 
-    if(row.discounts.length > 0){
+    if (row.discounts.length > 0) {
 
         let sum_discount_no_base = 0
         let sum_discount_base = 0
@@ -250,19 +268,16 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         row.unit_price = (total_value + total_taxes - sum_discount_no_base) / row.quantity
 
         //obs 4288
-        let exist_discount_no_base = _.find(row.discounts, {discount_type_id : '01'})
+        // let exist_discount_no_base = _.find(row.discounts, {discount_type_id: '01'})
+        // if (exist_discount_no_base) {
+        //     row.unit_value = (total_value + total_taxes) / row.quantity
+        //     if (row.affectation_igv_type_id === '10') {
+        //         row.unit_value = row.unit_value / (1 + percentage_igv / 100)
+        //     }
+        // }
 
-        if(exist_discount_no_base){
-
-            row.unit_value = (total_value + total_taxes) / row.quantity
-
-            if (row.affectation_igv_type_id === '10') {
-                row.unit_value = row.unit_value / (1 + percentage_igv / 100)
-            }
-
-        }
-
-        row.total_discount = _.round(sum_discount_no_base, 4)
+        let total_discounts = sum_discount_no_base + sum_discount_base;
+        row.total_discount = _.round(total_discounts, 2)
     }
 
 
@@ -274,7 +289,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     }
 
     //impuesto bolsa
-    if(row_old.has_plastic_bag_taxes){
+    if (row_old.has_plastic_bag_taxes) {
         row.total_plastic_bag_taxes = _.round(row.quantity * row.item.amount_plastic_bag_taxes, 1)
     }
 
@@ -283,7 +298,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 }
 
 function getUniqueArray(arr, keyProps) {
-    if(arr == null )return  null
+    if (arr == null) return null
     return Object.values(
         arr.reduce((uniqueMap, entry) => {
             const key = keyProps.map((k) => entry[k]).join('|')
@@ -292,4 +307,21 @@ function getUniqueArray(arr, keyProps) {
         }, {})
     )
 }
-export {calculateRowItem,getUniqueArray}
+
+function showNamePdfOfDescription(item, show_pdf_name) {
+    if (show_pdf_name !== undefined &&
+        show_pdf_name === true &&
+        item !== undefined &&
+        item.name_product_pdf !== undefined
+    ) {
+        let temn = item.name_product_pdf;
+        temn = temn.substring(3)
+        temn = temn.slice(0, -4)
+        if (temn.length > 0) {
+            return temn;
+        }
+    }
+    return item.description
+}
+
+export {calculateRowItem, getUniqueArray, showNamePdfOfDescription}

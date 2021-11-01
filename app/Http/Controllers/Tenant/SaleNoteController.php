@@ -2,54 +2,64 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use App\Models\Tenant\User;
-use Illuminate\Http\Request;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
+use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\CoreFacturalo\Template;
 use App\Http\Controllers\Controller;
-use App\Models\Tenant\Person;
-use App\Models\Tenant\Catalogs\CurrencyType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\Models\Tenant\Establishment;
-use App\Models\Tenant\SaleNote;
-use App\Models\Tenant\SaleNoteItem;
-use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
-use App\Models\Tenant\Item;
-use App\Models\Tenant\Series;
+use App\Http\Controllers\SearchItemController;
+use App\Http\Requests\Tenant\SaleNoteRequest;
 use App\Http\Resources\Tenant\SaleNoteCollection;
 use App\Http\Resources\Tenant\SaleNoteResource;
 use App\Http\Resources\Tenant\SaleNoteResource2;
+use App\Mail\Tenant\SaleNoteEmail;
+use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
+use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
-use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
-use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Dispatch;
-use App\Http\Requests\Tenant\SaleNoteRequest;
-// use App\Models\Tenant\Warehouse;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\ItemWarehouse;
+use App\Models\Tenant\MigrationConfiguration;
+use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\SaleNoteItem;
+use App\Models\Tenant\SaleNoteMigration;
+use App\Models\Tenant\Series;
+use App\Models\Tenant\User;
+use App\Traits\OfflineTrait;
+use Carbon\Carbon;
+use ErrorException;
+use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
-use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\Template;
-use Mpdf\Mpdf;
-use Mpdf\HTMLParserMode;
+use Modules\Document\Traits\SearchTrait;
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Inventory\Models\Warehouse;
+use Modules\Inventory\Traits\InventoryTrait;
+use Modules\Item\Models\ItemLot;
+use Modules\Item\Models\ItemLotsGroup;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
-use App\Models\Tenant\PaymentMethodType;
-use App\Mail\Tenant\SaleNoteEmail;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\Mail;
-use Modules\Inventory\Models\Warehouse;
-use Modules\Item\Models\ItemLot;
-use App\Models\Tenant\ItemWarehouse;
-use Modules\Finance\Traits\FinanceTrait;
-use Modules\Item\Models\ItemLotsGroup;
-use App\Models\Tenant\Configuration;
-use Modules\Inventory\Traits\InventoryTrait;
-use Modules\Document\Traits\SearchTrait;
-use App\Models\Tenant\BankAccount;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
+use Modules\Sale\Helpers\SaleNoteHelper;
+// use App\Models\Tenant\Warehouse;
+use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
+// use App\Models\Tenant\Warehouse;
 use Modules\Item\Models\Category;
 use Mike42\Escpos\EscposImage;
 use Illuminate\Support\Facades\Storage;
@@ -62,7 +72,11 @@ use Mike42\Escpos\Printer;
 class SaleNoteController extends Controller
 {
 
-    use StorageDocument, FinanceTrait, InventoryTrait, SearchTrait;
+    use FinanceTrait;
+    use InventoryTrait;
+    use SearchTrait;
+    use StorageDocument;
+    use OfflineTrait;
 
     protected $sale_note;
     protected $company;
@@ -81,6 +95,325 @@ class SaleNoteController extends Controller
     public function create($id = null)
     {
         return view('tenant.sale_notes.form', compact('id'));
+    }
+
+
+    /**
+     * Envia la NV al servidor de destino. Devuelve el mensaje de exito o error del servidor
+     *
+     * @param $saleNoteId
+     * @return array
+     */
+    public function sendDataToOtherSite($saleNoteId ){
+        $dataSend = [
+            'sale_note_id'=>$saleNoteId,
+            'success' => false,
+        ];
+
+        if (auth()->user()->type !== 'admin') {
+            $dataSend['message'] ='Solo los administradores pueden realizar esta accion';
+            return $dataSend;
+        }
+        $configuration = Configuration::first();
+        if($configuration->isSendDataToOtherServer()!= true){
+            $dataSend['message'] ='La configuracion no esta habilitada para el envio';
+            return $dataSend;
+        }
+
+
+        $migrationConfiguration = MigrationConfiguration::first();
+
+        if ($migrationConfiguration === null || empty($migrationConfiguration->url) || empty($migrationConfiguration->api_key)) {
+            $dataSend['message'] ='No hay datos configurados para la migracion';
+            return $dataSend;
+        };
+        $token = $migrationConfiguration->getApiKey();
+        $web = $migrationConfiguration->getUrl();
+        /*
+        $token = 'TESTING_TOKEN_mmmddasdadasd';
+        $web = 'testing.url';
+        */
+
+        $alreadySendit = SaleNoteMigration::where([
+            'sale_notes_id' => $saleNoteId,
+            'success' => 1,
+            'url' => $web,
+        ])->first();
+        // ya se envio, no hacer nada
+        if ($alreadySendit!==null) {
+            $dataSend['message'] ="Ya se ha enviado al servidor $web. ".$alreadySendit->getNumber();
+            return $dataSend;
+        };
+
+        $sale_note = SaleNote::find($saleNoteId);
+
+        if ($sale_note===null) {
+            $dataSend['message'] ="No se ha encontrado la NV";
+            return $dataSend;
+        };
+
+         // Hace ping para validar puertos, Implementado para testing de conexion
+        $this->pingSite($web);
+        $data_note = $sale_note->getDataToApiExport();
+
+
+        $alreadySendit = new SaleNoteMigration([
+            'sale_notes_id' => $saleNoteId,
+            'user_id' => auth()->user()->id,
+            'success' => 1,
+            'url' => $web,
+            'data' => json_encode($data_note),
+        ]);
+        $web = "https://$web";
+        $web_Url = "$web/api/sale-note";
+
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept'        => 'application/json',
+        ];
+        $client = new  Client([
+            'base_uri'=>$web,
+            'verify'          => false,
+            'headers'          => $headers,
+
+        ]);
+
+        try {
+            $send = [
+                'form_params' => $data_note,
+                'headers' => $headers,
+            ];
+            $ype_send = 'POST';
+            self::ExtraLog(__FILE__."::".__LINE__."  \n Enviando por >$ype_send<  a la url $web_Url \n\n".__FUNCTION__." \n". json_encode($send) ."\n\n\n\n");
+            $response = $client->request($ype_send, $web_Url,$send);
+        }catch (RequestException $e){
+            $code = $e->getCode();
+            $responsea = $e->getResponse();
+            if(empty($responsea)){
+                $dataSend['message'] = 'No se ha obtenido respuesta del sitio '.$web;
+                return $dataSend;
+            }
+            $responseBodyAsString = $responsea->getBody()->getContents();
+            $response = json_decode($responseBodyAsString);
+            try {
+                if (property_exists($response, 'success')) {
+                    $success = $response->success;
+                    $alreadySendit->setSuccess();
+                    if (property_exists($response, 'data')) {
+                        $data = $response->data;
+                        if ($success == true) {
+                            $alreadySendit
+                                ->setSuccess(true)
+                                ->setNumber($data->number)
+                                ->setRemoteId($data->id);
+                        }
+                    } else {
+                        if (property_exists($response, 'message')) {
+                            $message = $response->message;
+                            $err_gen = 'NV-GEN-';
+                            if ($this->searchInString('SQLSTATE[23000]', $message)) {
+                                $err_gen = 'NV-SQL-';
+                                if ($this->searchInString('`persons`', $message)) {
+                                    $err_gen .= "001";
+                                    $dataSend['message'] = 'Problemas insertando datos del cliente. ' . $err_gen;
+                                } else {
+                                    $err_gen .= "003";
+                                    $dataSend['message'] = 'Problemas insertando datos' . $err_gen;
+                                }
+
+                            } else {
+                                if (
+                                    $this->searchInString("Trying to get property 'description' of non-object", $message) &&
+                                    $this->searchInString("sale_note_a4.blade.php", $message)
+                                ) {
+                                    $err_gen = "NV-FILE-001";
+                                    $dataSend['message'] = 'Problemas generando los atributos del item en el pdf ' . $err_gen;
+                                    $err_gen.= '\n\n\nPosiblemente sea el atributo en parte del siguiente codigo   @if($row->attributes)
+                    @foreach($row->attributes as $attr)
+                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                    @endforeach
+                @endif \n\n\n';
+
+                                }else {
+                                    $err_gen .= "004";
+                                    $dataSend['message'] = "Error desconocido. Codigo $err_gen";
+                                    $dataSend['extra'] = $response->message;
+                                }
+                            }
+                            \Log::channel('facturalo')->error(__FILE__ . "::" . __LINE__ . " \n $err_gen: No se ha podido determinar el fallo. La respuesta es \n" .
+                                var_export($response->message, true));
+                            return $dataSend;
+
+                        }
+                    }
+                    $alreadySendit->push();
+                    $dataSend['message'] = 'Se ha generado correctamente bajo el numero ' . $alreadySendit->getNumber();
+                    $dataSend['success'] = true;
+                }
+            }catch (ErrorException $er){
+                \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-501: No se ha podido determinar el fallo. La respuesta es \n".
+                    $responseBodyAsString."\n");
+            }
+
+            \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-500: No se ha podido determinar el fallo. La respuesta es \n".
+                var_export($response,true));
+            $dataSend['message'] = 'Error desconocido. Codigo : NV-M-500';
+            return $dataSend;
+        }
+
+        self::ExtraLog(__FILE__."::".__LINE__."  \n Datos de RESPUESTA ".__FUNCTION__." \n". var_export($response,true) ."\n\n\n\n");
+
+        if($response == false){
+            \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-404: La respuesta ha sido falsa, posiblemente no se encuentre la web $web_Url \n".
+                var_export($response,true));
+            $dataSend['message'] = 'Problemas de conexion con el servidor. Revise la configuracion. Codigo : NV-M-404';
+
+            return $dataSend;
+        }
+
+        $responseBodyAsString = $response->getBody()->getContents();
+        $response = json_decode($responseBodyAsString);
+
+        if (property_exists($response, 'success')) {
+            $success = $response->success;
+            $alreadySendit->setSuccess();
+
+            if (property_exists($response, 'data')) {
+                $data = $response->data;
+                if ($success == true) {
+                    $alreadySendit
+                        ->setSuccess(true)
+                        ->setNumber($data->number)
+                        ->setRemoteId($data->id);
+                }
+            } else {
+                if (property_exists($response, 'message')) {
+                    $message = $response->message;
+                    $err_gen = 'NV-GEN-';
+                    if ($this->searchInString('SQLSTATE[23000]', $message)) {
+                        $err_gen = 'NV-SQL-';
+                        if ($this->searchInString('`persons`', $message)) {
+                            $err_gen.="001";
+                            $dataSend['message'] = 'Problemas insertando datos del cliente. '.$err_gen;
+                        } else {
+                            $err_gen.="003";
+                            $dataSend['message'] = 'Problemas insertando datos'.$err_gen;
+                        }
+                    } else {
+                        $err_gen.="004";
+                        $dataSend['message'] = "Error desconocido. Codigo $err_gen";
+                        $dataSend['extra'] = $response->message;
+                    }
+                    \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n $err_gen: No se ha podido determinar el fallo. La respuesta es \n".
+                        var_export($response->message,true));
+                    return $dataSend;
+
+                }
+            }
+            $alreadySendit->push();
+            $dataSend['message']='Se ha generado correctamente bajo el numero '.$alreadySendit->getNumber();
+            $dataSend['success'] = true;
+        }else{
+            \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-500: No se ha podido determinar el fallo. La respuesta es \n".
+                var_export($response,true));
+            $dataSend['message'] = 'Error desconocido. Codigo : NV-M-500';
+            return $dataSend;
+
+        }
+
+        return $dataSend;
+    }
+
+    /**
+     * Evalua la forma de enviar la nv al servidor.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function EnviarOtroSitio(Request $request){
+        $proccesed = [];
+        $text = '';
+        $success = false;
+        $extra = '';
+        if($request->has('sale_note_id')){
+            // para una NV
+            $saleNoteId = $request->sale_note_id;
+            return $this->sendDataToOtherSite($saleNoteId);
+        }elseif($request->has('sale_notes_id')){
+            // multiples NV
+            foreach($request->sale_notes_id as $saleNoteId){
+                $temp =$this->sendDataToOtherSite($saleNoteId);
+                $proccesed[] = $temp;
+                $proccesed[] = $temp;
+                $proccesed[] = $temp;
+                if($success == false){
+                    $success = $temp['success'];
+                }
+                $extra .= $temp['extra']." | "??null;
+                $sms = $temp['message']??null;
+                $text.=($sms !== null)?$sms."<br>":null;
+            }
+        }
+        $data['success']= $success;
+        $data['message']= $text;
+        $data['extra_info']= $extra;
+        $data['proccesed']= $proccesed;
+        return $data;
+    }
+
+    /**
+     * Obtiene la url del servidor de destino configurada en la migracion.
+     *
+     * @return mixed|string|null
+     */
+    public function getSaleNoteToOtherSiteUrl(){
+            $e = MigrationConfiguration::first();
+        return $e!== null?$e->url:'';
+    }
+
+    /**
+     * Obtiene la lista de nota de ventas que pueden ser migradas a otro servidor.
+     *
+     * @param Request $request
+     * @return SaleNote[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed
+     */
+    public function getSaleNoteToOtherSite(Request $request){
+
+
+        $saleNoteAlready = SaleNoteMigration::where('success',1)
+            ->select('sale_notes_id')
+            ->get()
+            ->pluck('sale_notes_id');
+        $configuration = Configuration::first();
+        $saleNote = SaleNote::whereNotIn('id',$saleNoteAlready);
+        if($request->has('params')){
+            $param = $request->params;
+            if(isset($param['client_id'])) {
+                $saleNote->where('customer_id', $param['client_id']);
+            }
+            if(isset($param['date_of_issue'])) {
+                $saleNote->where('date_of_issue', $param['date_of_issue']);
+            }
+        }
+
+        $saleNote = $saleNote->where('state_type_id','!=','11')
+            ->get()
+            ->transform(function($row)use($configuration){
+                /** @var SaleNote $row */
+                return $row->getCollectionData($configuration);
+            });
+
+        return $saleNote;
+    }
+    /**
+     * Busca el texto $search en la cadena de caracteres $text
+     * @param $search
+     * @param $text
+     * @return bool
+     */
+    public function searchInString($search, $text){
+        return !(strpos($text, $search) === false);
     }
 
     public function columns()
@@ -204,7 +537,8 @@ class SaleNoteController extends Controller
 
     public function item_tables()
     {
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getItemsToSaleNote();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -213,8 +547,20 @@ class SaleNoteController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                        'discount_types', 'charge_types', 'attribute_types');
+        $operation_types = OperationType::whereActive()->get();
+        $is_client = $this->getIsClient();
+
+        return compact('items',
+        'categories',
+        'affectation_igv_types',
+        'system_isc_types',
+        'price_types',
+        'discount_types',
+        'charge_types',
+        'attribute_types',
+        'operation_types',
+        'is_client'
+        );
     }
 
     public function record($id)
@@ -250,7 +596,8 @@ class SaleNoteController extends Controller
 
             foreach($data['items'] as $row) {
 
-                $item_id = isset($row['id']) ? $row['id'] : null;
+                // $item_id = isset($row['id']) ? $row['id'] : null;
+                $item_id = isset($row['record_id']) ? $row['record_id'] : null;
                 $sale_note_item = SaleNoteItem::query()->firstOrNew(['id' => $item_id]);
 
                 if(isset($row['item']['lots'])){
@@ -679,6 +1026,7 @@ class SaleNoteController extends Controller
 
             case 'items':
 
+                return SearchItemController::getItemsToSaleNote();
                 $establishment_id = auth()->user()->establishment_id;
                 $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
                 // $warehouse_id = ($warehouse) ? $warehouse->id:null;
@@ -765,14 +1113,18 @@ class SaleNoteController extends Controller
         // dd($request->all());
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-        $warehouse_id = ($warehouse) ? $warehouse->id:null;
-
+        $warehouse_id = ($warehouse) ? $warehouse->id : null;
+        /*
         $items_not_services = $this->getItemsNotServices($request);
         $items_services = $this->getItemsServices($request);
         $all_items = $items_not_services->merge($items_services);
 
         $items = collect($all_items)->transform(function($row) use($warehouse_id, $warehouse){
+        */
+        $items = SearchItemController::getItemsToSaleNote($request);
 
+        /*
+        $items = SearchItemController::getItemsToSaleNote($request)->transform(function ($row) use ($warehouse_id, $warehouse) {
             $detail = $this->getFullDescription($row, $warehouse);
 
             return [
@@ -789,11 +1141,11 @@ class SaleNoteController extends Controller
                 'unit_type_id' => $row->unit_type_id,
                 'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                 'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                'has_igv' => (bool) $row->has_igv,
-                'lots_enabled' => (bool) $row->lots_enabled,
-                'series_enabled' => (bool) $row->series_enabled,
-                'is_set' => (bool) $row->is_set,
-                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse_id){
+                'has_igv' => (bool)$row->has_igv,
+                'lots_enabled' => (bool)$row->lots_enabled,
+                'series_enabled' => (bool)$row->series_enabled,
+                'is_set' => (bool)$row->is_set,
+                'warehouses' => collect($row->warehouses)->transform(function ($row) use ($warehouse_id) {
                     return [
                         'warehouse_id' => $row->warehouse->id,
                         'warehouse_description' => $row->warehouse->description,
@@ -803,20 +1155,20 @@ class SaleNoteController extends Controller
                 }),
                 'item_unit_types' => $row->item_unit_types,
                 'lots' => [],
-                'lots_group' => collect($row->lots_group)->transform(function($row){
+                'lots_group' => collect($row->lots_group)->transform(function ($row) {
                     return [
-                        'id'  => $row->id,
+                        'id' => $row->id,
                         'code' => $row->code,
                         'quantity' => $row->quantity,
                         'date_of_due' => $row->date_of_due,
-                        'checked'  => false
+                        'checked' => false
                     ];
                 }),
                 'lot_code' => $row->lot_code,
                 'date_of_due' => $row->date_of_due
             ];
         });
-
+*/
         return compact('items');
 
     }
@@ -824,10 +1176,9 @@ class SaleNoteController extends Controller
 
     public function searchItemById($id)
     {
-
+        return  SearchItemController::getItemsToSaleNote(null, $id);
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-
         $search_item = $this->getItemsNotServicesById($id);
 
         if(count($search_item) == 0){
@@ -835,9 +1186,7 @@ class SaleNoteController extends Controller
         }
 
         $items = collect($search_item)->transform(function($row) use($warehouse){
-
             $detail = $this->getFullDescription($row, $warehouse);
-
             return [
                 'id' => $row->id,
                 'full_description' => $detail['full_description'],
@@ -852,11 +1201,11 @@ class SaleNoteController extends Controller
                 'unit_type_id' => $row->unit_type_id,
                 'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                 'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                'has_igv' => (bool) $row->has_igv,
-                'lots_enabled' => (bool) $row->lots_enabled,
-                'series_enabled' => (bool) $row->series_enabled,
-                'is_set' => (bool) $row->is_set,
-                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                'has_igv' => (bool)$row->has_igv,
+                'lots_enabled' => (bool)$row->lots_enabled,
+                'series_enabled' => (bool)$row->series_enabled,
+                'is_set' => (bool)$row->is_set,
+                'warehouses' => collect($row->warehouses)->transform(function ($row) use ($warehouse) {
                     return [
                         'warehouse_id' => $row->warehouse->id,
                         'warehouse_description' => $row->warehouse->description,
@@ -866,13 +1215,13 @@ class SaleNoteController extends Controller
                 }),
                 'item_unit_types' => $row->item_unit_types,
                 'lots' => [],
-                'lots_group' => collect($row->lots_group)->transform(function($row){
+                'lots_group' => collect($row->lots_group)->transform(function ($row) {
                     return [
-                        'id'  => $row->id,
+                        'id' => $row->id,
                         'code' => $row->code,
                         'quantity' => $row->quantity,
                         'date_of_due' => $row->date_of_due,
-                        'checked'  => false
+                        'checked' => false
                     ];
                 }),
                 'lot_code' => $row->lot_code,
@@ -913,21 +1262,8 @@ class SaleNoteController extends Controller
 
     public function searchCustomerById($id)
     {
+        return $this->searchClientById($id);
 
-        $customers = Person::whereType('customers')
-                    ->where('id',$id)
-                    ->get()->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'description' => $row->number.' - '.$row->name,
-                            'name' => $row->name,
-                            'number' => $row->number,
-                            'identity_document_type_id' => $row->identity_document_type_id,
-                            'identity_document_type_code' => $row->identity_document_type->code
-                        ];
-                    });
-
-        return compact('customers');
     }
 
     public function option_tables()
@@ -948,8 +1284,23 @@ class SaleNoteController extends Controller
         $record = SaleNote::find($request->input('id'));
         $customer_email = $request->input('customer_email');
 
+        $email = $customer_email;
+        $mailable = new SaleNoteEmail($company, $record);
+        $id = (int) $request->id;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 2);
+        /*
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new SaleNoteEmail($company, $record));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+        }*/
 
         return [
             'success' => true
@@ -1229,14 +1580,31 @@ class SaleNoteController extends Controller
             'notes_id' => 'required|array',
         ]);
 
-        $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)
-            ->select('item_id', 'quantity')
-            ->get();
+
+        if($request->select_all){
+
+            $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)->get();
+
+        }else{
+
+            $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)
+                    ->select('item_id', 'quantity')
+                    ->get();
+        }
+
 
         return response()->json([
             'success' => true,
             'data' => $items,
         ], 200);
+    }
+
+
+    public function getConfigGroupItems()
+    {
+        return [
+            'group_items_generate_document' => Configuration::select('group_items_generate_document')->first()->group_items_generate_document
+        ];
     }
 
     /**
@@ -1272,6 +1640,79 @@ class SaleNoteController extends Controller
             ],
         ];
 
+    }
+
+
+    /**
+     * Retorna la vistsa para la configuracion de migracion avanzada en Nota de venta
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
+     */
+    public function SetAdvanceConfiguration(){
+        $migrationConfiguration = MigrationConfiguration::getCollectionData();
+        return view('tenant.configuration.sale_notes',compact('migrationConfiguration'));
+
+    }
+
+    /**
+     * Guarda los datos para la migracion de nota de venta
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function SaveSetAdvanceConfiguration(Request $request){
+
+        $data = $request->all();
+        $data['success'] = false;
+        $data['send_data_to_other_server'] = (bool)$data['send_data_to_other_server'];
+
+        if(auth()->user()->type !=='admin'){
+            $data['message'] = 'No puedes realizar cambios';
+            return $data;
+        }
+        $configuration = Configuration::first();
+        $migrationConfiguration = MigrationConfiguration::first();
+        if(empty($migrationConfiguration)) $migrationConfiguration = new MigrationConfiguration($data);
+
+        $migrationConfiguration->setUrl($data['url'])->setApiKey($data['apiKey'])->push();
+        $configuration->setSendDataToOtherServer($data['send_data_to_other_server'] )->push();
+
+        $data['url']=$migrationConfiguration->getUrl();
+        $data['apiKey']=$migrationConfiguration->getApiKey();
+        $data['send_data_to_other_server'] = $configuration->isSendDataToOtherServer();
+        $data['success'] = true;
+        $data['message'] = 'Ha sido acualizado';
+        return $data;
+
+    }
+
+
+    /**
+     * Retorna arreglo para generar nota de venta desde ecommerce
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function transformDataOrder(Request $request){
+
+        $data = SaleNoteHelper::transformForOrder($request->all());
+
+        return [
+            'data' => $data
+        ];
+
+    }
+
+
+    /**
+     * Retorna items para generar json en checkout de hoteles
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function getItemsByIds(Request $request)
+    {
+        return SearchItemController::TransformToModalSaleNote(Item::whereIn('id', $request->ids)->get());
     }
 
     public function esc(Request $request)
@@ -1440,5 +1881,6 @@ class SaleNoteController extends Controller
             $printer->close();
         }
     }
+
 
 }

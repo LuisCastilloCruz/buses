@@ -130,7 +130,11 @@
                         <th v-if="columns.item_code.visible">Cód. SUNAT</th>
                         <th v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">R.S.</th>
                         <th v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">DIGEMID</th>
+                        <template v-if="typeUser == 'admin'">
+                            <th class="text-center">Historial</th>
+                        </template>
                         <th class="text-left">Stock</th>
+                        <th v-if="(columns.extra_data!== undefined && columns.extra_data.visible===true )" class="text-center">Stock por datos extra</th>
                         <th class="text-right">P.Unitario (Venta)</th>
                         <th v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
                             P.Unitario (Compra)
@@ -155,6 +159,19 @@
                         <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
                         <td v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">{{ row.sanitary }}</td>
                         <td v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">{{ row.cod_digemid }}</td>
+
+                        <template v-if="typeUser == 'admin'">
+                            <td class="text-center">
+                                <button
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    @click.prevent="clickHistory(row.id)"
+                                >
+                                    <i class="fa fa-history"></i>
+                                </button>
+                            </td>
+                        </template>
+
                         <td>
                             <div v-if="config.product_only_location == true">
                                 {{ row.stock }}
@@ -189,6 +206,33 @@
                             </template> -->
 
                             <!-- <br/>Mín:{{ row.stock_min }} -->
+                        </td>
+                        <td v-if="(columns.extra_data!== undefined && columns.extra_data.visible===true )"
+                            class="text-center">
+
+                            <template v-if="
+                            config.show_extra_info_to_item &&
+                            (
+                                row.stock_by_extra.total !== null ||
+                                row.stock_by_extra.colors !== null ||
+                                row.stock_by_extra.CatItemSize !== null ||
+                                row.stock_by_extra.CatItemStatus !== null ||
+                                row.stock_by_extra.CatItemUnitBusiness !== null ||
+                                row.stock_by_extra.CatItemMoldCavity !== null ||
+                                row.stock_by_extra.CatItemPackageMeasurement !== null ||
+                                row.stock_by_extra.CatItemUnitsPerPackage !== null ||
+                                row.stock_by_extra.CatItemMoldProperty !== null ||
+                                row.stock_by_extra.CatItemProductFamily !== null
+                            )
+                                ">
+                                <button
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    @click.prevent="clickStockItems(row)"
+                                >
+                                    <i class="fa fa-database"></i>
+                                </button>
+                            </template>
                         </td>
                         <td class="text-right">{{ row.sale_unit_price }}</td>
                         <td v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
@@ -287,10 +331,20 @@
             <items-import-list-price
                 :showDialog.sync="showImportListPriceDialog"
             ></items-import-list-price>
+            <tenant-item-aditional-info-modal
+                :showDialog.sync="showDialogItemStock"
+                :item="recordItem"
+            ></tenant-item-aditional-info-modal>
+            <items-history
+                :showDialog.sync="showDialogHistory"
+                :recordId="recordId"
+            >
+            </items-history>
         </div>
     </div>
 </template>
 <script>
+
 import ItemsForm from "./form.vue";
 import WarehousesDetail from "./partials/warehouses.vue";
 import ItemsImport from "./import.vue";
@@ -299,7 +353,9 @@ import ItemsExport from "./partials/export.vue";
 import ItemsExportWp from "./partials/export_wp.vue";
 import ItemsExportBarcode from "./partials/export_barcode.vue";
 import DataTable from "../../../components/DataTable.vue";
-import { deletable } from "../../../mixins/deletable";
+import {deletable} from "../../../mixins/deletable";
+import ItemsHistory from "@viewsModuleItem/items/history.vue";
+import {mapActions, mapState} from "vuex";
 
 export default {
     props: [
@@ -316,6 +372,7 @@ export default {
         DataTable,
         WarehousesDetail,
         ItemsImportListPrice,
+        ItemsHistory,
     },
     data() {
         return {
@@ -329,8 +386,8 @@ export default {
             showWarehousesDetail: false,
             resource: "items",
             recordId: null,
+            recordItem: {},
             warehousesDetail: [],
-            config: {},
             columns: {
                 description: {
                     title: 'Descripción',
@@ -364,16 +421,29 @@ export default {
                     title: 'DIGEMID',
                     visible: false
                 },
+                extra_data: {
+                    title: 'Stock Por datos extra',
+                    visible: false
+                },
             },
             item_unit_types: [],
             titleTopBar: '',
-            title: ''
+            title: '',
+            showDialogHistory: false,
+            showDialogItemStock: false,
         };
     },
     created() {
-         if(this.configuration.is_pharmacy !== true){
+        this.$store.commit('setConfiguration', this.configuration);
+        this.loadConfiguration()
+
+        if(this.config.is_pharmacy !== true){
             delete this.columns.sanitary;
             delete this.columns.cod_digemid;
+         }
+         if(this.config.show_extra_info_to_item !== true){
+             delete this.columns.extra_data;
+
          }
         if (this.type === 'ZZ') {
             this.titleTopBar = 'Servicios';
@@ -383,16 +453,32 @@ export default {
             this.title = 'Listado de productos';
         }
         this.$http.get(`/configurations/record`).then((response) => {
-            this.config = response.data.data;
+            this.$store.commit('setConfiguration',response.data.data);
+            //this.config = response.data.data;
         });
         this.canCreateProduct();
     },
     computed:{
+        ...mapState([
+            'config',
+        ]),
         columnsComputed:function(){
             return this.columns;
         }
     },
     methods: {
+
+        ...mapActions([
+            'loadConfiguration',
+        ]),
+        clickHistory(recordId){
+            this.recordId = recordId
+            this.showDialogHistory = true
+        },
+        clickStockItems(row){
+            this.recordItem = row
+            this.showDialogItemStock = true
+        },
         canCreateProduct()
         {
             if (this.typeUser === 'admin') {

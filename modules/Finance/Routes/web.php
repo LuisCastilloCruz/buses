@@ -28,12 +28,23 @@ if($hostname) {
                 Route::get('balance/filter', 'BalanceController@filter');
                 Route::get('balance/records', 'BalanceController@records');
 
+                Route::post('balance/bank_accounts', 'BalanceController@getBankAcounts');
+                Route::post('balance/cash', 'BalanceController@getCashAcounts');
+                Route::post('balance/transfer', 'BalanceController@makeTransfer');
                 Route::get('payment-method-types', 'PaymentMethodTypeController@index')->name('tenant.finances.payment_method_types.index');
                 Route::get('payment-method-types/pdf', 'PaymentMethodTypeController@pdf');
                 Route::get('payment-method-types/excel', 'PaymentMethodTypeController@excel');
                 Route::get('payment-method-types/filter', 'PaymentMethodTypeController@filter');
                 Route::get('payment-method-types/records', 'PaymentMethodTypeController@records');
 
+                /**
+                 * finances/unpaid
+                 * finances/balance/pdf
+                 * finances/unpaid/filter
+                 * finances/unpaid/records
+                 * finances/unpaid/unpaidall
+                 * finances/unpaid/report-payment-method-days
+                 */
                 Route::get('unpaid', 'UnpaidController@index')->name('tenant.finances.unpaid.index');
                 // Route::post('unpaid', 'UnpaidController@unpaid');
                 Route::get('unpaid/filter', 'UnpaidController@filter');

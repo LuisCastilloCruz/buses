@@ -32,6 +32,7 @@ use Modules\Transporte\Models\TransporteUserTerminal;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $phone
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $documents
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $seller_documents
  * @property-read int|null $documents_count
  * @property-read \App\Models\Tenant\Establishment $establishment
  * @property-read \Illuminate\Database\Eloquent\Collection|ModuleLevel[] $levels
@@ -41,6 +42,7 @@ use Modules\Transporte\Models\TransporteUserTerminal;
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNote[] $sale_notes
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNote[] $seller_sale_notes
  * @property-read int|null $sale_notes_count
  * @property-read UserCommission|null $user_commission
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
@@ -73,6 +75,7 @@ class User extends Authenticatable
         'address', 'telephone',
          'document_id',
          'series_id',
+        'permission_edit_cpe',
     ];
 
     /**
@@ -85,7 +88,8 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'series_id'=> 'int'
+        'series_id'=> 'int',
+        'permission_edit_cpe' => 'boolean',
     ];
 
     public function modules()
@@ -172,9 +176,19 @@ class User extends Authenticatable
         return $this->hasMany(Document::class);
     }
 
+    public function seller_documents()
+    {
+        return $this->hasMany(Document::class,'seller_id','id');
+    }
+
     public function sale_notes()
     {
         return $this->hasMany(SaleNote::class);
+    }
+
+    public function seller_sale_notes()
+    {
+        return $this->hasMany(SaleNote::class,'seller_id','id');
     }
 
     public function scopeWhereTypeUser($query)

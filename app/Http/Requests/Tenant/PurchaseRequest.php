@@ -38,6 +38,10 @@ class PurchaseRequest extends FormRequest
                 'note.note_description' => [
                     'required',
                 ],
+                'items' => [
+                    'required',
+                    'array',
+                ],
             ];
         }
         else {
@@ -54,7 +58,11 @@ class PurchaseRequest extends FormRequest
                 ],
                 'date_of_issue' => [
                     'required',
-                ]
+                ],
+                'items' => [
+                    'required',
+                    'array',
+                ],
             ];
         }
     }

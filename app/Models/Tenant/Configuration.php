@@ -3,14 +3,38 @@
 namespace App\Models\Tenant;
 
 
+use App\Models\Tenant\Catalogs\CurrencyType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
+use Modules\Inventory\Models\Warehouse;
+use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * Class Configuration
  *
  * @package App\Models\Tenant
- * @mixin  ModelTenant
-
+ * @mixin ModelTenant
+ * @property bool $show_extra_info_to_item
+ * @property bool $show_items_only_user_stablishment
+ * @method static Builder|Configuration newModelQuery()
+ * @method static Builder|Configuration newQuery()
+ * @method static Builder|Configuration query()
+ * @method static Builder|Configuration whereCertificate($value)
+ * @method static Builder|Configuration whereCreatedAt($value)
+ * @method static Builder|Configuration whereId($value)
+ * @method static Builder|Configuration whereLockedAdmin($value)
+ * @method static Builder|Configuration whereLogin($value)
+ * @method static Builder|Configuration whereSoapPassword($value)
+ * @method static Builder|Configuration whereSoapSendId($value)
+ * @method static Builder|Configuration whereSoapTypeId($value)
+ * @method static Builder|Configuration whereSoapUrl($value)
+ * @method static Builder|Configuration whereSoapUsername($value)
+ * @method static Builder|Configuration whereTokenApiruc($value)
+ * @method static Builder|Configuration whereTokenPrivateCulqui($value)
+ * @method static Builder|Configuration whereTokenPublicCulqui($value)
+ * @method static Builder|Configuration whereUpdatedAt($value)
+ * @method static Builder|Configuration whereUrlApiruc($value)
+ * @method static Builder|Configuration whereUseLoginGlobal($value)
  */
 class Configuration extends ModelTenant
 {
@@ -27,6 +51,7 @@ class Configuration extends ModelTenant
         'visual',
         'enable_whatsapp',
         'phone_whatsapp',
+        'apk_url',
         'limit_users',
         'quantity_documents',
         'date_time_start',
@@ -67,6 +92,19 @@ class Configuration extends ModelTenant
         'active_warehouse_prices',
         'active_allowance_charge',
         'percentage_allowance_charge',
+        'send_data_to_other_server',
+        'search_item_by_series',
+        'change_free_affectation_igv',
+        'select_available_price_list',
+        'currency_type_id',
+        'show_extra_info_to_item',
+        'group_items_generate_document',
+        'enabled_global_igv_to_purchase',
+        'show_pdf_name',
+        'dispatches_address_text',
+        'set_address_by_establishment',
+        'permission_to_edit_cpe',
+        'show_items_only_user_stablishment',
         'color1',
         'color2',
         'fondo',
@@ -88,7 +126,32 @@ class Configuration extends ModelTenant
         'update_document_on_dispaches' => 'boolean',
         'is_pharmacy' => 'boolean',
         'auto_send_dispatchs_to_sunat' => 'boolean',
+        'send_data_to_other_server' => 'boolean',
+        'select_available_price_list' => 'boolean',
+        'show_extra_info_to_item' => 'boolean',
+        'group_items_generate_document' => 'boolean',
+        'enabled_global_igv_to_purchase' => 'boolean',
+        'show_pdf_name' => 'boolean',
+        'dispatches_address_text' => 'boolean',
+        'set_address_by_establishment' => 'boolean',
+        'show_items_only_user_stablishment' => 'boolean',
+        'permission_to_edit_cpe' => 'boolean',
     ];
+
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function (self $item) {
+
+            //i f(empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
+        });
+        static::retrieved(function (self $item) {
+
+           // if (empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
+        });
+
+    }
 
     /**
      * @return bool
@@ -347,8 +410,28 @@ class Configuration extends ModelTenant
      * @return array
      */
     public function getCollectionData() {
+        $company = Company::first();
+        /** @var User $user */
+        $user = new User();
+        if(\Auth::user()) {
+            $user = auth()->user();
+        }
+        $establishment =   $user->establishment;
+        $establishment_id = $user->establishment_id;
+        $serie = $user->series_id;
+        $document_id = $user->document_id;
+        $typeUser = $user->type;
+        $unit_type_id = 'KGM'; //Unidad de medida por defecto
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+        if($warehouse == null){
+             $warehouse = new Warehouse();
+        }
+        $currency = CurrencyType::all();
         return [
             'id' => $this->id,
+            'company' => $company,
+            'establishment' => $establishment,
+            'warehouse_id' => $warehouse->id,
             'send_auto' => (bool)$this->send_auto,
             'formats' => $this->formats,
             'stock' => (bool)$this->stock,
@@ -365,6 +448,8 @@ class Configuration extends ModelTenant
             'affectation_igv_type_id' => $this->affectation_igv_type_id,
             'visual' => $this->visual,
             'enable_whatsapp' => (bool)$this->enable_whatsapp,
+            'phone_whatsapp' => $this->enable_whatsapp,
+            'apk_url' => $this->apk_url,
             'terms_condition' => $this->terms_condition,
             'terms_condition_sale' => $this->terms_condition_sale,
             'cotizaction_finance' => (bool)$this->cotizaction_finance,
@@ -384,11 +469,32 @@ class Configuration extends ModelTenant
             'update_document_on_dispaches' => (bool)$this->update_document_on_dispaches,
             'is_pharmacy' => (bool)$this->is_pharmacy,
             'auto_send_dispatchs_to_sunat' => (bool)$this->auto_send_dispatchs_to_sunat,
+            'send_data_to_other_server' => (bool)$this->send_data_to_other_server,
             'item_per_page' => config('tenant.items_per_page'),
             'active_warehouse_prices' => (bool)$this->active_warehouse_prices,
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
+            'dispatches_address_text' => $this->isDispatchesAddressText(),
+            'show_items_only_user_stablishment' => $this->isShowItemsOnlyUserStablishment(),
+            'search_item_by_series' => (bool)$this->search_item_by_series,
+            'change_free_affectation_igv' => (bool)$this->change_free_affectation_igv,
+            'select_available_price_list' => (bool)$this->select_available_price_list,
+            'show_extra_info_to_item' => (bool)$this->show_extra_info_to_item,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
+            'group_items_generate_document' => $this->group_items_generate_document,
+            'set_address_by_establishment' => $this->set_address_by_establishment,
+            'permission_to_edit_cpe' => $this->permission_to_edit_cpe,
+            'currency_type_id' => $this->getCurrencyTypeId(),
+            'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
+            'typeUser'=>$typeUser,
+            'unit_type_id'=>$unit_type_id,
+            'enabled_global_igv_to_purchase'=>$this->isEnabledGlobalIgvToPurchase(),
+            'show_pdf_name'=>$this->isShowPdfName(),
+            'user'=>[
+                'serie'=>$serie,
+                'document_id'=>$document_id,
+                'type'=>$typeUser,
+            ],
             'color1'=>$this->color1,
             'color2'=>$this->color2,
             'PrinterNombre1'=>$this->PrinterNombre1,
@@ -401,4 +507,180 @@ class Configuration extends ModelTenant
 
         ];
     }
+
+    /**
+     * Devuelve verdadero o falso si esta habilitado el envio de datos a otro servidor
+     *
+     * @return bool
+     */
+    public function isSendDataToOtherServer(): bool
+    {
+        return (bool)$this->send_data_to_other_server;
+    }
+
+    /**
+     * Establece el valor para el envio de datos a otro servidor
+     *
+     * @param bool $send_data_to_other_server
+     * @return Configuration
+     */
+    public function setSendDataToOtherServer(bool $send_data_to_other_server = false): Configuration
+    {
+        $this->send_data_to_other_server = (bool)$send_data_to_other_server;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCurrencyTypeId(): ?string
+    {
+        return empty($this->currency_type_id)?'PEN':$this->currency_type_id;
+    }
+
+    /**
+     * @param string|null $currency_type_id
+     */
+    public function setCurrencyTypeId(?string $currency_type_id ='PEN'): Configuration
+    {
+        $this->currency_type_id = empty($currency_type_id)?'PEN':$currency_type_id;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShowExtraInfoToItem(): bool
+    {
+        return (bool)$this->show_extra_info_to_item;
+    }
+
+    /**
+     * @param bool $show_extra_info_to_item
+     *
+     * @return Configuration
+     */
+    public function setShowExtraInfoToItem(bool $show_extra_info_to_item = false): Configuration
+    {
+        $this->show_extra_info_to_item = (bool) $show_extra_info_to_item;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSearchItemBySeries(): bool
+    {
+        return (bool)$this->search_item_by_series;
+    }
+
+    /**
+     * @param bool $search_item_by_series
+     *
+     * @return Configuration
+     */
+    public function setSearchItemBySeries(bool $search_item_by_series): Configuration
+    {
+        $this->search_item_by_series = (bool) $search_item_by_series;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabledGlobalIgvToPurchase(): bool
+    {
+        return (bool) $this->enabled_global_igv_to_purchase;
+    }
+
+    /**
+     * @param bool $enabled_global_igv_to_purchase
+     *
+     * @return Configuration
+     */
+    public function setEnabledGlobalIgvToPurchase(bool $enabled_global_igv_to_purchase = false): Configuration
+    {
+        $this->enabled_global_igv_to_purchase = (bool) $enabled_global_igv_to_purchase;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShowPdfName(): bool
+    {
+        return (bool)$this->show_pdf_name;
+    }
+
+    /**
+     * @param bool $show_pdf_name
+     *
+     * @return Configuration
+     */
+    public function setShowPdfName(bool $show_pdf_name): Configuration
+    {
+        $this->show_pdf_name = (bool)$show_pdf_name;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getApkUrl(): ?string
+    {
+        return $this->apk_url;
+    }
+
+    /**
+     * @param string|null $apk_url
+     *
+     * @return Configuration
+     */
+    public function setApkUrl(?string $apk_url): Configuration
+    {
+        $this->apk_url = $apk_url;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDispatchesAddressText(): bool
+    {
+        return (bool) $this->dispatches_address_text;
+    }
+
+    /**
+     * @param bool $dispatches_address_text
+     *
+     * @return Configuration
+     */
+    public function setDispatchesAddressText(bool $dispatches_address_text): Configuration
+    {
+        $this->dispatches_address_text = (bool) $dispatches_address_text;
+        return $this;
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isShowItemsOnlyUserStablishment(): bool
+    {
+        return (bool)$this->show_items_only_user_stablishment;
+    }
+
+    /**
+     * @param bool $show_items_only_user_stablishment
+     *
+     * @return Company
+     */
+    public function setShowItemsOnlyUserStablishment(bool $show_items_only_user_stablishment): Configuration
+    {
+        $this->show_items_only_user_stablishment = (bool) $show_items_only_user_stablishment;
+        return $this;
+    }
+
+
+
 }

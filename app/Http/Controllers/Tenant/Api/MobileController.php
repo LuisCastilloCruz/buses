@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Api;
 
+use App\Http\Controllers\Tenant\EmailController;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Tenant\Item;
@@ -108,7 +109,7 @@ class MobileController extends Controller
         $items = Item::with(['brand', 'category'])
                     ->whereWarehouse()
                     ->whereHasInternalId()
-                    ->whereNotIsSet()
+                    // ->whereNotIsSet()
                     ->whereIsActive()
                     ->orderBy('description')
                     ->take(20)
@@ -181,8 +182,24 @@ class MobileController extends Controller
         $document = Document::find($request->id);
         $customer_email = $request->email;
 
+        $email = $customer_email;
+        $mailable =new DocumentEmail($company, $document);
+        $id =  $request->id;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 1);
+        /*
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new DocumentEmail($company, $document));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new DocumentEmail($company, $document));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new DocumentEmail($company, $document));
+        }
+        */
 
         return [
             'success' => true,
@@ -310,7 +327,7 @@ class MobileController extends Controller
                     ->orWhere('internal_id', 'like', "%{$request->input}%")
                     ->whereHasInternalId()
                     ->whereWarehouse()
-                    ->whereNotIsSet()
+                    // ->whereNotIsSet()
                     ->whereIsActive()
                     ->orderBy('description')
                     ->get()

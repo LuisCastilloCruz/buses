@@ -2,6 +2,7 @@
 
 namespace App\CoreFacturalo;
 
+use App\Http\Controllers\Tenant\EmailController;
 use Exception;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
@@ -123,10 +124,10 @@ class Facturalo
                 $this->savePayments($document, $inputs['payments']);
                 $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
-                    // $document->items()->create($row);
-                    $row['document_id']=  $document->id;
-                    $item = new DocumentItem($row);
-                    $item->push();
+                    $document->items()->create($row);
+                    // $row['document_id']=  $document->id;
+                    // $item = new DocumentItem($row);
+                    // $item->push();
                 }
                 $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
@@ -182,8 +183,24 @@ class Facturalo
             $company = $this->company;
             $document = $this->document;
             $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
+            $mailable =new DocumentEmail($company, $document);
+            $id =  $document->id;
+            $model = __FILE__.";;".__LINE__;
+            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+            /*
             Configuration::setConfigSmtpMail();
-            Mail::to($email)->send(new DocumentEmail($company, $document));
+            $array_email = explode(',', $email);
+            if (count($array_email) > 1) {
+                foreach ($array_email as $email_to) {
+                    $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                        Mail::to($email_to)->send(new DocumentEmail($company, $document));
+                    }
+                }
+            } else {
+                Mail::to($email)->send(new DocumentEmail($company, $document));
+            }
+            */
 
         }
     }
@@ -352,6 +369,7 @@ class Facturalo
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
             $document_payments     = count($this->document->payments);
+            $document_transport     = ($this->document->transport) ? 30 : 0;
 
             $extra_by_item_additional_information = 0;
             $extra_by_item_description = 0;
@@ -412,7 +430,8 @@ class Facturalo
                     $total_plastic_bag_taxes+
                     $quotation_id+
                     $extra_by_item_additional_information+
-                    $height_legend
+                    $height_legend+
+                    $document_transport
                 ],
                 'margin_top' => 0,
                 'margin_right' => 1,
@@ -642,13 +661,9 @@ class Facturalo
     public function validationCodeResponse($code, $message)
     {
         //Errors
-        if($code === 'ERROR_CDR' || $code === 'env:Client' || $code === 'env:Server' || $code === 'soap:Server') {
-            return;
-        }
-        if($code === 'HTTP') {
-//            $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
+        if(!is_numeric($code)){
 
-            if(in_array($this->type, ['retention', 'dispatch'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
@@ -662,7 +677,8 @@ class Facturalo
         if((int)$code < 2000) {
             //Excepciones
 
-            if(in_array($this->type, ['retention', 'dispatch'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+            // if(in_array($this->type, ['retention', 'dispatch'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
@@ -1040,17 +1056,21 @@ class Facturalo
                 $this->saveFee($document, $inputs['fee']);
 
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
                 foreach ($document->items as $it) {
-                    $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
+                    //se usa el evento deleted del modelo - InventoryKardexServiceProvider document_item_delete
+                    $it->delete();
+                    // $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
                 }
 
                 // Al editar el item, borra los registros anteriores
-                foreach ($document->items()->get() as $item) {
-                    /** @var \App\Models\Tenant\DocumentItem $item */
-                    DocumentItem::UpdateItemWarehous($item,'deleted');
-                    $item->delete();
-                }
-                //  $document->items()->delete();
+                // foreach ($document->items()->get() as $item) {
+                //     /** @var \App\Models\Tenant\DocumentItem $item */
+                //     DocumentItem::UpdateItemWarehous($item,'deleted');
+                //     $item->delete();
+                // }
+                // $document->items()->delete();
+
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }

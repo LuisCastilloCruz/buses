@@ -5,6 +5,7 @@ use App\Exports\DigemidItemExport;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PdfUnionController;
 use App\Http\Requests\Tenant\ItemRequest;
 use App\Http\Resources\Tenant\ItemCollection;
 use App\Http\Resources\Tenant\ItemResource;
@@ -12,10 +13,19 @@ use App\Imports\CatalogImport;
 use App\Imports\ItemsImport;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
+use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
 use App\Models\Tenant\Catalogs\UnitType;
+use App\Models\Tenant\CatItemSize;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
@@ -42,6 +52,7 @@ use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use setasign\Fpdi\Fpdi;
 
 
 class ItemController extends Controller
@@ -147,13 +158,59 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $configuration= Configuration::first();
+        /** Informacion adicional */
+        $colors = collect([]);
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        $CatItemSize= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+            $colors = CatColorsItem::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemSize= CatItemSize::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
+        /** Informacion adicional */
+        $configuration = $configuration->getCollectionData();
+        /*
         $configuration = Configuration::select(
             'affectation_igv_type_id',
-            'is_pharmacy'
+            'is_pharmacy',
+            'show_extra_info_to_item'
         )->firstOrFail();
-
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
-                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands', 'configuration');
+        */
+        return compact(
+            'unit_types',
+            'currency_types',
+            'attribute_types',
+            'system_isc_types',
+            'affectation_igv_types',
+            'warehouses',
+            'accounts',
+            'tags',
+            'categories',
+            'brands',
+            'configuration',
+            'colors',
+            'CatItemSize',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage'
+        );
     }
 
     public function record($id)
@@ -164,6 +221,7 @@ class ItemController extends Controller
     }
 
     public function store(ItemRequest $request) {
+
         $id = $request->input('id');
         if (!$request->barcode) {
             if ($request->internal_id) {
@@ -248,6 +306,40 @@ class ItemController extends Controller
             $item_unit_type->save();
 
         }
+        $configuration = Configuration::first();
+        if($configuration->isShowExtraInfoToItem()){
+            // Extra data
+            if($request->has('colors')){
+                $item->setItemColor($request->colors);
+            }
+            if($request->has('CatItemUnitsPerPackage')){
+                $item->setItemUnitsPerPackage($request->CatItemUnitsPerPackage);
+            }
+            if($request->has('CatItemMoldCavity')){
+                $item->setItemMoldCavity($request->CatItemMoldCavity);
+            }
+            if($request->has('CatItemMoldProperty')){
+                $item->setItemMoldProperty($request->CatItemMoldProperty);
+            }
+            if($request->has('CatItemUnitBusiness')){
+                $item->setItemUnitBusiness($request->CatItemUnitBusiness);
+            }
+            if($request->has('CatItemStatus')){
+                $item->setItemStatus($request->CatItemStatus);
+            }
+            if($request->has('CatItemPackageMeasurement')){
+                $item->setItemPackageMeasurement($request->CatItemPackageMeasurement);
+            }
+            if($request->has('CatItemProductFamily')){
+                $item->setItemProductFamily($request->CatItemProductFamily);
+            }
+            if($request->has('CatItemSize')){
+                $item->setItemSize($request->CatItemSize);
+            }
+            // Extra data
+        }
+
+
 
         if ($request->tags_id) {
             ItemTag::destroy(   ItemTag::where('item_id', $item->id)->pluck('id'));
@@ -466,29 +558,29 @@ class ItemController extends Controller
     }
 
 
-    private function createItemWarehousePrices($request, $item){
-
-        foreach ($request->item_warehouse_prices as $item_warehouse_price) {
-
-            if($item_warehouse_price['price'] && $item_warehouse_price['price'] != ''){
-
-                ItemWarehousePrice::updateOrCreate([
-                    'item_id' => $item->id,
-                    'warehouse_id' => $item_warehouse_price['warehouse_id'],
-                ], [
-                    'price' => $item_warehouse_price['price'],
-                ]);
-
-            }else{
-
-                if($item_warehouse_price['id']){
-                    ItemWarehousePrice::findOrFail($item_warehouse_price['id'])->delete();
+    /**
+     * @param ItemRequest|null $request
+     * @param null $item
+     * @throws Exception
+     */
+    private function createItemWarehousePrices(ItemRequest $request = null, Item $item = null)
+    {
+        if ($request !== null && $request->has('item_warehouse_prices') && $item !== null) {
+            foreach ($request->item_warehouse_prices as $item_warehouse_price) {
+                if ($item_warehouse_price['price'] && $item_warehouse_price['price'] != '') {
+                    ItemWarehousePrice::updateOrCreate([
+                        'item_id' => $item->id,
+                        'warehouse_id' => $item_warehouse_price['warehouse_id'],
+                    ], [
+                        'price' => $item_warehouse_price['price'],
+                    ]);
+                } else {
+                    if ($item_warehouse_price['id']) {
+                        ItemWarehousePrice::findOrFail($item_warehouse_price['id'])->delete();
+                    }
                 }
-
             }
-
         }
-
     }
 
 
@@ -661,10 +753,17 @@ class ItemController extends Controller
 
     public function duplicate(Request $request)
     {
-       // return $request->id;
-       $obj = Item::find($request->id);
-       $new = $obj->setDescription($obj->getDescription().' (Duplicado)')->replicate();
-       $new->save();
+        // return $request->id;
+        $obj = Item::find($request->id);
+
+        if($obj->lots_enabled){
+            $obj->date_of_due = null;
+            $obj->lot_code = null;
+            $obj->stock = 0;
+        }
+
+        $new = $obj->setDescription($obj->getDescription().' (Duplicado)')->replicate();
+        $new->save();
 
         return [
             'success' => true,
@@ -821,14 +920,8 @@ class ItemController extends Controller
 
     }
 
-    /**
-     * @param \Illuminate\Http\Request $request
-     *
-     * @throws \Mpdf\MpdfException
-     * @throws \Throwable
-     */
-    public function exportBarCode(Request $request)
-    {
+    public function exportBarCode(Request $request){
+
         ini_set("pcre.backtrack_limit", "50000000");
 
         $start = $request[0];
@@ -848,24 +941,86 @@ class ItemController extends Controller
         $extra_data = $extradata;
         $records = $records->get();
         $pdf = new Mpdf([
-                'mode' => 'utf-8',
-                'format' => [
-                    104.1,
-                    101.6
-                    ],
-                'margin_top' => 2,
-                'margin_right' => 2,
-                'margin_bottom' => 0,
-                'margin_left' => 2
-            ]);
+            'mode' => 'utf-8',
+            'format' => [
+                104.1,
+                101.6
+            ],
+            'margin_top' => 2,
+            'margin_right' => 2,
+            'margin_bottom' => 0,
+            'margin_left' => 2
+        ]);
         $html = view('tenant.items.exports.items-barcode', compact('records','extra_data'))->render();
 
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
-
     }
 
+    /**
+     * Genera los codigos de barra por archivo para los items que tengan internal_id o barcode
+     * Se prioriza barcode, sino se genera internal_id
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Mpdf\MpdfException
+     * @throws \Throwable
+     */
+    public function exportBarCodeFull(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+
+        $start = $request[0];
+        $end = $request[1];
+
+        $records = Item::whereBetween('id', [$start, $end])
+            ->where(function($q){
+                $q->orwhere('barcode','!=','');
+                $q->orwhere('internal_id','!=','');
+            })
+            // ->wherenotnull('barcode')
+        ;
+        $extradata = [];
+        $establishment = \Auth::user()->establishment;
+        $isPharmacy = false;
+        if($request->has('isPharmacy') ){
+            $isPharmacy = ($request->isPharmacy==='true')?true:false;
+        }
+        if($isPharmacy == true){
+            $extradata[]='sanitary';
+            $extradata[]='cod_digemid';
+            $records->Pharmacy();
+        }
+        $extra_data = $extradata;
+        $records = $records->get();
+        $height = 23;
+
+        $width = 48;
+        $pdfj = new Fpdi();
+        /** @var Item $item */
+        foreach($records as $item){
+            $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    $width,
+                    $height
+                ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+            $html = view('tenant.items.exports.items-barcode-full', compact('item','extra_data','establishment'))->render();
+            $pdf->AddPage();
+            $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+            PdfUnionController::addFpi($pdfj, $pdf);
+        }
+
+        return PdfUnionController::ResponseAsFile($pdfj,'bar_code_full');
+
+    }
     /**
      * Exporta items al formato de DIGEMID
      *

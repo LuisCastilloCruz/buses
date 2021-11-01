@@ -17,15 +17,18 @@ class ReportUnpaidController extends Controller
 
     use UnpaidTrait;
 
-    public function excel(Request $request) {
+    public function excel(Request $request)
+    {
 
-        $records = $this->transformRecords((new DashboardView())->getUnpaidFilterUser($request->all())->get());
+        $records = (new DashboardView())->getUnpaidFilterUser($request->all())->get();
+        $records = $this->transformRecords($records);
 
         $company = Company::first();
-        return (new NoPaidExport)
-                ->company($company)
-                ->records($records)
-                ->download('Reporte_Cuentas_Por_Cobrar'.Carbon::now().'.xlsx');
+        $noPaidExport = new NoPaidExport();
+        $noPaidExport
+            ->company($company)
+            ->records($records);
+        return $noPaidExport->download('Reporte_Cuentas_Por_Cobrar' . Carbon::now() . '.xlsx');
 
     }
 

@@ -6,14 +6,14 @@ use App\CoreFacturalo\Requests\Inputs\Common\ActionInput;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\CoreFacturalo\Requests\Inputs\Transform\DocumentWebTransform;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
-use Illuminate\Support\Str;
-use App\CoreFacturalo\Requests\Inputs\Transform\DocumentWebTransform;
-use Modules\Offline\Models\OfflineConfiguration;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Modules\Offline\Models\OfflineConfiguration;
 
 class DocumentInput
 {
@@ -60,6 +60,8 @@ class DocumentInput
             $data_json = Functions::valueKeyInArray($inputs, 'data_json');
         }
 
+        $items = self::items($inputs);
+
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -95,6 +97,7 @@ class DocumentInput
             'total_unaffected' => Functions::valueKeyInArray($inputs, 'total_unaffected', 0),
             'total_exonerated' => Functions::valueKeyInArray($inputs, 'total_exonerated', 0),
             'total_igv' => $inputs['total_igv'],
+            'total_igv_free' => Functions::valueKeyInArray($inputs, 'total_igv_free', 0),
             'total_base_isc' => Functions::valueKeyInArray($inputs, 'total_base_isc', 0),
             'total_isc' => Functions::valueKeyInArray($inputs, 'total_isc', 0),
             'total_base_other_taxes' => Functions::valueKeyInArray($inputs, 'total_base_other_taxes', 0),
@@ -102,12 +105,13 @@ class DocumentInput
             'total_plastic_bag_taxes' => Functions::valueKeyInArray($inputs, 'total_plastic_bag_taxes', 0),
             'total_taxes' => $inputs['total_taxes'],
             'total_value' => $inputs['total_value'],
+            'subtotal' => (Functions::valueKeyInArray($inputs, 'subtotal')) ? $inputs['subtotal'] : $inputs['total'],
             'total' => $inputs['total'],
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
             'affectation_type_prepayment' => Functions::valueKeyInArray($inputs, 'affectation_type_prepayment'),
             'was_deducted_prepayment' => Functions::valueKeyInArray($inputs, 'was_deducted_prepayment', 0),
             'pending_amount_prepayment' => Functions::valueKeyInArray($inputs, 'pending_amount_prepayment', 0),
-            'items' => self::items($inputs),
+            'items' => $items,
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
             'prepayments' => self::prepayments($inputs),
@@ -144,7 +148,7 @@ class DocumentInput
             foreach ($inputs['items'] as $row) {
                 $item = Item::query()->find($row['item_id']);
                 /** @var Item $item */
-                $items[] = [
+                $arayItem = [
                     'item_id' => $item->id,
                     'item' => [
                         'description' => trim($item->description),
@@ -193,6 +197,8 @@ class DocumentInput
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf')
                 ];
+                Item::SaveExtraDataToRequest($arayItem,$row);
+                $items[] = $arayItem;
             }
             return $items;
         }
@@ -217,12 +223,18 @@ class DocumentInput
                 $attributes = [];
                 foreach ($inputs['attributes'] as $row) {
                     $attributes[] = [
-                        'attribute_type_id' => $row['attribute_type_id'] ?? null,
-                        'description' => $row['description'] ?? null,
-                        'value' => $row['value'] ?? null,
-                        'start_date' =>  $row['start_date'] ?? null,
-                        'end_date' => $row['end_date'] ?? null,
-                        'duration' =>  $row['duration'] ?? null,
+                        // 'attribute_type_id' => $row['attribute_type_id'] ?? null,
+                        // 'description' => $row['description'] ?? null,
+                        // 'value' => $row['value'] ?? null,
+                        // 'start_date' =>  $row['start_date'] ?? null,
+                        // 'end_date' => $row['end_date'] ?? null,
+                        // 'duration' =>  $row['duration'] ?? null,
+                        'attribute_type_id' => $row['attribute_type_id'],
+                        'description' => $row['description'],
+                        'value' => $row['value'],
+                        'start_date' =>  $row['start_date'],
+                        'end_date' => $row['end_date'],
+                        'duration' =>  $row['duration'],
                     ];
                 }
                 return $attributes;

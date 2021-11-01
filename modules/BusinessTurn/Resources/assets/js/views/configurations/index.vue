@@ -12,10 +12,10 @@
             <div class="card-header bg-info">
                 <h3 class="my-0"> {{ title }}</h3>
             </div>
-            <div class="card-body"> 
+            <div class="card-body">
                 <div class="row">
                     <div class="col-md-12">
-                        
+
                        <template  v-for="(option,ind) in records">
                             <!--<template v-if="option.id === 3">-->
                                 <!--<el-checkbox class="plan_documents d-block" :disabled="true"  v-model="option.active"  :label="option.id"  :key="ind"  @change="submit(option.id)">{{option.name+' (Pronto)'}}</el-checkbox>-->
@@ -27,7 +27,7 @@
                     </div>
                 </div>
             </div>
- 
+
         </div>
         <div v-if="isActiveBussinessTurn('restaurant')" class="card">
             <div class="card-header bg-info">
@@ -94,14 +94,14 @@
     </div>
 </template>
 
-<script type="text/babel">
+<script>
 
     export default {
         props:['path_image'],
         data() {
             return {
                 loading_submit: false,
-                title: null, 
+                title: null,
                 business_turns:[],
                 resource: 'bussiness_turns',
                 records: [],
@@ -110,7 +110,7 @@
             }
         },
         async created() {
-            
+
             this.title = 'Giros de negocio';
             await this.getRecords();
             await this.$http.get(`/configurations/record`) .then(response => {
@@ -124,10 +124,10 @@
                 })
         },
         methods: {
-            
+
             submit(id) {
                 this.loading_submit = true;
-                
+
                 this.$http.post(`/${this.resource}`,{id}).then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
@@ -173,9 +173,9 @@
             },
             getRecords(){
                 this.$http.get(`/${this.resource}/records`)
-                    .then(response => { 
-                        this.records = response.data    
-                    }) 
+                    .then(response => {
+                        this.records = response.data
+                    })
             },
             changeTipoConexion1() {
                 // this.form.PrinterTipoConexion1 = _.find(this.conexiones, {'name': this.conexiones.item.name})

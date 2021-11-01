@@ -5,23 +5,24 @@
             <div class="row" v-loading="loading">
                 <div class="col-md-12" >
                     <el-button type="primary"  @click.prevent="clickAddLot()" >Agregar</el-button>
+                    <el-button type="success"  @click.prevent="clickImport()" >Importar</el-button>
                 </div>
                 <div class="col-md-12 mt-2" >
 
                     <data-tables :data='lots'  :current-page.sync="currentPage" :table-props="tableProps" :pagination-props="{ pageSizes: [20] }" style="width: 100%" >
-                    
+
                         <el-table-column
                             width="80"
                             prop="index"
                             label="#">
-                            <template slot-scope="scope"> 
+                            <template slot-scope="scope">
                                 {{ scope.row.index + 1 }}
                             </template>
                         </el-table-column>
 
                         <el-table-column prop="series"  label="Series">
-                            
-                            <template slot-scope="scope">  
+
+                            <template slot-scope="scope">
                                 <el-input @blur="duplicateSerie(scope.row.series, scope.row.index)" v-model="scope.row.series"
                                     :ref="`ref_series_${scope.row.index}`"
                                     @keyup.enter.native="keyupEnterSeries(scope.row.series, scope.row.index)" ></el-input>
@@ -30,8 +31,8 @@
                         </el-table-column>
 
                         <el-table-column prop="state" label="Estado"   >
-                            
-                            <template slot-scope="scope">  
+
+                            <template slot-scope="scope">
                                 <el-select  v-model="scope.row.state">
                                     <el-option
                                         v-for="(option, index) in states"
@@ -45,30 +46,35 @@
                         </el-table-column>
 
                         <el-table-column prop="date" label="Fecha" >
-                            <template slot-scope="scope">  
+                            <template slot-scope="scope">
                                 <el-date-picker v-model="scope.row.date" type="date" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
                             </template>
                         </el-table-column>
-                        
+
                         <el-table-column
                             style="width: 10%"
                             width="80"
                             label="Acciones">
-                            <template slot-scope="scope"> 
+                            <template slot-scope="scope">
                                 <el-button
                                     size="mini"
                                     type="danger"
-                                    icon="el-icon-delete" 
+                                    icon="el-icon-delete"
                                     circle
                                     @click.prevent="clickCancel(scope.row.index)"></el-button>
                             </template>
                         </el-table-column>
 
                     </data-tables>
-    
+
 
                 </div>
             </div>
+
+            <series-import
+                :showDialog.sync="showImportDialog"
+            ></series-import>
+
         </div>
 
         <div class="form-actions text-right pt-2 mt-3">
@@ -80,15 +86,18 @@
 
 <script>
     import { DataTables } from 'vue-data-tables'
+    import SeriesImport from "@views/purchases/partials/import_series.vue";
 
     export default {
         components: {
-            DataTables
+            DataTables,
+            SeriesImport
         },
         props: ['showDialog', 'lots', 'stock','recordId'],
         data() {
             return {
                 titleDialog: 'Series',
+                showImportDialog: false,
                 loading: false,
                 errors: {},
                 form: {},
@@ -101,19 +110,50 @@
             }
         },
         async created() {
- 
+
+            this.$eventHub.$on('responseImportSeries', (response) => {
+                this.responseImportSeries(response)
+            })
         },
-        methods: { 
+        methods: {
+            async responseImportSeries(response){
+
+                // console.log(response.data.news_rows)
+                let lots_import = response.data.news_rows
+
+                try {
+
+                    for (let index = 0; index < this.lots.length; index++) {
+
+                        this.lots[index].series = lots_import[index].series
+                        this.lots[index].date = lots_import[index].date
+                        this.lots[index].state = lots_import[index].state
+
+                    }
+
+                } catch (error) {
+                }
+
+                if(response.data.news_rows.length != this.lots.length){
+                    this.$notify({title: "", message: "La cantidad de registros del archivo importado, es diferente a la cantidad ingresada", type: "error", duration: 4000});
+                }
+
+                this.$emit('addRowLot', this.lots);
+
+            },
+            clickImport() {
+                this.showImportDialog = true;
+            },
             getMaxItems(index) {
 
                 if(this.currentPage > 1){
                     index = index - this.per_page
                 }
-                
+
                 return (this.per_page * (this.currentPage - 1)) + index + 1
             },
             async keyupEnterSeries(series, index){
-                
+
                 // console.log(series, index, this.getIndex())
                 // console.log(this.$refs)
 
@@ -123,10 +163,10 @@
 
                 try {
                     await this.changeFocus(index)
-                    
-                } 
+
+                }
                 catch(e) {
-                    
+
                     await this.nextPage()
 
                     await this.$nextTick(() => {
@@ -134,7 +174,7 @@
                     })
 
                 }
-                
+
             },
             changeFocus(index){
                 this.$refs[`ref_series_${index+1}`].$el.getElementsByTagName('input')[0].focus()
@@ -153,7 +193,7 @@
                         this.$message.error('Ingresó una serie duplicada');
                         this.lots[index].series = ''
                     }
-                    
+
                 }
             },
             create(){

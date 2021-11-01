@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Middleware;
+    namespace App\Http\Middleware;
 
-use Closure;
+    use Closure;
 
     /**
      * Class RedirectModule

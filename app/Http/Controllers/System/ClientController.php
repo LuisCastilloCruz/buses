@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers\System;
 
+use App\CoreFacturalo\Helpers\Certificate\GenerateCertificate;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\System\ClientRequest;
+use App\Http\Resources\System\ClientCollection;
+use App\Http\Resources\System\ClientResource;
+use App\Models\System\Client;
+use App\Models\System\Configuration;
+use App\Models\System\Module;
+use App\Models\System\Plan;
 use Carbon\Carbon;
 use Exception;
 use Hyn\Tenancy\Contracts\Repositories\HostnameRepository;
 use Hyn\Tenancy\Contracts\Repositories\WebsiteRepository;
-use App\Http\Resources\System\ClientCollection;
-use App\Http\Resources\System\ClientResource;
-use App\Http\Requests\System\ClientRequest;
 use Hyn\Tenancy\Environment;
-use App\Models\System\Client;
-use App\Models\System\Module;
-use App\Models\System\Plan;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\System\Configuration;
-use App\CoreFacturalo\Helpers\Certificate\GenerateCertificate;
+use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
@@ -58,6 +57,15 @@ class ClientController extends Controller
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
         $modules = Module::with('levels')
+            ->where('sort', '<', 14)
+            ->orderBy('sort')
+            ->get()
+            ->each(function ($module) {
+                return $this->prepareModules($module);
+            });
+
+        $apps = Module::with('levels')
+            ->where('sort', '>', 13)
             ->orderBy('sort')
             ->get()
             ->each(function ($module) {
@@ -70,20 +78,28 @@ class ClientController extends Controller
         $soap_username =  $config->soap_username;
         $soap_password =  $config->soap_password;
 
-        return compact('url_base','plans','types', 'modules', 'certificate_admin', 'soap_username', 'soap_password');
+        return compact('url_base','plans','types', 'modules', 'apps', 'certificate_admin', 'soap_username', 'soap_password');
     }
+
 
     public function records()
     {
 
         $records = Client::latest()->get();
+
         foreach ($records as &$row) {
+
             $tenancy = app(Environment::class);
             $tenancy->tenant($row->hostname->website);
             // $row->count_doc = DB::connection('tenant')->table('documents')->count();
             $row->count_doc = DB::connection('tenant')->table('configurations')->first()->quantity_documents;
             $row->soap_type = DB::connection('tenant')->table('companies')->first()->soap_type_id;
             $row->count_user = DB::connection('tenant')->table('users')->count();
+
+            $quantity_pending_documents = $this->getQuantityPendingDocuments();
+            $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
+            $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
+            $row->document_to_be_canceled = $quantity_pending_documents['document_to_be_canceled'];
 
             if($row->start_billing_cycle)
             {
@@ -111,13 +127,29 @@ class ClientController extends Controller
         return new ClientCollection($records);
     }
 
+
+    private function getQuantityPendingDocuments(){
+
+        return [
+            'document_regularize_shipping' => DB::connection('tenant')->table('documents')->where('state_type_id', '01')->where('regularize_shipping', true)->count(),
+            'document_not_sent' => DB::connection('tenant')->table('documents')->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d'))->count(),
+            'document_to_be_canceled' => DB::connection('tenant')->table('documents')->where('state_type_id', '13')->count(),
+        ];
+
+    }
+
+
     public function record($id)
     {
         $client = Client::findOrFail($id);
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);
 
-        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get()->pluck('module_id')->toArray();
+        $modules = DB::connection('tenant')->table('modules')->where('order_menu', '<', 14)->select('id');
+        $apps = DB::connection('tenant')->table('modules')->where('order_menu', '>', 13)->select('id');
+
+        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->whereIn('module_id', $modules)->get()->pluck('module_id')->toArray();
+        $client->apps = DB::connection('tenant')->table('module_user')->where('user_id', 1)->whereIn('module_id', $apps)->get()->pluck('module_id')->toArray();
         $client->levels = DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->get()->pluck('module_level_id')->toArray();
 
         $config =  DB::connection('tenant')->table('configurations')->first();
@@ -179,6 +211,29 @@ class ClientController extends Controller
         ];
 
         return compact('line', 'total_documents');
+    }
+
+    /**
+     * Devuelve la informacion si el modulo de farmacia esta habilitado o no para activar la configuracion correspondiente
+     *
+     * @param int $user_id
+     *
+     * @return bool
+     */
+    public static function EnablePharmacy($user_id = 0)
+    {
+        $modulo_id = DB::connection('tenant')
+            ->table('modules')
+            ->where('value', 'digemid')
+            ->first()->id;
+        $modulo = DB::connection('tenant')
+            ->table('module_user')
+            ->where('module_id', $modulo_id)
+            ->where('user_id', $user_id)
+            ->first();
+
+        return ($modulo == null)?false:true;
+
     }
 
     public function update(Request $request)
@@ -265,20 +320,26 @@ class ClientController extends Controller
 
             $array_modules = [];
             $array_levels = [];
+            $user_id = 1;
             foreach ($request->modules as $module) {
                 array_push($array_modules, [
-                    'module_id' => $module, 'user_id' => 1
+                    'module_id' => $module,
+                    'user_id' => $user_id
                 ]);
             }
             foreach ($request->levels as $level) {
                 array_push($array_levels, [
-                    'module_level_id' => $level, 'user_id' => 1
+                    'module_level_id' => $level,
+                    'user_id' => $user_id
                 ]);
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);
             DB::connection('tenant')->table('module_level_user')->insert($array_levels);
-            // Modules
 
+            // Actualiza el modulo de farmacia.
+            $config = (array)DB::connection('tenant')->table('configurations')->first();
+            $config['is_pharmacy'] = (self::EnablePharmacy($user_id)) ? 1 : 0;
+            DB::connection('tenant')->table('configurations')->update($config);
             return [
                 'success' => true,
                 'message' => 'Cliente Actualizado satisfactoriamente'
@@ -448,7 +509,8 @@ class ClientController extends Controller
             'api_token' => $token,
             'establishment_id' => $establishment_id,
             'type' => $request->input('type'),
-            'locked' => true
+            'locked' => true,
+            'permission_edit_cpe' => true,
         ]);
 
 

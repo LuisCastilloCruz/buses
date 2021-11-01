@@ -2,6 +2,10 @@
 
 namespace Modules\Sale\Http\Controllers;
 
+use App\Http\Controllers\SearchItemController;
+use App\Http\Controllers\Tenant\EmailController;
+use App\Models\Tenant\Catalogs\OperationType;
+use App\Traits\OfflineTrait;
 use Exception;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
@@ -44,11 +48,18 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 
 
+/**
+ * Class ContractController
+ *
+ * @package Modules\Sale\Http\Controllers
+ * @mixin Controller
+ */
 class ContractController extends Controller
 {
 
-    use StorageDocument, FinanceTrait;
-
+    use FinanceTrait;
+    use StorageDocument;
+    use OfflineTrait;
     protected $contract;
     protected $company;
 
@@ -175,7 +186,8 @@ class ContractController extends Controller
 
     public function item_tables() {
 
-        $items = $this->table('items');
+         // $items = $this->table('items');
+         $items = SearchItemController::getItemToContract();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -184,7 +196,21 @@ class ContractController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types', 'discount_types', 'charge_types', 'attribute_types');
+        $operation_types = OperationType::whereActive()->get();
+        $is_client = $this->getIsClient();
+
+        return compact(
+            'items',
+            'categories',
+            'affectation_igv_types',
+            'system_isc_types',
+            'price_types',
+            'discount_types',
+            'charge_types',
+            'attribute_types',
+            'operation_types',
+            'is_client'
+        );
     }
 
     public function record($id)
@@ -368,23 +394,14 @@ class ContractController extends Controller
         }
     }
 
+    /**
+     * @param $id
+     *
+     * @return array
+     */
     public function searchCustomerById($id)
     {
-
-        $customers = Person::whereType('customers')
-                    ->where('id',$id)
-                    ->get()->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'description' => $row->number.' - '.$row->name,
-                            'name' => $row->name,
-                            'number' => $row->number,
-                            'identity_document_type_id' => $row->identity_document_type_id,
-                            'identity_document_type_code' => $row->identity_document_type->code
-                        ];
-                    });
-
-        return compact('customers');
+        return $this->searchClientById($id);
     }
 
 
@@ -524,8 +541,25 @@ class ContractController extends Controller
         $contract = Contract::find($request->id);
         $customer_email = $request->input('customer_email');
 
+        $email = $customer_email;
+        $mailable = new ContractEmail($client, $contract);
+        $id = (int)$contract->id;
+        $model = __FILE__.";;".__LINE__;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+        /*
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new ContractEmail($client, $contract));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new ContractEmail($client, $contract));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new ContractEmail($client, $contract));
+        }
+        */
         return [
             'success' => true
         ];
@@ -565,5 +599,28 @@ class ContractController extends Controller
             'success' => true,
             'message' => 'Estado actualizado correctamente'
         ];
+    }
+
+    /**
+     * @param $id
+     *
+     * @return array
+     */
+    public function searchItemById($id)
+    {
+        $items =  SearchItemController::getItemToContract(null,$id);
+        return compact('items');
+
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function searchItems(Request $request)
+    {
+        $items = SearchItemController::getItemToContract($request);
+        return compact('items');
     }
 }

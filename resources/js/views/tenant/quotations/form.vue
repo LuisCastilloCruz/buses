@@ -217,7 +217,10 @@
                                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                                     <label class="control-label">Observación
                                                     </label>
-                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
+                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"
+                                                        maxlength="1000"
+                                                        show-word-limit>
+                                                    </el-input>
                                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                                 </div>
                                             </div>
@@ -256,7 +259,8 @@
                                         <tbody v-if="form.items.length > 0">
                                             <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{index + 1}}</td>
-                                                <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
+                                                <td>
+                                                    {{ setDescriptionOfItem (row.item) }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
@@ -312,7 +316,10 @@
         <quotation-form-item :showDialog.sync="showDialogAddItem"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
-                           :recordItem="recordItem"
+                             :typeUser="typeUser"
+                             :recordItem="recordItem"
+                             :configuration="config"
+
                            @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -339,11 +346,16 @@
     import PersonForm from '../persons/form.vue'
     import QuotationOptions from '../quotations/partials/options.vue'
     import {functions, exchangeRate} from '../../../mixins/functions'
-    import {calculateRowItem} from '../../../helpers/functions'
+    import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
+    import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
     export default {
-        props:['typeUser', 'saleOpportunityId'],
+        props:[
+            'typeUser',
+            'saleOpportunityId',
+            'configuration',
+        ],
         components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition},
         mixins: [functions, exchangeRate],
         data() {
@@ -372,12 +384,14 @@
                 payment_destinations:  [],
                 activePanel: 0,
                 customer_addresses:  [],
-                configuration: {},
+                // configuration: {},
                 loading_search:false,
                 recordItem: null
             }
         },
         async created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -392,7 +406,7 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                     this.payment_method_types = data.payment_method_types
                     this.payment_destinations = data.payment_destinations
-                    this.configuration = data.configuration
+                    // this.configuration = data.configuration
                     this.sellers = data.sellers;
 
                     this.changeEstablishment()
@@ -408,7 +422,15 @@
 
             await this.createQuotationFromSO()
         },
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+        },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             clickAddItem() {
                 this.recordItem = null;
                 this.showDialogAddItem = true;
@@ -536,14 +558,14 @@
                 // return unit_price.toFixed(6)
             },
             async changePaymentMethodType(flag_submit = true){
-                let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
-                if(payment_method_type){
+                // let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
+                // if(payment_method_type){
 
-                    if(payment_method_type.number_days){
-                        this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
-                        this.changeDateOfIssue()
-                    }
-                }
+                //     if(payment_method_type.number_days){
+                //         this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
+                //         this.changeDateOfIssue()
+                //     }
+                // }
             },
             searchRemoteCustomers(input) {
 
@@ -583,6 +605,7 @@
                     total_unaffected: 0,
                     total_exonerated: 0,
                     total_igv: 0,
+                    total_igv_free: 0,
                     total_base_isc: 0,
                     total_isc: 0,
                     total_base_other_taxes: 0,
@@ -668,6 +691,7 @@
                 this.calculateTotal()
             },
             calculateTotal() {
+
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0
@@ -678,6 +702,8 @@
                 let total_igv = 0
                 let total_value = 0
                 let total = 0
+                let total_igv_free = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -702,8 +728,23 @@
                         total += parseFloat(row.total)
                     }
                     total_value += parseFloat(row.total_value)
+
+
+                    if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+
+                        let unit_value = row.total_value / row.quantity
+                        let total_value_partial = unit_value * row.quantity
+                        row.total_taxes = row.total_value - total_value_partial
+                        row.total_igv = total_value_partial * (row.percentage_igv / 100)
+                        row.total_base_igv = total_value_partial
+                        total_value -= row.total_value
+                        total_igv_free += row.total_igv
+
+                    }
+
                 });
 
+                this.form.total_igv_free = _.round(total_igv_free, 2)
                 this.form.total_exportation = _.round(total_exportation, 2)
                 this.form.total_taxed = _.round(total_taxed, 2)
                 this.form.total_exonerated = _.round(total_exonerated, 2)
@@ -713,6 +754,7 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
+
 
                 this.setTotalDefaultPayment()
 

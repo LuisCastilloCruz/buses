@@ -465,7 +465,6 @@ export default {
         };
     },
     created() {
-
         this.initForm();
         this.initDocument();
         this.clickAddPayment();
@@ -599,6 +598,7 @@ export default {
                 total_unaffected: 0,
                 total_exonerated: 0,
                 total_igv: 0,
+                total_igv_free: 0,
                 total_base_isc: 0,
                 total_isc: 0,
                 total_base_other_taxes: 0,
@@ -730,6 +730,7 @@ export default {
             this.document.total_unaffected = q.total_unaffected;
             this.document.total_exonerated = q.total_exonerated;
             this.document.total_igv = q.total_igv;
+            this.document.total_igv_free = q.total_igv_free;
             this.document.total_base_isc = q.total_base_isc;
             this.document.total_isc = q.total_isc;
             this.document.total_base_other_taxes = q.total_base_other_taxes;
@@ -775,26 +776,30 @@ export default {
                     // this.changeDocumentType()
                 });
 
-            await this.$http
-                .get(`/${this.resource}/record2/${this.recordId}`)
-                .then((response) => {
-                    this.form = response.data.data;
-                    this.document.payments =
-                        response.data.data.quotation.payments;
-                    this.document.total = this.form.quotation.total;
-                    this.document.currency_type_id = this.form.quotation.currency_type_id;
-                    this.document.payment_condition_id = this.form.quotation.payment_condition_id;
-                    if (this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
-                        this.document.payment_condition_id = "01";
-                    }
+            await this.getRecord()
+        },
+        async getRecord(){
 
-                    // console.log(this.form)
-                    // this.validateIdentityDocumentType()
-                    this.getCustomer();
-                    let type = this.type == "edit" ? "editada" : "registrada";
-                    this.titleDialog =
-                        `Cotización ${type}: ` + this.form.identifier;
-                });
+            await this.$http
+                        .get(`/${this.resource}/record2/${this.recordId}`)
+                        .then((response) => {
+                            this.form = response.data.data;
+                            this.document.payments =
+                                response.data.data.quotation.payments;
+                            this.document.total = this.form.quotation.total;
+                            this.document.currency_type_id = this.form.quotation.currency_type_id;
+                            this.document.payment_condition_id = this.form.quotation.payment_condition_id;
+                            if (this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
+                                this.document.payment_condition_id = "01";
+                            }
+
+                            // console.log(this.form)
+                            // this.validateIdentityDocumentType()
+                            this.getCustomer();
+                            let type = this.type == "edit" ? "editada" : "registrada";
+                            this.titleDialog =
+                                `Cotización ${type}: ` + this.form.identifier;
+                        })
         },
         changeDocumentType() {
             // this.filterSeries()

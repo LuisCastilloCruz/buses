@@ -10,6 +10,7 @@ if($current_hostname) {
         Route::get('order-notes/download/{external_id}/{format?}', 'OrderNoteController@download');
 
         Route::middleware(['auth', 'locked.tenant'])->group(function () {
+
             /**
              * order-notes/
              * order-notes/columns
@@ -34,6 +35,8 @@ if($current_hostname) {
              * order-notes/documents
              * order-notes/documents
              * order-notes/document_tables
+             * order-notes/search-items
+             * order-notes/search/item/{item}
              */
             Route::prefix('order-notes/not-sent')->group(function() {
                 Route::get('', 'OrderNoteController@index_not_sent')->name('tenant.order_notes.not_sent')->middleware('redirect.level','tenant.internal.mode');
@@ -60,6 +63,8 @@ if($current_hostname) {
                 Route::get('option/tables', 'OrderNoteController@option_tables');
                 Route::get('search/customers', 'OrderNoteController@searchCustomers');
                 Route::get('search/customer/{id}', 'OrderNoteController@searchCustomerById');
+                Route::get('search-items', 'OrderNoteController@searchItems');
+                Route::get('search/item/{item}', 'OrderNoteController@searchItemById');
                 //Route::get('download/{external_id}/{format?}', 'OrderNoteController@download');
                 //Route::get('print/{external_id}/{format?}', 'OrderNoteController@toPrint');
                 Route::post('email', 'OrderNoteController@email');
@@ -68,6 +73,7 @@ if($current_hostname) {
                 Route::delete('destroy_order_note_item/{order_note_item}', 'OrderNoteController@destroy_order_note_item');
                 Route::get('documents', 'OrderNoteController@documents');
                 Route::post('documents', 'OrderNoteController@generateDocuments');
+                Route::post('Quotation/get/{id}', 'OrderNoteController@getQuotationToOrderNote');
                 Route::get('document_tables', 'OrderNoteController@document_tables');
                 Route::get('esc-print/{id}', 'OrderNoteController@esc');
 

@@ -1,6 +1,7 @@
 <template>
     <el-dialog :close-on-click-modal="false" :title="titleDialog" :visible="showDialog" top="7vh" @close="close"
-               @open="create">
+               @open="create"
+               :append-to-body="true">
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
@@ -16,46 +17,57 @@
 
                             <template v-if="!search_item_by_barcode" id="select-append">
                                 <el-input id="custom-input">
-                                    <el-select id="select-width"
-                                               slot="prepend"
-                                               v-model="form.item_id"
-                                               :disabled="recordItem != null"
-                                               :loading="loading_search"
-                                               :remote-method="searchRemoteItems"
-                                               filterable
-                                               placeholder="Buscar"
-                                               popper-class="el-select-items"
-                                               remote
-                                               @change="changeItem"
-                                               @visible-change="focusTotalItem">
+                                    <el-select
+                                        id="select-width"
+                                        ref="selectSearchNormal"
+                                        slot="prepend"
+                                        v-model="form.item_id"
+                                        :disabled="recordItem != null"
+                                        :loading="loading_search"
+                                        :remote-method="searchRemoteItems"
+                                        filterable
+                                        placeholder="Buscar"
+                                        popper-class="el-select-items"
+                                        remote
+                                        @change="changeItem"
+                                        @focus="focusSelectItem"
+                                        @visible-change="focusTotalItem">
 
-                                        <el-tooltip v-for="option in items" :key="option.id" placement="top">
+                                            <el-tooltip
+                                                v-for="option in items"
+                                                :key="option.id"
+                                                placement="left">
+                                                <div
+                                                    slot="content"
+                                                    v-html="ItemSlotTooltipView(option)"
+                                                ></div>
+                                                <el-option
+                                                    :label="ItemOptionDescriptionView(option)"
+                                                    :value="option.id"
+                                                ></el-option>
 
-                                            <div slot="content">
-                                                Almacen: {{ option.warehouse_description }} <br>
-                                                Marca: {{ option.brand }} <br>
-                                                Categoria: {{ option.category }} <br>
-                                                Stock: {{ option.stock }} <br>
-                                                Precio: {{ option.currency_type_symbol }} {{ option.sale_unit_price }}
-                                                <br>
-                                            </div>
-
-                                            <el-option :label="option.full_description" :value="option.id"></el-option>
-
-                                        </el-tooltip>
-
+                                            </el-tooltip>
                                     </el-select>
-                                    <el-tooltip slot="append" :disabled="recordItem != null" class="item"
-                                                content="Ver Stock del Producto" effect="dark"
-                                                placement="bottom">
-                                        <el-button :disabled="isEditItemNote" @click.prevent="clickWarehouseDetail()"><i
-                                            class="fa fa-search"></i></el-button>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Ver Stock del Producto"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickWarehouseDetail()">
+                                            <i class="fa fa-search"></i>
+                                        </el-button>
                                     </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
                                 <el-input id="custom-input">
-                                    <el-select id="select-width" ref="selectBarcode"
+                                    <el-select
+                                        id="select-width"
+                                        ref="selectBarcode"
                                                slot="prepend"
                                                v-model="form.item_id"
                                                :disabled="recordItem != null"
@@ -74,12 +86,18 @@
                                                    :label="option.full_description"
                                                    :value="option.id"></el-option>
                                     </el-select>
-                                    <el-tooltip slot="append" :disabled="recordItem != null" class="item"
-                                                content="Ver Stock del Producto" effect="dark"
-                                                placement="bottom">
-                                        <el-button :disabled="isEditItemNote"
-                                                   @click.prevent="clickWarehouseDetail()"><i
-                                            class="fa fa-search"></i></el-button>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Ver Stock del Producto"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickWarehouseDetail()">
+                                            <i class="fa fa-search"></i>
+                                        </el-button>
                                     </el-tooltip>
                                 </el-input>
                             </template>
@@ -103,7 +121,9 @@
                             <label class="control-label">Afectación Igv</label>
                             <el-select v-model="form.affectation_igv_type_id"
                                        :disabled="!change_affectation_igv_type_id" filterable>
-                                <el-option v-for="option in affectation_igv_types" :key="option.id"
+                                <el-option
+                                    v-for="option in affectation_igv_types"
+                                    :key="option.id"
                                            :label="option.description"
                                            :value="option.id"></el-option>
                             </el-select>
@@ -119,8 +139,11 @@
                         <div :class="{'has-danger': errors.quantity}" class="form-group">
 
                             <label class="control-label">Cantidad</label>
-                            <el-input ref="inputQuantity" v-model="form.quantity"
-                                      :disabled="form.item.calculate_quantity" @blur="validateQuantity"
+                            <el-input
+                                ref="inputQuantity"
+                                v-model="form.quantity"
+                                      :disabled="form.item.calculate_quantity"
+                                @blur="validateQuantity"
                                       @input.native="changeValidateQuantity">
                                 <el-button slot="prepend"
                                            :disabled="form.quantity < 0.01 || form.item.calculate_quantity"
@@ -183,10 +206,19 @@
                     <div v-if="config.edit_name_product" class="col-md-12 col-sm-12 mt-2">
                         <div class="form-group">
                             <label class="control-label">Nombre producto en PDF</label>
-                            <vue-ckeditor v-model="form.name_product_pdf" :editors="editors"
+                            <vue-ckeditor
+                                v-model="form.name_product_pdf"
+                                :editors="editors"
                                           type="classic"></vue-ckeditor>
                         </div>
                     </div>
+                    <template v-if="canShowExtraData">
+                        <!-- resources/js/views/tenant/components/partials/item_extra_info.vue -->
+                        <tenant-item-aditional-info-selector
+                            :form="form"
+                            :errors="errors"
+                        ></tenant-item-aditional-info-selector>
+                    </template>
                     <template v-if="!is_client">
 
                         <div v-if="form.item_unit_types.length > 0" class="col-md-12">
@@ -224,18 +256,13 @@
                                                 <option v-if="row.price3" :value="row.price3" :label="row.price3"></option>
                                             </select>
                                         </td>
-<!--                                        <td class="series-table-actions text-right">-->
-<!--                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="selectedPrice(row)">-->
-<!--                                                <i class="el-icon-check"></i>-->
-<!--                                            </button>-->
-<!--                                        </td>-->
-                                </tr>
-                                </tbody>
-                            </table>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-2">
+                        <div class="col-md-12 mt-2" v-if="showDiscounts">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item :disabled="recordItem != null"
                                                   name="1" title="+ Agregar Descuentos/Cargos/Atributos especiales">
@@ -338,7 +365,9 @@
                                                 <td>
                                                     <el-select v-model="row.attribute_type_id" filterable
                                                                @change="changeAttributeType(index)">
-                                                        <el-option v-for="option in attribute_types" :key="option.id"
+                                                        <el-option
+                                                            v-for="option in attribute_types"
+                                                            :key="option.id"
                                                                    :label="option.description"
                                                                    :value="option.id"></el-option>
                                                     </el-select>
@@ -362,11 +391,35 @@
                     </template>
                 </div>
             </div>
-            <div class="form-actions text-right pt-2">
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+
+            <div class="row hidden-md-up form-actions text-center">
+                <div class="col-12">
+                &nbsp;
+                </div>
+                <div class="col-6">
+                    <el-button class="form-control" @click.prevent="close()">Cerrar</el-button>
+                </div>
+                <div class="col-6">
+                    <el-button v-if="form.item_id" class="add form-control btn btn-primary" native-type="submit" type="primary">
+                        {{ titleAction }}
+                    </el-button>
+                </div>
+            </div>
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Ocultar en cel -->
+
+            <div class="form-actions text-right pt-2  hidden-sm-down">
                 <el-button @click.prevent="close()">Cerrar</el-button>
-                <el-button v-if="form.item_id" class="add" native-type="submit" type="primary">{{ titleAction }}
+                <el-button v-if="form.item_id" class="add" native-type="submit" type="primary">
+                    {{ titleAction }}
                 </el-button>
             </div>
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Ocultar en cel -->
         </form>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
@@ -415,6 +468,7 @@ import SelectLotsForm from './lots.vue'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 
 export default {
     props: [
@@ -427,7 +481,8 @@ export default {
         'isEditItemNote',
         'configuration',
         'documentTypeId',
-        'noteCreditOrDebitTypeId'
+        'noteCreditOrDebitTypeId',
+        'displayDiscount',
     ],
     components: {
         ItemForm,
@@ -438,6 +493,8 @@ export default {
     },
     data() {
         return {
+            showDiscounts: true,
+            extra_temp: undefined,
             can_add_new_product: false,
             loading_search: false,
             titleAction: '',
@@ -452,6 +509,7 @@ export default {
             items: [],
             operation_types: [],
             all_affectation_igv_types: [],
+            aux_items: [],
             affectation_igv_types: [],
             system_isc_types: [],
             discount_types: [],
@@ -462,6 +520,7 @@ export default {
             activePanel: 0,
             total_item: 0,
             item_unit_types: [],
+            item_unit_type: {},
             showWarehousesDetail: false,
             warehousesDetail: [],
             showListStock: false,
@@ -483,21 +542,17 @@ export default {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
+        if(this.displayDiscount !== undefined){
+            if(this.displayDiscount == true){
+                this.showDiscounts = true;
+            }else{
+                this.showDiscounts = false;
+
+            }
+        }
     },
     mounted() {
-        this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            this.all_items = response.data.items
-            this.operation_types = response.data.operation_types
-            this.all_affectation_igv_types = response.data.affectation_igv_types
-            this.system_isc_types = response.data.system_isc_types
-            this.discount_types = response.data.discount_types
-            this.charge_types = response.data.charge_types
-            this.attribute_types = response.data.attribute_types
-            this.is_client = response.data.is_client;
-            this.filterItems()
-
-        })
-
+        this.getTables()
         this.$eventHub.$on('reloadDataItems', (item_id) => {
             this.reloadDataItems(item_id)
         })
@@ -509,14 +564,42 @@ export default {
     },
     computed: {
         ...mapState([
+            'colors',
+            'CatItemUnitsPerPackage',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemMoldCavity',
+            'CatItemProductFamily',
+            'CatItemSize',
+            'extra_colors',
+            'extra_CatItemUnitsPerPackage',
+            'extra_CatItemMoldProperty',
+            'extra_CatItemSize',
+            'extra_CatItemUnitBusiness',
+            'extra_CatItemStatus',
+            'extra_CatItemPackageMeasurement',
+            'extra_CatItemMoldCavity',
+            'extra_CatItemProductFamily',
+            'deb',
             'config',
         ]),
+        canShowExtraData: function(){
+            if(this.config && this.config.show_extra_info_to_item  !== undefined){
+                return this.config.show_extra_info_to_item;
+            }
+            return false;
+        },
         showLots() {
-            if (
-                this.form.item_id &&
-                this.form.item.lots_enabled &&
-                this.form.lots_group.length > 0
-            ) {
+            // if (
+            //     this.form.item_id &&
+            //     this.form.item.lots_enabled &&
+            //     this.form.lots_group.length > 0
+            // )
+
+            if (this.form.item_id && this.form.item.lots_enabled )
+            {
                 return true;
             }
 
@@ -554,7 +637,54 @@ export default {
     methods: {
         ...mapActions([
             'loadConfiguration',
+            'clearExtraInfoItem',
         ]),
+        hasAttributes(){
+            if(
+                this.form.item !== undefined &&
+                this.form.item.attributes !== undefined &&
+                this.form.item.attributes !== null &&
+                this.form.item.attributes.length > 0
+            ){
+                return true
+            }
+
+            return false;
+        },
+        ItemSlotTooltipView(item) {
+            return ItemSlotTooltip(item);
+        },
+        ItemOptionDescriptionView(item) {
+            return ItemOptionDescription(item)
+        },
+        getTables(){
+            this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                let data = response.data
+                this.all_items = data.items
+                this.operation_types = data.operation_types
+                this.all_affectation_igv_types = data.affectation_igv_types
+                this.system_isc_types = data.system_isc_types
+                this.discount_types = data.discount_types
+                this.charge_types = data.charge_types
+                this.attribute_types = data.attribute_types
+                this.is_client = data.is_client;
+
+                if(this.canShowExtraData) {
+                    this.$store.commit('setColors', data.colors);
+                    this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
+                    this.$store.commit('setCatItemStatus', data.CatItemStatus);
+                    this.$store.commit('setCatItemMoldCavity', data.CatItemMoldCavity);
+                    this.$store.commit('setCatItemMoldProperty', data.CatItemMoldProperty);
+                    this.$store.commit('setCatItemUnitBusiness', data.CatItemUnitBusiness);
+                    this.$store.commit('setCatItemPackageMeasurement', data.CatItemPackageMeasurement);
+                    this.$store.commit('setCatItemProductFamily', data.CatItemPackageMeasurement);
+                    this.$store.commit('setCatItemSize', data.CatItemSize);
+                }
+                this.$store.commit('setConfiguration', data.configuration);
+                this.filterItems()
+
+            })
+        },
         canCreateProduct() {
             if (this.typeUser === 'admin') {
                 this.can_add_new_product = true
@@ -622,6 +752,7 @@ export default {
                         this.items = response.data.items
                         this.loading_search = false
                         this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemBySeries()
                         if (this.items.length == 0) {
                             this.filterItems()
                         }
@@ -643,6 +774,30 @@ export default {
                     this.changeItem();
                 }
             }
+        },
+        async enabledSearchItemBySeries() {
+
+            if(this.config.search_item_by_series && this.items.length == 1){
+
+                this.$notify({title: "Serie ubicada", message: "Producto añadido!", type: "success", duration: 1200});
+                this.form.item_id = this.items[0].id;
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+
+                await this.changeItem();
+
+                this.lots = await this.form.item.lots.map((lot)=>{
+                    lot.has_sale = true
+                })
+
+                await this.clickAddItem()
+
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+            }
+
+            if(this.config.search_item_by_series && this.items.length == 0){
+                this.$notify({title: "Serie no ubicada", message: "", type: "warning", duration: 1200});
+            }
+
         },
         filterMethod(query) {
 
@@ -682,15 +837,18 @@ export default {
                 percentage_isc: 0,
                 suggested_price: 0,
                 quantity: 1,
-                unit_price_value: 0,
-                input_unit_price_value: 0,
                 unit_price: 0,
+                unit_price_value: 0,
+                input_unit_price: 0,
+                input_unit_price_value: 0,
                 charges: [],
                 discounts: [],
                 attributes: [],
                 has_igv: null,
+                is_set: false,
                 item_unit_types: [],
                 has_plastic_bag_taxes: false,
+                series_enabled: false,
                 warehouse_id: null,
                 lots_group: [],
                 IdLoteSelected: null,
@@ -701,12 +859,14 @@ export default {
             this.activePanel = 0;
             this.total_item = 0;
             this.item_unit_type = {};
+            this.lots = []
             this.has_list_prices = false;
         },
         // initializeFields() {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
         async create() {
+            this.extra_temp = undefined;
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
@@ -715,6 +875,9 @@ export default {
 
 
             if (this.recordItem) {
+                if(this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined){
+                        this.extra_temp  = this.recordItem.item.extra
+                }
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
                 await this.changeItem()
@@ -723,6 +886,7 @@ export default {
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
+
 
                 if (this.isEditItemNote) {
                     this.form.item.currency_type_id = this.currencyTypeIdActive
@@ -736,7 +900,13 @@ export default {
                         this.lots = this.form.item.lots
                     }
 
+                }else{
+
+                    this.form.item.lots = this.recordItem.item.lots
+                    this.lots = this.recordItem.item.lots
                 }
+
+                this.setPresentationEditItem()
 
                 if (this.recordItem.item.name_product_pdf) {
                     this.form.name_product_pdf = this.recordItem.item.name_product_pdf
@@ -745,10 +915,27 @@ export default {
                 //     this.form.name_product_pdf = this.recordItem.name_product_pdf
                 // }
 
+                if(this.recordItem.item.change_free_affectation_igv){
 
+                    this.form.affectation_igv_type_id = '15'
+                    this.form.item.change_free_affectation_igv = true
+
+                }else{
+                    if(this.recordItem.item.original_affectation_igv_type_id){
+                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
+                    }
+                }
                 this.calculateQuantity()
             } else {
                 this.isUpdateWarehouseId = null
+            }
+
+        },
+        setPresentationEditItem(){
+
+            if(!_.isEmpty(this.recordItem.item.presentation)){
+                this.selectedPrice(this.recordItem.item.presentation)
+                this.getSelectedClass(this.recordItem.item.presentation)
             }
 
         },
@@ -850,7 +1037,11 @@ export default {
             this.$emit('update:showDialog', false)
         },
         async changeItem() {
+
+            this.clearExtraInfoItem()
+
             this.form.item = _.find(this.items, {'id': this.form.item_id});
+            this.form.item = this.setExtraFieldOfitem(this.form.item)
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.form.unit_price_value = this.form.item.sale_unit_price;
             this.lots = this.form.item.lots
@@ -862,22 +1053,24 @@ export default {
             this.cleanTotalItem();
             this.showListStock = true
 
+            if(this.hasAttributes()) {
+                    const contex = this
+                    this.form.item.attributes.forEach((row) => {
 
-            if (this.form.item.attributes.length > 0) {
-                const contex = this
-                this.form.item.attributes.forEach((row) => {
-
-                    contex.form.attributes.push({
-                        attribute_type_id: row.attribute_type_id,
-                        description: row.description,
-                        value: row.value,
-                        start_date: row.start_date,
-                        end_date: row.end_date,
-                        duration: row.duration,
+                        contex.form.attributes.push({
+                            attribute_type_id: row.attribute_type_id,
+                            description: row.description,
+                            value: row.value,
+                            start_date: row.start_date,
+                            end_date: row.end_date,
+                            duration: row.duration,
+                        })
                     })
-                })
-            }
+                }
+
             this.form.lots_group = this.form.item.lots_group
+            this.setExtraElements(this.form.item);
+
             // if (!this.recordItem) {
             //     await this.form.item.warehouses.forEach(element => {
             //         if(element.checked){
@@ -925,7 +1118,7 @@ export default {
                 if (!this.form.IdLoteSelected)
                     return this.$message.error('Debe seleccionar un lote.');
             }
-
+            let extra = this.form.item.extra
 
             if (this.validateTotalItem().total_item) return;
 
@@ -972,6 +1165,7 @@ export default {
 
             // this.row.edit = false;
             this.initForm();
+            this.row.item.extra = extra;
             //this.initializeFields()
 
             if (this.recordItem) {
@@ -983,10 +1177,20 @@ export default {
 
             this.$emit('add', this.row);
 
+            if (this.search_item_by_barcode) {
+                this.cleanItems()
+            }
 
             if (this.recordItem) {
-                this.close()
+                this.close();
+            } else {
+                this.setFocusSelectItem();
             }
+        },
+        cleanItems(){
+            this.items = []
+            this.$refs.selectBarcode.$el.getElementsByTagName('input')[0].focus()
+            // console.log("add cart barcode")
         },
         validateTotalItem() {
 
@@ -1042,6 +1246,21 @@ export default {
             this.form.unit_price_value = price;
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
+        getSelectedClass(row) {
+
+            if(this.isSelectedPrice(row)) return 'btn-success'
+
+            return 'btn-secondary'
+
+        },
+        isSelectedPrice(item_unit_type){
+
+            if(!_.isEmpty(this.item_unit_type)){
+                return (this.item_unit_type.id === item_unit_type.id)
+            }
+
+            return false
+        },
         selectedPrice(row) {
             let valor = 0
             switch (row.price_default) {
@@ -1073,6 +1292,131 @@ export default {
         },
         addRowSelectLot(lots) {
             this.lots = lots
+        },
+        focusSelectItem() {
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+        },
+        setFocusSelectItem() {
+
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+
+        },
+        setExtraFieldOfitem(item) {
+            if(this.canShowExtraData) {
+                if (item.extra === undefined) item.extra = {};
+                if (item.extra.colors === undefined) item.extra.colors = null;
+                if (item.extra.CatItemUnitsPerPackage === undefined) item.extra.CatItemUnitsPerPackage = null;
+                if (item.extra.CatItemMoldProperty === undefined) item.extra.CatItemMoldProperty = null;
+                if (item.extra.CatItemUnitBusiness === undefined) item.extra.CatItemUnitBusiness = null;
+                if (item.extra.CatItemStatus === undefined) item.extra.CatItemStatus = null;
+                if (item.extra.CatItemPackageMeasurement === undefined) item.extra.CatItemPackageMeasurement = null;
+                if (item.extra.CatItemMoldCavity === undefined) item.extra.CatItemMoldCavity = null;
+                if (item.extra.CatItemProductFamily === undefined) item.extra.CatItemProductFamily = null;
+                if (item.extra.CatItemSize === undefined) item.extra.CatItemSize = null;
+
+                if (this.extra_temp !== undefined) {
+                    item.extra = this.extra_temp;
+                }
+            }
+            return item
+        },
+        setExtraElements(item) {
+            this.clearExtraInfoItem()
+            if(this.canShowExtraData) {
+                let temp = [];
+                this.colors.find(obj => {
+                    for (var i = 0, iLen = item.colors.length; i < iLen; i++) {
+                        if (item.colors[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                });
+                this.$store.commit('setExtraColors', temp)
+                temp = [];
+                this.CatItemUnitsPerPackage.find(obj => {
+                    for (var i = 0, iLen = item.CatItemUnitsPerPackage.length; i < iLen; i++) {
+                        if (item.CatItemUnitsPerPackage[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemUnitsPerPackage', temp)
+                temp = [];
+                this.CatItemMoldProperty.find(obj => {
+                    for (var i = 0, iLen = item.CatItemMoldProperty.length; i < iLen; i++) {
+                        if (item.CatItemMoldProperty[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemMoldProperty', temp)
+                temp = [];
+                this.CatItemUnitBusiness.find(obj => {
+                    for (var i = 0, iLen = item.CatItemUnitBusiness.length; i < iLen; i++) {
+                        if (item.CatItemUnitBusiness[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemUnitBusiness', temp)
+                temp = [];
+                this.CatItemStatus.find(obj => {
+                    for (var i = 0, iLen = item.CatItemStatus.length; i < iLen; i++) {
+                        if (item.CatItemStatus[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemStatus', temp)
+                temp = [];
+                this.CatItemPackageMeasurement.find(obj => {
+                    for (var i = 0, iLen = item.CatItemPackageMeasurement.length; i < iLen; i++) {
+                        if (item.CatItemPackageMeasurement[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemPackageMeasurement', temp)
+                temp = [];
+                this.CatItemMoldCavity.find(obj => {
+                    for (var i = 0, iLen = item.CatItemMoldCavity.length; i < iLen; i++) {
+                        if (item.CatItemMoldCavity[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemMoldCavity', temp)
+                temp = [];
+                this.CatItemProductFamily.find(obj => {
+                    for (var i = 0, iLen = item.CatItemProductFamily.length; i < iLen; i++) {
+                        if (item.CatItemProductFamily[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemProductFamily', temp)
+                temp = [];
+                this.CatItemSize.find(obj => {
+                    for (var i = 0, iLen = item.CatItemSize.length; i < iLen; i++) {
+                        if (item.CatItemSize[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemSize', temp)
+                temp = [];
+                this.CatItemMoldProperty.find(obj => {
+                    for (var i = 0, iLen = item.CatItemMoldProperty.length; i < iLen; i++) {
+                        if (item.CatItemMoldProperty[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemMoldProperty', temp)
+                if (this.extra_temp !== undefined) {
+                    this.form.item.extra = this.extra_temp;
+                }
+            }
         },
     }
 }

@@ -38,7 +38,8 @@ function getLocationData($value)
         'province' => $province,
     ];
 }
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
@@ -47,9 +48,12 @@ function getLocationData($value)
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Document</title>
         <style>
+            @page {
+              margin: 5;
+            }
             html {
                 font-family: sans-serif;
-                font-size: 10px;
+                font-size: 12px;
             }
 
             table {
@@ -148,7 +152,7 @@ function getLocationData($value)
                         $acum_total_igv_usd=0;
                         $acum_total_usd=0;
                     @endphp
-                    <table class="">
+                    <table class="" style="font-size:10px;">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -166,7 +170,8 @@ function getLocationData($value)
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
-                                <th class="">Mon.</th>
+                                <th class="">Moneda</th>
+                                <th>Plataforma</th>
                                 <th>Orden de compra</th>
                                 <!-- <th>Total Exonerado</th>
                                 <th>Total Inafecto</th>
@@ -223,6 +228,11 @@ function getLocationData($value)
                                     <td class="celda">{{$value->state_type->description}}</td>
 
                                     <td class="celda">{{$value->currency_type_id}}</td>
+                                    <td class="celda">
+                                        @foreach ($value->getPlatformThroughItems() as $platform)
+                                            <label class="d-block">{{$platform->name}}</label>
+                                        @endforeach
+                                    </td>
                                     <td class="celda">{{ $value->purchase_order }}</td>
                                     @php
                                      $signal = $value->document_type_id;
@@ -330,14 +340,14 @@ function getLocationData($value)
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="14"></td>
+                                <td class="celda" colspan="15"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="14"></td>
+                                <td class="celda" colspan="15"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>
