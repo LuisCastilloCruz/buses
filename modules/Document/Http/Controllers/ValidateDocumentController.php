@@ -15,6 +15,7 @@ use Modules\Document\Http\Requests\ValidateDocumentsRequest;
 // use App\CoreFacturalo\Services\Extras\ValidateCpe2;
 use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\CoreFacturalo\Services\IntegratedQuery\{
     AuthApi,
     ValidateCpe
