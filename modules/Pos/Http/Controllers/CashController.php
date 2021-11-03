@@ -148,6 +148,17 @@ class CashController extends Controller
 
             /** Documentos de Tipo Nota de venta */
             if ($cash_document->sale_note) {
+                $transporte='';
+                $encomienda = $cash_document->sale_note->encomienda;
+                $pasaje = $cash_document->sale_note->pasaje;
+
+                if(!is_null($encomienda)){
+                    $transporte='Encomienda' ;
+                }
+                if(!is_null($pasaje)){
+                    $transporte='Pasaje' ;
+                }
+
                 $sale_note = $cash_document->sale_note;
                 if (in_array($sale_note->state_type_id, $status_type_id)) {
                     $record_total = 0;
@@ -167,7 +178,7 @@ class CashController extends Controller
                     }
                 }
                 $temp = [
-                    'type_transaction'          => 'Venta',
+                    'type_transaction'          => 'Venta - ' .$transporte,
                     'document_type_description' => 'NOTA DE VENTA',
                     'number'                    => $sale_note->number_full,
                     'date_of_issue'             => $sale_note->date_of_issue->format('Y-m-d'),
@@ -182,6 +193,17 @@ class CashController extends Controller
                 ];
             } /** Documentos de Tipo Document */
             elseif ($cash_document->document) {
+                $transporte='';
+                $encomienda = $cash_document->document->encomienda;
+                $pasaje = $cash_document->document->pasaje;
+
+                if(!is_null($encomienda)){
+                    $transporte='Encomienda' ;
+                }
+                if(!is_null($pasaje)){
+                    $transporte='Pasaje' ;
+                }
+
                 $record_total = 0;
                 $document = $cash_document->document;
                 $payment_condition_id = $document->payment_condition_id;
@@ -256,7 +278,7 @@ class CashController extends Controller
                     $usado .= '<br> Los montos son diferentes '.$document->total." vs ".$pagado."<br>";
                 }
                 $temp = [
-                    'type_transaction'          => 'Venta',
+                    'type_transaction'          => 'Venta - ' . $transporte,
                     'document_type_description' => $document->document_type->description,
                     'number'                    => $document->number_full,
                     'date_of_issue'             => $document->date_of_issue->format('Y-m-d'),
