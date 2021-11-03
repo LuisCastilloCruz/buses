@@ -1,7 +1,7 @@
 <?php
 
 namespace App\CoreFacturalo\Services\IntegratedQuery;
- 
+
 use Exception;
 use Carbon\Carbon;
 
@@ -9,7 +9,7 @@ class ValidateCpe
 {
 
     const BASE_URL = 'https://api.sunat.gob.pe/v1/contribuyente/contribuyentes';
-    
+
     protected $company_number;
     protected $document_type_id;
     protected $series;
@@ -17,7 +17,7 @@ class ValidateCpe
     protected $date_of_issue;
     protected $total;
     protected $token;
-    
+
     protected $document_state = [
         '0' => '-1', //'NO EXISTE' custom code
         '1' => '05', //'ACEPTADO'
@@ -52,9 +52,9 @@ class ValidateCpe
 
 
             $curl = curl_init();
-            
+
             curl_setopt_array($curl, array(
-                CURLOPT_URL => self::BASE_URL."/{$this->company_number}/validarcomprobante",
+                CURLOPT_URL => self::BASE_URL."/20601411076/validarcomprobante",
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -68,9 +68,9 @@ class ValidateCpe
                     'Content-Type: application/json'
                 ),
             ));
-            
+
             $response = curl_exec($curl);
-            
+
             curl_close($curl);
 
             $res = json_decode($response, true);
@@ -104,6 +104,6 @@ class ValidateCpe
 
         }
 
-    } 
+    }
 
 }
