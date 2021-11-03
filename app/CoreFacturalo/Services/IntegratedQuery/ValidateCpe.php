@@ -88,6 +88,8 @@ class ValidateCpe
                         'estadoRuc' =>  $res['data']['estadoRuc'] ?? null,
                         'condDomiRuc' =>  $res['data']['condDomiRuc'] ?? null,
                         'observaciones' =>  $res['data']['observaciones'] ?? null,
+                        'comprobante_estado_codigo' => $res['data']['estadoCp'],
+                        'comprobante_estado_descripcion' => $this->document_state[$res['data']['estadoCp']],
                     ],
                 ];
 
