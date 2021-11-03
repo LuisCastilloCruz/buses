@@ -186,8 +186,17 @@
             $date_of_issue = $request->fecha_de_emision;
             $total = $request->total;
 
-            $validate_cpe = new ValidateCpe();
-            $response = $validate_cpe->search($company_number, $document_type_id, $series, $number, $date_of_issue, $total);
+            $validate_cpe = new ValidateCpe(
+                'hidden',
+                $company_number,
+                $document_type_id,
+                $series,
+                $number,
+                $date_of_issue,
+                $total
+            );
+
+            $response = $validate_cpe->search();
 
             if ($response['success']) {
 
