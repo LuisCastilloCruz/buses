@@ -566,6 +566,7 @@
                             this.form = response.data.data;
     //                        this.filterProvinces();
     //                        this.filterDistricts();
+                            this.changeCurrencyType()
                         })
                 }
 

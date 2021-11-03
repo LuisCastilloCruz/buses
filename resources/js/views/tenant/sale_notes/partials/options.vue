@@ -8,7 +8,7 @@
 
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 container-tabs">
-                    <button  v-if="this.activeName== 'fourth' && this.configuration.print_silent" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket')">
+                    <button  v-if="(activeName=== 'fourth' &&  configuration.print_silent===true)" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket')">
                         <i class="fa fa-receipt"></i> IMPRIMIR
                     </button>
                     <el-tabs v-model="activeName">
@@ -23,9 +23,6 @@
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir Ticket 58MM" name="third" v-if="Ticket58">
                             <embed :src="form.print_ticket_58" type="application/pdf" width="100%" height="400px"/>
-                        </el-tab-pane>
-                        <el-tab-pane label="Imprimir Ticket" name="fourth">
-                            <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                     </el-tabs>
                 </div>

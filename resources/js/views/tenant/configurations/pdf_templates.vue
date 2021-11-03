@@ -44,7 +44,7 @@
                         <el-card :id="template.id"
                                  :body-style="{ padding: '0px' }">
                             <a @click="viewImage(template)">
-                                <img :src="path.origin+'/'+template.urls.invoice"
+                                <img v-if="template.urls.invoice!=''" :src="path.origin+'/'+template.urls.invoice"
                                      class="image"
                                      style="width: 100%"></a>
                             <div style="padding: 14px;">
@@ -57,6 +57,43 @@
                                         <span v-if="form.current_format == template.name">Activo</span>
                                         <span v-else>Activar</span>
                                     </el-radio>
+                                </div>
+                                <div v-if="form.current_format == template.name && form.current_format == 'aqpfact_01'" class="row">
+                                    <div class="col-md-3">
+                                        <label class="control-label float-left">
+                                            <el-tooltip class="item" effect="dark" content="Color primario de la plantilla." placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                            <input type="color" id="primary_color" class="field-radio" v-bind:value="form.color1"  @change="changeColor1(form.current_format,$event)">
+                                        </label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="control-label float-left">
+                                            <el-tooltip class="item" effect="dark" content="Color secundario de la plantilla." placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                            <input type="color" id="secondary_color" class="field-radio"  v-bind:value="form.color2" @change="changeColor2(form.current_format,$event)">
+                                        </label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="control-label float-left">
+                                            <el-tooltip class="item" effect="dark" content="Cambiar fondo para cotización. Se recomienda diseñar según el formato por
+                                        defecto, o editar en Photoshop o Corel y sinó descargar de www.aqpfact.pe/recursos" placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+
+                                            <el-upload slot="append"
+                                                       :headers="headers"
+                                                       :data="{'type': 'fondo'}"
+                                                       action="/configurations/uploads"
+                                                       :show-file-list="false"
+                                                       :on-success="successUpload">
+                                                <el-button type="primary" icon="el-icon-upload"></el-button>
+                                            </el-upload>
+
+                                        </label>
+                                    </div>
+
                                 </div>
                             </div>
                         </el-card>
@@ -71,7 +108,7 @@
                 <div class="block">
                     <el-carousel arrow="always" :interval="10000" height="550px">
                         <el-carousel-item>
-                            <img  :src="path.origin+'/'+template.urls.invoice"
+                            <img  v-if="template.urls.invoice!=''" :src="path.origin+'/'+template.urls.invoice"
                                   class="image"
                                   style="width: 100%; height:100%;">
                         </el-carousel-item>
@@ -116,6 +153,7 @@ export default {
     data() {
         return {
             loading_submit: false,
+            headers: headers_token,
             resource: 'configurations',
             errors: {},
             form: {},
@@ -129,11 +167,18 @@ export default {
         }
     },
     async created() {
+        await this.$http.get(`/${this.resource}/record`) .then(response => {
+            if (response.data !== ''){
+                // console.log(response.data);
+                this.form = response.data.data;
+            }
+            // console.log(this.placeholder)
+        });
+
         await this.$http.get(`/${this.resource}/getFormats`).then(response => {
             if (response.data !== '') this.formatos = response.data.formats
             // if (response.data !== '') this.formatos = response.data.filter(r => this.image(r.formats))
         });
-        console.log(this.establishments);
     },
     methods: {
         changeFormat(value) {
@@ -145,6 +190,7 @@ export default {
 
             this.$http.post(`/${this.resource}/changeFormat`, this.form).then(response => {
                 this.$message.success(response.data.message);
+                console.log(this.form);
                 location.reload()
             })
 
@@ -168,6 +214,43 @@ export default {
         viewModalImage(name) {
             this.template = this.formatos.filter(template => template.name == name)[0]
             this.modalImage = true
+        },
+
+        changeColor1(value,e){
+            this.modalImage = false
+            this.formatos = {
+                formats: value,
+                color1: e.target.value
+            }
+            this.$http.post(`/${this.resource}/changeColor1`, this.formatos).then(response =>{
+                this.$message.success(response.data.message);
+                //alert('El color primario fué cambiado corréctamente, el sistema necesita recargarse.');
+                //location.reload()
+                //alert('El color primario se cambió correctamente: ' +e.target.value);
+            })
+            //alert('cambiando color: '+ ' - otro: '+value+ ' color: ' +e.target.value);
+        },
+        changeColor2(value,e){
+            this.modalImage = false
+            this.formatos = {
+                formats: value,
+                color2: e.target.value
+            }
+            this.$http.post(`/${this.resource}/changeColor2`, this.formatos).then(response =>{
+                this.$message.success(response.data.message);
+                //alert('El color secundario fué cambiado corréctamente, el sistema necesita recargarse.');
+                //location.reload()
+                //alert('El color primario se cambió correctamente: ' +e.target.value);
+            })
+            //alert('cambiando color: '+ ' - otro: '+value+ ' color: ' +e.target.value);
+        },
+        successUpload(response, file, fileList) {
+            if (response.success) {
+                this.$message.success(response.message)
+                this.form[response.type] = response.name
+            } else {
+                this.$message({message:'Error al subir el archivo', type: 'error'})
+            }
         }
     }
 }

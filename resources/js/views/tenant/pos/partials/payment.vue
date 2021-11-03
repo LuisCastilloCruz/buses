@@ -213,7 +213,7 @@
                         <div class="card-body text-center">
 
                             <div class="row col-lg-12">
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="form-group">
                                         <h2>
                                             <el-switch v-model="enabled_discount"
@@ -223,7 +223,14 @@
                                         </h2>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Porcentaje %</label>
+                                        <el-input v-model="discount_percent"  ref="monto_porc" @input="inputDiscountPercent()" :disabled="!enabled_discount">
+                                        </el-input>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="control-label">Monto descuento</label>
                                         <el-input v-model="discount_amount"
@@ -435,6 +442,7 @@ export default {
         return {
             enabled_discount: false,
             discount_amount: 0,
+            discount_percent:0,
             loading_submit: false,
             showDialogOptions: false,
             showDialogMultiplePayment: false,
@@ -530,10 +538,13 @@ export default {
             if (!this.enabled_discount) {
 
                 this.discount_amount = 0
+                this.discount_percent= 0
                 this.deleteDiscountGlobal()
                 this.reCalculateTotal()
 
             }
+
+            this.$nextTick(() => this.$refs.monto_porc.focus())
 
         },
         inputDiscountAmount() {
@@ -567,6 +578,40 @@ export default {
 
             return (not_exonerated) ? false : true
         },
+        inputDiscountPercent(){
+            if(parseFloat(this.discount_percent) > 0){
+                this.form.total_discount = 0;
+                this.discount_amount=0;
+                this.reCalculateTotal();
+                let descuento_porc=parseFloat(this.discount_percent);
+                this.discount_amount=(descuento_porc/100)*this.form.total;
+            }
+            else{
+                this.discount_amount = 0;
+                this.form.total_discount = 0;
+                this.reCalculateTotal()
+            }
+
+            if(this.enabled_discount){
+                if(this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0){
+                    if(this.discount_amount >= this.form.total)
+                        return this.$message.error("El monto de descuento debe ser menor al total de venta")
+
+                    this.reCalculateTotal()
+
+                }else{
+
+                    //this.discount_amount = 0
+                    //this.discount_percent= 0
+                    this.deleteDiscountGlobal()
+                    this.reCalculateTotal()
+
+                }
+
+                // console.log(this.discount_amount)
+            }
+        },
+
         async discountGlobal() {
 
             // let is_exonerated = this.isExonerated()
@@ -580,26 +625,54 @@ export default {
 
             let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
 
-            if (global_discount > 0 && !discount) {
+                if(global_discount>0 && !discount){
 
-                this.form.total_discount = _.round(amount, 2)
-                this.form.total = _.round(this.form.total - amount, 2)
+                    this.form.total_discount =  _.round(amount,2)
 
-                this.form.discounts.push({
-                    discount_type_id: '03',
-                    description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
-                    factor: factor,
-                    amount: amount,
-                    base: base
-                })
+                    this.form.total =  _.round(this.form.total - amount, 2)
 
-            }
+                    this.form.total_value =  _.round(this.form.total / 1.18, 2)
+                    this.form.total_taxed =  this.form.total_value
 
-            this.difference = this.enter_amount - this.form.total
-            // this.difference = this.enter_amount - this.form.total_payable_amount
-            // console.log(this.form.discounts)
-        },
-        reCalculateTotal() {
+                    this.form.total_igv =  _.round(this.form.total_value * 0.18, 2)
+                    this.form.total_taxes =  this.form.total_igv
+
+                    this.form.discounts.push({
+                            discount_type_id: '03',
+                            description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
+                            factor: factor,
+                            amount: amount,
+                            base: base
+                        })
+
+                }else{
+
+                    let index = this.form.discounts.indexOf(discount);
+
+                    if(index > -1){
+
+                        this.form.total_discount =  _.round(amount,2)
+
+                        this.form.total =  _.round(this.form.total - amount, 2)
+
+                        this.form.total_value =  _.round(this.form.total / 1.18, 2)
+                        this.form.total_taxed =  this.form.total_value
+
+                        this.form.total_igv =  _.round(this.form.total_value * 0.18, 2)
+                        this.form.total_taxes =  this.form.total_igv
+
+                        this.form.discounts[index].base = base
+                        this.form.discounts[index].amount = amount
+                        this.form.discounts[index].factor = factor
+
+                    }
+
+                }
+
+                this.difference = _.round((this.enter_amount - this.form.total),2)
+                // console.log(this.form.discounts)
+            },
+            reCalculateTotal() {
 
             let total_discount = 0
             let total_charge = 0

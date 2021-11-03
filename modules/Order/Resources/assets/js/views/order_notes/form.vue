@@ -222,7 +222,9 @@
 
                     <div class="form-actions text-right mt-4">
                         <el-button @click.prevent="close()">Cancelar</el-button>
-                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
+                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit"
+                                   v-if="form.items.length > 0">Generar
+                        </el-button>
                     </div>
                 </form>
             </div>
@@ -284,9 +286,7 @@ export default {
             all_customers: [],
             payment_method_types: [],
             customers: [],
-            company: null,
             establishments: [],
-            establishment: null,
             currency_type: {},
             orderNoteNewId: null,
             activePanel: 0,
@@ -299,6 +299,7 @@ export default {
         this.loadConfiguration()
         this.loadEstablishment()
         this.loadCompany()
+        console.log(this.configuration);
     },
     mounted() {
         this.initForm()

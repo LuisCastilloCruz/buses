@@ -369,8 +369,6 @@
 
             this.form.soap_username = this.soap_username
             this.form.soap_password = this.soap_password
-
-
         },
         methods: {
             FixChildren(currentObj, treeStatus) {
@@ -400,6 +398,8 @@
                         }
                     }
                 }
+
+                console.log(currentObj);
             },
             //funcion fusion fixchildren
             FixSameValueToChild(treeList, isSelected, element) {
@@ -414,7 +414,7 @@
                 }
             },
             SelectParent(currentObj, element) {
-                console.error(element);
+                //console.error(element);
                 if(currentObj !== undefined) {
                     let currentNode = element.getNode(currentObj)
                     if (currentNode.parent.key !== undefined) {
@@ -524,6 +524,8 @@
                             }, 1000);
                         })
                 }
+                console.log("holita");
+                console.log(this.modules);
             },
             async submit() {
                 const modulesAndLevelsSelecteds = this.$refs.tree.getCheckedNodes();

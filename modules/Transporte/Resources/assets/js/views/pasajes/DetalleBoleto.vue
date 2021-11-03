@@ -70,15 +70,15 @@
                     </el-select>
                 </div>
             </div>
-            
+
             <div class="col-3">
                 <div class="form-group">
                     <label for="dni">Precio</label>
                     <el-input v-model="precio" type="number" :disabled=" (transportePasaje) ? true : false"></el-input>
                 </div>
-               
+
             </div>
-            
+
             <div v-if="asiento" class="col-3">
                 <div class="form-group">
                     <label for="dni">Asiento</label>
@@ -89,13 +89,13 @@
                 <div class="form-group">
                     <label for="dni">
                         Nombre del pasajero
-                        
+
                     </label>
                     <el-input disabled v-model="nombrePasajero" type="text" placeholder="Nombre del pasajero" ></el-input>
-                    
+
                 </div>
             </div>
-            
+
         </div>
         <div v-if="(transportePasaje && !isReserva)" class="row justify-content-center">
 
@@ -107,7 +107,7 @@
                 Anular
                 <i class="fa fa-trash"></i>
             </el-button>
-            
+
         </div>
         <div class="row pt-2" v-if="document.document_type_id === '01'">
 
@@ -222,7 +222,7 @@
         >
         </sale-note-options>
 
-        
+
 
         <person-form :showDialog.sync="showDialogNewPerson"
         type="customers"
@@ -251,7 +251,7 @@ export default {
         DocumentOptions,
         PersonForm,
         SaleNoteOptions
-        
+
     },
     props:{
         visible: {
@@ -315,14 +315,14 @@ export default {
         this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
         this.allSeries = this.series;
         this.document.establishment_id = this.establishment.id;
-        this.changeDocumentType();        
-       
+        this.changeDocumentType();
+
     },
     watch:{
         precio:function(newVal){
-            if(this.document.payments.length > 0){
-                this.document.payments[0].payment = newVal ? newVal : 0;
-            }
+            // if(this.document.payments.length > 0){
+            //     this.document.payments[0].payment = newVal ? newVal : 0;
+            // }
         },
     },
     mounted(){
@@ -390,13 +390,13 @@ export default {
     methods:{
 
         async reloadDataCustomers(clienteId){
-            
+
             await this.searchCliente();
             this.clienteId = clienteId;
-            
+
         },
         async reloadDataPasajeros(pasajeroId){
-            
+
             await this.searchPasajero();
             this.pasajeroId = pasajeroId;
         },
@@ -419,17 +419,17 @@ export default {
             this.tempClientes = this.clientes  = data.clientes;
         },
         async onCreate(){
-            
-           
+
+
             this.transportePasaje = this.asiento.transporte_pasaje || null;
-           
+
             this.initProducto();
             //this.initDocument();
             this.clickAddPayment();
             this.onCalculateTotals();
             //this.validateIdentityDocumentType();
-            
-            
+
+
             if(this.transportePasaje){
                 this.nombrePasajero = this.transportePasaje.nombre_pasajero;
                 this.pasajero = this.transportePasaje.pasajero;
@@ -464,9 +464,9 @@ export default {
 
             }
 
-            
 
-            
+
+
 
 
             this.loading = true;
@@ -483,14 +483,14 @@ export default {
             this.producto.unit_price=precio;
             this.producto.unit_value=precio;
             this.document.items.push(this.producto);
-            this.document.payments.push(this.payment);
+            //this.document.payments.push(this.payment);
             this.document.customer_id=this.pasajeroId;
 
             const id = await this.createItem(this.producto.item);
             if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
             this.producto.item_id = this.producto.item.id = id;
 
-            this.document.items.push(this.producto);
+            //this.document.items.push(this.producto);
             this.payment.payment= precio;
             this.document.payments.push(this.payment);
 
@@ -519,7 +519,7 @@ export default {
                     if (response.data.success) {
                         this.documentId = response.data.data.id;
                         this.form_cash_document.document_id = response.data.data.id;
-                        
+
                          if (this.document.document_type_id === "nv"){
                             this.form_cash_document.sale_note_id = response.data.data.id;
                             this.sale_note_id = response.data.data.id;
@@ -527,7 +527,7 @@ export default {
                         else{
                             this.form_cash_document.document_id = response.data.data.id;
                         }
-                        
+
                         await this.saveCashDocument();
                         await this.guardarPasaje();
                     } else {
@@ -554,7 +554,7 @@ export default {
                 cliente_id:this.clienteId,
                 pasajero_id:client,
                 // asiento_id:this.asiento.id,
-                estado_asiento_id:this.estadoAsiento, 
+                estado_asiento_id:this.estadoAsiento,
                 programacion_id:this.programacion.id,
                 fecha_salida:this.fechaSalida,
                 precio:this.precio
@@ -891,7 +891,7 @@ export default {
                 } else {
 
                     this.tempClientes = _.filter(this.clientes, (c) => { return c.identity_document_type_id !== '6' })
-                    
+
                 }
                 this.tempPasajeros = _.filter(this.pasajeros, (c) => { return c.identity_document_type_id !== '6' })
             } else {
@@ -899,9 +899,9 @@ export default {
             }
         },
         anularBoleto(){
-            
+
             this.$emit('anularBoleto',this.transportePasaje);
-            
+
         },
         modalPerson(buscar_pasajero){
             this.showDialogNewPerson=true;

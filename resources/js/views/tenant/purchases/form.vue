@@ -610,6 +610,9 @@ export default {
                 this.payment_destinations = data.payment_destinations
                 this.all_customers = data.customers
 
+                this.note_credit_types = response.data.note_credit_types
+                this.note_debit_types = response.data.note_debit_types
+
                 this.charges_types = data.charges_types
                 this.$store.commit('setConfiguration', data.configuration);
                 this.$store.commit('setEstablishment', data.establishment);

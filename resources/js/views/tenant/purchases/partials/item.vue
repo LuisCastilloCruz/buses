@@ -88,6 +88,7 @@
                                 <small v-if="errors.affectation_igv_type_id"
                                        class="form-control-feedback"
                                        v-text="errors.affectation_igv_type_id[0]"></small>
+                                <el-checkbox v-model="form.purchase_has_igv">Incluye Igv</el-checkbox><br>
                             </div>
                         </div>
                         <div class="col-md-3">

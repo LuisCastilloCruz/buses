@@ -14,8 +14,8 @@ class FixModuleToModules extends Migration
     public function up()
     {
         Schema::table('modules', function (Blueprint $table) {
-            DB::table('modules')->where('id', 15)->delete();//borrar hotel
-            DB::table('modules')->where('id', 16)->delete(); //borrar transporte
+//            DB::table('modules')->where('id', 15)->delete();//borrar hotel
+//            DB::table('modules')->where('id', 16)->delete(); //borrar transporte
         });
     }
 

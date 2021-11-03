@@ -512,10 +512,45 @@ export default {
         }
     },
 
-    created() {
+    async created() {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
+        if (this.recordItem) {
+            await this.reloadDataItems(this.recordItem.item_id)
+            this.form.item_id = await this.recordItem.item_id
+            //await this.changeItem()
+            this.form.quantity = this.recordItem.quantity
+            this.form.unit_price_value = this.recordItem.input_unit_price_value
+            this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
+            this.form.warehouse_id = this.recordItem.warehouse_id
+            this.isUpdateWarehouseId = this.recordItem.warehouse_id
+
+            if(this.isEditItemNote){
+                this.form.item.currency_type_id = this.currencyTypeIdActive
+                this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
+
+                if(this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07'){
+
+                    this.form.document_item_id =  this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
+                    this.form.item.lots = this.recordItem.item.lots
+                    await this.regularizeLots()
+                    this.lots = this.form.item.lots
+                }
+
+            }
+
+            if(this.recordItem.name_product_pdf){
+                this.form.name_product_pdf = this.recordItem.name_product_pdf
+            }
+
+
+            this.calculateQuantity()
+        }else{
+            this.isUpdateWarehouseId = null
+        }
+
+        console.log(this.form);
     },
     mounted() {
         this.getTables()
@@ -813,36 +848,26 @@ export default {
         // initializeFields() {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
-        create() {
-            /* Migrado de resources/js/views/tenant/sale_notes/partials/item.vue*/
-            /*
-
+    async create() {
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
-            if(this.operation_types !== undefined) {
-                let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
-                if(operation_type !== undefined) {
-                    this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
-                }
-            }
-
             if (this.recordItem) {
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
-                await this.changeItem()
+                //await this.changeItem()
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
-                if (this.isEditItemNote) {
+                if(this.isEditItemNote){
                     this.form.item.currency_type_id = this.currencyTypeIdActive
-                    this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/' : '$'
+                    this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
 
-                    if (this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07') {
+                    if(this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07'){
 
-                        this.form.document_item_id = this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
+                        this.form.document_item_id =  this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
                         this.form.item.lots = this.recordItem.item.lots
                         await this.regularizeLots()
                         this.lots = this.form.item.lots
@@ -850,30 +875,15 @@ export default {
 
                 }
 
-                if (this.recordItem.item.name_product_pdf) {
-                    this.form.name_product_pdf = this.recordItem.item.name_product_pdf
+                if(this.recordItem.name_product_pdf){
+                    this.form.name_product_pdf = this.recordItem.name_product_pdf
                 }
-                // if(this.recordItem.name_product_pdf){
-                //     this.form.name_product_pdf = this.recordItem.name_product_pdf
-                // }
 
-                if(this.recordItem.item.change_free_affectation_igv){
 
-                    this.form.affectation_igv_type_id = '15'
-                    this.form.item.change_free_affectation_igv = true
-
-                }else{
-                    if(this.recordItem.item.original_affectation_igv_type_id){
-                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
-                    }
-                }
                 this.calculateQuantity()
-            } else {
+            }else{
                 this.isUpdateWarehouseId = null
             }
-
-            */
-            //     this.initializeFields()
         },
         async regularizeLots() {
 
@@ -1035,6 +1045,11 @@ export default {
             this.initForm();
 
             // this.initializeFields()
+
+            if (this.recordItem)
+            {
+                this.row.indexi = this.recordItem.indexi
+            }
             this.$emit('add', this.row);
             this.setFocusSelectItem()
 
@@ -1127,6 +1142,9 @@ export default {
         setFocusSelectItem() {
 
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+            if(!this.recordItem){
+                this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
+            }
 
         },
     }

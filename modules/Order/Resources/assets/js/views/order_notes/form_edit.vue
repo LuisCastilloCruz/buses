@@ -650,6 +650,8 @@
             },
             ediItem(row, index)
             {
+                console.log("huli");
+                console.log(row);
                 row.indexi = index
                 this.recordItem = row
                 this.showDialogAddItem = true

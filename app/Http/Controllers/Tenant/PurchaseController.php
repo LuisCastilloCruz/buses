@@ -309,6 +309,7 @@
             $data = self::convert($request);
             try {
                 $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+                    $doc = Purchase::create($data);
                     if($data['document_type_id']=='07' || $data['document_type_id'] =='08'){
                         $note_purchase= new NotePurchase();
                         $note_purchase->purchase_id=$doc->id;
@@ -319,7 +320,6 @@
                         $note_purchase->affected_purchase_id =$data['note']['affected_purchase_id'];
                         $note_purchase->save();
                     }
-                    $doc = Purchase::create($data);
                     foreach ($data['items'] as $row) {
                         $p_item = new PurchaseItem();
                         $p_item->fill($row);

@@ -843,6 +843,9 @@
                     this.form.customer_id = customer_id
                 })
             },
+            setDescriptionOfItem(item){
+                return showNamePdfOfDescription(item,this.config.show_pdf_name)
+            }
         }
     }
 </script>

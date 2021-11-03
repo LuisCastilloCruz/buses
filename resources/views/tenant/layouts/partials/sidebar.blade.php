@@ -851,12 +851,13 @@
                         </ul>
                     </li>
                     @endif
-                    {{-- DIGEMID --}}
-                    @if(in_array('apps', $vc_modules))
-                    <li class="">
-                        <a class="nav-link" href="{{url('list-extras')}}">
-                            <i class="fas fa-cube"></i>
-                            <span>Apps</span>
+                    {{-- TRANSPORTE --}}
+                    @if(in_array('transporte', $vc_modules))
+                        <li class=" nav-parent
+                    {{ ($path[0] === 'transportes') ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-building" aria-hidden="true"></i>
+                                <span>Transportes</span>
                         </a>
                             <ul class="nav nav-children">
                                 <li class="{{ ($path[0] === 'transportes' && ($path[1] === 'cash') )?'nav-active':'' }}">

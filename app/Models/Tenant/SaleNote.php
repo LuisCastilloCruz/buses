@@ -10,6 +10,8 @@
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Database\Query\Builder;
     use Modules\Item\Models\WebPlatform;
+    use Modules\Transporte\Models\TransporteEncomienda;
+    use Modules\Transporte\Models\TransportePasaje;
 
     /**
      * Class SaleNote
