@@ -5,7 +5,7 @@
     use App\CoreFacturalo\Helpers\Storage\StorageDocument;
     use App\CoreFacturalo\Services\Dni\Dni;
     use App\CoreFacturalo\Services\Extras\ExchangeRate;
-    use App\CoreFacturalo\Services\Extras\ValidateCpe2;
+    use App\CoreFacturalo\Services\IntegratedQuery\ValidateCpe;
     use App\CoreFacturalo\Services\Ruc\Sunat;
     use App\Http\Controllers\Controller;
     use App\Http\Requests\Tenant\ServiceRequest;
@@ -186,7 +186,7 @@
             $date_of_issue = $request->fecha_de_emision;
             $total = $request->total;
 
-            $validate_cpe = new ValidateCpe2();
+            $validate_cpe = new ValidateCpe();
             $response = $validate_cpe->search($company_number, $document_type_id, $series, $number, $date_of_issue, $total);
 
             if ($response['success']) {
