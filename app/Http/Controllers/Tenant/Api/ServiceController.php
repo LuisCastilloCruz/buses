@@ -176,7 +176,7 @@
             }
         }
 
-        public function validateCpe(Request $request)
+        public function validateCpeSunat(Request $request)
         {
 
             $company_number = $request->numero_ruc_emisor;
