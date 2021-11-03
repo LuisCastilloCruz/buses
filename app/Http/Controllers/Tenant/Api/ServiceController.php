@@ -5,6 +5,7 @@
     use App\CoreFacturalo\Helpers\Storage\StorageDocument;
     use App\CoreFacturalo\Services\Dni\Dni;
     use App\CoreFacturalo\Services\Extras\ExchangeRate;
+    use App\CoreFacturalo\Services\IntegratedQuery\AuthApi;
     use App\CoreFacturalo\Services\IntegratedQuery\ValidateCpe;
     use App\CoreFacturalo\Services\Ruc\Sunat;
     use App\Http\Controllers\Controller;
@@ -26,6 +27,7 @@
         protected $wsClient;
         use StorageDocument;
         protected $document;
+        protected $access_token;
 
         public function consultCdrStatus(ServiceRequest $request)
         {
@@ -178,6 +180,9 @@
 
         public function validateCpeSunat(Request $request)
         {
+            $auth_api = (new AuthApi())->getToken();
+            if(!$auth_api['success']) return $auth_api;
+            $this->access_token = $auth_api['data']['access_token'];
 
             $company_number = $request->numero_ruc_emisor;
             $document_type_id = $request->codigo_tipo_documento;
@@ -187,7 +192,7 @@
             $total = $request->total;
 
             $validate_cpe = new ValidateCpe(
-                'hidden',
+                $this->access_token,
                 $company_number,
                 $document_type_id,
                 $series,
