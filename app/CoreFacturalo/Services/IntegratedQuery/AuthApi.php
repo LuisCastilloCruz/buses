@@ -35,7 +35,7 @@ class AuthApi
             ];
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://api-seguridad.sunat.gob.pe/v1/clientesextranet/11d21fcf-2a30-4e98-bd5b-fb56f1e9096f/oauth2/token",
+                CURLOPT_URL => "https://api-seguridad.sunat.gob.pe/v1/clientesextranet/11d21fcf-2a30-4e98-bd5b-fb56f1e9096f/oauth2/token/",
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -43,7 +43,7 @@ class AuthApi
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => http_build_query($form_params),
+                CURLOPT_POSTFIELDS => 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.sunat.gob.pe%2Fv1%2Fcontribuyente%2Fcontribuyentes&client_id=11d21fcf-2a30-4e98-bd5b-fb56f1e9096f&client_secret=OhQ25%2FGh55x8CFwsal1FAg%3D%3D',
                 CURLOPT_HTTPHEADER => array(
                     'Content-Type: application/x-www-form-urlencoded',
                 ),
