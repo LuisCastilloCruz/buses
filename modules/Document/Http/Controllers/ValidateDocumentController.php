@@ -15,7 +15,6 @@ use Modules\Document\Http\Requests\ValidateDocumentsRequest;
 // use App\CoreFacturalo\Services\Extras\ValidateCpe2;
 use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 use App\CoreFacturalo\Services\IntegratedQuery\{
     AuthApi,
     ValidateCpe
@@ -62,7 +61,7 @@ class ValidateDocumentController extends Controller
                                 $document->document_type_id,
                                 $document->series,
                                 $document->number,
-                                Carbon::parse($document->date_of_issue)->format('d/m/Y'),
+                                $document->date_of_issue,
                                 $document->total
                             );
 
