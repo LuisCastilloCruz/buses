@@ -82,7 +82,7 @@ class ValidateCpe
                 return [
                     'success' => $res['success'],
                     'message' => $res['message'],
-                    'response' => "Ok ".$res->getBody()->getContents(),
+                    'response' => "Ok ".$res['message'],
                     'data' => [
                         'state_type_id' =>  isset($this->document_state[ $res['data']['estadoCp'] ]) ? $this->document_state[ $res['data']['estadoCp'] ] : null,
                         'estadoCp' =>  $res['data']['estadoCp'] ?? null,
