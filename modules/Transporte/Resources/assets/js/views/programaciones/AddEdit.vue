@@ -32,7 +32,7 @@
                                 :label="terminal.nombre"
                             ></el-option>
                         </template>
-                        
+
                     </el-select>
                     <div v-if="errors.terminal_destino_id" class="invalid-feedback">{{ errors.terminal_destino_id[0] }}</div>
                 </div>
@@ -46,11 +46,11 @@
                                 :label="vehiculo.placa"
                             ></el-option>
                         </template>
-                        
+
                     </el-select>
                     <div v-if="errors.vehiculo_id" class="invalid-feedback">{{ errors.vehiculo_id[0] }}</div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="hora_salida">Hora salida</label>
                     <el-input type="time" v-model="form.hora_salida" placeholder="Hora Salida" ></el-input>
@@ -58,8 +58,8 @@
                     </el-time-picker> -->
                     <!-- <el-input
                         type="time"
-                        
-                        
+
+
                     /> -->
                 </div>
 
@@ -75,10 +75,10 @@
                                 <template v-for="terminal in listTerminales">
                                     <el-option  v-if="terminal.id != form.terminal_origen_id && terminal.id != form.terminal_destino_id" :key="terminal.id" :value="terminal" :label="terminal.nombre">
                                     </el-option>
-                                   
+
                                 </template>
                             </el-select>
-                                
+
 
                         </div>
                     </div>
@@ -105,13 +105,13 @@
                             </el-card>
                         </div>
                     </template>
-                   
-                    
-                
+
+
+
                 </draggable>
 
 
-                
+
                 <div class="row text-center mt-3">
                     <div class="col-6">
                         <el-button
@@ -205,7 +205,7 @@ export default {
             }catch(error){
                 this.axiosError(error);
             }
-            
+
         },
         async onUpdate() {
             this.loading = true;
@@ -218,6 +218,10 @@ export default {
 
                 const { data:response } =  await this.$http.put(`/transportes/programaciones/${this.programacion.id}/update`,data);
                 this.$emit("onUpdateItem", response.data);
+                this.$message({
+                    type: 'success',
+                    message: 'Se editó la programación.'
+                });
                 this.onClose();
                 this.onEdit = false;
             }catch(error){
@@ -251,6 +255,10 @@ export default {
                 }
                 const { data:response } = await this.$http.post("/transportes/programaciones/store",data);
                 this.$emit("onAddItem", response.data);
+                this.$message({
+                    type: 'success',
+                    message: 'Se agregó la programación.'
+                });
                 this.onClose();
             } catch(error){
                 this.axiosError(error);
@@ -259,7 +267,7 @@ export default {
                 this.errors = {};
 
             }
-            
+
             // this.$http
             //     .post("/transportes/terminales/store", this.form)
             //     .then((response) => {
@@ -339,7 +347,6 @@ export default {
         },
         async onDelete(terminal,index){
 
-
             if(!this.onEdit){
 
                 this.selectTerminales.splice(index,1);
@@ -357,7 +364,7 @@ export default {
                 type: 'warning'
             }).then(async() => {
 
-                const { data } = await axios.delete(`/transportes/programaciones/${this.programacion.id}/${terminal.id}/delete`);
+                const { data } = await axios.delete(`/transportes/programaciones/${this.programacion.id}/${terminal.terminal_origen_id}/delete`);
 
                 if(!data.status) return this.$message({
                     type:'error',
@@ -366,8 +373,9 @@ export default {
 
                 this.$message({
                     type: 'success',
-                    message: data.message
+                    message: data.msg
                 });
+                this.selectTerminales.splice(index,1);
 
             }).catch((error) => {
                 this.axiosError(error);

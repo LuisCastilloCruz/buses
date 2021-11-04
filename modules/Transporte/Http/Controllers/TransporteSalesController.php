@@ -123,7 +123,7 @@ class TransporteSalesController extends Controller
     public function getProgramacionesDisponibles(ProgramacionesDisponiblesRequest $request){
 
        try{
-           
+
 
             $programaciones = TransporteProgramacion::with('origen','destino')
             ->where('terminal_origen_id',$request->origen_id)
@@ -160,7 +160,7 @@ class TransporteSalesController extends Controller
                     ->where('programacion_id',$programacion->id)
                     ->where('estado_asiento_id','!=',4) //diferente de cancelado
                     ->first();
-    
+
                     if(!is_null($pasaje)){
                         $seat->estado_asiento_id = $pasaje->estado_asiento_id;
                         $seat->transporte_pasaje = $pasaje;
@@ -202,7 +202,7 @@ class TransporteSalesController extends Controller
 
     private function combinaciones(Collection $list,Collection $result = null): Collection{
         $item = $list->shift();
-        $result = is_null($result) ? new Collection() : $result; 
+        $result = is_null($result) ? new Collection() : $result;
         if(count($list) == 0) return $result;
 
         foreach($list as $terminal){
@@ -211,7 +211,7 @@ class TransporteSalesController extends Controller
         return $this->combinaciones($list,$result);
     }
 
-    
+
     private function getProgramacionesMatch(TransporteProgramacion $programacion){
         $terminal = Auth::user()->terminal;
         $listProgramaciones = new Collection();
@@ -219,7 +219,7 @@ class TransporteSalesController extends Controller
         $parent = $programacion->programacion;
 
         $listaRutas = $parent->rutas()->get();
-       
+
 
         $listaRutas->prepend($parent->origen);
         $listaRutas->push($parent->destino);
@@ -227,7 +227,7 @@ class TransporteSalesController extends Controller
         $rutaIndex = $listaRutas->search(function($r)use($terminal){
             return $r->id == $terminal->id;
         });
-       
+
 
         $orderList = $listaRutas->filter(function($term,$index) use($rutaIndex){
             return $index >= $rutaIndex;
@@ -253,7 +253,7 @@ class TransporteSalesController extends Controller
         ->merge($listaCombinada1)
         ->unique();
 
-      
+
 
         foreach($totalList as $item){
             [$origen,$destino] = $item;
@@ -269,7 +269,7 @@ class TransporteSalesController extends Controller
 
         }
 
-        
+
         return $listProgramaciones;
     }
 
@@ -281,7 +281,7 @@ class TransporteSalesController extends Controller
 
         $disponibles = collect([]); // aqui almacenaré los asientos disponibles
         $ocupados = collect([]); //aqui los ocupados
-        
+
         $list = $this->getProgramacionesMatch($programacion);
 
         if(count($list) == 0) return $listSeats;
@@ -325,7 +325,7 @@ class TransporteSalesController extends Controller
         return $newList;
     }
 
-    
+
 
     private function getAsientosPasajesEnRuta(TransporteProgramacion $programacion,$listSeats,$fecha){
 
@@ -449,6 +449,7 @@ class TransporteSalesController extends Controller
                 $exist = TransportePasaje::where('asiento_id',$request->input('asiento_id'))
                 ->whereIn('programacion_id',$list->toArray())
                 ->where('fecha_salida',$request->input('fecha_salida'))
+                ->whereNotIn('estado_asiento_id',[4])
                 ->first();
 
                 if( !is_null($exist) ) return response()->json([
@@ -456,7 +457,7 @@ class TransporteSalesController extends Controller
                     'message' => 'Lo sentimos el asiento ya ha sido ocupado'
                 ]);
 
-               
+
 
                 TransportePasaje::create(
                     array_merge($attributes,[
@@ -471,7 +472,7 @@ class TransporteSalesController extends Controller
 
             }
 
-            
+
 
             DB::connection('tenant')->commit();
 
