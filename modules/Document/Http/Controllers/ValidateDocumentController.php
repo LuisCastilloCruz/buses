@@ -150,7 +150,7 @@ class ValidateDocumentController extends Controller
                                     $document->document_type_id,
                                     $document->series,
                                     $document->number,
-                                    Carbon::parse($document->date_of_issue)->format('d/m/Y'),
+                                    Carbon::parse(substr($document->date_of_issue,0,10))->format('d/m/Y'),
                                     $document->total
                                 );
 
