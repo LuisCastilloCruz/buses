@@ -124,7 +124,7 @@
                            v-text="errors.customer_telephone[0]"></small>
                 </div>
             </div>
-            <div v-if="company.soap_type_id == '02' && form.group_id == '01'"
+            <div v-if="company.soap_type_id == '02' && form.group_id == '01' || form.group_id == '02'"
                  class="row mt-4">
                 <div class="col-md-12 text-center">
                     <button class="btn waves-effect waves-light btn-outline-primary"
