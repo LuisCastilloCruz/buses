@@ -19,6 +19,7 @@ use App\CoreFacturalo\Services\IntegratedQuery\{
     AuthApi,
     ValidateCpe
 };
+use Carbon\Carbon;
 
 class ValidateDocumentController extends Controller
 {
