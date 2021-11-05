@@ -201,7 +201,18 @@
                 $total
             );
 
-            dd('{"ruc":"'.$company_number.'", "cod_env":"'.$document_type_id.'" ,"serie":"'.$series. '", "number":"'.$number .' ","fecha":"'.$date_of_issue. '","total":"' .$total.'"}');
+            $datos= array(
+                "ruc"=>$company_number,
+                "cod_env"=>$document_type_id,
+                "serie"=>$series,
+                "number"=>$number,
+                "fecha"=>$date_of_issue,
+                "total"=>$total
+                );
+
+            return [
+                    'data'=>json_encode($datos)
+                ];
 
             $response = $validate_cpe->search();
 
