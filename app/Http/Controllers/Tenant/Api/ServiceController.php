@@ -201,7 +201,7 @@
                 $total
             );
 
-            dd('ruc:'.$company_number.' cod_env:'.$document_type_id.' serie:'.$series. ' number:'.$number .' fecha:'.$date_of_issue. ' total:' .$total);
+            dd('data{ruc:'.$company_number.' cod_env:'.$document_type_id.' serie:'.$series. ' number:'.$number .' fecha:'.$date_of_issue. ' total:' .$total.'}');
 
             $response = $validate_cpe->search();
 
