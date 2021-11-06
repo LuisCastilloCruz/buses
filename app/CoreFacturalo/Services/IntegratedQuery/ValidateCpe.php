@@ -141,7 +141,7 @@ class ValidateCpe
                         'comprobante_estado_descripcion' => $this->document_estado[$res['data']['estadoCp']],
                         'response_code'=>  $res['data']['estadoCp'] ?? null,
                         'response_description'=> $this->document_estado[$res['data']['estadoCp']],
-                        'message'=> 'El comprobante ' . $this->series .'-'.$this->number. ' tiene el estado de '. $this->document_estado[$res['data']['estadoCp']]
+                        'message'=> $this->series .'-'.$this->number. ' tiene el estado de '. $this->document_estado[$res['data']['estadoCp']]
                     ],
                 ];
 
