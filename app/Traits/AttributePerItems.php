@@ -36,15 +36,15 @@
         {
 
             static::deleted(function ($model) {
-                self::adsjustItemMovementTable($model, 'deleted');
+                //self::adsjustItemMovementTable($model, 'deleted');
             });
             static::updated(function ($model) {
-                Log::debug(__FILE__."::" .__LINE__ . " esto en updated adsjustItemMovementTable " . $model->id . " / " . get_class($model));
-                 self::adsjustItemMovementTable($model, 'updated');
+//                Log::debug(__FILE__."::" .__LINE__ . " esto en updated adsjustItemMovementTable " . $model->id . " / " . get_class($model));
+//                 self::adsjustItemMovementTable($model, 'updated');
             });
             static::created(function ($model) {
-                Log::debug(__FILE__."::" .__LINE__ . " esto en created adsjustItemMovementTable " . $model->id . " / " . get_class($model));
-                self::adsjustItemMovementTable($model, 'created');
+//                Log::debug(__FILE__."::" .__LINE__ . " esto en created adsjustItemMovementTable " . $model->id . " / " . get_class($model));
+//                self::adsjustItemMovementTable($model, 'created');
             });
             static::saved(function ($model) {
                 // self::adsjustItemMovementTable($model, 'saved');
