@@ -2,7 +2,6 @@
 
 namespace App\CoreFacturalo\Services\IntegratedQuery;
 
-use App\CoreFacturalo\Services\Ruc\Sunat;
 use Exception;
 use Carbon\Carbon;
 
@@ -124,12 +123,6 @@ class ValidateCpe
 
             $res = json_decode($response, true);
 
-            $service = new Sunat();
-            $res2     = $service->get($this->company_number);
-            if ($res2) {
-                $ruc_emisor=$res2->ruc;
-                $razon_social_emisor=$res2->razonSocial;
-            }
             // dd($res);
 
             if($res['success']){
@@ -150,10 +143,6 @@ class ValidateCpe
                         'response_description'=> $this->document_estado[$res['data']['estadoCp']],
                         'message'=> $this->series .'-'.$this->number. ' '. $this->document_estado[$res['data']['estadoCp']]
                     ],
-                    'emisor'=>[
-                        'ruc'=>$ruc_emisor,
-                        'razon_social'=>$razon_social_emisor,
-                    ]
                 ];
 
             }
