@@ -7,7 +7,7 @@
     <div class="product">
         <figure class="product-image-container">
             <a  href="/ecommerce/category/{{ $categorie->id }}" class="product-image">
-                @if($categorie->image!="imagen-no-disponible.jpg")
+                @if($categorie->image!="imagen-no-disponible.jpg" || $categorie->image !="")
                     <img src="{{ asset('storage/uploads/tags/'.$categorie->image) }}" alt="categoría" class="crop">
                 @else
                     <img src="{{ asset('logo/imagen-no-disponible.jpg') }}" class="image" alt="product">
