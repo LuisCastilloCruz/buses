@@ -95,29 +95,6 @@
                  </a>
              </div><!-- End .header-left -->
 
-             <div id="header_bar" class="header-center header-dropdowns">
-
-                 <div class="header-dropdown" style="min-width:400px;">
-
-                    <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
-                     <div class="header-menu">
-                         <ul v-if="results.length > 0">
-                            <li v-for="result in results">
-                                <a :href="'/ecommerce/item/' + result.id" class="d-flex">
-                                    <div class="flex-grow-1"><img style="max-width: 80px" :src="result.image_url_small" alt="England flag">
-                                    <span class="search_title" style="font-size: 1.0em;"> @{{ result.description }} </span>
-                                    </div>
-                                    <span class="search_price">@{{result.sale_unit_price}}</span>
-                                    {{-- <div class="search_btn btn btn-default">@{{result.sale_unit_price}}</div> --}}
-                                </a>
-                            </li>
-                         </ul>
-                     </div><!-- End .header-menu -->
-                 </div><!-- End .header-dropown -->
-
-
-             </div><!-- End .headeer-center -->
-
              <div class="header-right">
                  <button class="mobile-menu-toggler" type="button">
                      <i class="icon-menu"></i>
@@ -133,6 +110,29 @@
 
              </div><!-- End .header-right -->
          </div><!-- End .container -->
+         <div class="container">
+             <div id="header_bar" class="header-center header-dropdowns">
+                 <div class="header-dropdown" style="min-width:400px;">
+                     <div class="buscador">
+                         <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
+                     </div>
+                     <div class="header-menu">
+                         <ul v-if="results.length > 0">
+                             <li v-for="result in results">
+                                 <a :href="'/ecommerce/item/' + result.id" class="d-flex">
+                                     <div class="flex-grow-1"><img style="max-width: 80px" :src="result.image_url_small" alt="England flag">
+                                         <span class="search_title" style="font-size: 1.0em;"> @{{ result.description }} </span>
+                                     </div>
+                                     <span class="search_price">@{{result.sale_unit_price}}</span>
+                                     {{-- <div class="search_btn btn btn-default">@{{result.sale_unit_price}}</div> --}}
+                                 </a>
+                             </li>
+                         </ul>
+                     </div><!-- End .header-menu -->
+                 </div><!-- End .header-dropown -->
+             </div><!-- End .headeer-center -->
+
+         </div>
      </div><!-- End .header-middle -->
 
      <div class="header-bottom sticky-header">

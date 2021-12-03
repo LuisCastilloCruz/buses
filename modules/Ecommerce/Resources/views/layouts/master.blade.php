@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:39:38 GMT -->
 
@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>eCommerce</title>
+    <title>Tienda Virtual</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="keywords" content="ecommerce" />
     <meta name="description" content="eCommerce">
@@ -89,7 +89,16 @@
 
                         <div class="mb-3"></div><!-- margin -->
 
-                        {{-- @include('ecommerce::layouts.partials_ecommerce.featured_products') --}}
+{{--                         @include('ecommerce::layouts.partials_ecommerce.featured_products')--}}
+                        @php
+                            $home = Request::segment(1);
+                            $tagid = Request::segment(2);
+                        @endphp
+
+                        @if($home=="ecommerce" && $tagid=="")
+                            @include('ecommerce::layouts.partials_ecommerce.categories_list')
+                        @endif
+
                         <div class="row row-sm">
                             @include('ecommerce::layouts.partials_ecommerce.list_products')
                         </div>
@@ -131,10 +140,14 @@
 
                     <figure class="product-image-container boxing">
                         <a href="/ecommerce/item/{{ $data->id }}" class="product-image">
-                            <img src="{{ asset('storage/uploads/items/'.$data->image) }}" alt="product" class="image">
+                            @if($data->image!="imagen-no-disponible.jpg")
+                                <img src="{{ asset('storage/uploads/items/'.$data->image) }}" alt="product" class="image">
+                            @else
+                                <img src="{{ asset('logo/imagen-no-disponible.jpg') }}" class="image" alt="product">
+                            @endif
                         </a>
                         <a href="{{route('item_partial', ['id' => $data->id])}}" class="btn-quickview">Vista Rápida</a>
-                     <span class="product-label label-hot">New Sales Recent</span>
+                     <span class="product-label label-hot">Reciéntemente Vendidos</span>
                                 <span class="product-label">{{$data->description}}</span>
                     </figure>
                             @endif

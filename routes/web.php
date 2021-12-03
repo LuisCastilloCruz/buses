@@ -592,6 +592,7 @@ if ($hostname) {
             Route::get('tags/record/{tag}', 'Tenant\TagController@record');
             Route::post('tags', 'Tenant\TagController@store');
             Route::delete('tags/{tag}', 'Tenant\TagController@destroy');
+            Route::post('tags/upload', 'Tenant\TagController@upload');
 
             //Promotion
             Route::get('promotions', 'Tenant\PromotionController@index')->name('tenant.promotion.index');

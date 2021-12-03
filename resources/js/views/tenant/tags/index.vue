@@ -35,6 +35,7 @@
             <th>#</th>
             <th>Nombre</th>
             <th>Descripción</th>
+            <th>Imagen</th>
             <th class="text-right">Acciones</th>
           </tr>
           <tr></tr>
@@ -42,6 +43,7 @@
             <td>{{ index }}</td>
             <td>{{ row.name }}</td>
             <td>{{ row.description }}</td>
+            <td><img :src="row.image_url" alt width="170" height="130" /></td>
             <td class="text-right">
               <template>
                 <!-- v-if="typeUser === 'admin'" -->
@@ -80,7 +82,7 @@ export default {
     return {
       showDialog: false,
       showImportDialog: false,
-  
+
       showImageDetail: false,
       resource: "tags",
       recordId: null,

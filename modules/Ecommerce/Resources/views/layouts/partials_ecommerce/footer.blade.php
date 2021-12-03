@@ -95,7 +95,7 @@
 
 <div class="container">
     <div class="footer-bottom">
-        <p class="footer-copyright">Facturador Pro 3. &copy; 2019. Todos los Derechos Reservados</p>
+        <p class="footer-copyright">AqpFact 4.5. &copy; 2022. Todos los Derechos Reservados</p>
 
         <img src="{{ asset('porto-ecommerce/assets/images/payments.png') }}" alt="payment methods"
             class="footer-payments">

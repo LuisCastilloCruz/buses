@@ -20,5 +20,5 @@ class Tag extends ModelTenant
      *
      * @var array
      */
-    protected $fillable = ['name', 'description', 'status'];
+    protected $fillable = ['name', 'description', 'status', 'image'];
 }

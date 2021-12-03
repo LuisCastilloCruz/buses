@@ -2,7 +2,7 @@
     <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
-            
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.name}">
@@ -18,8 +18,24 @@
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="form-group" >
+                            <label class="control-label">Imágen <span class="text-danger"></span></label>
+                            <el-upload class="avatar-uploader"
+                                       :data="{'type': 'tags'}"
+                                       :headers="headers"
+                                       :action="`/${resource}/upload`"
+                                       :show-file-list="false"
+                                       :on-success="onSuccess">
+                                <img v-if="form.image_url" :src="form.image_url" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </el-upload>
+                            <div class="sub-title text-danger"><small>Se recomienda resoluciones Full Hd 1024x720</small></div>
+
+                        </div>
+                    </div>
                 </div>
-             
+
 
             </div>
             <div class="form-actions text-right mt-4">
@@ -50,15 +66,16 @@
                 all_districts: [],
                 provinces: [],
                 districts: [],
-                identity_document_types: []
+                identity_document_types: [],
+                headers: headers_token,
             }
         },
         created() {
             this.initForm()
-            
+
         },
         computed: {
-           
+
         },
         methods: {
             initForm() {
@@ -66,6 +83,9 @@
                 this.form = {
                     name: null,
                     description: null,
+                    image: null,
+                    image_url: null,
+                    temp_path: null
                 }
             },
             create() {
@@ -74,7 +94,7 @@
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
-                          
+
                         })
                 }
             },
@@ -85,9 +105,9 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
-                           
+
                             this.$eventHub.$emit('reloadData')
-                            
+
                             this.close()
                         } else {
                             this.$message.error(response.data.message)
@@ -108,7 +128,16 @@
                 this.$emit('update:showDialog', false)
                 this.initForm()
             },
-            
+            onSuccess(response, file, fileList) {
+                if (response.success) {
+                    this.form.image = response.data.filename
+                    this.form.image_url = response.data.temp_image
+                    this.form.temp_path = response.data.temp_path
+                } else {
+                    this.$message.error(response.message)
+                }
+            },
+
         }
     }
 </script>

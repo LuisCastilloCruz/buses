@@ -19,7 +19,8 @@ class TagCollection extends ResourceCollection
                 'id' => $row->id,
                 'description' => $row->description,
                 'name' => $row->name,
-                'status' => $row->status
+                'status' => $row->status,
+                'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'tags'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
             ];
         });
     }

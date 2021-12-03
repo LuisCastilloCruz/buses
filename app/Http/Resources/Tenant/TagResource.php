@@ -19,6 +19,7 @@ class TagResource extends JsonResource
             'description' => $this->description,
             'name' => $this->name,
             'status' => $this->status,
+            'image_url' => ($this->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'tags'.DIRECTORY_SEPARATOR.$this->image) : asset("/logo/{$this->image}"),
         ];
     }
 }
