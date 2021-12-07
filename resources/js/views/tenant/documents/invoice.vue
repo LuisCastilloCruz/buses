@@ -395,10 +395,6 @@
                                                         </el-select>
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td>M. PENDIENTE:</td>
-                                                    <td>{{ currency_type.symbol }} {{ form.total- form.detraction.amount }}</td>
-                                                </tr>
 
                                                 <tr v-if="form.total > 0">
                                                     <!-- Metodos de pago -->
@@ -2290,7 +2286,7 @@ export default {
             }
             let total = 0;
             if (this.form.total !== undefined) {
-                total = this.form.total-this.form.detraction.amount;
+                total = this.form.total
             }
             this.form.date_of_due = moment().format('YYYY-MM-DD');
             this.form.payments.push({
@@ -2792,7 +2788,6 @@ export default {
             this.calculateFee();
 
             this.chargeGlobal()
-            this.calculatePayments();
 
         },
         sumDiscountsNoBaseByItem(row) {
@@ -3186,7 +3181,7 @@ export default {
         },
         calculatePayments() {
             let payment_count = this.form.payments.length;
-            let total = this.form.total -this.form.detraction.amount;
+            let total = this.form.total;
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
             // console.log(amount);
@@ -3201,7 +3196,7 @@ export default {
         },
         calculateFee() {
             let fee_count = this.form.fee.length;
-            let total = this.form.total-this.form.detraction.amount;
+            let total = this.form.total;
             let accumulated = 0;
             let amount = _.round(total / fee_count, 2);
             _.forEach(this.form.fee, row => {
