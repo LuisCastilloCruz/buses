@@ -91,13 +91,17 @@ class DocumentController extends Controller
         $import_documents_second = config('tenant.import_documents_second_format');
         $configuration = Configuration::getPublicConfig();
 
-        $pendientes = Document::where('state_type_id','01')
-            ->get();
+        // apiperu
+        // se valida cual api usar para validacion desde el listado de comprobantes
+        $view_apiperudev_validator_cpe = config('tenant.apiperudev_validator_cpe');
+        $view_validator_cpe = config('tenant.validator_cpe');
 
-//        if(count($pendientes)>0){
-//            smilify('error', "Por favor valide sus comprobantes:==================== 1.- Dentro del botón OPCIONES, dar click en el botón CONSULTAR CDR.========  2.- Si aparece el mensaje ticket no existe o server error, debe utilizar el botón REENVIAR.======================  3.- Si después de hacer todas las acciones anteriores, aún hay comprobantes pendientes, comunicarse con 950360472");
-//        }
-        return view('tenant.documents.index', compact('is_client','import_documents','import_documents_second','configuration'));
+        return view('tenant.documents.index',
+            compact('is_client','import_documents',
+                'import_documents_second',
+                'configuration',
+                'view_apiperudev_validator_cpe',
+                'view_validator_cpe'));
     }
 
     public function columns()
@@ -180,17 +184,18 @@ class DocumentController extends Controller
     public function tables()
     {
         $customers = $this->table('customers');
+        $user = new User();
+        if(\Auth::user()){
+            $user = \Auth::user();
+        }
+        $document_id =  $user->document_id;
+        $series_id =  $user->series_id;
+        $establishment_id =  $user->establishment_id;
+        $userId =  $user->id;
+        $userType = $user->type;
+        $series = $user->getSeries();
         // $prepayment_documents = $this->table('prepayment_documents');
-        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
-        $series = collect(Series::all())->transform(function($row) {
-            return [
-                'id' => $row->id,
-                'contingency' => (bool) $row->contingency,
-                'document_type_id' => $row->document_type_id,
-                'establishment_id' => $row->establishment_id,
-                'number' => $row->number
-            ];
-        });
+        $establishments = Establishment::where('id', $establishment_id)->get();// Establishment::all();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
         $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
@@ -201,8 +206,7 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
-        $user = auth()->user()->type;
-        $sellers = User::where('establishment_id', auth()->user()->establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', auth()->user()->id)->get();
+        $sellers = User::where('establishment_id',$establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)->get();
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
@@ -234,7 +238,7 @@ class DocumentController extends Controller
         $document_id =  auth()->user()->document_id;
         $series_id =  auth()->user()->series_id;
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
-
+        $user = $userType;
         return compact(
             'document_id',
             'series_id',
@@ -524,12 +528,74 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
+
+        $validate = $this->validateDocument($request);
+        if(!$validate['success']) return $validate;
+
         $res = $this->storeWithData($request->all());
         $document_id = $res['data']['id'];
         $this->associateDispatchesToDocument($request, $document_id);
         $this->associateSaleNoteToDocument($request, $document_id);
 
         return $res;
+    }
+
+
+    /**
+     * Validaciones previas al proceso de facturacion
+     *
+     * @param array $request
+     * @return array
+     */
+    public function validateDocument($request)
+    {
+
+        // validar nombre de producto pdf en xml - items
+        foreach ($request->items as $item) {
+
+            if($item['name_product_xml']){
+                // validar error 2027 sunat
+                if(mb_strlen($item['name_product_xml']) > 500){
+                    return [
+                        'success' => false,
+                        'message' => "El campo Nombre producto en PDF/XML no puede superar los 500 caracteres - Producto/Servicio: {$item['item']['description']}"
+                    ];
+                }
+            }
+        }
+
+        return [
+            'success' => true,
+            'message' => ''
+        ];
+
+    }
+
+    /**
+     * Guarda los datos del hijo para el proceso de suscripcion. #952
+     * Toma el valor de nota de venta y lo pasa para la boleta/factura
+     *
+     * @param $data
+     */
+    public static function setChildrenToData(&$data){
+        $request = request();
+        if(
+            $request != null &&
+            $request->has('sale_note_id') &&
+            $request->sale_note_id
+        ){
+            $saleNote = SaleNote::find($request->sale_note_id);
+            if($saleNote!=null && isset($data['customer'])){
+                $customer = $data['customer'];
+                $customerNote = (array) $saleNote->customer;
+                if(isset($customerNote['children'])){
+                    $customer['children'] = (array)$customerNote['children'];
+                }
+                $data['customer']=$customer;
+                $data['grade']=$saleNote->getGrade();
+                $data['section']=$saleNote->getSection();
+            }
+        }
     }
 
     /**
@@ -540,6 +606,7 @@ class DocumentController extends Controller
      */
     public function storeWithData($data)
     {
+        self::setChildrenToData($data);
         $fact = DB::connection('tenant')->transaction(function () use ($data) {
             $facturalo = new Facturalo();
             $facturalo->save($data);
@@ -672,6 +739,10 @@ class DocumentController extends Controller
      */
     public function update(DocumentUpdateRequest $request, $id)
     {
+
+        $validate = $this->validateDocument($request);
+        if(!$validate['success']) return $validate;
+
         $fact = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $facturalo = new Facturalo();
             $facturalo->update($request->all(), $id);
