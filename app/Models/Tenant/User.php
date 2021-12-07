@@ -3,15 +3,32 @@
 namespace App\Models\Tenant;
 
 use App\Notifications\Tenant\PasswordResetNotification;
+use Carbon\Carbon;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Modules\DocumentaryProcedure\Models\DocumentaryFile;
+use Modules\Expense\Models\Expense;
+use Modules\Finance\Models\GlobalPayment;
+use Modules\Finance\Models\Income;
+use Modules\Inventory\Models\Devolution;
 use Modules\LevelAccess\Models\ModuleLevel;
+use Modules\Order\Models\OrderForm;
+use Modules\Order\Models\OrderNote;
+use Modules\Purchase\Models\FixedAssetPurchase;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseQuotation;
+use Modules\Sale\Models\Contract;
+use Modules\Sale\Models\SaleOpportunity;
+use Modules\Sale\Models\TechnicalService;
 use Modules\Sale\Models\UserCommission;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Modules\Transporte\Models\TransporteUserTerminal;
 
 
@@ -71,11 +88,25 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'establishment_id', 'type', 'locked', 'identity_document_type_id', 'number',
-        'address', 'telephone',
-         'document_id',
-         'series_id',
+        'name',
+        'email',
+        'password',
+        'establishment_id',
+        'type',
+        'locked',
+        'identity_document_type_id',
+        'number',
+        'address',
+        'telephone',
+        'document_id',
+        'series_id',
         'permission_edit_cpe',
+        'recreate_documents',
+
+        // 'email_verified_at',
+        // 'api_token',
+        // 'remember_token',
+
     ];
 
     /**
@@ -85,11 +116,15 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'remember_token',
+
     ];
 
     protected $casts = [
         'series_id'=> 'int',
         'permission_edit_cpe' => 'boolean',
+        'recreate_documents' => 'boolean',
+        'establishment_id' => 'int',
+        'locked' => 'bool',
     ];
 
     public function modules()
@@ -460,6 +495,226 @@ class User extends Authenticatable
             'type' => $type,
             'locked' => (bool) $this->locked,
         ];
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function cashes()
+    {
+        return $this->hasMany(Cash::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function devolutions()
+    {
+        return $this->hasMany(Devolution::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function dispatches()
+    {
+        return $this->hasMany(Dispatch::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function documentary_files()
+    {
+        return $this->hasMany(DocumentaryFile::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function documents_where_seller()
+    {
+        return $this->hasMany(Document::class, 'seller_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function fixed_asset_purchases()
+    {
+        return $this->hasMany(FixedAssetPurchase::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function global_payments()
+    {
+        return $this->hasMany(GlobalPayment::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function items_ratings()
+    {
+        return $this->hasMany(ItemsRating::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function order_forms()
+    {
+        return $this->hasMany(OrderForm::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function order_notes()
+    {
+        return $this->hasMany(OrderNote::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function perceptions()
+    {
+        return $this->hasMany(Perception::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function purchase_orders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function purchase_quotations()
+    {
+        return $this->hasMany(PurchaseQuotation::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function purchase_settlements()
+    {
+        return $this->hasMany(PurchaseSettlement::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function quotations()
+    {
+        return $this->hasMany(Quotation::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function retentions()
+    {
+        return $this->hasMany(Retention::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function sale_opportunities()
+    {
+        return $this->hasMany(SaleOpportunity::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function summaries()
+    {
+        return $this->hasMany(Summary::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function technical_services()
+    {
+        return $this->hasMany(TechnicalService::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function user_commissions()
+    {
+        return $this->hasMany(UserCommission::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function voideds()
+    {
+        return $this->hasMany(Voided::class);
+    }
+
+    /**
+     * Devuelve las series que puede seleccionar el usuario.
+     *
+     * @return Series[]|Builder[]|Collection|\Illuminate\Support\Collection
+     */
+    public function getSeries(){
+
+        $document_id =  $this->document_id;
+        $series_id =  $this->series_id;
+        $establishment_id =  $this->establishment_id;
+        $userType = $this->type;
+
+        return  Series::FilterSeries($establishment_id)
+            ->get()
+            ->transform(function($row) use($document_id,$series_id,$userType) {
+            /** @var Series $row */
+            return $row->getCollectionData($document_id,$series_id,$userType);
+        })->where('disabled',false);
     }
 
     public function transporte_user_terminal() : HasOne{
