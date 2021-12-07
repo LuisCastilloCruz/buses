@@ -20,40 +20,13 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
     // unit_price = _.round(unit_price, 4);
 
-    // $table->increments('id');
-    // $table->unsignedInteger('document_id');
-    // $table->unsignedInteger('item_id');
-    // $table->json('item');
-    // $table->integer('quantity');
-    // $table->decimal('unit_value', 12, 2);
-    //
-    // $table->char('affectation_igv_type_id', 2);
-    // $table->decimal('total_base_igv', 12, 2);
-    // $table->decimal('percentage_igv', 12, 2);
-    // $table->decimal('total_igv', 12, 2);
-    //
-    // $table->char('system_isc_type_id', 2)->nullable();
-    // $table->decimal('total_base_isc', 12, 2)->default(0);
-    // $table->decimal('percentage_isc', 12, 2)->default(0);
-    // $table->decimal('total_isc', 12, 2)->default(0);
-    //
-    // $table->decimal('total_base_other_taxes', 12, 2)->default(0);
-    // $table->decimal('percentage_other_taxes', 12, 2)->default(0);
-    // $table->decimal('total_other_taxes', 12, 2)->default(0);
-    // $table->decimal('total_taxes', 12, 2);
-    //
-    // $table->char('price_type_id', 2);
-    // $table->decimal('unit_price', 12, 2);
-    //
-    // $table->decimal('total_value', 12, 2);
-    // $table->decimal('total', 12, 2);
-    //
-    // $table->json('attributes')->nullable();
-    // $table->json('charges')->nullable();
-    // $table->json('discounts')->nullable();
 
     // fixed for update sale_note
     let record_id = (row_old.record_id) ? row_old.record_id : (row_old.id ? row_old.id : null)
+
+    let has_isc = row_old.has_isc
+
+    // console.log(row_old)
 
     let row = {
         item_id: row_old.item.id,
@@ -67,9 +40,11 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         total_base_igv: 0,
         percentage_igv: 18,
         total_igv: 0,
-        system_isc_type_id: null,
+        system_isc_type_id: has_isc ? row_old.system_isc_type_id : null,
+        // system_isc_type_id: null,
         total_base_isc: 0,
-        percentage_isc: 0,
+        percentage_isc: has_isc ? parseFloat(row_old.percentage_isc) : 0,
+        // percentage_isc: 0,
         total_isc: 0,
         total_base_other_taxes: 0,
         percentage_other_taxes: 0,
@@ -89,7 +64,16 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         warehouse_id: warehouse_id,
         name_product_pdf: row_old.name_product_pdf,
         record_id: record_id, // fixed for update sale_note
+
+        //valores sin redondeo, se usa en los calculos (invoice) para mayor precision
+        total_value_without_rounding: 0,
+        total_base_igv_without_rounding: 0,
+        total_igv_without_rounding: 0,
+        total_taxes_without_rounding: 0,
+        total_without_rounding: 0,
     };
+
+    // console.log(row)
 
     let percentage_igv = 18
     let unit_value = row.unit_price
@@ -254,6 +238,52 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     row.total = _.round(total, 2)
 
 
+    //procedimiento para agregar isc
+    if(has_isc){
+
+        row.total_base_isc = _.round(total_value, 2) //total valor antes de aplicar isc
+        row.total_isc = _.round(total_value * (row.percentage_isc / 100), 2)
+        // row.total_isc = _.round(row.total_base_isc * (row.percentage_isc / 100), 2)
+
+        //calcular nueva base incrementando el valor actual + isc
+        total_base_igv += row.total_isc
+        row.total_base_igv = _.round(total_base_igv, 2)
+
+        total_igv = total_base_igv * (percentage_igv / 100)
+        row.total_igv = _.round(total_igv, 2)
+
+        //asignar nuevo total impuestos, si tiene descuentos se usa total_taxes para calcular el precio unitario
+        total_taxes = total_igv + row.total_isc
+        row.total_taxes = _.round(total_taxes, 2)
+
+        total = total_value + total_taxes
+        row.total = _.round(total, 2)
+
+        //calcular nuevo precio unitario
+        row.unit_price = _.round(total / row.quantity, 6)
+
+
+        // // console.log("apply isc")
+        // row.total_base_isc = total_value //total valor antes de aplicar isc
+        // // row.total_base_isc = total_value_partial //total valor antes de aplicar isc
+        // row.total_isc = _.round(row.total_base_isc * (row.percentage_isc / 100), 2)
+        // row.total_base_igv += row.total_isc  //calcular nueva base incrementando el valor actual + isc
+        // row.total_igv = row.total_base_igv * (percentage_igv / 100)
+
+        // //asignar nuevo total impuestos, si tiene descuentos se usa total_taxes para calcular el precio unitario
+        // total_taxes = row.total_igv + row.total_isc
+        // row.total_taxes = total_taxes
+
+        // row.total = row.total_value + row.total_taxes
+
+        // //calcular nuevo precio unitario
+        // row.unit_price = _.round(row.total / row.quantity, 6)
+
+    }
+    //procedimiento para agregar isc
+
+
+    // descuentos, se modifica precio unitario y total descuentos
     if (row.discounts.length > 0) {
 
         let sum_discount_no_base = 0
@@ -265,6 +295,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         })
 
         //obs 4287
+        // monto dscto que no afecta a la base segun fila 180, hoja factura2_0 excel validaciones (20210902)
         row.unit_price = (total_value + total_taxes - sum_discount_no_base) / row.quantity
 
         //obs 4288
@@ -279,6 +310,15 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         let total_discounts = sum_discount_no_base + sum_discount_base;
         row.total_discount = _.round(total_discounts, 2)
     }
+    // descuentos
+
+
+    //valores sin redondeo, se usa en los calculos para mayor precision (método calculateTotal - Invoice)
+    row.total_value_without_rounding = total_value
+    row.total_base_igv_without_rounding = total_base_igv
+    row.total_igv_without_rounding = total_igv
+    row.total_taxes_without_rounding = total_taxes
+    row.total_without_rounding = total
 
 
     if (row.affectation_igv_type.free) {
@@ -286,6 +326,9 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         row.unit_value = 0
         // row.total_value = 0
         row.total = 0
+
+        //valor sin redondeo
+        row.total_without_rounding = 0
     }
 
     //impuesto bolsa
@@ -312,7 +355,8 @@ function showNamePdfOfDescription(item, show_pdf_name) {
     if (show_pdf_name !== undefined &&
         show_pdf_name === true &&
         item !== undefined &&
-        item.name_product_pdf !== undefined
+        item.name_product_pdf !== undefined &&
+        item.name_product_pdf !== null
     ) {
         let temn = item.name_product_pdf;
         temn = temn.substring(3)
@@ -324,4 +368,24 @@ function showNamePdfOfDescription(item, show_pdf_name) {
     return item.description
 }
 
-export {calculateRowItem, getUniqueArray, showNamePdfOfDescription}
+function sumAmountDiscountsNoBaseByItem(row) {
+
+    let sum_discount_no_base = 0
+
+    if (row.discounts) {
+        // if(row.discounts.length > 0){
+        sum_discount_no_base = _.sumBy(row.discounts, function (discount) {
+            return (discount.discount_type_id == '01') ? discount.amount : 0
+        })
+        // }
+    }
+
+    return sum_discount_no_base
+}
+
+function FormatUnitPriceRow(unit_price){
+    return _.round(unit_price, 6)
+    // return unit_price.toFixed(6)
+}
+
+export {calculateRowItem, getUniqueArray, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem, FormatUnitPriceRow}

@@ -77,6 +77,7 @@ class DocumentUpdateInput
 			'purchase_order'            => $inputs['purchase_order'],
 			'quotation_id'              => Functions::valueKeyInArray($inputs, 'quotation_id'),
 			'sale_note_id'              => Functions::valueKeyInArray($inputs, 'sale_note_id'),
+            'technical_service_id'      => Functions::valueKeyInArray($inputs, 'technical_service_id'),
 			'exchange_rate_sale'        => $inputs['exchange_rate_sale'],
 			'total_prepayment'          => Functions::valueKeyInArray($inputs, 'total_prepayment', 0),
 			'total_discount'            => Functions::valueKeyInArray($inputs, 'total_discount', 0),
@@ -107,6 +108,7 @@ class DocumentUpdateInput
 			'related'                   => self::related($inputs),
 			'perception'                => self::perception($inputs),
 			'detraction'                => self::detraction($inputs),
+            'retention' 				=> self::retention($inputs),
 			'invoice'                   => $invoice,
 			'note'                      => $note,
 			'hotel'                     => self::hotel($inputs),
@@ -133,6 +135,7 @@ class DocumentUpdateInput
 			'filename'                  => Functions::valueKeyInArray($inputs, 'filename'),
             'payment_condition_id'		=> key_exists('payment_condition_id', $inputs) ? $inputs['payment_condition_id'] : '01',
             'fee' 						=> Functions::valueKeyInArray($inputs, 'fee', []),
+            'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
 		];
 	}
 
@@ -186,7 +189,9 @@ class DocumentUpdateInput
 					'charges'                 => self::charges($row),
 					'warehouse_id'            => Functions::valueKeyInArray($row, 'warehouse_id'),
 					'additional_information'  => Functions::valueKeyInArray($row, 'additional_information'),
-					'name_product_pdf'        => Functions::valueKeyInArray($row, 'name_product_pdf')
+					'name_product_pdf'        => Functions::valueKeyInArray($row, 'name_product_pdf'),
+                    'name_product_xml'        => Functions::valueKeyInArray($row, 'name_product_pdf') ? DocumentInput::getNameProductXml($row, $inputs) : null,
+					'update_description'      => Functions::valueKeyInArray($row, 'update_description', false)
 				];
 			}
 
@@ -522,4 +527,31 @@ class DocumentUpdateInput
 			],
 		];
 	}
+
+
+    private static function retention($inputs)
+    {
+
+        if (array_key_exists('retention', $inputs)) {
+
+            if ($inputs['retention']) {
+
+                $retention = $inputs['retention'];
+                $code = $retention['code'];
+                $percentage = $retention['percentage'];
+                $amount = $retention['amount'];
+                $base = $retention['base'];
+
+                return [
+                    'code' => $code,
+                    'percentage' => $percentage,
+                    'amount' => $amount,
+                    'base' => $base,
+                ];
+            }
+        }
+
+        return null;
+    }
+
 }

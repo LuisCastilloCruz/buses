@@ -542,10 +542,10 @@ export default {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
-        if(this.displayDiscount !== undefined){
-            if(this.displayDiscount == true){
+        if (this.displayDiscount !== undefined) {
+            if (this.displayDiscount == true) {
                 this.showDiscounts = true;
-            }else{
+            } else {
                 this.showDiscounts = false;
 
             }
@@ -585,8 +585,8 @@ export default {
             'deb',
             'config',
         ]),
-        canShowExtraData: function(){
-            if(this.config && this.config.show_extra_info_to_item  !== undefined){
+        canShowExtraData: function () {
+            if (this.config && this.config.show_extra_info_to_item !== undefined) {
                 return this.config.show_extra_info_to_item;
             }
             return false;
@@ -598,8 +598,7 @@ export default {
             //     this.form.lots_group.length > 0
             // )
 
-            if (this.form.item_id && this.form.item.lots_enabled )
-            {
+            if (this.form.item_id && this.form.item.lots_enabled) {
                 return true;
             }
 
@@ -639,13 +638,13 @@ export default {
             'loadConfiguration',
             'clearExtraInfoItem',
         ]),
-        hasAttributes(){
-            if(
+        hasAttributes() {
+            if (
                 this.form.item !== undefined &&
                 this.form.item.attributes !== undefined &&
                 this.form.item.attributes !== null &&
                 this.form.item.attributes.length > 0
-            ){
+            ) {
                 return true
             }
 
@@ -657,7 +656,7 @@ export default {
         ItemOptionDescriptionView(item) {
             return ItemOptionDescription(item)
         },
-        getTables(){
+        getTables() {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                 let data = response.data
                 this.all_items = data.items
@@ -669,7 +668,7 @@ export default {
                 this.attribute_types = data.attribute_types
                 this.is_client = data.is_client;
 
-                if(this.canShowExtraData) {
+                if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
                     this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
                     this.$store.commit('setCatItemStatus', data.CatItemStatus);
@@ -777,7 +776,7 @@ export default {
         },
         async enabledSearchItemBySeries() {
 
-            if(this.config.search_item_by_series && this.items.length == 1){
+            if (this.config.search_item_by_series && this.items.length == 1) {
 
                 this.$notify({title: "Serie ubicada", message: "Producto añadido!", type: "success", duration: 1200});
                 this.form.item_id = this.items[0].id;
@@ -785,7 +784,7 @@ export default {
 
                 await this.changeItem();
 
-                this.lots = await this.form.item.lots.map((lot)=>{
+                this.lots = await this.form.item.lots.map((lot) => {
                     lot.has_sale = true
                 })
 
@@ -794,7 +793,7 @@ export default {
                 this.$refs.selectSearchNormal.$data.selectedLabel = '';
             }
 
-            if(this.config.search_item_by_series && this.items.length == 0){
+            if (this.config.search_item_by_series && this.items.length == 0) {
                 this.$notify({title: "Serie no ubicada", message: "", type: "warning", duration: 1200});
             }
 
@@ -875,9 +874,10 @@ export default {
 
 
             if (this.recordItem) {
-                if(this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined){
-                        this.extra_temp  = this.recordItem.item.extra
+                if (this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined) {
+                    this.extra_temp = this.recordItem.item.extra
                 }
+
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
                 await this.changeItem()
@@ -900,7 +900,7 @@ export default {
                         this.lots = this.form.item.lots
                     }
 
-                }else{
+                } else {
 
                     this.form.item.lots = this.recordItem.item.lots
                     this.lots = this.recordItem.item.lots
@@ -915,13 +915,13 @@ export default {
                 //     this.form.name_product_pdf = this.recordItem.name_product_pdf
                 // }
 
-                if(this.recordItem.item.change_free_affectation_igv){
+                if (this.recordItem.item.change_free_affectation_igv) {
 
                     this.form.affectation_igv_type_id = '15'
                     this.form.item.change_free_affectation_igv = true
 
-                }else{
-                    if(this.recordItem.item.original_affectation_igv_type_id){
+                } else {
+                    if (this.recordItem.item.original_affectation_igv_type_id) {
                         this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
                     }
                 }
@@ -931,9 +931,9 @@ export default {
             }
 
         },
-        setPresentationEditItem(){
+        setPresentationEditItem() {
 
-            if(!_.isEmpty(this.recordItem.item.presentation)){
+            if (!_.isEmpty(this.recordItem.item.presentation)) {
                 this.selectedPrice(this.recordItem.item.presentation)
                 this.getSelectedClass(this.recordItem.item.presentation)
             }
@@ -1053,20 +1053,27 @@ export default {
             this.cleanTotalItem();
             this.showListStock = true
 
-            if(this.hasAttributes()) {
-                    const contex = this
-                    this.form.item.attributes.forEach((row) => {
 
-                        contex.form.attributes.push({
-                            attribute_type_id: row.attribute_type_id,
-                            description: row.description,
-                            value: row.value,
-                            start_date: row.start_date,
-                            end_date: row.end_date,
-                            duration: row.duration,
-                        })
+            //asignar variables isc
+            this.form.has_isc = this.form.item.has_isc
+            this.form.percentage_isc = this.form.item.percentage_isc
+            this.form.system_isc_type_id = this.form.item.system_isc_type_id
+
+
+            if (this.hasAttributes()) {
+                const contex = this
+                this.form.item.attributes.forEach((row) => {
+
+                    contex.form.attributes.push({
+                        attribute_type_id: row.attribute_type_id,
+                        description: row.description,
+                        value: row.value,
+                        start_date: row.start_date,
+                        end_date: row.end_date,
+                        duration: row.duration,
                     })
-                }
+                })
+            }
 
             this.form.lots_group = this.form.item.lots_group
             this.setExtraElements(this.form.item);
@@ -1081,6 +1088,10 @@ export default {
 
             //this.item_unit_types = this.form.item.item_unit_types;
             //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
+            if(this.form.item.name_product_pdf && this.config.item_name_pdf_description){
+                this.form.name_product_pdf = this.form.item.name_product_pdf;
+            }
+
         },
         focusTotalItem(change) {
             if (!change && this.form.item.calculate_quantity) {
@@ -1126,14 +1137,14 @@ export default {
             // let unit_price = (this.form.has_igv) ? this.form.unit_price_value : this.form.unit_price_value * 1.18;
             let unit_price = this.form.unit_price_value;
             if (this.form.has_igv === false) {
-                if(
+                if (
                     affectation_igv_type_id === "20" ||
                     affectation_igv_type_id === "21" ||
                     affectation_igv_type_id === "40"
-                ){
+                ) {
                     // do nothing
                     // exonerado de igv
-                }else{
+                } else {
                     unit_price = this.form.unit_price_value * 1.18;
 
                 }
@@ -1187,7 +1198,7 @@ export default {
                 this.setFocusSelectItem();
             }
         },
-        cleanItems(){
+        cleanItems() {
             this.items = []
             this.$refs.selectBarcode.$el.getElementsByTagName('input')[0].focus()
             // console.log("add cart barcode")
@@ -1248,14 +1259,14 @@ export default {
         },
         getSelectedClass(row) {
 
-            if(this.isSelectedPrice(row)) return 'btn-success'
+            if (this.isSelectedPrice(row)) return 'btn-success'
 
             return 'btn-secondary'
 
         },
-        isSelectedPrice(item_unit_type){
+        isSelectedPrice(item_unit_type) {
 
-            if(!_.isEmpty(this.item_unit_type)){
+            if (!_.isEmpty(this.item_unit_type)) {
                 return (this.item_unit_type.id === item_unit_type.id)
             }
 
@@ -1302,7 +1313,7 @@ export default {
 
         },
         setExtraFieldOfitem(item) {
-            if(this.canShowExtraData) {
+            if (this.canShowExtraData) {
                 if (item.extra === undefined) item.extra = {};
                 if (item.extra.colors === undefined) item.extra.colors = null;
                 if (item.extra.CatItemUnitsPerPackage === undefined) item.extra.CatItemUnitsPerPackage = null;
@@ -1322,7 +1333,7 @@ export default {
         },
         setExtraElements(item) {
             this.clearExtraInfoItem()
-            if(this.canShowExtraData) {
+            if (this.canShowExtraData) {
                 let temp = [];
                 this.colors.find(obj => {
                     for (var i = 0, iLen = item.colors.length; i < iLen; i++) {
