@@ -118,6 +118,13 @@
                                            v-text="errors.certificate_due[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.certificate_due}">
+                                    <label class="control-label">Numero de autorización impr. Manifiesto de pasajeros</label>
+                                    <el-input v-model="form.num_aut_manifiesto_pasajero"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.num_aut_manifiesto_pasajero" v-text="errors.num_aut_manifiesto_pasajero[0]"></small>
+                                </div>
+                            </div>
                             <div class="col-md-6 mt-4" v-show="false">
                                 <div class="form-group" :class="{'has-danger': errors.operation_amazonia}">
                                     <el-checkbox v-model="form.operation_amazonia">¿Emite en la Amazonía?</el-checkbox>
@@ -306,6 +313,7 @@
                     cod_digemid: null,
                     integrated_query_client_id: null,
                     integrated_query_client_secret: null,
+                    num_aut_manifiesto_pasajero: null
 
                 }
             },
