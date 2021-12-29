@@ -79,7 +79,7 @@
 
 <table style="width: 100%;font-size:11px;margin-top:20px">
     <tr>
-        <td style="width: 33%">
+        <td style="width: 100%">
             <table style="width: 100%">
                 <tr>
                     <td style="width: 10px">
@@ -105,12 +105,16 @@
                     <td style="text-align: left;border-bottom:1px solid black">
                         {{ $vehiculo->placa }}
                     </td>
+                    <td style="width: 10px"><strong>Nro Hab. vehícular:</strong></td>
+                    <td style="text-align: left;border-bottom:1px solid black">
+                        {{ $vehiculo->nro_hab_veh }}
+                    </td>
+
                 </tr>
 
             </table>
 
         </td>
-        <td style="width: 33%"></td>
 
     </tr>
 </table>

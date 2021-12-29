@@ -8,6 +8,7 @@ use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\SaleNote;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Tenant\User;
 
 class TransportePasaje extends ModelTenant
 {
@@ -30,7 +31,8 @@ class TransportePasaje extends ModelTenant
         'destino_id',
         'origen_id',
         'cliente_id',
-        'nombre_pasajero'
+        'nombre_pasajero',
+        'user_name'
     ];
 
 

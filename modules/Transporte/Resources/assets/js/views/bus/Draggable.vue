@@ -114,12 +114,11 @@ export default {
                 } else {
                     this.selectedSeat = this.getSeat(r, c);
                 }
-                console.log(number);
 
             },
             obtener: function (event){
                 var num = event.target.getAttribute('data-id');
-                console.log(num);
+
             },
             seatStatus(status){
                 if(this.selectedSeat != null) {

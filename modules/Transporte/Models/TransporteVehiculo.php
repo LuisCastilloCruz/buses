@@ -12,7 +12,7 @@ class TransporteVehiculo extends ModelTenant
         'img_back'
     ];
 
-    protected $fillable = ['placa','nombre','asientos','pisos','image_front','image_back','ancho_vehiculo'];
+    protected $fillable = ['placa','nombre','asientos','pisos','image_front','image_back','ancho_vehiculo','nro_hab_veh'];
 
 
     public function getImgFrontAttribute(){

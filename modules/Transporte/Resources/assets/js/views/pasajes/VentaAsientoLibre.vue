@@ -237,7 +237,7 @@
                 </div>
             </div>
         </el-dialog>
-        
+
 
         <sale-note-options
             :showDialog.sync="showDialogSaleNoteOptions"
@@ -265,11 +265,12 @@
         :input_person="input_person"
         :document_type_id="document.document_type_id"></person-form>
 
-        
+
 
     </div>
 
 </template>
+
 <script>
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 import DocumentOptions from "@views/documents/partials/options.vue";
@@ -335,10 +336,6 @@ export default {
             type: Object,
             required: true,
         },
-        configuration:{
-            type: Object,
-            required: true,
-        },
         transportePasaje:{
             type:Object|null,
             default:() => null
@@ -368,10 +365,34 @@ export default {
             default:null
 
 
+        },
+        reloj:{
+            type:String|null,
+            required:true,
+            default:null
+        },
+        fecha:{
+            type:String|null,
+            required:true,
+            default:null
+        },
+        hora:{
+            type:String|null,
+            required:true,
+            default:null
         }
+    },
+    mounted() {
+
     },
     created(){
         this.initDocument();
+        setInterval(() => {
+            this.document.date_of_issue= this.fecha
+            this.document.time_of_issue= this.hora
+            this.document.date_of_due= this.fecha
+            this.document.delivery_date= this.fecha
+        }, 5000)
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
         this.series  = this.allSeries;
@@ -470,8 +491,7 @@ export default {
             activeNames:[1],
             tempPasajeros:[],
             tempClientes:[],
-            is_document_type_invoice: true
-
+            is_document_type_invoice: true,
         });
     },
     methods:{
@@ -519,8 +539,8 @@ export default {
         async onCreate(){
             this.estadoAsiento = 2;
 
-            
-            
+
+
             // this.transportePasaje = this.asiento.transporte_pasaje || null;
 
             this.initProducto();
@@ -789,7 +809,6 @@ export default {
                     description:null,
                     full_description: "",
                     has_igv: false,
-                    has_plastic_bag_taxes: false,
                     item_type_id:'02',
                     internal_id: null,
                     item_unit_types: [],
@@ -801,7 +820,6 @@ export default {
                     purchase_unit_price: "0.000000",
                     sale_affectation_igv_type_id: "20",
                     sale_unit_price: 0,
-                    series_enabled: false,
                     stock: 1,
                     stock_min:1,
                     unit_price: 0, //cambiado
@@ -845,8 +863,8 @@ export default {
                 document_type_id: null,
                 series_id: null,
                 number: "#",
-                date_of_issue: moment().format("YYYY-MM-DD"),
-                time_of_issue: moment().format("HH:mm:ss"),
+                date_of_issue: null,
+                time_of_issue: null,
                 currency_type_id: "PEN",
                 purchase_order: null,
                 exchange_rate_sale: 0,
@@ -867,8 +885,8 @@ export default {
                 total_value: 0,
                 total: 0,
                 operation_type_id: "0101",
-                date_of_due: moment().format("YYYY-MM-DD"),
-                delivery_date: moment().format("YYYY-MM-DD"),
+                date_of_due: null,
+                delivery_date: null,
                 items: [],
                 charges: [],
                 discounts: [],
@@ -1210,8 +1228,6 @@ export default {
             this.$emit('update:visible',false);
             this.$emit('onCancel');
         }
-
-
     }
 }
 </script>

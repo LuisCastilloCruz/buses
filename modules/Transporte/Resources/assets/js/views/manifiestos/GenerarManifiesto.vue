@@ -304,7 +304,7 @@ export default {
             });
         },
         initForm(){
-            console.log(this.series);
+
             this.manifiesto.fecha= moment().format('YYYY-MM-DD');
             if(this.manifiesto.tipo==1){//encomienda
                 this.all_series = _.filter(this.series, {'document_type_id': '100'});
@@ -314,7 +314,7 @@ export default {
             }
             this.manifiesto.serie = (this.all_series.length > 0)?this.all_series[0].number:null
 
-            console.log(this.all_series);
+
         },
         async searchOrigen(param){
             this.loadingOrigen = true;

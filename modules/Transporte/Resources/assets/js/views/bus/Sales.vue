@@ -143,8 +143,6 @@ export default {
         {
             push(){
                 let count = this.rows * this.cols;
-                console.log(count);
-                console.log(this.seats.length + 11);
                 if (count == this.seats.length + 11){
                     this.rows = this.rows + 1;
                 }
@@ -260,12 +258,10 @@ export default {
                 } else {
                     this.selectedSeat = this.getSeat(r, c);
                 }
-                console.log(number);
 
             },
             obtener: function (event){
                 var num = event.target.getAttribute('data-id');
-                console.log(num);
             },
             seatStatus(status){
                 if(this.selectedSeat != null) {

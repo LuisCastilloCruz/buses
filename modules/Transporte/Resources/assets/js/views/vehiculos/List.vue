@@ -33,6 +33,7 @@
                 <th class="text-center">Nombre</th>
                 <th>Asientos</th>
                 <th>Pisos</th>
+                <th>Nro. Hab. Vehicular</th>
                 <th></th>
               </tr>
             </thead>
@@ -43,6 +44,7 @@
                 <td class="text-center">{{ item.nombre}}</td>
                 <td>{{ item.asientos }}</td>
                 <td>{{ item.pisos }}</td>
+                <td>{{ item.nro_hab_veh }}</td>
                 <td class="text-center">
                   <el-button type="success" @click="onEdit(item)">
                     <i class="fa fa-edit"></i>

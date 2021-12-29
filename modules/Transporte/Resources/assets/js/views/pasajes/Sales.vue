@@ -4,6 +4,15 @@
         <div class="row pt-3">
             <div class="col-md-12 text-center card-header">
                 <span class="mr-2"><a class="btn btn-primary btn-sm" href="/transportes/pasajes"> <i class="fa fa-arrow-left"></i>  </a></span>
+                <div class="clock-border">
+                    <span class="claro">Hora del servidor:</span>
+                    <div class="clock-inner">
+                        <div class="hour">{{fecha}}</div>
+                        <div class="dots"> &nbsp  &nbsp</div>
+                        <div class="secs">{{hora}}</div>
+                        <div class="mode"></div>
+                    </div>
+                </div>
                 <span class="claro">Venta de boletos terminal  <el-tag >{{ terminal.nombre }}</el-tag></span>
             </div>
 
@@ -250,6 +259,9 @@
             :destino="destino"
             :origen="origen"
             :horaSalida="horaSalida"
+            :reloj="reloj"
+            :fecha="fecha"
+            :hora="hora"
         />
 
         <document-options
@@ -290,6 +302,39 @@
     </div>
     </div>
 </template>
+<style>
+.clock-border {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 380px;
+    padding: 3px 10px;
+    height: auto;
+    background: black;
+    color: #fff;
+}
+.clock-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 230px;
+    height: auto;
+    color: white;
+    font-size: 15pt
+}
+.dots {
+    font-size: 15px;
+}
+.red {
+    color: red;
+}
+.yellow {
+    color: yellow;
+}
+.green {
+    color: green;
+}
+</style>
 <script>
 import Bus from '../bus/Bus';
 import VentaAsientoLibre from './VentaAsientoLibre.vue';
@@ -367,6 +412,9 @@ export default {
         //     if(exist) this.destino = exist.destino;
         // }
     },
+    mounted() {
+        this.setTime()
+    },
     async created(){
         this.load = true;
         // this.searchCiudad();
@@ -425,6 +473,10 @@ export default {
             horaSalida:null,
             destino:null,
             origen:null,
+
+            reloj:null,
+            fecha:null,
+            hora:null
         });
     },
     computed:{
@@ -575,6 +627,10 @@ export default {
             this.openModal = true;
             this.asiento = asiento;
 
+            console.log('aqui')
+            console.log(this.asiento)
+
+
 
         },
 
@@ -657,10 +713,18 @@ export default {
                 this.asiento.estado_asiento_id = 1;
                 this.asiento = null;
             }
+        },
+        setTime(){
+            setInterval(() => {
+                this.$http
+                    .get(`/documents/fecha-actual`)
+                    .then((response) => {
+                        this.fecha  = response.data.fecha
+                        this.hora  = response.data.hora
+                        this.reloj= response.data.fecha + " "+ response.data.hora
+                    });
+            }, 5000)
         }
-
-
-
     }
 }
 </script>

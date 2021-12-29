@@ -4,8 +4,8 @@
             <div class="col-5">
                 <div class="form-group">
                     <label for="">Tipo de comprobante</label>
-                    <el-select
-                        v-model="document.document_type_id"
+                    <el-select v-if="transportePasaje"
+                        v-model="this.transportePasaje.document.document_type_id"
                         @change="changeDocumentType"
                         popper-class="el-select-document_type"
                         dusk="document_type_id"
@@ -22,7 +22,7 @@
                     </el-select>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-3" v-if="(!transportePasaje && !isReserva)">
                 <div class="form-group">
                     <label for="">Serie</label>
                     <!-- <el-input v-model="document.serie" disabled></el-input> -->
@@ -95,6 +95,16 @@
 
                 </div>
             </div>
+            <div class="col-5">
+                <div class="form-group">
+                    <label for="dni">
+                        Vendido por:
+
+                    </label>
+                    <el-input disabled v-model="usuario" type="text" placeholder="Nombre del vendedor" ></el-input>
+
+                </div>
+            </div>
 
         </div>
         <div v-if="(transportePasaje && !isReserva)" class="row justify-content-center">
@@ -105,6 +115,14 @@
             </el-button>
             <el-button type="danger" @click="anularBoleto" :style="{marginTop:'1.90rem'}">
                 Anular
+                <i class="fa fa-trash"></i>
+            </el-button>
+
+        </div>
+        <div v-if="(isReserva)" class="row justify-content-center">
+
+            <el-button type="danger" @click="eliminarReserva(asiento.transporte_pasaje.id)" :style="{marginTop:'1.90rem'}">
+                Eliminar reserva
                 <i class="fa fa-trash"></i>
             </el-button>
 
@@ -130,7 +148,6 @@
                     </el-select>
                 </div>
             </div>
-
         </div>
         <div v-if="!transportePasaje || isReserva" class="row mt-2">
             <div class="col-md-12">
@@ -309,6 +326,7 @@ export default {
         },
     },
     created(){
+
         this.initDocument();
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
@@ -327,7 +345,7 @@ export default {
     },
     mounted(){
 
-        this.$eventHub.$on('reloadDataPersons', (clienteId) => {
+        this.$eventHub.$on('reloadDataCustomers', (clienteId) => {
             this.reloadDataCustomers(clienteId)
         })
 
@@ -375,7 +393,8 @@ export default {
             sale_note_id:null,
             showDialogSaleNoteOptions:false,
             nombrePasajero:null,
-            tempEstadosAsientos: this.estadosAsientos
+            tempEstadosAsientos: this.estadosAsientos,
+            usuario: null
         });
     },
     computed:{
@@ -419,16 +438,15 @@ export default {
             this.tempClientes = this.clientes  = data.clientes;
         },
         async onCreate(){
-
-
             this.transportePasaje = this.asiento.transporte_pasaje || null;
+
+            console.log(this.transportePasaje)
 
             this.initProducto();
             //this.initDocument();
             this.clickAddPayment();
             this.onCalculateTotals();
             //this.validateIdentityDocumentType();
-
 
             if(this.transportePasaje){
                 this.nombrePasajero = this.transportePasaje.nombre_pasajero;
@@ -437,6 +455,7 @@ export default {
                 this.pasajeroId = this.pasajero ? this.pasajero.id : null;
                 this.estadoAsiento = 2;
                 this.documentId = this.transportePasaje.document_id;
+                this.usuario = this.transportePasaje.user_name;
             }
 
             const date = moment().format("YYYY-MM-DD");
@@ -567,7 +586,6 @@ export default {
                     this.$eventHub.$emit('reloadDataNotes')
                     this.showDialogSaleNoteOptions= true
                 } else {
-                    console.log('entra');
                     this.$emit('onSuccessVenta',this.documentId);
                 }
 
@@ -628,7 +646,6 @@ export default {
                     description: null,
                     full_description: "",
                     has_igv: false,
-                    has_plastic_bag_taxes: false,
                     id: 2,
                     internal_id: null,
                     item_unit_types: [],
@@ -640,7 +657,6 @@ export default {
                     purchase_unit_price: "0.000000",
                     sale_affectation_igv_type_id: "20",
                     sale_unit_price: 35,
-                    series_enabled: false,
                     stock: 1,
                     stock_min:1,
                     unit_price: 0, //cambiado
@@ -850,15 +866,6 @@ export default {
                 reference: null,
                 payment: payment,
             };
-            // this.document.payments.push({
-            //     id: null,
-            //     document_id: null,
-            //     date_of_payment: moment().format("YYYY-MM-DD"),
-            //     payment_method_type_id: "01",
-            //     payment_destination_id: null,
-            //     reference: null,
-            //     payment: payment,
-            // });
         },
         validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
@@ -917,6 +924,20 @@ export default {
                 return null;
             }
         },
+        eliminarReserva(id){
+            this.$http
+                .get(`/transportes/sales/borrar-reserva/${id}`)
+                .then((response) => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.$emit('onUpdateItem');
+                        this.onClose()
+                    }
+                })
+                .catch((error) => {
+                    this.axiosError(error);
+                });
+        }
     }
 }
 </script>

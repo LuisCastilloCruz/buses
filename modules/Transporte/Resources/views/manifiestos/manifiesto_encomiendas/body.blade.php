@@ -23,13 +23,13 @@
 <table style="width: 100%;font-size:11px">
     <tr>
         <td style="width: 33%;text-align: center">
-        <strong>{{ $company->name }} </strong> <br> 
+        <strong>{{ $company->name }} </strong> <br>
             <span style="font-size: 10px">
             {{ ($establishment->address !== '-')? $establishment->address : '' }}
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
             {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
-            </span>  
+            </span>
         </td>
         <td style="width: 10% !important;text-align: center">
             <table class="bordered" style="width: 30%;font-size:8px;">
@@ -79,7 +79,7 @@
 
 <table style="width: 100%;font-size:11px;margin-top:20px">
     <tr>
-        <td style="width: 33%">
+        <td style="width: 100%">
             <table style="width: 100%">
                 <tr>
                     <td style="width: 10px">
@@ -93,7 +93,7 @@
                         {{ $programacion->destino->nombre }}
                     </td>
                 </tr>
-            
+
             </table>
             <table style="width: 100%;margin-top:20px">
                 <tr>
@@ -105,13 +105,16 @@
                     <td style="text-align: left;border-bottom:1px solid black">
                         {{ $vehiculo->placa }}
                     </td>
+                    <td style="width: 10px"><strong>Nro Hab. vehícular:</strong></td>
+                    <td style="text-align: left;border-bottom:1px solid black">
+                        {{ $vehiculo->nro_hab_veh }}
+                    </td>
                 </tr>
-            
+
             </table>
-        
+
         </td>
-        <td style="width: 33%"></td>
-        
+
     </tr>
 </table>
 
@@ -129,7 +132,7 @@
                     <td style="text-align: right"><strong>Nro de Licencia:</strong></td>
                 </tr>
                 <tr>
-                    
+
                     <td>1.- {{ $chofer->nombre }}</td>
                     <td style="text-align: right">{{ $chofer->licencia }}</td>
                 </tr>
@@ -181,8 +184,8 @@
                 {{-- <td>Observacion</td> --}}
             </tr>
         @endforeach
-        
-        
+
+
     @endforeach
 </table>
 
@@ -211,7 +214,7 @@
                     <td>CHOFER</td>
                 </tr>
             </table>
-            
+
         </td>
         <td style="width: 50%;text-align:center">
             <table style="width: 250px">

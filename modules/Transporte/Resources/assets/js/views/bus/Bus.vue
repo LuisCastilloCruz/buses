@@ -166,7 +166,6 @@ export default {
     created(){
         this.asientos = this.seats;
 
-        console.log(this.asientos);
     },
     watch:{
         seats(newVal){
@@ -290,7 +289,6 @@ export default {
             //cálculo la nueva posición de mi elemento en el eje y
             let y = this.initY+e.pageY-this.firstY;
 
-            console.log(busHeight);
 
 
 
@@ -320,8 +318,6 @@ export default {
             this.fy = evt.pageY;
             this.point = point;
 
-            console.log('inicialx',this.fx);
-            console.log('inicialx',this.fy);
 
             window.addEventListener('mousemove',this.mouseMoveResize);
             window.addEventListener('mouseup',this.mouseUp);
@@ -337,8 +333,6 @@ export default {
             let sizeWidth = this.$refs.bus.offsetWidth;
             let sizeHeight = this.$refs.bus.offsetHeight;
 
-            console.log('movex', evt.pageX);
-            console.log('movey',evt.pageY);
 
             //cálculo la nueva posición de mi elemento en el eje x
             let x =  this.fx - evt.pageX;

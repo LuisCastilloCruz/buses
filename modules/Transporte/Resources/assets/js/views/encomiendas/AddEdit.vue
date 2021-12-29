@@ -567,6 +567,7 @@ export default {
     },
     created(){
         this.initDocument();
+        this.setTime()
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
         this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
@@ -918,7 +919,6 @@ export default {
                 let p =  JSON.parse(JSON.stringify(this.producto));
 
                 this.document.items.push( p );
-                console.log(this.document.items);
 
                 this.total += parseFloat(this.producto.unit_price);
 
@@ -1156,7 +1156,6 @@ export default {
                     description: null, //cambiado
                     full_description: "",
                     has_igv: false,
-                    has_plastic_bag_taxes: false,
                     internal_id: null,
                     item_unit_types: [],
                     lots: [],
@@ -1167,7 +1166,6 @@ export default {
                     purchase_unit_price: "0.000000",
                     sale_affectation_igv_type_id: "10",
                     sale_unit_price: 0,
-                    series_enabled: false,
                     stock: 1,
                     stock_min:1,
                     unit_price: "0", //cambiado
@@ -1235,7 +1233,6 @@ export default {
                     description: null,
                     full_description: "",
                     has_igv: false,
-                    has_plastic_bag_taxes: false,
                     item_type_id:'02',
                     internal_id: null,
                     item_unit_types: [],
@@ -1247,7 +1244,6 @@ export default {
                     purchase_unit_price: "0.000000",
                     sale_affectation_igv_type_id: "20",
                     sale_unit_price: 0,
-                    series_enabled: false,
                     stock: 1,
                     stock_min:1,
                     unit_price: 0, //cambiado
@@ -1295,8 +1291,8 @@ export default {
                 series_id: null,
                 establishment_id: null,
                 number: "#",
-                date_of_issue: moment().format("YYYY-MM-DD"),
-                time_of_issue: moment().format("HH:mm:ss"),
+                date_of_issue: null,
+                time_of_issue: null,
                 currency_type_id: "PEN",
                 purchase_order: null,
                 exchange_rate_sale: 0,
@@ -1317,8 +1313,8 @@ export default {
                 total_value: 0,
                 total: 0,
                 operation_type_id: "0101",
-                date_of_due: moment().format("YYYY-MM-DD"),
-                delivery_date: moment().format("YYYY-MM-DD"),
+                date_of_due: null,
+                delivery_date: null,
                 items: [],
                 charges: [],
                 discounts: [],
@@ -1467,6 +1463,20 @@ export default {
                  this.initProducto();
              }
         },
+        setTime(){
+            setInterval(() => {
+                this.$http
+                    .get(`/documents/fecha-actual`)
+                    .then((response) => {
+                        this.document.date_of_issue= response.data.fecha
+                        this.document.time_of_issue= response.data.hora
+                        this.document.date_of_due= response.data.fecha
+                        this.document.delivery_date= response.data.fecha
+
+
+                    });
+            }, 5000)
+        }
     },
 };
 </script>

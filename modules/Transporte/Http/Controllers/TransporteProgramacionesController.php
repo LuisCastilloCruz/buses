@@ -35,7 +35,7 @@ class TransporteProgramacionesController extends Controller
         if(auth()->user()->type=='admin'){
 
             $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
-            ->where('hidden',0)    
+            ->where('hidden',0)
             ->get()
                 ->map(function($programacion){
                     $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
@@ -76,7 +76,7 @@ class TransporteProgramacionesController extends Controller
             extract($request->only(['search']));
 
             $terminales = TransporteTerminales::query();
-            
+
             if(isset($search) && !empty($search)){
                 $terminales->where('nombre','like',"%{$search}%");
             }
@@ -145,7 +145,7 @@ class TransporteProgramacionesController extends Controller
             $totalList->push($pro);
         }
         return $totalList;
-    } 
+    }
 
 
     public function store(TransporteProgramacionesRequest $request){
@@ -156,7 +156,7 @@ class TransporteProgramacionesController extends Controller
 
             $formProgramacion = $request->input('programacion');
 
-          
+
             $formProgramacion['hidden'] = false;
             $programacion = TransporteProgramacion::create($formProgramacion);
             $programacion->update(['programacion_id' => $programacion->id]);
@@ -167,7 +167,7 @@ class TransporteProgramacionesController extends Controller
             foreach($intermedios as $intermedio){
                 $programacion->rutas()->attach($intermedio['terminal_origen_id'],[
                     'hora_salida' => $intermedio['hora_salida'],
-                    'orden' => $i 
+                    'orden' => $i
                 ]);
                 $i++;
             }
@@ -210,7 +210,7 @@ class TransporteProgramacionesController extends Controller
 
         }
 
-        
+
 
     }
 
@@ -237,7 +237,7 @@ class TransporteProgramacionesController extends Controller
         $terminales->prepend($programacion->origen);
         $terminales->push($programacion->destino);
 
-       
+
         return $this->listCombination($terminales);
     }
 
@@ -249,11 +249,11 @@ class TransporteProgramacionesController extends Controller
                 [$variable1,$variable2] = $item2;
                 [$variable3,$variable4] = $item1;
                 $indexVar1 = array_search($variable1,$item1);
-                $indexVar2 = array_search($variable2,$item1); 
+                $indexVar2 = array_search($variable2,$item1);
                 $indexVar3 = array_search($variable3,$item2);
-                $indexVar4 = array_search($variable4,$item2); 
+                $indexVar4 = array_search($variable4,$item2);
 
-                return ($variable1 == $variable3 
+                return ($variable1 == $variable3
                 && $indexVar1 == $indexVar3
                 && $variable2 == $variable4
                 && $indexVar2 == $indexVar4);
@@ -305,11 +305,11 @@ class TransporteProgramacionesController extends Controller
 
 
     public function checkIfExistOrCreate(TransporteProgramacion $programacion, Collection $collection){
-        
+
         foreach($collection as $item){
             [$origen,$destino] = $item;
-            
-            
+
+
 
             $exist = TransporteProgramacion::where('terminal_origen_id',$origen)
             ->where('terminal_destino_id',$destino)
@@ -401,9 +401,9 @@ class TransporteProgramacionesController extends Controller
             ]);
 
             $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
-            
+
             DB::connection('tenant')->commit();
-            
+
             return response()->json([
                 'success' => true,
                 'data'    => $programacion
@@ -419,7 +419,7 @@ class TransporteProgramacionesController extends Controller
 
         }
 
-        
+
     }
 
     public function deleteRuta(TransporteProgramacion $programacion,$terminal){
@@ -450,7 +450,7 @@ class TransporteProgramacionesController extends Controller
             ]);
 
         }
-        
+
 
 
 
@@ -508,7 +508,53 @@ class TransporteProgramacionesController extends Controller
         ]);
 
     }
+    public function desactivar(Request  $request){
+        try {
+            $programacion = TransporteProgramacion::findOrFail($request->id);
+            $programacion->active = 0;
+            $programacion->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $programacion,
+                'message'=> "Se desactivó la programación"
+            ], 200);
+        }
+        catch (\Throwable $th) {
+
+            return response()->json([
+            'success' => false,
+            'message' => $th->getCode() == 888 ? $th->getMessage() : 'Ocurrió un error al procesar su petición'
+            ],500);
+
+        }
+    }
+
+    public function activar(Request  $request){
+
+        try {
+            $programacion = TransporteProgramacion::findOrFail($request->id);
+            $programacion->active = 1;
+            $programacion->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $programacion,
+                'message'=> "Se activó la programación"
+            ], 200);
+        }
+        catch (\Throwable $th) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $th->getCode() == 888 ? $th->getMessage() : 'Ocurrió un error al procesar su petición'
+            ],500);
+
+        }
 
 
-    
+    }
+
+
+
 }

@@ -159,7 +159,7 @@ export default {
             form.append('image_front',this.fileImageFront);
             form.append('image_back',this.fileImageBack);
             form.append('ancho_vehiculo',this.anchoVehiculo);
-            console.log(this.anchoVehiculo);
+
             this.$http.post(`/transportes/vehiculos/${this.vehiculo.id}/guardar-asientos`,form).then( response => {
                 this.transporte = response.data.vehiculo;
                 this.asientos = response.data.vehiculo.seats;
@@ -274,7 +274,7 @@ export default {
 
                 inputElement.addEventListener("change", evt =>{
                     window.onfocus = null;
-                    console.log(evt);
+
 
                     let file = evt.target.files[0];
 
@@ -290,11 +290,9 @@ export default {
         pequeno(){
             this.anchoVehiculo -=10;
 
-            console.log(this.anchoVehiculo);
         },
         grande(){
             this.anchoVehiculo +=10;
-            console.log(this.anchoVehiculo);
         }
 
     }

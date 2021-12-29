@@ -170,7 +170,8 @@ class TransporteManifiestosController extends Controller
             'company',
             'establishment'
         ));
-
+        $pdf->SetHTMLFooter('<div style="text-align: center; font-size: 7pt">Numéro de autorización SUNAT: '.$company->num_aut_manifiesto_pasajero.'</div>'
+            ,0);
         $pdf->WriteHTML($content);
 
         $name = 'manifiesto_pasajeros_'.(new DateTime())->getTimestamp().'.pdf';

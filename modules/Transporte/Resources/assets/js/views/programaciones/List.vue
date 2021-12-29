@@ -42,7 +42,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="programacion in listProgramaciones" :key="programacion.id">
+                        <tr v-for="programacion in listProgramaciones" :key="programacion.id" :class="{'text-danger': (programacion.active === 0), 'border-danger': (programacion.active === 0)}">
                             <td class="text-right">{{ programacion.id }}</td>
                             <td>{{ programacion.origen.nombre }}</td>
                             <td>{{ programacion.destino.nombre }}</td>
@@ -60,12 +60,19 @@
                                         <i class="fa fa-file"></i>
                                     </el-button>
                                 </el-tooltip> -->
-                                
+
                                 <el-button type="success" @click="onEdit(programacion)">
                                     <i class="fa fa-edit"></i>
                                 </el-button>
                                 <el-button type="danger" @click="onDelete(programacion)">
                                     <i class="fa fa-trash"></i>
+                                </el-button>
+
+                                <el-button v-if="programacion.active==1" type="disable" @click="desactivar(programacion)" title="Desactivar">
+                                    <i class="fa fa-eye-slash"></i>
+                                </el-button>
+                                <el-button  v-else type="success" @click="activar(programacion)" title="Activar">
+                                    <i class="fa fa-eye"></i>
                                 </el-button>
                             </td>
                         </tr>
@@ -87,15 +94,15 @@
             :user-terminal="userTerminal"
         ></ModalAddEdit>
         <!-- Modal para la configuracion de rutas de cada terminal -->
-        <configuracion-rutas 
+        <configuracion-rutas
         :terminales="terminales"
-        :programacion="programacion" 
-        :visible.sync="openModalConfigRutas" 
+        :programacion="programacion"
+        :visible.sync="openModalConfigRutas"
         @onUpdateItem="onUpdateItem" />
-        
-        <generar-manifiesto 
-        :visible.sync="visible" 
-        :series="series" 
+
+        <generar-manifiesto
+        :visible.sync="visible"
+        :series="series"
         :programacion="programacion"
         :choferes="choferes"
         />
@@ -206,6 +213,36 @@ export default {
         openModalGenerarManifiesto(programacion){
             this.programacion = programacion;
             this.visible = true;
+        },
+        desactivar(programacion){
+            this.$http.put(`/transportes/programacion/${programacion.id}/desactivar`).then(response => {
+                this.$message({
+                    type: 'success',
+                    message: response.data.message
+                });
+                location.reload();
+            }).catch(error => {
+                let response = error.response;
+                this.$message({
+                    type: 'error',
+                    message: response.data.message
+                });
+            });
+        },
+        activar(programacion){
+            this.$http.put(`/transportes/programacion/${programacion.id}/activar`).then(response => {
+                this.$message({
+                    type: 'success',
+                    message: response.data.message
+                });
+                location.reload();
+            }).catch(error => {
+                let response = error.response;
+                this.$message({
+                    type: 'error',
+                    message: response.data.message
+                });
+            });
         }
     },
 };

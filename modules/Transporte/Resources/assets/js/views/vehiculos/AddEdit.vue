@@ -32,6 +32,12 @@
             <div v-if="errors.pisos" class="invalid-feedback">{{ errors.pisos[0] }}</div>
         </div>
 
+          <div class="form-group">
+              <label for="nro_hab_veh">Nro. Habilitación Vehicular</label>
+              <input type="text" id="nro_hab_veh" class="form-control" v-model="form.nro_hab_veh" :class="{ 'is-invalid': errors.nro_hab_veh }"/>
+              <div v-if="errors.pisos" class="invalid-feedback">{{ errors.nro_hab_veh[0] }}</div>
+          </div>
+
         <div class="row text-center">
           <div class="col-6">
             <el-button native-type="submit" :disabled="loading" type="primary" class="btn-block" :loading="loading">Guardar</el-button>

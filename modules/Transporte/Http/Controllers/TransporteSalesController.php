@@ -123,27 +123,43 @@ class TransporteSalesController extends Controller
     public function getProgramacionesDisponibles(ProgramacionesDisponiblesRequest $request){
 
        try{
+            $user = auth()->user();
+
+           if($user->type=="admin"){
+
+               $programaciones = TransporteProgramacion::with('origen','destino')
+                   ->where('terminal_origen_id',$request->origen_id)
+                   ->where('active',true)
+                   ->whereHas('destino',function($destino) use($request){
+                       $destino->where('destino_id',$request->destino_id);
+                   });
+
+               $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s')");
+
+           }else{
+               $programaciones = TransporteProgramacion::with('origen','destino')
+                   ->where('terminal_origen_id',$request->origen_id)
+                   ->where('active',true)
+                   ->whereHas('destino',function($destino) use($request){
+                       $destino->where('destino_id',$request->destino_id);
+                   })
+                   // ->where('terminal_destino_id',$request->destino_id)
+                   ->WhereEqualsOrBiggerDate($request->fecha_salida);
+               $date = Carbon::parse($request->fecha_salida);
+               $today = Carbon::now();
+
+               /* váliddo si es el mismo dia  */
+               if($date->isSameDay($today)){
+                   /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
+                   $time = date('H:i:s',strtotime("-60 minutes")); //doy una hora para que aún esté disponible la programación
+                   $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
+               }
+           }
 
 
-            $programaciones = TransporteProgramacion::with('origen','destino')
-            ->where('terminal_origen_id',$request->origen_id)
-            ->where('active',true)
-            ->whereHas('destino',function($destino) use($request){
-                $destino->where('destino_id',$request->destino_id);
-            })
-            // ->where('terminal_destino_id',$request->destino_id)
-            ->WhereEqualsOrBiggerDate($request->fecha_salida);
-            $date = Carbon::parse($request->fecha_salida);
-            $today = Carbon::now();
-
-            /* váliddo si es el mismo dia  */
-            if($date->isSameDay($today)){
-                /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
-                $time = date('H:i:s',strtotime("-60 minutes")); //doy una hora para que aún esté disponible la programación
-                $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
-            }
 
             $listProgramaciones = $programaciones->get();
+
             foreach($listProgramaciones as $programacion){
 
                 $programacion->transporte = TransporteVehiculo::find($programacion->vehiculo_id);
@@ -464,7 +480,7 @@ class TransporteSalesController extends Controller
                         'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
                         'origen_id' => $terminal->id,
                         'soap_type_id'=>$soap_type_id,
-                        // 'fecha_llegada' => $fechaLLegada
+                        'user_name' => auth()->user()->name
                     ])
                 );
 
@@ -636,6 +652,28 @@ class TransporteSalesController extends Controller
                 'data'    => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage()
             ], 500);
         }
+    }
+    public function eliminarReserva(Request $request){
+
+        try {
+
+            $pasaje = TransportePasaje::findOrFail($request->id);
+            $pasaje->estado_asiento_id=4;
+            $pasaje->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Éxito!!'
+            ],200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al procesar su petición',
+                'error' => $th->getMessage()
+            ],500);
+        }
+
     }
 
 

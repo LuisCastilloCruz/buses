@@ -108,12 +108,12 @@
                                                         </td>
                                                     </tr>
                                                 </template>
-                                            
+
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="row justify-content-center">
-                                        
+
                                         <el-pagination
                                             v-if="total > 0"
                                             :page-size="limit"
@@ -295,7 +295,7 @@ export default {
             page:1,
             total:0,
             limit:25,
-            
+
 
             sale:false,
             recordId:null,
@@ -370,7 +370,7 @@ export default {
             window.location.href = `/transportes/sales/${pasaje.id}`;
         },
         onUpdateItem(pasaje) {
-            // console.log(pasaje);
+
             this.items = this.listPasajes.map((i) => {
                 if (i.id === pasaje.id) {
                     return pasaje;

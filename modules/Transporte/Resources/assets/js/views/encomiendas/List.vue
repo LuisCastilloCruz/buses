@@ -46,7 +46,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    
+
                                                     <tr v-for="(invoice, index) in listInvoices" :key="invoice.id" :class="{'text-danger': (invoice.document.state_type_id === '11'),
                                                     'text-warning': (invoice.document.state_type_id === '13'),
                                                     'border-light': (invoice.document.state_type_id === '01'),
@@ -106,7 +106,7 @@
                                             </table>
                                         </div>
                                         <div class="row justify-content-center">
-                                        
+
                                          <el-pagination
                                             v-if="total > 0"
                                             :page-size="25"
@@ -303,7 +303,7 @@ export default {
     },
     data() {
         return {
-            //pagination 
+            //pagination
             page:1,
             limit:25,
             total:0,
@@ -342,7 +342,7 @@ export default {
                 this.listInvoices = data.data;
                 this.total = data.count;
 
-                //console.log(this.listInvoices );
+
                 this.loading = false;
 
             }catch(error){
