@@ -1490,4 +1490,12 @@ class DocumentController extends Controller
         }
     }
 
+    public  function fechaActual(){
+        return [
+            'fecha'=> date('Y-m-d'),
+            'hora' => date('H:i:s')
+        ];
+
+    }
+
 }

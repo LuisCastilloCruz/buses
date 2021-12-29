@@ -46,6 +46,7 @@ class CompanyResource extends JsonResource
             'is_pharmacy' => $configuration->isPharmacy(),
             'integrated_query_client_id' => $this->integrated_query_client_id,
             'integrated_query_client_secret' => $this->integrated_query_client_secret,
+            'num_aut_manifiesto_pasajero' => $this->num_aut_manifiesto_pasajero,
 
         ];
     }

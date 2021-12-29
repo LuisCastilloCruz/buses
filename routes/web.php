@@ -263,6 +263,7 @@ if ($hostname) {
 
             Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
             Route::get('documents/esc-print/{id}', 'Tenant\DocumentController@esc');
+            Route::get('documents/fecha-actual', 'Tenant\DocumentController@fechaActual');
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level', 'tenant.internal.mode');

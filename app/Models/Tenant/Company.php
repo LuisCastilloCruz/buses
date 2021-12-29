@@ -33,6 +33,7 @@ class Company extends ModelTenant
         'cod_digemid',
         'integrated_query_client_id',
         'integrated_query_client_secret',
+        'num_aut_manifiesto_pasajero'
     ];
 
     /**
