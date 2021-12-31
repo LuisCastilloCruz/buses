@@ -44,7 +44,7 @@ class TransporteVehiculoController extends Controller
     public function store(Request $request)
     {
 
-        $data = array_merge($request->only('placa', 'nombre','pisos'),['asientos' => 0],'nro_hab_veh');
+        $data = array_merge($request->only('placa', 'nombre','pisos','nro_hab_veh'),['asientos' => 0]);
         $vehiculo = TransporteVehiculo::create($data);
 
         return response()->json([

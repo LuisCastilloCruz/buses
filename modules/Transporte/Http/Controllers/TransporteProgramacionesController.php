@@ -358,6 +358,9 @@ class TransporteProgramacionesController extends Controller
             $programacion->update($formProgramacion);
             $programacion->update(['programacion_id' => $programacion->id]);
 
+            $programacion->where('programacion_id',$programacion->id)
+                ->update(['vehiculo_id' => $programacion->vehiculo_id]);
+
             $intermedios = collect($request->input('intermedios'));
 
             TransporteRuta::where('programacion_id',$programacion->id)

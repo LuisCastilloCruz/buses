@@ -93,7 +93,7 @@ export default {
         this.initAsiento();
         this.imageBack = this.vehiculo.img_back;
         this.imageFront = this.vehiculo.img_front;
-        this.anchoVehiculo = this.vehiculo.ancho_vehiculo;
+        this.anchoVehiculo = (this.vehiculo.ancho_vehiculo)?this.vehiculo.ancho_vehiculo: 650;
     },
     data(){
         return({
