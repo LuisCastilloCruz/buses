@@ -266,7 +266,7 @@ class TransporteProgramacionesController extends Controller
     }
 
     private function updateOrCreateProgramaciones(TransporteProgramacion $programacion, Collection $collection){
-
+        
         foreach($collection as $item){
             [$origen,$destino] = $item;
 
@@ -513,9 +513,10 @@ class TransporteProgramacionesController extends Controller
     }
     public function desactivar(Request  $request){
         try {
-            $programacion = TransporteProgramacion::findOrFail($request->id);
-            $programacion->active = 0;
-            $programacion->save();
+            $programacion = new TransporteProgramacion();
+
+            $programacion->where('programacion_id',$request->id)
+                ->update(['active' => 0]);
 
             return response()->json([
                 'success' => true,
@@ -536,9 +537,10 @@ class TransporteProgramacionesController extends Controller
     public function activar(Request  $request){
 
         try {
-            $programacion = TransporteProgramacion::findOrFail($request->id);
-            $programacion->active = 1;
-            $programacion->save();
+            $programacion = new TransporteProgramacion();
+
+            $programacion->where('programacion_id',$request->id)
+                ->update(['active' => 1]);
 
             return response()->json([
                 'success' => true,
