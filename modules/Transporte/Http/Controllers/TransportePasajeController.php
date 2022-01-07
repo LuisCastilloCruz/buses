@@ -112,6 +112,7 @@ class TransportePasajeController extends Controller
             ->whereNotNull('document_id')
             ->whereNotNull('pasajero_id')
             ->where('origen_id',$terminal->id)
+            ->orderBy('document_id', 'DESC')
             ->take($limit)->skip($limit * ($page - 1) );
 
 
@@ -145,6 +146,7 @@ class TransportePasajeController extends Controller
             ])
                 ->whereNotNull('note_id')
                 ->where('origen_id',$terminal->id)
+                ->orderBy('note_id', 'DESC')
                 ->get();
 
             return response()->json($pasajes,200);
