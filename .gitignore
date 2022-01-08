@@ -32,3 +32,13 @@ app/CoreFacturalo/Templates/pdf/personalizada*
 public/templates/pdf/personalizada*
 
 app/Http/Controllers/TestController.php
+
+/public/css/app.css
+/public/css/auth.css
+
+/public/js/app.js
+/public/js/manifest.js
+/public/js/vendor.js
+
+
+
