@@ -83,7 +83,7 @@
                                                             <el-button type="primary" @click="verComprobante(invoice)">
                                                                 <i class="fa fa-file-alt"></i>
                                                             </el-button>
-                                                            <button data-toggle="tooltip" data-placement="top" title="Anular" v-if="invoice.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            <button :disabled="user.type != 'admin'" data-toggle="tooltip" data-placement="top" title="Anular" v-if="invoice.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                             @click.prevent="anularDocument(invoice)"><i class="fas fa-trash"></i></button>
                                                         </td>
                                                     </tr>
@@ -151,7 +151,7 @@
                                                             <el-button type="primary" @click="verNota(note)">
                                                                 <i class="fa fa-file-alt"></i>
                                                             </el-button>
-                                                            <button data-toggle="tooltip" data-placement="top" title="Anular" v-if="note.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            <button :disabled="user.type != 'admin'" data-toggle="tooltip" data-placement="top" title="Anular" v-if="note.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                             @click.prevent="anularNota(note.id)"><i class="fas fa-trash"></i></button>
 
 
@@ -283,6 +283,10 @@ export default {
         persons:{
             type:Array,
             default:() => []
+        },
+        user:{
+            type:Object,
+            required:true,
         }
     },
     components: {

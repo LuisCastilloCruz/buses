@@ -44,6 +44,7 @@ class TransporteEncomiendaController extends Controller
         $estadosPagos = TransporteEstadoPagoEncomienda::all();
 
         $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
+        $user=$user_terminal->user;
 
         if(is_null($user_terminal)){
             //redirigirlo
@@ -79,7 +80,8 @@ class TransporteEncomiendaController extends Controller
             'configuration',
             'document_type_03_filter',
             'isCashOpen',
-            'persons'
+            'persons',
+            'user'
         ));
     }
 

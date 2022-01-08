@@ -46,6 +46,7 @@ class TransportePasajeController extends Controller
         }
 
         $terminal = $user_terminal->terminal;
+        $user=$user_terminal->user;
 
         // $pasajes = TransportePasaje::with('document','pasajero','asiento')
         // ->whereHas('programacion',function($programacion) use ($terminal){
@@ -81,7 +82,8 @@ class TransportePasajeController extends Controller
             'payment_destinations',
             'terminal',
             'configuration',
-            'estadosAsientos'
+            'estadosAsientos',
+            'user'
         ));
     }
 

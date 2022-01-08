@@ -14,6 +14,7 @@
     :document_type_03_filter='@json($document_type_03_filter)'
     :is-cash-open='@json($isCashOpen)'
     :persons='@json($persons)'
+    :user='@json($user)'
     />
 
 @endsection

@@ -378,7 +378,8 @@ class TransporteManifiestosController extends Controller
                     $programacion->with('destino','origen','vehiculo');
                 }
             ])
-            ->where('tipo',$tipo)->get();
+            ->where('tipo',$tipo)
+            ->orderBy('id','DESC')->get();
 
             return response()->json($manifiestos,200);
 

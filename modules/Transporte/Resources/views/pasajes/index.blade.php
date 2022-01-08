@@ -12,6 +12,7 @@
         :user-terminal='@json($terminal)'
         :configuration='@json($configuration)'
         :estado-asientos='@json($estadosAsientos)'
+        :user='@json($user)'
     />
 
 @endsection

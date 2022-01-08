@@ -571,10 +571,10 @@ export default {
             let element = this.$refs.precioBoleto;
 
             this.$nextTick(() => element && element.focus());
+            this.document.document_type_id = '03';
+            this.changeDocumentType();
             await this.searchCliente();
             await this.searchPasajero();
-            this.changeDocumentType();
-            this.document.document_type_id = '03';
             this.filterSeries();
             this.filterCustomers();
         },

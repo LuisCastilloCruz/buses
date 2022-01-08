@@ -46,6 +46,7 @@ class TransporteSalesController extends Controller
         $terminal = $request->user()->terminal;
 
         $isCashOpen =  !is_null(Cash::where([['user_id',$user->id],['state',true]])->first());
+        //dd($isCashOpen);
         if(is_null($terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
@@ -151,7 +152,7 @@ class TransporteSalesController extends Controller
                /* váliddo si es el mismo dia  */
                if($date->isSameDay($today)){
                    /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
-                   $time = date('H:i:s',strtotime("-60 minutes")); //doy una hora para que aún esté disponible la programación
+                   $time = date('H:i:s',strtotime("-120 minutes")); //doy una hora para que aún esté disponible la programación
                    $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
                }
            }

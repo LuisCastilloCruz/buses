@@ -626,12 +626,6 @@ export default {
             asiento.estado_asiento_id = 4;
             this.openModal = true;
             this.asiento = asiento;
-
-            console.log('aqui')
-            console.log(this.asiento)
-
-
-
         },
 
         searchCiudad(value= ''){

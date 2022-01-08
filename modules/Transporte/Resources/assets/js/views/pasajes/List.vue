@@ -93,7 +93,7 @@
                                                             </el-tooltip>
 
                                                             <el-tooltip class="item" effect="dark" content="Anular" placement="top-start">
-                                                                <el-button type="danger" @click="anular(pasaje)">
+                                                                <el-button :disabled="user.type != 'admin'" type="danger" @click="anular(pasaje)">
                                                                     <i class="fa fa-trash"></i>
                                                                 </el-button>
                                                             </el-tooltip>
@@ -157,7 +157,7 @@
                                                     <el-button type="primary" @click="verNota(note)">
                                                         <i class="fa fa-file-alt"></i>
                                                     </el-button>
-                                                    <button data-toggle="tooltip" data-placement="top" title="Anular" v-if="note.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                                    <button :disabled="user.type != 'admin'" data-toggle="tooltip" data-placement="top" title="Anular" v-if="note.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                             @click.prevent="anularNota(note.id)"><i class="fas fa-trash"></i></button>
                                                 </td>
                                             </tr>
@@ -273,6 +273,10 @@ export default {
             required:true,
             default:() => []
         },
+        user:{
+            type:Object,
+            required:true,
+        }
     },
     components: {
         DocumentOptions,
