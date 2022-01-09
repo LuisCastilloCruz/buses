@@ -44,13 +44,20 @@ class TransporteEncomiendaController extends Controller
         $estadosPagos = TransporteEstadoPagoEncomienda::all();
 
         $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
-        $user=$user_terminal->user;
 
         if(is_null($user_terminal)){
             //redirigirlo
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
         }
+
+        $user=$user_terminal->user;
+
+        // if(is_null($user_terminal)){
+        //     //redirigirlo
+        //     Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
+        //     return redirect()->back();
+        // }
 
         $terminal = $user_terminal->terminal;
         $persons = Person::where('type','customers')->get();

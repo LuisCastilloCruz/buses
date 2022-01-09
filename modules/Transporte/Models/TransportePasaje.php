@@ -32,7 +32,9 @@ class TransportePasaje extends ModelTenant
         'origen_id',
         'cliente_id',
         'nombre_pasajero',
-        'user_name'
+        'user_name',
+        'sucursal_id',
+        'color'
     ];
 
 

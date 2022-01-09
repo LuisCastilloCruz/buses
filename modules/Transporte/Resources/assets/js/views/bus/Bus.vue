@@ -198,6 +198,7 @@ export default {
 
         stateAsiento(asiento,config={}){
             /** Manejo de los estados del asiento */
+            
             if(asiento.estado_asiento_id == 1){//Disponible
                 return {
                     fill:'#fff',
@@ -210,10 +211,15 @@ export default {
                         fill:'#fff'
                     };
                 }
+
+                let color = asiento.transporte_pasaje 
+                ? asiento.transporte_pasaje.color
+                : '#ff0000';
+
                 return {
-                    fill:'#ff0000',
+                    fill: color, // '#ff0000'
                     animation:'none',
-                    color:'#fff'
+                    color: asiento.color
                 }
 
             }else if(asiento.estado_asiento_id == 3){ //Reservado

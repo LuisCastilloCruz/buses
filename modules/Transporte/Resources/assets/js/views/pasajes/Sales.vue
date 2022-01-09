@@ -557,7 +557,7 @@ export default {
                     };
                 }
                 return {
-                    fill:'#ff0000',
+                    fill: this.terminal.color || '#ff0000',
                     animation:'none'
                 }
 

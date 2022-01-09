@@ -24,7 +24,7 @@ class TransporteTerminalesController extends Controller
 
     public function store(TransporteTerminalesRequest $request){
 
-        $terminal = TransporteTerminales::create($request->only('direccion','destino_id','nombre'));
+        $terminal = TransporteTerminales::create($request->only('direccion','destino_id','nombre','color'));
         $terminal->destino; //cargo el destino o ciudad
 
         return response()->json([
@@ -58,7 +58,8 @@ class TransporteTerminalesController extends Controller
         $terminal->update($request->only([
             'nombre',
             'direccion',
-            'destino_id'
+            'destino_id',
+            'color'
         ]));
         $terminal->destino;
 

@@ -319,6 +319,7 @@ class TransporteSalesController extends Controller
                 if(!is_null($isState)){
                     $seat->estado_asiento_id = $isState->estado_asiento_id;
                     $seat->transporte_pasaje = $isState;
+                    $seat->color = $isState->color;
                     $ocupados->push($seat); //inserto el asiento en la lista de ocupados
                     /** Si existe en disponibles lo remuevo */
                     $disponibles = $disponibles->filter(function($asiento) use($seat){
@@ -385,6 +386,7 @@ class TransporteSalesController extends Controller
                 if(!is_null($isState)){
                     $seat->estado_asiento_id = $isState->estado_asiento_id;
                     $seat->transporte_pasaje = $isState;
+                    $seat->color = $isState->color;
                     $ocupados->push($seat); //inserto el asiento en la lista de ocupados
 
                     /** Si existe en disponibles lo remuevo */
@@ -443,7 +445,7 @@ class TransporteSalesController extends Controller
                 'tipo_venta',
                 'numero_asiento',
                 'destino_id',
-                'hora_salida'
+                'hora_salida',
             ]);
 
             if($request->input('tipo_venta') == 1){
@@ -451,8 +453,9 @@ class TransporteSalesController extends Controller
                     array_merge($attributes,[
                         'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
                         'origen_id' => $terminal->id,
-                        'soap_type_id'=>$soap_type_id
-                        // 'fecha_llegada' => $fechaLLegada
+                        'soap_type_id'=>$soap_type_id,
+                        // 'fecha_llegada' => $fechaLLegada,
+                        'sucursal_id' => $terminal->id,
                     ])
                 );
 
@@ -481,7 +484,9 @@ class TransporteSalesController extends Controller
                         'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
                         'origen_id' => $terminal->id,
                         'soap_type_id'=>$soap_type_id,
-                        'user_name' => auth()->user()->name
+                        'user_name' => auth()->user()->name,
+                        'sucursal_id' => $terminal->id,
+                        'color' => $terminal->color
                     ])
                 );
 
