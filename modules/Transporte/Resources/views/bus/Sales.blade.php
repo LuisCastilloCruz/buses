@@ -9,6 +9,7 @@
 
 
     <tenant-transporte-bus-sales
+    :socket-host='@json(env("URL_SERVER_SOCKET"))'
     :document_type_03_filter='@json($document_type_03_filter)'
     :item-pasajero='@json($pasaje)'
     :estado-asientos="{{ $estadosAsientos }}"

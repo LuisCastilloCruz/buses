@@ -7,7 +7,8 @@
         "watch-poll": "npm run watch -- --watch-poll",
         "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
         "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "start-socket": "nodemon ./socket/index.js"
     },
     "devDependencies": {
         "axios": "^0.18.1",
@@ -18,6 +19,7 @@
         "jquery": "^3.4.1",
         "laravel-mix": "^3.0.0",
         "lodash": "^4.17.15",
+        "nodemon": "^2.0.15",
         "popper.js": "^1.12",
         "vue": "^2.5.7"
     },
@@ -31,6 +33,8 @@
         "jqwidgets-scripts": "^10.1.5",
         "moment": "^2.22.2",
         "node-sass": "^4.14.1",
+        "socket.io": "^4.4.1",
+        "socket.io-client": "^4.4.1",
         "v-movable": "^0.3.2",
         "vue-chartjs": "^3.4.0",
         "vue-ckeditor5": "^0.5.0",
