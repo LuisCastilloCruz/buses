@@ -93,6 +93,12 @@ if ($hostname) {
 				Route::post('usuarios-terminales/store','TransporteUsersTerminalController@store');
 				Route::put('usuarios-terminales/{usuario_terminal}/update','TransporteUsersTerminalController@update');
 				Route::delete('usuarios-terminales/{id}/delete','TransporteUsersTerminalController@destroy');
+
+
+				//Reportes
+				Route::get('reportes','TransporteReportes@index');
+				Route::post('reportes/reporte-venta-por-dia/preview','TransporteReportes@getPreviewReporteVentarPorDia');
+				Route::post('reportes/reporte-venta-por-dia','TransporteReportes@reporteDiarioPorVentas');
 			});
 	});
 }

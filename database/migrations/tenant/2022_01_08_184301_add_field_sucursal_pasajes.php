@@ -20,6 +20,9 @@ class AddFieldSucursalPasajes extends Migration
             $table->foreign('sucursal_id')->references('id')->on('transporte_terminales');
 
             $table->string('color')->nullable();
+
+            $table->unsignedInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

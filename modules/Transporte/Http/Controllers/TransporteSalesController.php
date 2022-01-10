@@ -230,10 +230,12 @@ class TransporteSalesController extends Controller
 
 
     private function getProgramacionesMatch(TransporteProgramacion $programacion){
-        $terminal = Auth::user()->terminal;
+       
         $listProgramaciones = new Collection();
 
         $parent = $programacion->programacion;
+
+        $terminal = $programacion->destino;
 
         $listaRutas = $parent->rutas()->get();
 
@@ -425,7 +427,9 @@ class TransporteSalesController extends Controller
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
 
-        $terminal = $request->user()->terminal;
+        $user = $request->user();
+
+        $terminal = $user->terminal;
 
         DB::connection('tenant')->beginTransaction();
 
@@ -456,6 +460,7 @@ class TransporteSalesController extends Controller
                         'soap_type_id'=>$soap_type_id,
                         // 'fecha_llegada' => $fechaLLegada,
                         'sucursal_id' => $terminal->id,
+                        'user_id' => $user->id,
                     ])
                 );
 
@@ -486,7 +491,8 @@ class TransporteSalesController extends Controller
                         'soap_type_id'=>$soap_type_id,
                         'user_name' => auth()->user()->name,
                         'sucursal_id' => $terminal->id,
-                        'color' => $terminal->color
+                        'color' => $terminal->color,
+                        'user_id' => $user->id,
                     ])
                 );
 

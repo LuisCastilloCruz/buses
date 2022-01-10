@@ -34,7 +34,8 @@ class TransportePasaje extends ModelTenant
         'nombre_pasajero',
         'user_name',
         'sucursal_id',
-        'color'
+        'color',
+        'user_id'
     ];
 
 
@@ -59,4 +60,14 @@ class TransportePasaje extends ModelTenant
     public function saleNote() : BelongsTo{
         return $this->belongsTo(SaleNote::class,'note_id','id');
     }
+
+    public function origen() : BelongsTo{
+        return $this->belongsTo(TransporteTerminales::class,'origen_id');
+    }
+
+    public function destino() : BelongsTo{
+        return $this->belongsTo(TransporteTerminales::class,'destino_id');
+    }
+
+
 }

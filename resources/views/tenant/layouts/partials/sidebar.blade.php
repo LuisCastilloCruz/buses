@@ -887,6 +887,9 @@
                                 <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'manifiestos')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/manifiestos') }}">Manifiestos</a>
                                 </li>
+                                <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'reportes')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ url('transportes/reportes') }}">Reportes</a>
+                                </li>
 
                                 @if(auth()->user()->type == 'admin')
                                     <li class="{{ (($path[0] === 'transportes') && ($path[1] === 'usuarios-terminales')) ? 'nav-active' : '' }}">
