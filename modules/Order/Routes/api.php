@@ -11,6 +11,7 @@ if ($hostname) {
             Route::prefix('order-notes')->group(function () {
                 Route::post('', 'OrderNoteController@store');
                 Route::get('lists', 'Api\OrderNoteController@lists');
+                Route::get('record/{id}', 'Api\OrderNoteController@record');
             });
 
         });
