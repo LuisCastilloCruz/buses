@@ -89,4 +89,11 @@ class OrderNoteController extends Controller
     //     $this->order_note->save();
 
     // }
+
+    public function record(Request $request)
+    {
+        $record = new OrderNoteResource(OrderNote::findOrFail($request->id));
+
+        return $record;
+    }
 }

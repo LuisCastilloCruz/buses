@@ -415,6 +415,7 @@ class OrderNoteController extends Controller
                 'id' => $this->order_note->id,
                 'external_id' => $this->order_note->external_id,
 				'number' => $this->order_note->id,
+                'order_note' => $this->order_note
             ],
         ];
     }
