@@ -17,10 +17,10 @@
                                 <reporte-ventas-por-dia :oficinas="oficinas" />
                             </el-tab-pane>
                             <el-tab-pane label="Reporte Avance de venta por buses" name="reporte2">
-
+                                <reporte-porcentaje-programaciones />
                             </el-tab-pane>
                             <el-tab-pane label="Reporte venta por buses" name="reporte3">
-
+                                <reporte-ventas-buses />
                             </el-tab-pane>
                         </el-tabs>
                     </div>
@@ -32,9 +32,14 @@
 <script>
 
 import ReporteVentasPorDia from './tabs/ReporteVentasPorDia';
+import ReportePorcentajeProgramaciones from './tabs/ReportePorcentajeProgramaciones';
+import ReporteVentasBuses from './tabs/ReporteVentasBuses';
 export default {
     components:{
-        ReporteVentasPorDia
+        ReporteVentasPorDia,
+        ReportePorcentajeProgramaciones,
+        ReporteVentasBuses
+
     },
     props:{
         oficinas:{

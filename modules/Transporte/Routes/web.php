@@ -99,6 +99,15 @@ if ($hostname) {
 				Route::get('reportes','TransporteReportes@index');
 				Route::post('reportes/reporte-venta-por-dia/preview','TransporteReportes@getPreviewReporteVentarPorDia');
 				Route::post('reportes/reporte-venta-por-dia','TransporteReportes@reporteDiarioPorVentas');
+
+				// REPORTE DE AVANCE DE BUSES POR PORCENTAJE
+				Route::post('reportes/reporte-porcentaje-programaciones/preview','TransporteReportes@getPreviewReportePorcentajeProgramaciones');
+				Route::post('reportes/reporte-porcentaje-programaciones','TransporteReportes@getReportePorcentajeProgramaciones');
+
+
+				// REPORTE DE VENTA POR BUSES
+				Route::post('reportes/reporte-ventas-buses/preview','TransporteReportes@getPreviewReporteVentaBuses');
+				Route::post('reportes/reporte-ventas-buses','TransporteReportes@getReporteVentaBuses');
 			});
 	});
 }

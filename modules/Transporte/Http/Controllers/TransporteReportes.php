@@ -10,6 +10,7 @@ use Modules\Transporte\Models\TransporteTerminales;
 use Mpdf\Mpdf;
 use App\Models\Tenant\Company;
 use DateTime;
+use Modules\Transporte\Models\TransporteVehiculo;
 
 class TransporteReportes extends Controller
 {
@@ -88,8 +89,6 @@ class TransporteReportes extends Controller
 
     }
 
-   
-
     public function reporteDiarioPorVentas(Request $request){
 
         extract($request->only(['oficina','fecha','page','limit']));
@@ -102,6 +101,8 @@ class TransporteReportes extends Controller
         
         ->get();
 
+        $total = 0;
+
         foreach($vendedores as $vendedor){
 
             $totalVendido = TransportePasaje::where('user_id',$vendedor->id)
@@ -110,19 +111,235 @@ class TransporteReportes extends Controller
             
             $pasajes = TransportePasaje::with('origen','destino')
             ->where('user_id',$vendedor->id)
+            ->whereDate('created_at',$fecha) 
             ->get();
 
             $vendedor->setAttribute('pasajes_vendidos',$pasajes);
             $vendedor->setAttribute('total_vendido',$totalVendido);
 
+            $total += $totalVendido;
         }
 
         $this->generarReportePorVentas([
             'sucursal' => $sucursal,
             'fecha' => $fecha,
-            'vendedores' => $vendedores
+            'vendedores' => $vendedores,
+            'total' => $total
         ]);
 
+    }
+
+
+    //REPORTE DE AVANCE DE VENTAS
+
+    private function getReporteAvanceVentas(array $data){
+
+        $pdf = new Mpdf([
+            'mode' => 'utf-8',
+            'margin_top' => 2,
+            'margin_right' => 2,
+            'margin_bottom' => 0,
+            'margin_left' => 2
+        ]);
+
+
+        $content = view('transporte::reportes.templates.reporte_avance_porcentaje.index',$data);
+        $pdf->SetHTMLFooter('<div style="text-align: center; font-size: 7pt">Numéro de autorización SUNAT: '.$this->company->num_aut_manifiesto_pasajero.'</div>'
+            ,0);
+        $pdf->WriteHTML($content);
+
+        $name = 'reporte_por_dia_ventas'.(new DateTime())->getTimestamp().'.pdf';
+
+        $pdf->Output($name,'I');
+
+    }
+
+
+    public function getPreviewReportePorcentajeProgramaciones(Request $request){
+
+        extract($request->only(['fecha','page','limit']));
+
+        $transportes = TransporteVehiculo::with('programaciones')
+        ->whereHas('programaciones',function($builder){
+            $builder->where('active',true);
+        })
+        ->take($limit)->skip($limit * ($page - 1) );
+
+
+        $total = $transportes->count();
+        $transportes = $transportes->get();
+
+        foreach($transportes as $transporte){
+
+            $totalAsientos = $transporte->asientos;
+            $idsProgramaciones = $transporte->programaciones->map(function($item){
+                return $item->id;
+            });
+
+            $query = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            ->whereDate('fecha_salida',$fecha);
+
+            $copyQuery = $query;
+
+            $efectivo = $copyQuery->sum('precio');
+
+            $asientosOcupados = $copyQuery->count();
+
+            $porcentaje = ((int)($asientosOcupados * 100 / $totalAsientos));
+
+            $transporte->setAttribute('asientos_ocupados',$asientosOcupados);
+            $transporte->setAttribute('asientos_disponibles', $totalAsientos - $asientosOcupados);
+            $transporte->setAttribute('total_vendido',number_format($efectivo,2,'.',''));
+            $transporte->setAttribute('porcentaje',$porcentaje);
+
+        }
+
+        return response()->json([
+            'total' => $total,
+            'data' => $transportes
+        ]);
+    }
+
+    public function getReportePorcentajeProgramaciones(Request $request){
+
+        extract($request->only(['fecha','page','limit']));
+
+        $transportes = TransporteVehiculo::with('programaciones')
+        ->whereHas('programaciones',function($builder){
+            $builder->where('active',true);
+        });
+
+
+        $transportes = $transportes->get();
+
+        $total = 0;
+
+        foreach($transportes as $transporte){
+
+            $totalAsientos = $transporte->asientos;
+            $idsProgramaciones = $transporte->programaciones->map(function($item){
+                return $item->id;
+            });
+
+            $query = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            ->whereDate('fecha_salida',$fecha);
+
+            $copyQuery = $query;
+
+            $efectivo = $copyQuery->sum('precio');
+
+            $asientosOcupados = $copyQuery->count();
+
+            $porcentaje = ((int)($asientosOcupados * 100 / $totalAsientos));
+
+            $transporte->setAttribute('asientos_ocupados',$asientosOcupados);
+            $transporte->setAttribute('asientos_disponibles', $totalAsientos - $asientosOcupados);
+            $transporte->setAttribute('total_vendido',number_format($efectivo,2,'.',''));
+            $transporte->setAttribute('porcentaje',$porcentaje);
+            
+            $total += $efectivo;
+        }
+
+        $this->getReporteAvanceVentas([
+            'transportes' => $transportes,
+            'fecha' => $fecha,
+            'total' => $total
+        ]);
+    }
+
+     //REPORTE DE VENTAS POR BUSES
+
+     private function getReporteVentasBuses(array $data){
+
+        $pdf = new Mpdf([
+            'mode' => 'utf-8',
+            'margin_top' => 2,
+            'margin_right' => 2,
+            'margin_bottom' => 0,
+            'margin_left' => 2
+        ]);
+
+
+        $content = view('transporte::reportes.templates.reporte_ventas_buses.index',$data);
+        $pdf->SetHTMLFooter('<div style="text-align: center; font-size: 7pt">Numéro de autorización SUNAT: '.$this->company->num_aut_manifiesto_pasajero.'</div>'
+            ,0);
+        $pdf->WriteHTML($content);
+
+        $name = 'reporte_por_dia_ventas'.(new DateTime())->getTimestamp().'.pdf';
+
+        $pdf->Output($name,'I');
+
+    }
+
+
+    public function getPreviewReporteVentaBuses(Request $request){
+
+        extract($request->only(['fecha','page','limit']));
+
+        $transportes = TransporteVehiculo::with('programaciones')
+        ->whereHas('programaciones',function($builder){
+            $builder->where('active',true);
+        })
+        ->take($limit)->skip($limit * ($page - 1) );
+
+
+        $total = $transportes->count();
+        $transportes = $transportes->get();
+
+        foreach($transportes as $transporte){
+
+            $idsProgramaciones = $transporte->programaciones->map(function($item){
+                return $item->id;
+            });
+
+            $efectivo = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            ->whereDate('created_at',$fecha)
+            ->sum('precio');
+
+            $transporte->setAttribute('total_vendido',number_format($efectivo,2,'.',''));
+
+        }
+
+        return response()->json([
+            'total' => $total,
+            'data' => $transportes
+        ]);
+    }
+
+    public function getReporteVentaBuses(Request $request){
+
+        extract($request->only(['fecha','page','limit']));
+
+        $transportes = TransporteVehiculo::with('programaciones')
+        ->whereHas('programaciones',function($builder){
+            $builder->where('active',true);
+        });
+
+
+        $transportes = $transportes->get();
+
+        $total = 0;
+
+        foreach($transportes as $transporte){
+
+            $idsProgramaciones = $transporte->programaciones->map(function($item){
+                return $item->id;
+            });
+
+            $efectivo = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            ->whereDate('created_at',$fecha)
+            ->sum('precio');
+
+            $transporte->setAttribute('total_vendido',number_format($efectivo,2,'.',''));
+            
+            $total += $efectivo;
+        }
+
+        $this->getReporteVentasBuses([
+            'transportes' => $transportes,
+            'fecha' => $fecha,
+            'total' => $total
+        ]);
     }
 
 }

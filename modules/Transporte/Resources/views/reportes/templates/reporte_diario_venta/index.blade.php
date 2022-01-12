@@ -22,21 +22,19 @@
 
 <table style="width: 100%;font-size:11px">
     <tr>
-        <td style="width: 33%;text-align: center">
-             <strong>{{ $sucursal->nombre }} </strong> <br>
-            
-        </td>
       
-        <td style="width: 40%">
+        <td style="width: 100%">
             <table class="bordered" style="width: 100%">
                 <tr>
                     <td style="width: 100%;text-align:center">
                         {{-- <h1>RUC: {{ $company->number }}</h1> --}}
                     </td>
                 </tr>
-                <tr style="background-color: #0088cc;">
+                <tr style="background-color: {{ $sucursal->color }};">
                     <td style="width: 100%;text-align:center;color:white">
-                        <h2>REPORTE DE PASAJEROS POR FECHA</h2>
+                        <h2>REPORTE DE VENTAS POR OFICINA</h2><br>
+                        Sucursal: <strong>{{ $sucursal->nombre }} </strong> <br>
+                        Fecha: <strong>{{ $fecha }}</strong>
                     </td>
                 </tr>
                 <tr>
@@ -45,6 +43,11 @@
                     </td>
                 </tr>
             </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="width: 33%;text-align: right;font-size: 20px;">
+            Ingresos totales: <strong style="background-color: yellow">${{ number_format($total,2,'.','') }} </strong> <br>
         </td>
     </tr>
 </table>
@@ -77,7 +80,7 @@
                                         <td>{{ $pasaje->pasajero->name }}</td>
                                         <td>{{ $pasaje->origen->nombre }}</td>
                                         <td>{{ $pasaje->destino->nombre }}</td>
-                                        <td>{{ number_format($pasaje->precio,2,'.','') }}</td> 
+                                        <td style="background-color: yellow"> <strong>{{ number_format($pasaje->precio,2,'.','') }}</strong></td> 
                                     </tr>
                                 @endforeach
             
