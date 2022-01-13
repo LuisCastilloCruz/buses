@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFieldSucursalPasajes extends Migration
+class TenantAddForeignUserTerminalToTransportePasajes extends Migration
 {
     /**
      * Run the migrations.
@@ -14,11 +14,8 @@ class AddFieldSucursalPasajes extends Migration
     public function up()
     {
         Schema::table('transporte_pasajes', function (Blueprint $table) {
-            //
-
-            $table->unsignedInteger('sucursal_id')->nullable();
-            $table->string('color')->nullable();
-            $table->unsignedInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('sucursal_id')->references('id')->on('transporte_terminales');
         });
     }
 
