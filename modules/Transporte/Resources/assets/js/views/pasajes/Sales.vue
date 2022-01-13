@@ -341,9 +341,15 @@ import VentaAsientoLibre from './VentaAsientoLibre.vue';
 import DocumentOptions from "@views/documents/partials/options.vue";
 import DocumentsVoided from '@views/documents/partials/voided.vue';
 import DetalleBoleto from './DetalleBoleto.vue';
-export default {
+import SocketClient from '@mixins/socket.js'
 
+export default {
+    mixins:[SocketClient],
     props:{
+        socketHost:{
+            type:String,
+            default: ''
+        },
         isCashOpen:{
             type:Boolean,
             required:true,
@@ -413,7 +419,7 @@ export default {
         // }
     },
     mounted() {
-        this.setTime()
+        this.setTime();
     },
     async created(){
         this.load = true;
@@ -427,6 +433,8 @@ export default {
         await this.searchDestinos();
         await this.onCreate();
         this.load = false;
+
+        this.initSocket();
 
     },
     data(){
@@ -476,7 +484,8 @@ export default {
 
             reloj:null,
             fecha:null,
-            hora:null
+            hora:null,
+            socketClient:null,
         });
     },
     computed:{
@@ -492,6 +501,25 @@ export default {
     },
     methods:{
 
+        initSocket(){
+            try{
+
+                const { Manager } = this.io;
+
+                const manager = new Manager(this.socketHost);
+
+                this.socketClient = manager.socket("/");
+
+                this.socketClient.on('venta-completada', (params) => {
+                    if( this.selectProgramacion.id ) this.onUpdateItem();
+                });
+
+
+            }catch(error){
+               this.socketClient = null;
+            }
+            
+        },
         nuevaVenta(){
             this.pasajero = null;
             this.selectProgramacion = {};
@@ -531,6 +559,8 @@ export default {
         async onSuccessVenta(documentId){
             this.documentId = documentId;
             this.showDialogDocumentOptions = true;
+
+            if(this.socketClient) this.socketClient.emit('venta-completada',true);
             // if(this.tipoVenta == 2){
             //     await this.onUpdateItem()
             //     this.documentId = documentId;
@@ -557,7 +587,7 @@ export default {
                     };
                 }
                 return {
-                    fill:'#ff0000',
+                    fill: this.terminal.color || '#ff0000',
                     animation:'none'
                 }
 

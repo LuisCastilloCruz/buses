@@ -298,9 +298,9 @@ export default {
             default:null,
         },
         programacion: {
-            type: Object | null,
+            type: Object|null,
             required: true,
-            default: {},
+            default: () => ({}),
         },
         estadosAsientos:{
             type:Array,

@@ -32,6 +32,7 @@
                             <th>Nombre</th>
                             <th>Dirección</th>
                             <th>Ciudad</th>
+                            <th>Color de asiento</th>
                             <th></th>
                             <!-- <th>Licencia</th>
                             <th>Categoría</th> -->
@@ -43,6 +44,10 @@
                             <td>{{ terminal.nombre }}</td>
                             <td>{{ terminal.direccion }}</td>
                             <td>{{ terminal.destino.nombre }}</td>
+                            <td class="text-center">
+                                <el-tag class="p-3" :color="terminal.color || '#000000'"></el-tag>
+                                <!-- <el-switch :active-color="terminal.color || '#000000'" :value="item.color"></el-switch> -->
+                            </td>
                             <!-- <td>{{ item.licencia }}</td>
                             <td>{{ item.categoria }}</td> -->
                             <td class="text-center">
@@ -130,12 +135,14 @@ export default {
             this.openModalAddEdit = true;
         },
         onUpdateItem(terminal) {
-            this.listTerminales = this.listTerminales.map((i) => {
+            let terminales = this.listTerminales.map((i) => {
                 if (i.id === terminal.id) {
                     return terminal;
                 }
                 return i;
             });
+
+            this.listTerminales = terminales.slice()
         },
         onAddItem(terminal) {
             this.listTerminales.unshift(terminal);

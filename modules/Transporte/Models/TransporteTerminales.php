@@ -10,7 +10,7 @@ class TransporteTerminales extends ModelTenant
 {
     //
     protected $table = 'transporte_terminales';
-    protected $fillable = ['nombre','direccion','destino_id'];
+    protected $fillable = ['nombre','direccion','destino_id','color'];
 
 
     public function destino() : BelongsTo{

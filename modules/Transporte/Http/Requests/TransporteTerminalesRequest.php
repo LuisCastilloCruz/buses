@@ -27,7 +27,8 @@ class TransporteTerminalesRequest extends FormRequest
         return [
             'nombre' => ['required','max:255'],
             'direccion' => ['required','max:255'],
-            'destino_id' => ['required','exists:tenant.transporte_destinos,id']
+            'destino_id' => ['required','exists:tenant.transporte_destinos,id'],
+            'color' => ['required']
             //
         ];
     }

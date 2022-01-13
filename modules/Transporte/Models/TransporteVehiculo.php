@@ -34,4 +34,8 @@ class TransporteVehiculo extends ModelTenant
         return $this->hasMany(TransporteAsiento::class,'vehiculo_id','id');
     }
 
+    public function programaciones() : HasMany{
+        return $this->hasMany(TransporteProgramacion::class,'vehiculo_id');
+    }
+
 }

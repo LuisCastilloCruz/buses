@@ -334,6 +334,10 @@ Vue.component('tenant-transporte-usuariosterminales',require('@viewsModuleTransp
 Vue.component('tenant-transporte-manifiestos',require('@viewsModuleTransporte/manifiestos/Manifiestos.vue'));
 Vue.component('tenant-transporte-encomiendas-manifiesto', require('@viewsModuleTransporte/manifiestos/AsignacionEncomiendaManifiestos.vue'));
 
+//Transporte :: REPORTES
+
+Vue.component('tenant-transporte-reportes', require('@viewsModuleTransporte/reportes/Reportes.vue'))
+
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 

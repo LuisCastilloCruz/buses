@@ -41,6 +41,11 @@
                     <!-- <input type="text" id="nombre" class="form-control" v-model="form.nombre" :class="{ 'is-invalid': errors.nombre }"/> -->
                     <span v-if="errors.destino_id" :style="{marginTop: '0.25rem',fontSize: '80%',color: '#dc3545'}">El destino es obligatorio</span>
                 </div>
+                <div class="form-group">
+                    <label for="color">Color Asientos</label>
+                    <el-input type="color" name="color" id="color" class="form-control" v-model="form.color" :class="{ 'is-invalid': errors.color }"/>
+                    <div v-if="errors.color" class="invalid-feedback">{{ errors.color[0] }}</div>
+                </div>
                 <!-- <div class="form-group">
                     <label for="licencia">Licencia</label>
                     <input type="text" id="licencia" class="form-control" v-model="form.licencia" :class="{ 'is-invalid': errors.licencia }"/>
@@ -95,7 +100,8 @@ export default {
             form: {
                 nombre:null,
                 direccion:null,
-                destino_id:null
+                destino_id:null,
+                color:null,
             },
             title: "",
             errors: {},

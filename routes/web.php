@@ -649,6 +649,8 @@ if ($hostname) {
 
             Route::post('extra_info/items', 'Tenant\ExtraInfoController@getExtraDataForItems');
         });
+
+        Route::get('test','TestController@test');
     });
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
