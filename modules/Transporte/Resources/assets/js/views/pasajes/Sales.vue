@@ -434,7 +434,7 @@ export default {
         await this.onCreate();
         this.load = false;
 
-        this.initSocket();
+        //this.initSocket();
 
     },
     data(){
