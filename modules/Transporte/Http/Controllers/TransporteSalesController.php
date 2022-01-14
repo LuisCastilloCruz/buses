@@ -30,6 +30,7 @@ use App\Models\Tenant\PaymentMethodType;
 use Exception;
 use Illuminate\Support\Collection;
 use Modules\Finance\Traits\FinanceTrait;
+use Modules\Transporte\Traits\Rutas;
 
 class TransporteSalesController extends Controller
 {
@@ -38,7 +39,7 @@ class TransporteSalesController extends Controller
      * @return Response
      */
 
-    use FinanceTrait;
+    use FinanceTrait, Rutas;
     public function index(Request $request, TransportePasaje $pasaje = null)
     {
 
@@ -217,81 +218,7 @@ class TransporteSalesController extends Controller
 
     }
 
-    private function combinaciones(Collection $list,Collection $result = null): Collection{
-        $item = $list->shift();
-        $result = is_null($result) ? new Collection() : $result;
-        if(count($list) == 0) return $result;
-
-        foreach($list as $terminal){
-            $result->push([$item->id,$terminal->id]);
-        }
-        return $this->combinaciones($list,$result);
-    }
-
-
-    private function getProgramacionesMatch(TransporteProgramacion $programacion){
-       
-        $listProgramaciones = new Collection();
-
-        $parent = $programacion->programacion;
-
-        $terminal = $programacion->destino;
-
-        $listaRutas = $parent->rutas()->get();
-
-
-        $listaRutas->prepend($parent->origen);
-        $listaRutas->push($parent->destino);
-
-        $rutaIndex = $listaRutas->search(function($r)use($terminal){
-            return $r->id == $terminal->id;
-        });
-
-
-        $orderList = $listaRutas->filter(function($term,$index) use($rutaIndex){
-            return $index >= $rutaIndex;
-        });
-
-        $listaCombinada = $this->combinaciones($orderList);
-
-        $orderList1 = $listaRutas->filter(function($term,$index) use($rutaIndex){
-            return $index < $rutaIndex;
-        });
-
-        $orderList2 = $listaRutas->filter(function($term,$index) use($rutaIndex){
-            return $index > $rutaIndex;
-        });
-
-        $newList = $orderList1->merge($orderList2);
-
-        $listaCombinada1 = $this->combinaciones($newList);
-
-        // dd($listaCombinada1);
-
-        $totalList = $listaCombinada
-        ->merge($listaCombinada1)
-        ->unique();
-
-
-
-        foreach($totalList as $item){
-            [$origen,$destino] = $item;
-
-            $program = TransporteProgramacion::where('terminal_origen_id',$origen)
-            ->where('terminal_destino_id',$destino)
-            ->where('programacion_id',$parent->id)
-            ->where('active',true)
-            ->first();
-
-            if($program) $listProgramaciones->push($program);
-
-
-        }
-
-
-        return $listProgramaciones;
-    }
-
+    
 
     private function buscarAsientosOcupados(TransporteProgramacion $programacion,$listSeats,$fecha){
         // $parent = $programacion->programacion;
