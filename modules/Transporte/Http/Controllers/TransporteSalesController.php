@@ -221,18 +221,38 @@ class TransporteSalesController extends Controller
     
 
     private function buscarAsientosOcupados(TransporteProgramacion $programacion,$listSeats,$fecha){
-        // $parent = $programacion->programacion;
+        //$parent = $programacion->programacion;
 
-        // if(is_null($parent)) return $listSeats;
+        //if(is_null($parent)) return $listSeats;
 
-        $disponibles = collect([]); // aqui almacenaré los asientos disponibles
-        $ocupados = collect([]); //aqui los ocupados
+       $disponibles = collect([]); // aqui almacenaré los asientos disponibles
+       $ocupados = collect([]); //aqui los ocupados
 
-        $list = $this->getProgramacionesMatch($programacion);
+       $list = $this->getProgramacionesMatch($programacion);
 
-        if(count($list) == 0) return $listSeats;
+       if(count($list) == 0) return $listSeats;
 
-        // $list->add($parent);
+       // $list->add($parent);
+
+        // correccion temporal
+        //     $parent = $programacion->programacion;
+
+        //     if(is_null($parent)) return $listSeats;
+
+        //     $disponibles = collect([]); // aqui almacenaré los asientos disponibles
+        //     $ocupados = collect([]); //aqui los ocupados
+
+        //     $list = $parent->programaciones()
+        //         ->where('active',true)
+        //         ->where('terminal_destino_id',$programacion->terminal_destino_id)
+        //         ->orWhere('terminal_destino_id',$parent->terminal_destino_id)
+        //         // ->where('terminal_destino_id',$programacion->terminal_destino_id)
+        //         // ->orWhere('terminal_destino_id',$parent->terminal_destino_id)
+        //         ->get();
+
+        //     $list->add($parent);
+        // //fin correcion temporal
+
         foreach($list as $program){
             /** Obtengo lista temporal de los asientos disponibles */
             $tempList = $listSeats->whereNotIn('id',$ocupados->pluck('id'));

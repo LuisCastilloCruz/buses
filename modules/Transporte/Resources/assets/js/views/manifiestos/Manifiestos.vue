@@ -223,6 +223,7 @@ export default {
         });
     },
     methods:{
+        
         onCreate(tipo){
             this.tipo = tipo;
             this.visible = true;

@@ -16,13 +16,9 @@ class AddFieldSucursalPasajes extends Migration
         Schema::table('transporte_pasajes', function (Blueprint $table) {
             //
 
-            $table->unsignedInteger('sucursal_id');
-            $table->foreign('sucursal_id')->references('id')->on('transporte_terminales');
-
+            $table->unsignedInteger('sucursal_id')->nullable();
             $table->string('color')->nullable();
-
-            $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedInteger('user_id')->nullable();
         });
     }
 

@@ -434,7 +434,7 @@ export default {
         await this.onCreate();
         this.load = false;
 
-        this.initSocket();
+        //this.initSocket();
 
     },
     data(){
@@ -506,7 +506,7 @@ export default {
 
                 const { Manager } = this.io;
 
-                const manager = new Manager(this.socketHost);
+                const manager = new Manager("https://transporte.pse.aqpfact.pe:3000");
 
                 this.socketClient = manager.socket("/");
 
@@ -518,7 +518,7 @@ export default {
             }catch(error){
                this.socketClient = null;
             }
-            
+
         },
         nuevaVenta(){
             this.pasajero = null;
