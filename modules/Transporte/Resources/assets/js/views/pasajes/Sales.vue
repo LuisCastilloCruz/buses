@@ -506,7 +506,7 @@ export default {
 
                 const { Manager } = this.io;
 
-                const manager = new Manager("https://transporte.pse.aqpfact.pe:3000");
+                const manager = new Manager("https://pse.aqpfact.pe:3000");
 
                 this.socketClient = manager.socket("/");
 
