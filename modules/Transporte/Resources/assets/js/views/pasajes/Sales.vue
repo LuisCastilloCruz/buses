@@ -289,6 +289,7 @@
         :payment-method-types="paymentMethodTypes"
         :configuration="configuration"
         :asiento="asiento"
+        :user="user"
         @anularBoleto="anularBoleto"
         @onSuccessVenta="onSuccessVenta"
         @onUpdateItem="onUpdateItem"
@@ -396,6 +397,10 @@ export default {
         itemPasajero:{
             type:Object|null,
             default:() => null
+        },
+        user:{
+            type:Object,
+            required:true,
         }
 
     },

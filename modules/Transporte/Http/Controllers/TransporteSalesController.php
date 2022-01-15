@@ -88,7 +88,8 @@ class TransporteSalesController extends Controller
             'payment_method_types',
             'payment_destinations',
             'configuration',
-            'isCashOpen'
+            'isCashOpen',
+            'user'
         ));
     }
 
@@ -218,7 +219,7 @@ class TransporteSalesController extends Controller
 
     }
 
-    
+
 
     private function buscarAsientosOcupados(TransporteProgramacion $programacion,$listSeats,$fecha){
         //$parent = $programacion->programacion;
