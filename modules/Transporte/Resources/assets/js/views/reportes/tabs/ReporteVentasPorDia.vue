@@ -9,7 +9,7 @@
                         v-for="oficina in oficinas"
                         :key="oficina.id"
                         :label="oficina.nombre"
-                    
+
                         :value="oficina.id">
                         </el-option>
                     </el-select>
@@ -32,11 +32,11 @@
             <div class="col-3 d-flex">
                 <el-button v-if="total > 0" type="primary" @click="imprimirReporte" style="align-self:center">Imprimir</el-button>
             </div>
-            
+
         </div>
         <div v-loading="loading" class="row mt-2">
             <div class="col-md-12">
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered table-striped table-responsive">
 
                     <thead>
                         <tr>
@@ -48,7 +48,7 @@
 
                         <tr v-for="(row, index) in records" :key="index">
                             <td>{{ row.name }}</td>
-                            <td>$ {{ row.total_vendido }}</td>
+                            <td>{{ row.total_vendido }}</td>
                         </tr>
 
                     </tbody>
@@ -64,7 +64,7 @@
                 </el-pagination>
             </div>
 
-            
+
 
         </div>
 
@@ -108,7 +108,7 @@ export default {
             if(newVal) {
                 this.page = 1;
                 this.getData();
-            } 
+            }
         }
     },
     methods:{
@@ -136,7 +136,7 @@ export default {
             let form = $("<form>").attr({id:"form1",target:"_blank",method:"POST",action:"/transportes/reportes/reporte-venta-por-dia"});
             let oficina = $("<input>").attr({type:"text",name:"oficina",value:this.oficina});
             let fecha = $("<input>").attr({type:"text",name:"fecha",value:this.fecha});
-           
+
             let token = $("<input>").attr({type:"text",name:"_token",value:tok});
             form.append(token,oficina,fecha);
             $(document.body).append(form);
@@ -145,6 +145,6 @@ export default {
         }
 
     }
-    
+
 }
 </script>

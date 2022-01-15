@@ -5,6 +5,7 @@
                 <div class="form-group">
                     <label for="">Fecha</label>
                     <el-date-picker
+                        :inline=true
                     v-model="fecha"
                     type="date"
                     value-format="yyyy-MM-dd"
@@ -17,11 +18,11 @@
             <div class="col-3 d-flex">
                 <el-button v-if="total > 0" type="primary" @click="imprimirReporte" style="align-self:center">Imprimir</el-button>
             </div>
-            
+
         </div>
         <div v-loading="loading" class="row mt-2">
             <div class="col-md-12">
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered table-striped table-responsive">
 
                     <thead>
                         <tr>
@@ -35,7 +36,7 @@
                         <tr v-for="(row, index) in records" :key="index">
                             <td>{{ row.placa }}</td>
                             <td>{{ row.nombre }}</td>
-                            <td>${{ row.total_vendido }}</td>
+                            <td>{{ row.total_vendido }}</td>
                         </tr>
 
                     </tbody>
@@ -51,7 +52,7 @@
                 </el-pagination>
             </div>
 
-            
+
 
         </div>
 
@@ -77,12 +78,12 @@ export default {
         }
     },
     watch:{
-        fecha(newVal){
-            if(newVal){
-                this.page = 1;
-                this.getData();
-            } 
-        }
+        // fecha(newVal){
+        //     if(newVal){
+        //         this.page = 1;
+        //         this.getData();
+        //     }
+        // }
     },
     methods:{
         async getData(){
@@ -107,7 +108,7 @@ export default {
             let tok = $('meta[name=csrf-token]').attr('content');
             let form = $("<form>").attr({id:"form1",target:"_blank",method:"POST",action:"/transportes/reportes/reporte-ventas-buses"});
             let fecha = $("<input>").attr({type:"text",name:"fecha",value:this.fecha});
-           
+
             let token = $("<input>").attr({type:"text",name:"_token",value:tok});
             form.append(token,fecha);
             $(document.body).append(form);
@@ -116,7 +117,7 @@ export default {
 
         }
     },
-    
-    
+
+
 }
 </script>

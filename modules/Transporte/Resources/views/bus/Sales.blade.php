@@ -21,6 +21,7 @@
     :payment-destinations='@json($payment_destinations)'
     :configuration='@json($configuration)'
     :is-cash-open='@json($isCashOpen)'
+    :user='@json($user)'
     ></tenant-transporte-bus-sales>
 
     {{-- <div class="draggable-area" style="background:#ddd;width:200px;height:200px;">

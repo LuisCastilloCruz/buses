@@ -113,7 +113,7 @@
                 Comprobante
                 <i class="fa fa-file-alt"></i>
             </el-button>
-            <el-button type="danger" @click="anularBoleto" :style="{marginTop:'1.90rem'}">
+            <el-button :disabled="user.type != 'admin'" type="danger" @click="anularBoleto" :style="{marginTop:'1.90rem'}">
                 Anular
                 <i class="fa fa-trash"></i>
             </el-button>
@@ -324,6 +324,10 @@ export default {
             type:Number,
             default:null
         },
+        user:{
+            type:Object,
+            required:true,
+        }
     },
     created(){
 
