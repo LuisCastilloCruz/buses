@@ -188,6 +188,7 @@ class TransporteProgramacionesController extends Controller
             DB::connection('tenant')->commit();
 
             $programacion->load([
+                'rutas',
                 'origen',
                 'destino',
                 'routes.destino',
@@ -270,14 +271,20 @@ class TransporteProgramacionesController extends Controller
         foreach($collection as $item){
             [$origen,$destino] = $item;
 
+            
+
             $oldProgramacion = TransporteProgramacion::where('terminal_origen_id',$origen)
             ->where('terminal_destino_id',$destino)
             ->where('programacion_id',$programacion->id)
             ->first();
 
-            if(!is_null($oldProgramacion)) $oldProgramacion->update(['active' => !$oldProgramacion->active]);
+            if(!is_null($oldProgramacion)){
 
-            else {
+                $oldProgramacion->update([
+                    'active' => !$oldProgramacion->active,
+                ]);
+
+            } else {
 
                 $hora_salida = null;
                 if($origen == $programacion->terminal_origen_id){
@@ -309,16 +316,6 @@ class TransporteProgramacionesController extends Controller
         foreach($collection as $item){
             [$origen,$destino] = $item;
 
-
-
-            $exist = TransporteProgramacion::where('terminal_origen_id',$origen)
-            ->where('terminal_destino_id',$destino)
-            ->where('programacion_id',$programacion->id)
-            ->first();
-
-
-            if(!is_null($exist)) continue;
-
             $hora_salida = null;
             if($origen == $programacion->terminal_origen_id){
                 $hora_salida = $programacion->hora_salida;
@@ -329,16 +326,28 @@ class TransporteProgramacionesController extends Controller
                 $hora_salida = $terminal->hora_salida;
             }
 
+            $exist = TransporteProgramacion::where('terminal_origen_id',$origen)
+            ->where('terminal_destino_id',$destino)
+            ->where('programacion_id',$programacion->id)
+            ->first();
 
-            $f = TransporteProgramacion::create([
-                'terminal_origen_id' => $origen,
-                'terminal_destino_id' => $destino,
-                'programacion_id' => $programacion->id,
-                'vehiculo_id' => $programacion->vehiculo_id,
-                'hora_salida' => $hora_salida,
-                'hidden' => true,
-                'active' => true
-            ]);
+
+            if(!is_null($exist)) {
+                $exist->update([
+                    'hora_salida' => $hora_salida
+                ]);
+            }else {
+                $f = TransporteProgramacion::create([
+                    'terminal_origen_id' => $origen,
+                    'terminal_destino_id' => $destino,
+                    'programacion_id' => $programacion->id,
+                    'vehiculo_id' => $programacion->vehiculo_id,
+                    'hora_salida' => $hora_salida,
+                    'hidden' => true,
+                    'active' => true
+                ]);
+            }
+
 
         }
 
@@ -373,6 +382,8 @@ class TransporteProgramacionesController extends Controller
                     'hora_salida' => $terminal['hora_salida'],
                     'orden' => $orden
                 ]);
+
+
                 $orden++;
             }
 
