@@ -113,9 +113,7 @@ class TransporteManifiestosController extends Controller
         ]);
 
         $company = $this->company;
-        $establishment_id = auth()->user()->establishment_id;
-        $establishment = Establishment::where('id',$establishment_id)->first();
-
+        $establishment = $manifiesto->user->establishment;
         $programacion = $manifiesto->programacion;
         $vehiculo = $programacion->vehiculo;
 
@@ -435,7 +433,8 @@ class TransporteManifiestosController extends Controller
         $programaciones = TransporteProgramacion::with('vehiculo','origen','destino')
             ->where('terminal_origen_id',$request->origen_id)
             ->where('terminal_destino_id',$request->destino_id)
-            ->WhereEqualsOrBiggerDate($request->fecha_salida);
+            ->WhereEqualsOrBiggerDate($request->fecha_salida)
+            ->where('active',1);
 
         return response()->json([
             'programaciones' => $programaciones->get()

@@ -8,8 +8,9 @@
                     v-model="fecha"
                     type="date"
                     value-format="yyyy-MM-dd"
-                    placeholder="Fecha"
-                    :picker-options="pickerOptions">
+                    placeholder="Fecha">
+<!--                    :picker-options="pickerOptions"-->
+
                     </el-date-picker>
                     <span v-if="errors.fecha" class="invalid-feedback" :style="{display:'block'}">{{ errors.fecha[0] }}</span>
                 </div>
@@ -17,11 +18,11 @@
             <div class="col-3 d-flex">
                 <el-button v-if="total > 0" type="primary" @click="imprimirReporte" style="align-self:center">Imprimir</el-button>
             </div>
-            
+
         </div>
         <div v-loading="loading" class="row mt-2">
             <div class="col-md-12">
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered table-striped table-responsive">
 
                     <thead>
                         <tr>
@@ -41,7 +42,7 @@
                             <td>{{ row.asientos_ocupados }}</td>
                             <td>{{ row.asientos_disponibles }}</td>
                             <td>%{{ row.porcentaje }}</td>
-                            <td>${{ row.total_vendido }}</td>
+                            <td>{{ row.total_vendido }}</td>
                         </tr>
 
                     </tbody>
@@ -57,7 +58,7 @@
                 </el-pagination>
             </div>
 
-            
+
 
         </div>
 
@@ -87,7 +88,7 @@ export default {
             if(newVal){
                 this.page = 1;
                 this.getData();
-            } 
+            }
         }
     },
     computed:{
@@ -124,7 +125,7 @@ export default {
             let tok = $('meta[name=csrf-token]').attr('content');
             let form = $("<form>").attr({id:"form1",target:"_blank",method:"POST",action:"/transportes/reportes/reporte-porcentaje-programaciones"});
             let fecha = $("<input>").attr({type:"text",name:"fecha",value:this.fecha});
-           
+
             let token = $("<input>").attr({type:"text",name:"_token",value:tok});
             form.append(token,fecha);
             $(document.body).append(form);
@@ -133,7 +134,7 @@ export default {
 
         }
     },
-    
-    
+
+
 }
 </script>

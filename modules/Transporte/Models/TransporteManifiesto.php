@@ -2,6 +2,7 @@
 
 namespace Modules\Transporte\Models;
 
+use App\Models\Tenant\User;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Series;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +22,8 @@ class TransporteManifiesto extends ModelTenant
         'fecha',
         'hora',
         'observaciones',
-        'programacion_id'
+        'programacion_id',
+        'user_id'
     ];
 
     public function chofer() : BelongsTo{
@@ -38,5 +40,9 @@ class TransporteManifiesto extends ModelTenant
 
     public function serie() : BelongsTo{
         return $this->belongsTo(Series::class,'serie','number');
+    }
+
+    public function user() : BelongsTo{
+        return $this->belongsTo(User::class,'user_id','id');
     }
 }

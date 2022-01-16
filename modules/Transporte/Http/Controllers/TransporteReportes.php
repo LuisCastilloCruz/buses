@@ -35,7 +35,7 @@ class TransporteReportes extends Controller
         $vendedores = User::select('id','name')
         ->whereHas('transporte_user_terminal',function($query) use ($oficina){
             $query->where('terminal_id',$oficina);
-        }) 
+        })
         ->take($limit)->skip($limit * ($page - 1) );
 
         $total = $vendedores->count();
@@ -44,11 +44,13 @@ class TransporteReportes extends Controller
         foreach($vendedores as $vendedor){
 
             $totalVendido = TransportePasaje::where('user_id',$vendedor->id)
+            ->where('estado_asiento_id',2) //solo asientos vendidos
             ->whereDate('created_at',$fecha)
             ->sum('precio');
-            
+
             $pasajes = TransportePasaje::with('origen','destino')
             ->where('user_id',$vendedor->id)
+            ->where('estado_asiento_id',2) //solo asientos vendidos
             ->whereDate('created_at',$fecha)
             ->get();
 
@@ -98,7 +100,7 @@ class TransporteReportes extends Controller
         $vendedores = User::whereHas('transporte_user_terminal',function($query) use ($oficina){
             $query->where('terminal_id',$oficina);
         })
-        
+
         ->get();
 
         $total = 0;
@@ -106,12 +108,14 @@ class TransporteReportes extends Controller
         foreach($vendedores as $vendedor){
 
             $totalVendido = TransportePasaje::where('user_id',$vendedor->id)
-            ->whereDate('created_at',$fecha) 
+            ->where('estado_asiento_id',2) //solo asientos vendidos
+            ->whereDate('created_at',$fecha)
             ->sum('precio');
-            
+
             $pasajes = TransportePasaje::with('origen','destino')
             ->where('user_id',$vendedor->id)
-            ->whereDate('created_at',$fecha) 
+            ->where('estado_asiento_id',2) //solo asientos vendidos
+            ->whereDate('created_at',$fecha)
             ->get();
 
             $vendedor->setAttribute('pasajes_vendidos',$pasajes);
@@ -177,6 +181,7 @@ class TransporteReportes extends Controller
             });
 
             $query = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            ->where('estado_asiento_id',2) //solo asientos vendidos
             ->whereDate('fecha_salida',$fecha);
 
             $copyQuery = $query;
@@ -222,6 +227,7 @@ class TransporteReportes extends Controller
             });
 
             $query = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            ->where('estado_asiento_id',2) //solo asientos vendidos
             ->whereDate('fecha_salida',$fecha);
 
             $copyQuery = $query;
@@ -236,7 +242,7 @@ class TransporteReportes extends Controller
             $transporte->setAttribute('asientos_disponibles', $totalAsientos - $asientosOcupados);
             $transporte->setAttribute('total_vendido',number_format($efectivo,2,'.',''));
             $transporte->setAttribute('porcentaje',$porcentaje);
-            
+
             $total += $efectivo;
         }
 
@@ -293,6 +299,7 @@ class TransporteReportes extends Controller
             });
 
             $efectivo = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            ->where('estado_asiento_id',2) //solo asientos vendidos
             ->whereDate('created_at',$fecha)
             ->sum('precio');
 
@@ -327,11 +334,12 @@ class TransporteReportes extends Controller
             });
 
             $efectivo = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            ->where('estado_asiento_id',2) //solo asientos vendidos
             ->whereDate('created_at',$fecha)
             ->sum('precio');
 
             $transporte->setAttribute('total_vendido',number_format($efectivo,2,'.',''));
-            
+
             $total += $efectivo;
         }
 
