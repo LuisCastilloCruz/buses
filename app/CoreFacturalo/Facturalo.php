@@ -314,12 +314,6 @@ class Facturalo
         $pdf_margin_bottom = 15;
         $pdf_margin_left = 15;
 
-        if (in_array($base_pdf_template, ['aqpfact_01'])) {
-            $pdf_margin_top = 8;
-            $pdf_margin_right = 5;
-            $pdf_margin_bottom = 5;
-            $pdf_margin_left = 10;
-        }
         if (in_array($base_pdf_template, ['full_height', 'default3_new','rounded'])) {
             $pdf_margin_top = 5;
             $pdf_margin_right = 5;
@@ -339,6 +333,7 @@ class Facturalo
             ($format_pdf === 'ticket_58') OR
             ($format_pdf === 'ticket_50'))
         {
+
 
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
@@ -558,16 +553,22 @@ class Facturalo
 
 
         if(config('tenant.pdf_template_footer')) {
-            if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
-                $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+                $html_footer = '';
+                if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+                    $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+                    $html_footer_legend = "";
+                }
+                // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
+                // se quiere visuzalizar ahora la legenda amazona en todos los formatos
                 $html_footer_legend = '';
                 if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
                     $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
                 }
 
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend); // genera esacio en blanco
+                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+
             }
-        }
+
 
         if ($base_pdf_template === 'brand') {
 
