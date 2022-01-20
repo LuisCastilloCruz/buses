@@ -909,6 +909,18 @@
                                         Libro Mayor
                                     </a>
                                 </li>
+
+                                    <li class="{{(($firstLevel === 'account') && ($secondLevel == 'ple'))   ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{ route('tenant.account_ple.index') }}">
+                                            PLE Vers. 5.2.0 2021
+                                        </a>
+                                    </li>
+
+                                    <li class="{{(($firstLevel === 'account') && ($secondLevel == 'tributo'))   ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{ route('tenant.account_tributo.index') }}">
+                                            Cuadro de tributos
+                                        </a>
+                                    </li>
                             </ul>
                         </li>
                     @endif

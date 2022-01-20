@@ -33,7 +33,7 @@
                 <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
                 <span>ES</span>
             </a>
-            <div class="d-none d-sm-none d-md-inline"><b>Para soporte escribir al 950360472 o llamar en horario de oficina al 947474096</b></div>
+            <div class="d-none d-sm-none d-md-inline"><b>Para soporte escribir al 950360472 o 947474096</b></div>
             <div class="d-block d-sm-block d-md-none"><b>Soporte 950360472</b></div>
         </div>
     </div>
