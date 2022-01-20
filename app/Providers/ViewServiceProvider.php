@@ -166,6 +166,11 @@ class ViewServiceProvider extends ServiceProvider
             'ecommerce',
             'Modules\Ecommerce\Http\ViewComposers\TakeProductoViewComposer'
         ); */
+
+        view()->composer(
+            'ecommerce::layouts.partials_ecommerce.categories_list',
+            'Modules\Ecommerce\Http\ViewComposers\CategoriesViewComposer'
+        );
     }
 
     /**
