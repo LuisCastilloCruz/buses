@@ -5,7 +5,7 @@ namespace Modules\Finance\Providers;
 use App\Models\Tenant\{
     SaleNotePayment,
     DocumentPayment,
-    PurchasePayment
+    PurchasePayment,
 };
 use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\ContractPayment;

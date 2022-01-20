@@ -346,7 +346,7 @@
     import PersonForm from '../persons/form.vue'
     import QuotationOptions from '../quotations/partials/options.vue'
     import {functions, exchangeRate} from '../../../mixins/functions'
-    import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
+    import {calculateRowItem, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
@@ -386,7 +386,8 @@
                 customer_addresses:  [],
                 // configuration: {},
                 loading_search:false,
-                recordItem: null
+                recordItem: null,
+                total_discount_no_base: 0,
             }
         },
         async created() {
@@ -613,6 +614,7 @@
                     total_taxes: 0,
                     total_value: 0,
                     total: 0,
+                    subtotal: 0,
                     operation_type_id: null,
                     date_of_due: null,
                     delivery_date: null,
@@ -636,6 +638,8 @@
                     contact:null,
                     phone:null,
                 }
+
+                this.total_discount_no_base = 0
 
                 this.clickAddPayment()
 
@@ -703,6 +707,7 @@
                 let total_value = 0
                 let total = 0
                 let total_igv_free = 0
+                this.total_discount_no_base = 0
 
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
@@ -742,9 +747,13 @@
 
                     }
 
+                    //sum discount no base
+                    this.total_discount_no_base += sumAmountDiscountsNoBaseByItem(row)
+
                 });
 
                 this.form.total_igv_free = _.round(total_igv_free, 2)
+                this.form.total_discount = _.round(total_discount, 2)
                 this.form.total_exportation = _.round(total_exportation, 2)
                 this.form.total_taxed = _.round(total_taxed, 2)
                 this.form.total_exonerated = _.round(total_exonerated, 2)
@@ -753,8 +762,9 @@
                 this.form.total_igv = _.round(total_igv, 2)
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
-                this.form.total = _.round(total, 2)
 
+                this.form.subtotal = _.round(total, 2)
+                this.form.total = _.round(total - this.total_discount_no_base, 2)
 
                 this.setTotalDefaultPayment()
 

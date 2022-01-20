@@ -167,6 +167,7 @@ class TransporteReportes extends Controller
         ->whereHas('programaciones',function($builder){
             $builder->where('active',true);
         })
+
         ->take($limit)->skip($limit * ($page - 1) );
 
 

@@ -113,7 +113,8 @@ class Purchase extends ModelTenant
         'date_of_due',
         'purchase_order_id',
         'customer_id',
-        'total_canceled'
+        'total_canceled',
+        'payment_condition_id',
     ];
 
     protected $casts = [
@@ -309,6 +310,14 @@ class Purchase extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function payment_condition()
+    {
+        return $this->belongsTo(GeneralPaymentCondition::class, 'payment_condition_id');
+    }
+
+    /**
      * @return string
      */
     public function getNumberFullAttribute()
@@ -325,6 +334,10 @@ class Purchase extends ModelTenant
     }
 
     /**
+     * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
+     * Tambien se debe tener en cuenta modules/Inventory/Providers/InventoryKardexServiceProvider.php y
+     * app/Providers/KardexServiceProvider.php para la correcta gestion de kardex
+     *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
     public function inventory_kardex()
@@ -394,6 +407,14 @@ class Purchase extends ModelTenant
      */
     public function customer() {
         return $this->belongsTo(Person::class, 'customer_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function fee()
+    {
+        return $this->hasMany(PurchaseFee::class);
     }
 
     /**

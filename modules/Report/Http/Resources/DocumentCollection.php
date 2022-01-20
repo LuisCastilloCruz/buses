@@ -13,6 +13,8 @@ class DocumentCollection extends ResourceCollection
 
         return $this->collection->transform(function($row, $key){
 
+
+            /** @var \App\Models\Tenant\Document $row */
             $affected_document = null;
             if(in_array($row->document_type_id,['07','08']) && $row->note){
 
@@ -25,7 +27,7 @@ class DocumentCollection extends ResourceCollection
             $state = $row->state_type_id;
 
             $web_platforms = $row->getPlatformThroughItems();
-
+            $seller = $row->getSellerData();
 
             return [
                 'id' => $row->id,
@@ -39,6 +41,7 @@ class DocumentCollection extends ResourceCollection
                 'customer_number' => $row->customer->number,
                 'currency_type_id' => $row->currency_type_id,
                 'series' => $row->series,
+                'establishment_id' => $row->establishment_id,
                 'alone_number' => $row->number,
                 'purchase_order' => $row->purchase_order,
                 'guides' => !empty($row->guides)?(array)$row->guides:null,
@@ -50,6 +53,7 @@ class DocumentCollection extends ResourceCollection
                 'total_taxed' => (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_taxed,2, ".",""),
                 'total_igv' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_igv,2, ".",""),
                 'total' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total,2, ".",""),
+                'total_isc' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_isc,2, ".",""),
 
 
 
@@ -58,8 +62,8 @@ class DocumentCollection extends ResourceCollection
                 'document_type_description' => $row->document_type->description,
                 'document_type_id' => $row->document_type->id,
                 'affected_document' => $affected_document,
-                'user_name' => ($row->user) ? $row->user->name : '',
-                'user_email' => ($row->user) ? $row->user->email : '',
+                'user_name' => ($seller) ? $seller->name : '',
+                'user_email' => ($seller) ? $seller->email : '',
 
                 'notes' => (in_array($row->document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {
                     return [

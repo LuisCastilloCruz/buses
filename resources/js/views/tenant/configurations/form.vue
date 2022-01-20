@@ -44,7 +44,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <!-- sunat ha dado de baja estos servidores -->
+                                <!-- <div class="row">
                                     <div v-if="typeUser != 'integrator'"
                                          class="col-md-6 mt-4">
                                         <label class="control-label">Envío de comprobantes a servidor alterno de
@@ -60,7 +61,7 @@
                                                    v-text="errors.sunat_alternate_server[0]"></small>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                             </el-tab-pane>
                             <el-tab-pane class="mb-3"
                                          name="second">
@@ -216,6 +217,57 @@
                                                 v-text="errors.currency_type_id[0]"></small>
                                         </div>
                                     </div>
+
+
+                                    <div v-if="typeUser != 'integrator'"
+                                         class="col-md-4 mt-4">
+                                        <label class="control-label">
+                                            Porcentaje retención IGV
+
+                                            <el-tooltip
+                                                class="item"
+                                                content="Disponible Nuevo CPE"
+                                                effect="dark"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+
+                                        </label>
+                                        <div :class="{'has-danger': errors.igv_retention_percentage}"
+                                             class="form-group">
+                                            <el-input-number v-model="form.igv_retention_percentage"
+                                                             :min="0.01"
+                                                             :max="999"
+                                                             @change="submit"></el-input-number>
+                                            <small v-if="errors.igv_retention_percentage"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.igv_retention_percentage[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2"></div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Nombre producto PDF para XML
+                                            <el-tooltip
+                                                class="item"
+                                                content="Registra el campo nombre producto pdf en el XML - Disponible Nuevo CPE (Facturas/Boletas)"
+                                                effect="dark"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.name_product_pdf_to_xml}"
+                                             class="form-group">
+                                            <el-switch v-model="form.name_product_pdf_to_xml"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                            <small v-if="errors.name_product_pdf_to_xml"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.name_product_pdf_to_xml[0]"></small>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3"
@@ -379,7 +431,7 @@
                                             <el-switch v-model="form.default_document_type_03"
                                                        active-text="Si"
                                                        inactive-text="No"
-                                                       @change="submit"></el-switch>
+                                                       @change="changeDefaultDocumentType03"></el-switch>
                                             <small v-if="errors.default_document_type_03"
                                                    class="form-control-feedback"
                                                    v-text="errors.default_document_type_03[0]"></small>
@@ -638,6 +690,51 @@
                                                    v-text="errors.permission_to_edit_cpe[0]"></small>
                                         </div>
                                     </div>
+
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Seleccionar nota de venta por defecto
+                                            <el-tooltip class="item"
+                                                        content="Disponible POS"
+                                                        effect="dark"
+                                                        placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.default_document_type_80}"
+                                             class="form-group">
+                                            <el-switch v-model="form.default_document_type_80"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="changeDefaultDocumentType80"></el-switch>
+                                            <small v-if="errors.default_document_type_80"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.default_document_type_80[0]"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Habilitar busqueda con escáner de código de barras
+                                            <el-tooltip class="item"
+                                                        content="Disponible POS"
+                                                        effect="dark"
+                                                        placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.search_item_by_barcode}"
+                                             class="form-group">
+                                            <el-switch v-model="form.search_item_by_barcode"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                            <small v-if="errors.search_item_by_barcode"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.search_item_by_barcode[0]"></small>
+                                        </div>
+                                    </div>
+
+                                    <!--
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Mostrar item de solo el almacen de usuario
                                             <el-tooltip
@@ -659,6 +756,7 @@
                                                    v-text="errors.show_items_only_user_stablishment[0]"></small>
                                         </div>
                                     </div>
+                                    -->
 
                                 </div>
                             </el-tab-pane>
@@ -800,6 +898,58 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- item_name_pdf_description -->
+                                    <div class="col-md-6 mt-4">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Usar la descripcion como nombre del producto PDF
+                                                <el-tooltip class="item"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <div slot="content">
+                                                        En factura/boleta, cotizacion y nota de venta, se usará la descripcion como nombre del producto PDF por defecto.
+                                                    </div>
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <div :class="{'has-danger': errors.item_name_pdf_description}"
+                                                 class="form-group">
+                                                <el-switch v-model="form.item_name_pdf_description"
+                                                           active-text="Si"
+                                                           inactive-text="No"
+                                                           @change="submit"></el-switch>
+                                                <small v-if="errors.item_name_pdf_description"
+                                                       class="form-control-feedback"
+                                                       v-text="errors.item_name_pdf_description[0]"></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- impresion automatica en pos -->
+                                    <div class="col-md-6 mt-4">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Impresión de PDF automática en POS
+                                                <el-tooltip class="item"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <div slot="content">
+                                                        Luego de realizar el pago se envia el documento a la impresora, seguir la documentación para el buen funcionamiento.
+                                                    </div>
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <div :class="{'has-danger': errors.auto_print}"
+                                                 class="form-group">
+                                                <el-switch v-model="form.auto_print"
+                                                           active-text="Si"
+                                                           inactive-text="No"
+                                                           @change="submit"></el-switch>
+                                                <small v-if="errors.auto_print"
+                                                       class="form-control-feedback"
+                                                       v-text="errors.auto_print[0]"></small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3"
@@ -848,6 +998,33 @@
                                 ></tenant-configurations-form-purchases>
 
                             </el-tab-pane>
+                            <el-tab-pane class="mb-3"
+                                         name="eight">
+                                <span slot="label">
+                                    <h3>
+                                        POS
+                                    </h3>
+                                </span>
+                                <div class="row">
+                                    <div class="col-12 mt-4">
+                                        <div class="form-group">
+                                            <label>
+                                                Listar servicios al inicio de Pos
+                                                <el-tooltip class="item"
+                                                            content="Normalmente, los servicios necesitan ser buscados, en este caso, se podran listar al inicio"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <el-switch v-model="form.show_service_on_pos"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
                         </el-tabs>
                         <terms-condition :form="form"
                                          :showClose="false"
@@ -878,7 +1055,11 @@ export default {
         'typeUser',
         'configuration',
     ],
-    components: {TermsCondition, TermsConditionSale, AllowanceCharge},
+    components: {
+        TermsCondition,
+        TermsConditionSale,
+        AllowanceCharge,
+    },
     computed: {
         ...mapState([
             'config',
@@ -978,6 +1159,8 @@ export default {
                 header_image: null,
                 legend_footer: false,
                 default_document_type_03: false,
+                default_document_type_80: false,
+                search_item_by_barcode: false,
                 destination_sale: false,
                 quotation_allow_seller_generate_sale: false,
                 allow_edit_unit_price_to_seller: false,
@@ -1000,6 +1183,7 @@ export default {
                 enabled_global_igv_to_purchase: this.config.enabled_global_igv_to_purchase,
                 set_address_by_establishment: false,
                 permission_to_edit_cpe: false,
+                name_product_pdf_to_xml:false,
                 print_silent:false
             };
         },
@@ -1007,6 +1191,21 @@ export default {
             //Añadir la variable para cada item en compra. No es posible pasar elemento form por vuex
             this.form.enabled_global_igv_to_purchase = this.config.enabled_global_igv_to_purchase
             this.submit();
+        },
+        changeDefaultDocumentType03(){
+
+            if(this.form.default_document_type_03){
+                this.form.default_document_type_80 = false
+            }
+            this.submit()
+
+        },
+        changeDefaultDocumentType80(){
+
+            if(this.form.default_document_type_80){
+                this.form.default_document_type_03 = false
+            }
+            this.submit()
         },
         submit() {
             this.loading_submit = true;

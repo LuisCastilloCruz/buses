@@ -19,11 +19,48 @@
     use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
     /**
-     * Class Dispatch
-     *
-     * @package App\Models\Tenant
-     * @mixin ModelTenant
-     */
+ * Class Dispatch
+ *
+ * @package App\Models\Tenant
+ * @mixin ModelTenant
+ * @property DocumentType $document_type
+ * @property \App\Models\Tenant\Establishment $establishment
+ * @property \App\Models\Tenant\Document|null $generate_document
+ * @property mixed $customer
+ * @property mixed $data_affected_document
+ * @property mixed $delivery
+ * @property mixed $dispatcher
+ * @property string $download_external_cdr
+ * @property string $download_external_pdf
+ * @property string $download_external_xml
+ * @property mixed $driver
+ * @property mixed $legends
+ * @property string $number_full
+ * @property mixed $origin
+ * @property mixed $secondary_license_plates
+ * @property mixed $soap_shipping_response
+ * @property \Illuminate\Database\Eloquent\Collection|InventoryKardex[] $inventory_kardex
+ * @property int|null $inventory_kardex_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\DispatchItem[] $items
+ * @property int|null $items_count
+ * @property OrderForm $order_form
+ * @property OrderNote $order_note
+ * @property \App\Models\Tenant\Person $person
+ * @property \App\Models\Tenant\Document $reference_document
+ * @property \App\Models\Tenant\SaleNote $sale_note
+ * @property \App\Models\Tenant\SoapType $soap_type
+ * @property \App\Models\Tenant\StateType $state_type
+ * @property TransferReasonType $transfer_reason_type
+ * @property TransportModeType $transport_mode_type
+ * @property UnitType $unit_type
+ * @property \App\Models\Tenant\User $user
+ * @method static Builder|Dispatch newModelQuery()
+ * @method static Builder|Dispatch newQuery()
+ * @method static Builder|Dispatch query()
+ * @method static Builder|Dispatch whereStateTypeAccepted()
+ * @method static Builder|Dispatch whereTypeUser()
+ * @method static Builder|Dispatch whereValuedKardexFormatSunat($params)
+ */
     class Dispatch extends ModelTenant
     {
         protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',
@@ -246,7 +283,7 @@
         }
 
         /**
-         * @return BelongsTo
+         * @return \Illuminate\Database\Eloquent\Relations\HasOne
          */
         public function generate_document()
         {
@@ -302,6 +339,10 @@
         }
 
         /**
+         * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
+         * Tambien se debe tener en cuenta modules/Inventory/Providers/InventoryKardexServiceProvider.php y
+         * app/Providers/KardexServiceProvider.php para la correcta gestion de kardex
+         *
          * @return MorphMany
          */
         public function inventory_kardex()
@@ -455,7 +496,7 @@
          */
         public function scopeWhereValuedKardexFormatSunat($query, $params)
         {
-            return $query->whereIn('transfer_reason_type_id', ['01', '02'])
+            return $query->whereIn('transfer_reason_type_id', ['01', '02', '04', '13'])
                 ->whereStateTypeAccepted()
                 ->whereTypeUser()
                 ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);

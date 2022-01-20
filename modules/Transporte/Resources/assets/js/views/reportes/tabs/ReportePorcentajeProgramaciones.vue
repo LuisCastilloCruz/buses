@@ -28,6 +28,7 @@
                         <tr>
                             <td>Placa</td>
                             <td>Nombre</td>
+                            <td>Hora de Partida y Ruta</td>
                             <td>Asientos vendidos</td>
                             <td>Asientos disponibles</td>
                             <td>Porcentaje vendido</td>
@@ -39,6 +40,7 @@
                         <tr v-for="(row, index) in records" :key="index">
                             <td>{{ row.placa }}</td>
                             <td>{{ row.nombre }}</td>
+                            <td>{{ row.programaciones[index].hora_salida }} </td>
                             <td>{{ row.asientos_ocupados }}</td>
                             <td>{{ row.asientos_disponibles }}</td>
                             <td>%{{ row.porcentaje }}</td>
@@ -115,6 +117,8 @@ export default {
 
             this.total = data.total;
             this.records = data.data;
+
+            console.log(this.records)
 
             this.loading = false;
         },

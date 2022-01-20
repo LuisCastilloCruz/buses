@@ -53,6 +53,54 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @method static Builder|Item whereTypeUser()
  * @method static Builder|Item whereWarehouse()
  * @property \Illuminate\Database\Eloquent\Collection|ItemMovementRelExtra[] $item_movement_rel_extras
+ * @property Account $account
+ * @property Brand $brand
+ * @property CatDigemid|null $cat_digemid
+ * @property Category $category
+ * @property CurrencyType $currency_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\DispatchItem[] $dispatch_items
+ * @property int|null $dispatch_items_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\DocumentItem[] $document_items
+ * @property int|null $document_items_count
+ * @property mixed $attributes
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemImage[] $images
+ * @property int|null $images_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
+ * @property int|null $inventory_kardex_count
+ * @property \Illuminate\Database\Eloquent\Collection|ItemLot[] $item_lots
+ * @property int|null $item_lots_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemMovementRelExtra[] $item_movement_rel_extra
+ * @property int|null $item_movement_rel_extra_count
+ * @property \App\Models\Tenant\ItemType $item_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemUnitType[] $item_unit_types
+ * @property int|null $item_unit_types_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Kardex[] $kardex
+ * @property int|null $kardex_count
+ * @property \Illuminate\Database\Eloquent\Collection|ItemLot[] $lots
+ * @property int|null $lots_count
+ * @property \Illuminate\Database\Eloquent\Collection|ItemLotsGroup[] $lots_group
+ * @property int|null $lots_group_count
+ * @property AffectationIgvType $purchase_affectation_igv_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PurchaseItem[] $purchase_item
+ * @property int|null $purchase_item_count
+ * @property AffectationIgvType $sale_affectation_igv_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNoteItem[] $sale_note_items
+ * @property int|null $sale_note_items_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemSet[] $sets
+ * @property int|null $sets_count
+ * @property SystemIscType $system_isc_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemTag[] $tags
+ * @property int|null $tags_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\TechnicalServiceItem[] $technical_service_item
+ * @property int|null $technical_service_item_count
+ * @property UnitType $unit_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemWarehousePrice[] $warehousePrices
+ * @property int|null $warehouse_prices_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemWarehouse[] $warehouses
+ * @property int|null $warehouses_count
+ * @property WebPlatform $web_platform
+ * @method  array getCollectionData()
+ * @method static Builder|Item whereFilterValuedKardexFormatSunat($params)
  */
 class Item extends ModelTenant
 {
@@ -237,6 +285,10 @@ class Item extends ModelTenant
     }
 
     /**
+     * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
+     * Tambien se debe tener en cuenta modules/Inventory/Providers/InventoryKardexServiceProvider.php y
+     * app/Providers/KardexServiceProvider.php para la correcta gestion de kardex
+     *
      * @return HasMany
      */
     public function inventory_kardex()
@@ -533,8 +585,8 @@ class Item extends ModelTenant
         return $query;
         */
         // No selecciona corectamente los establecimeintos.
-        if ($params->establishment_id) {
-
+        if (property_exists($params,'establishment_id') && $params->establishment_id) {
+        // if ($params->establishment_id) {
             return $query->with(['document_items' => function ($q) use ($params) {
                 $q->whereHas('document', function ($q) use ($params) {
                     $q->whereStateTypeAccepted()
@@ -885,7 +937,13 @@ class Item extends ModelTenant
             'change_free_affectation_igv'     => false,
             'original_affectation_igv_type_id'     => $this->sale_affectation_igv_type_id,
 
+            'has_isc' => (bool)$this->has_isc,
+            'system_isc_type_id' => $this->system_isc_type_id,
+            'percentage_isc' => $this->percentage_isc,
         ];
+
+        // El nombre de producto, por defecto, sera la misma descripcion.
+        $data['name_product_pdf']="<p>".$data['description']."</p>";
 
         return $data;
     }
@@ -955,74 +1013,85 @@ class Item extends ModelTenant
 
         $decimal_units = (int)$configuration->decimal_quantity;
         $stockPerCategory = ItemMovement::getStockByCategory($this->id,auth()->user()->establishment_id);
+        $has_igv = (bool)$this->has_igv;
+        $igv = 1.18; // El igv es de 18%
+        $affectation_igv_types_exonerated_unaffected = self::AffectationIgvTypesExoneratedUnaffected();
+        if (in_array($this->sale_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
+            // Exonerado, solo se multiplica por la unidad para que no haga cambio.
+            $igv = 1;
+        }
 
+        $salePriceWithIgv = ($has_igv == true)?$this->sale_unit_price:($this->sale_unit_price * $igv);
+        $salePriceWithIgv = number_format($salePriceWithIgv, $configuration->decimal_quantity, '.', '');
         return [
-            'name_disa'                           => $name_disa,
-            'laboratory'                           => $laboratory,
-            'exportable_pharmacy'                           => $digemid_exportable,
+            'name_disa' => $name_disa,
+            'laboratory' => $laboratory,
+            'exportable_pharmacy' => $digemid_exportable,
             'colors' => $currentColors,
-            'stock_by_extra'                            =>  $stockPerCategory,
-            'id'                           => $this->id,
-            'sanitary'                 => $this->sanitary,
-            'cod_digemid'                 => $this->cod_digemid,
-            'unit_type_id'                 => $this->unit_type_id,
-            'description'                  => $this->description,
-            'name'                         => $this->name,
-            'second_name'                  => $this->second_name,
-            'model'                        => $this->model,
-            'barcode'                      => $this->barcode,
-            'brand'                        => $brand,
-            'warehouse_id'                 => $this->warehouse_id,
-            'internal_id'                  => $this->internal_id,
-            'item_code'                    => $this->item_code,
-            'item_code_gs1'                => $this->item_code_gs1,
-            'stock'                        => $this->getStockByWarehouse(),
-            'stock_min'                    => $this->stock_min,
-            'currency_type_id'             => $this->currency_type_id,
-            'currency_type_symbol'         => $this->currency_type->symbol,
+            'stock_by_extra' => $stockPerCategory,
+            'id' => $this->id,
+            'sanitary' => $this->sanitary,
+            'cod_digemid' => $this->cod_digemid,
+            'unit_type_id' => $this->unit_type_id,
+            'unit_type_text' => $this->getUnitTypeText(),
+            'description' => $this->description,
+            'name' => $this->name,
+            'second_name' => $this->second_name,
+            'model' => $this->model,
+            'barcode' => $this->barcode,
+            'brand' => $brand,
+            'warehouse_id' => $this->warehouse_id,
+            'internal_id' => $this->internal_id,
+            'item_code' => $this->item_code,
+            'item_code_gs1' => $this->item_code_gs1,
+            'stock' => $this->getStockByWarehouse(),
+            'stock_min' => $this->stock_min,
+            'currency_type_id' => $this->currency_type_id,
+            'currency_type_symbol' => $this->currency_type->symbol,
             'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
-            'amount_sale_unit_price'       => $this->sale_unit_price,
-            'calculate_quantity'           => (bool)$this->calculate_quantity,
-            'has_igv'                      => (bool)$this->has_igv,
-            'active'                       => (bool)$this->active,
-            'has_igv_description'          => $has_igv_description,
+            'amount_sale_unit_price' => $this->sale_unit_price,
+            'calculate_quantity' => (bool)$this->calculate_quantity,
+            'has_igv' => (bool)$this->has_igv,
+            'active' => (bool)$this->active,
+            'has_igv_description' => $has_igv_description,
             'purchase_has_igv_description' => $purchase_has_igv_description,
-            'sale_unit_price'              => "{$this->currency_type->symbol} {$this->sale_unit_price}",
-            'purchase_unit_price'          => "{$this->currency_type->symbol} {$this->purchase_unit_price}",
-            'created_at'                   => ($this->created_at) ? $this->created_at->format('Y-m-d H:i:s') : '',
-            'updated_at'                   => ($this->created_at) ? $this->updated_at->format('Y-m-d H:i:s') : '',
-            'warehouses'                   => collect($this->warehouses)->transform(function ($row) {
+            'sale_unit_price' => "{$this->currency_type->symbol} {$this->sale_unit_price}",
+            'sale_unit_price_with_igv' => "{$this->currency_type->symbol} $salePriceWithIgv",
+            'purchase_unit_price' => "{$this->currency_type->symbol} {$this->purchase_unit_price}",
+            'created_at' => ($this->created_at) ? $this->created_at->format('Y-m-d H:i:s') : '',
+            'updated_at' => ($this->created_at) ? $this->updated_at->format('Y-m-d H:i:s') : '',
+            'warehouses' => collect($this->warehouses)->transform(function ($row) {
                 return [
                     'warehouse_description' => $row->warehouse->description,
-                    'stock'                 => $row->stock,
+                    'stock' => $row->stock,
                 ];
             }),
-            'apply_store'                  => (bool)$this->apply_store,
-            'image_url'                    => ($this->image !== 'imagen-no-disponible.jpg')
-                ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image)
+            'apply_store' => (bool)$this->apply_store,
+            'image_url' => ($this->image !== 'imagen-no-disponible.jpg')
+                ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image)
                 : asset("/logo/{$this->image}"),
-            'image_url_medium'             => ($this->image_medium !== 'imagen-no-disponible.jpg')
-                ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image_medium)
+            'image_url_medium' => ($this->image_medium !== 'imagen-no-disponible.jpg')
+                ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_medium)
                 : asset("/logo/{$this->image_medium}"),
-            'image_url_small'              => ($this->image_small !== 'imagen-no-disponible.jpg')
-                ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image_small)
+            'image_url_small' => ($this->image_small !== 'imagen-no-disponible.jpg')
+                ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_small)
                 : asset("/logo/{$this->image_small}"),
-            'tags'                         => $this->tags,
-            'tags_id'                      => $this->tags->pluck('tag_id'),
-            'item_unit_types'              => $this->item_unit_types->transform(function ($row) use ($decimal_units) {
+            'tags' => $this->tags,
+            'tags_id' => $this->tags->pluck('tag_id'),
+            'item_unit_types' => $this->item_unit_types->transform(function ($row) use ($decimal_units) {
                 /** @var ItemUnitType $row */
-                return $row ->getCollectionData($decimal_units);
+                return $row->getCollectionData($decimal_units);
                 /** Movido al modelo */
                 return [
-                    'id'            => $row->id,
-                    'description'   => "{$row->description}",
-                    'item_id'       => $row->item_id,
-                    'unit_type_id'  => $row->unit_type_id,
+                    'id' => $row->id,
+                    'description' => "{$row->description}",
+                    'item_id' => $row->item_id,
+                    'unit_type_id' => $row->unit_type_id,
                     'quantity_unit' => number_format($this->quantity_unit, $configuration->decimal_quantity, '.', ''),
-                    'price1'        => number_format($this->price1, $configuration->decimal_quantity, '.', ''),
-                    'price2'        => number_format($this->price2, $configuration->decimal_quantity, '.', ''),
-                    'price3'        => number_format($this->price3, $configuration->decimal_quantity, '.', ''),
+                    'price1' => number_format($this->price1, $configuration->decimal_quantity, '.', ''),
+                    'price2' => number_format($this->price2, $configuration->decimal_quantity, '.', ''),
+                    'price3' => number_format($this->price3, $configuration->decimal_quantity, '.', ''),
                     'price_default' => $this->price_default,
                 ];
             }),
@@ -1247,6 +1316,7 @@ class Item extends ModelTenant
     public function setItemColor($colors = []) {
         return $this->setExtraData(ItemColor::class,'cat_colors_item_id',$colors);
     }
+
     public function getItemColor(){
         return ItemColor::where('item_id', $this->id)->where('active',1)->get();
     }
@@ -1307,7 +1377,8 @@ class Item extends ModelTenant
      *
      * @return $this
      */
-    protected function setExtraData($class,$field_id = '',$data = []){
+    protected function setExtraData($class,$field_id = '',$data = []): Item
+    {
         $dataCollection = collect($data);
         $currentRow = $class::where('item_id',$this->id)
             ->whereNotIn($field_id,$dataCollection)
@@ -1331,7 +1402,16 @@ class Item extends ModelTenant
         }
         return $this;
     }
-
+    /**
+     * @param  ItemMoldProperty|ItemUnitBusiness|ItemStatus|ItemColor|ItemUnitsPerPackage|ItemProductFamily|ItemMoldCavity|ItemPackageMeasurement|null      $class
+     * @param string $field_id
+     * @param array  $data
+     *
+     * @return $this
+     */
+    public function setExtraDataByCatalogCategory($class,$field_id = '',$data = []){
+        return $this->setExtraData($class, $field_id, $data);
+    }
     /**
      * Genera una estructura unica para los datos extra.
      *
@@ -1852,5 +1932,28 @@ class Item extends ModelTenant
         return $data;
 
     }
+
+    /**
+     * @return string|null
+     */
+    public function getUnitTypeText(){
+        if(!empty($this->unit_type)) {
+            return $this->unit_type->description;
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Devuelve codigo interno - descripcion producto
+     *
+     * @return array
+     */
+    public function getInternalIdDescription()
+    {
+        return $this->internal_id ? "{$this->internal_id} - {$this->description}" : $this->description;
+    }
+
 }
 

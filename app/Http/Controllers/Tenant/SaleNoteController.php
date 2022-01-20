@@ -44,7 +44,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Modules\Document\Traits\SearchTrait;
 use Modules\Finance\Traits\FinanceTrait;
@@ -52,17 +51,15 @@ use Modules\Inventory\Models\Warehouse;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Sale\Helpers\SaleNoteHelper;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
-use Modules\Sale\Helpers\SaleNoteHelper;
-// use App\Models\Tenant\Warehouse;
-use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
+
 // use App\Models\Tenant\Warehouse;
 use Modules\Item\Models\Category;
 use Mike42\Escpos\EscposImage;
-use Illuminate\Support\Facades\Storage;
 use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
@@ -454,6 +451,10 @@ class SaleNoteController extends Controller
      */
     private function getRecords($request){
         $records = SaleNote::whereTypeUser();
+        // Solo devuelve matriculas
+        if($request != null && $request->has('onlySuscription') && (bool)$request->onlySuscription == true){
+            $records->whereNotNull('grade')->whereNotNull('section') ;
+        }
         if($request->column == 'customer'){
             $records->whereHas('person', function($query) use($request){
                                     $query
@@ -759,6 +760,12 @@ class SaleNoteController extends Controller
             'series' => $series,
             'number' => $number
         ];
+        if(!empty($children)){
+            $customer = PersonInput::set($inputs['customer_id']);
+            $customer['children'] = PersonInput::set($children);
+            $values['customer'] = $customer;
+        }
+
 
         unset($inputs['series_id']);
 
