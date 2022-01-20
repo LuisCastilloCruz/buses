@@ -1368,7 +1368,7 @@
             console.log(colorobscuro);
 
             var etiquetaStyle = document.createElement("style");
-            var estilos = document.createTextNode(".nav-children{background:"+colorobscuro+";}");
+            var estilos = document.createTextNode(".nav-children{background:"+colorobscuro+" !important;}");
 
             etiquetaStyle.appendChild(estilos);
 

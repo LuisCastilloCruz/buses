@@ -826,7 +826,7 @@ class SaleNoteController extends Controller
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
 
-            $company_logo      = ($this->company->logo) ? 40 : 0;
+            $company_logo      = ($this->company->logo) ? 20 : 0;
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
@@ -990,7 +990,7 @@ class SaleNoteController extends Controller
                         $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
                     }
                 }
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+                //$pdf->SetHTMLFooter($html_footer.$html_footer_legend);
             // }
         }
 

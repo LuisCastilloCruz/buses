@@ -147,11 +147,14 @@
                 </header>
                 <div class="card-body text-center">
                     <h3 class="font-weight-semibold mt-3 text-center">Transporte</h3>
-                    <p class="text-center">Gestión de transporte de pasajeros.</p>
-                    <span class="badge badge-info">
-                    Próximamente
-                </span>
+                    <p class="text-center">Gestión de transporte de pasajeros, pasajes, encomiendas, manifiestos.</p>
+                    <span class="badge badge-{{in_array('transporte', $vc_modules) ? 'success' : 'default'}}">
+                    {{in_array('transporte', $vc_modules) ? 'Activo' : 'Inactivo'}}
+                    </span>
                     <br>
+                    @if(!in_array('transporte', $vc_modules))
+                        <small class="text-muted">Debe consultar con su administrador para poder habilitarlo</small>
+                    @endif
                 </div>
             </section>
         </div>

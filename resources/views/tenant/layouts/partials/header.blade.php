@@ -33,9 +33,17 @@
                 <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
                 <span>ES</span>
             </a>
+            <div class="d-none d-sm-none d-md-inline"><b>Para soporte escribir al 950360472 o llamar en horario de oficina al 947474096</b></div>
+            <div class="d-block d-sm-block d-md-none"><b>Soporte 950360472</b></div>
         </div>
     </div>
     <div class="header-right">
+        <a href="https://youtube.com/playlist?list=PLRfWQIWTl4WQnUwpMDBs8iAlcti3s_UNY" target="_blank">
+            <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="Video Tutoriales en Youtube">
+                <img src="{{asset("/logo/youtube.png")}}" alt="">
+            </div>
+        </a>
+        <span class="separator"></span>
 
         <ul class="notifications mx-2">
             @if($vc_company->soap_type_id == "01")
