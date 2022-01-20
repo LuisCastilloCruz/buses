@@ -33,8 +33,10 @@
                 <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
                 <span>ES</span>
             </a>
-            <div class="d-none d-sm-none d-md-inline"><b>Para soporte escribir al 950360472 o 947474096</b></div>
-            <div class="d-block d-sm-block d-md-none"><b>Soporte 950360472</b></div>
+            <a class="topbar-links" href="#" title="947474096 - 950360472" data-toggle="tooltip" data-placement="bottom">
+                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+                <span>SOPORTE</span>
+            </a>
         </div>
     </div>
     <div class="header-right">
