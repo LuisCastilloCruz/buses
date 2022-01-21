@@ -944,7 +944,7 @@ export default {
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
             let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
-            this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
+            this.affectation_igv_types = this.all_affectation_igv_types
 
 
             if (this.recordItem) {
