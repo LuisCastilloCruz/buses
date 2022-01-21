@@ -118,23 +118,22 @@ $establishment = $cash->user->establishment;
                                 <th>#</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th>Sub Total</th>
                                 <th>Comprobante</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $num = 1;
-                            @endphp
+
                             @foreach($documents as $item)
                                 <tr>
-                                    <td class="celda">{{ $num }}</td>
+                                    <td class="celda">{{ $loop->iteration }}</td>
                                     <td class="celda">{{ $item['description'] }}</td>
                                     <td class="celda">{{ $item['quantity'] }}</td>
+                                    <td class="celda" style="text-align: right">{{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($item['unit_value']) }}</td>
+                                    <td class="celda" style="text-align: right">{{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($item['sub_total']) }}</td>
                                     <td class="celda">{{ $item['number_full'] }}</td>
                                 </tr>
-                                @php
-                                    $num++;
-                                @endphp
                             @endforeach
                         </tbody>
                     </table>

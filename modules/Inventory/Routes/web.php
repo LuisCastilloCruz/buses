@@ -153,7 +153,7 @@
                     Route::get('regularize_stock', 'InventoryController@regularize_stock');
 
                     Route::post('search_items', 'InventoryController@searchItems');
-                    /*
+                    /**
                      * inventory/report/tables
                      * inventory/report/records
                      * inventory/report/export
@@ -223,12 +223,21 @@
                         Route::get('/records', 'ReportValuedKardexController@records');
 
                     });
+
+                    // reporte movimientos
+                    Route::prefix('inventory-movements')->group(function () {
+                        Route::get('pdf', 'ReportMovementController@pdf');
+                        Route::get('excel', 'ReportMovementController@excel');
+                        Route::get('filter', 'ReportMovementController@filter');
+                        Route::get('records', 'ReportMovementController@records');
+                    });
+
                 });
 
 
                 Route::prefix('inventories')->group(function () {
 
-                    Route::get('configuration', 'InventoryConfigurationController@index')->name('tenant.inventories.configuration.index');
+                    Route::get('configuration', 'InventoryConfigurationController@index')->name('tenant.inventories.configuration.index')->middleware('redirect.level');
                     Route::get('configuration/record', 'InventoryConfigurationController@record');
                     Route::post('configuration', 'InventoryConfigurationController@store');
                 });
@@ -241,6 +250,17 @@
 
                 });
 
+                /**
+                    transfers/
+                    transfers/records
+                    transfers/columns
+                    transfers/tables
+                    transfers/record/{inventory}
+                    transfers/{inventory}
+                    transfers/create
+                    transfers/stock/{item_id}/{warehouse_id}
+                    transfers/items/{warehouse_id}
+                 */
 
                 Route::prefix('transfers')->group(function () {
                     Route::get('/', 'TransferController@index')->name('transfers.index');
@@ -249,15 +269,14 @@
                     Route::get('tables', 'TransferController@tables');
                     Route::get('record/{inventory}', 'TransferController@record');
                     Route::post('/', 'TransferController@store');
-
                     Route::delete('{inventory}', 'TransferController@destroy');
-
                     Route::get('create', 'TransferController@create')->name('transfer.create');
-
                     Route::get('stock/{item_id}/{warehouse_id}', 'TransferController@stock');
-
                     Route::get('items/{warehouse_id}', 'TransferController@items');
+                    Route::post('search-items', 'TransferController@searchItems');
 
+                     Route::get('/download/pdf/{inventoryTransfer}', 'TransferController@getPdf');
+                     // Route::get('info/{inventoryTransfer}', 'TransferController@getInventoryTransferData');
 
                 });
 

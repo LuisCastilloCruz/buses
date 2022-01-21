@@ -15,8 +15,8 @@ class AddExtraModulesToModulesTable extends Migration
     public function up()
     {
         DB::table('modules')->insert([
-            ['id'=>15,'value' => 'hotels', 'description' => 'Hoteles'],
-            ['id'=>16,'value' => 'documentary-procedure', 'description' => 'Trámite documentario'],
+            ['value' => 'hotels', 'description' => 'Hoteles'],
+            ['value' => 'documentary-procedure', 'description' => 'Trámite documentario'],
         ]);
     }
 

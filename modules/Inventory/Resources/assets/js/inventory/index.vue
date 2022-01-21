@@ -8,17 +8,9 @@
             <div v-if="typeUser == 'admin'" class="right-wrapper pull-right">
                 <!--<button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>-->
                 <div class="btn-group flex-wrap">
-                    <button
-                        type="button"
-                        class="btn btn-custom btn-sm mt-2 mr-2 dropdown-toggle"
-                        data-toggle="dropdown"
-                        aria-expanded="false"
-                    >
-                        <i class="fa fa-upload"></i> Importar
-                        <span class="caret"></span>
-                    </button>
-                    <div
-                    class="dropdown-menu"
+                    <button type="button" class="btn btn-custom btn-sm mt-2 mr-2 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-upload"></i> Importar<span class="caret"></span></button>
+                    <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickReport()"><i class="fa fa-file-excel"></i> Reporte</button>
+                    <div class="dropdown-menu"
                     role="menu"
                     x-placement="bottom-start"
                     style="
@@ -107,6 +99,11 @@
             <inventories-remove :showDialog.sync="showDialogRemove"
                                 :recordId="recordId"></inventories-remove>
             <MoveGlobal :products="selectedItems" :show.sync="showHideModalMoveGlobal"></MoveGlobal>
+
+            <movement-report
+                            :showDialog.sync="showDialogMovementReport"
+                                ></movement-report>
+
         </div>
     </div>
 </template>
@@ -120,12 +117,13 @@
     import InventoriesRemove from './remove.vue'
     import InventoriesImport from './import.vue'
     import InventoriesImportStock from './import_stock.vue'
-    import DataTable from '../../../../../../resources/js/components/DataTable.vue'
+    import DataTable from '@components/DataTable.vue'
     import MoveGlobal from './MoveGlobal.vue';
+    import MovementReport from './reports/movement_report.vue';
 
     export default {
         props: ['type', 'typeUser'],
-        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput,MoveGlobal,InventoriesImport,InventoriesImportStock},
+        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput, MoveGlobal, MovementReport, InventoriesImport,InventoriesImportStock},
         data() {
             return {
                 showHideModalMoveGlobal: false,
@@ -140,12 +138,16 @@
                 resource: 'inventory',
                 recordId: null,
                 typeTransaction:null,
+                showDialogMovementReport:false
             }
         },
         created() {
             this.title = 'Inventario'
         },
         methods: {
+            clickReport(){
+                this.showDialogMovementReport = true
+            },
             async onOpenModalMoveGlobal() {
                 const itemsSelecteds = await this.$refs.datatable.records.filter(p => p.selected);
                 if (itemsSelecteds.length > 0) {

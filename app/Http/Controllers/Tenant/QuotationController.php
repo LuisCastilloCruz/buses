@@ -180,7 +180,7 @@ class QuotationController extends Controller
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
-        $configuration = Configuration::first();
+        $configuration = Configuration::select('destination_sale')->first();
         /*
         carlomagno83/facturadorpro4#233
 
@@ -202,7 +202,8 @@ class QuotationController extends Controller
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
         $series = Series::where('establishment_id',$establishment->id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
-        $payment_method_types = PaymentMethodType::all();
+        // $payment_method_types = PaymentMethodType::all();
+        $payment_method_types =PaymentMethodType::getPaymentMethodTypes();
         $payment_destinations = $this->getPaymentDestinations();
         // $sellers = User::GetSellers(true)->get();
         $sellers = User::where('establishment_id', auth()->user()->establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', auth()->user()->id)->get();

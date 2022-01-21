@@ -267,11 +267,11 @@ class TransporteProgramacionesController extends Controller
     }
 
     private function updateOrCreateProgramaciones(TransporteProgramacion $programacion, Collection $collection){
-        
+
         foreach($collection as $item){
             [$origen,$destino] = $item;
 
-            
+
 
             $oldProgramacion = TransporteProgramacion::where('terminal_origen_id',$origen)
             ->where('terminal_destino_id',$destino)

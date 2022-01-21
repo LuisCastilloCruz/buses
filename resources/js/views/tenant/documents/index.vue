@@ -30,6 +30,12 @@
                             data-toggle="dropdown"
                             aria-expanded="false"><i class="fa fa-money-bill-wave-alt"></i>
                         Reporte de Pagos <span class="caret"></span></button>
+                    <!-- validadores apiperu  -->
+                    <a href="#" @click.prevent="showDialogApiPeruDevValidate = true" v-if="view_apiperudev_validator_cpe"
+                       class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-check"></i> Validación masiva</a>
+                    <a href="#" @click.prevent="showDialogValidate = true" v-if="view_validator_cpe"
+                       class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-file"></i> Validar CPE</a>
+
                     <div class="dropdown-menu"
                          role="menu"
                          x-placement="bottom-start"
@@ -444,6 +450,10 @@
             <report-payment :showDialog.sync="showDialogReportPayment"></report-payment>
 
             <report-payment-complete :showDialog.sync="showDialogReportPaymentComplete"></report-payment-complete>
+
+            <DocumentValidate :showDialogValidate.sync="showDialogValidate"></DocumentValidate>
+
+            <massive-validate-cpe :showDialogValidate.sync="showDialogApiPeruDevValidate"></massive-validate-cpe>
         </div>
     </div>
 </template>
@@ -460,11 +470,13 @@ import {deletable} from '../../../mixins/deletable'
 import DocumentConstancyDetraction from './partials/constancy_detraction.vue'
 import ReportPayment from './partials/report_payment.vue'
 import ReportPaymentComplete from './partials/report_payment_complete.vue'
+import DocumentValidate from './partials/validate.vue';
+import MassiveValidateCpe from '../../../../../modules/ApiPeruDev/Resources/assets/js/components/MassiveValidateCPE';
 
 
 export default {
     mixins: [deletable],
-    props: ['isClient', 'typeUser', 'import_documents', 'import_documents_second', 'userId', 'configuration', 'userPermissionEditCpe'],
+    props: ['isClient', 'typeUser', 'import_documents', 'import_documents_second', 'userId', 'configuration', 'userPermissionEditCpe','view_apiperudev_validator_cpe', 'view_validator_cpe'],
     components: {
         DocumentsVoided,
         ItemsImport,
@@ -474,10 +486,14 @@ export default {
         DataTable,
         DocumentConstancyDetraction,
         ReportPayment,
-        ReportPaymentComplete
+        ReportPaymentComplete,
+        DocumentValidate,
+        MassiveValidateCpe
     },
     data() {
         return {
+            showDialogApiPeruDevValidate: false,
+            showDialogValidate: false,
             showDialogReportPayment: false,
             showDialogReportPaymentComplete: false,
             showDialogVoided: false,

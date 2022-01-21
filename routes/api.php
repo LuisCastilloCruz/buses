@@ -47,6 +47,10 @@ if ($hostname) {
 
             Route::post('documents_server', 'Tenant\Api\DocumentController@storeServer');
             Route::get('document_check_server/{external_id}', 'Tenant\Api\DocumentController@documentCheckServer');
+
+            //liquidacion de compra
+            Route::post('purchase-settlements', 'Tenant\Api\PurchaseSettlementController@store');
+
             Route::get('document/record/{id}', 'Tenant\Api\DocumentController@record');
 
             Route::get('cash/records', 'Tenant\Api\CashController@recordsMovil');
@@ -81,6 +85,7 @@ if ($hostname) {
         //reseller
         Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
         Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
+        Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
 
     });
 

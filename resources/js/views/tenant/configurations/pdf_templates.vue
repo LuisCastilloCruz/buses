@@ -114,8 +114,8 @@
                         </el-carousel-item>
                         <el-carousel-item v-if="template.urls.guide != ''">
                             <img  :src="path.origin+'/'+template.urls.guide"
-                                  class="image"
-                                  style="width: 100%; height:100%;">
+                                class="image"
+                                style="width: 100%; height:100%;">
                         </el-carousel-item>
                     </el-carousel>
                 </div>
@@ -133,11 +133,11 @@
 
 <style scoped>
 .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
+background-color: #99a9bf;
 }
 
 .el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
+background-color: #d3dce6;
 }
 </style>
 
@@ -190,7 +190,6 @@ export default {
 
             this.$http.post(`/${this.resource}/changeFormat`, this.form).then(response => {
                 this.$message.success(response.data.message);
-                console.log(this.form);
                 location.reload()
             })
 

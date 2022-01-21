@@ -55,11 +55,16 @@ class ReportValuedKardexController extends Controller
         $data_of_period = $this->getDataOfPeriod($request);
 
         $params = (object)[
-            'establishment_id' => $request['establishment_id'],
+             'establishment_id' => $request['establishment_id']??0,
             'date_start' => $data_of_period['d_start'],
             'date_end' => $data_of_period['d_end'],
         ];
-
+        if(isset($request['stablishmentKardexAll']) && $request['stablishmentKardexAll'] = 1){
+            $params = (object)[
+                'date_start' => $data_of_period['d_start'],
+                'date_end' => $data_of_period['d_end'],
+            ];
+        }
         $records = $this->data($params);
 
         return $records;

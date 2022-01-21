@@ -49,6 +49,8 @@ Vue.component('tenant-bank_accounts-index', require('./views/tenant/bank_account
 Vue.component('tenant-items-index', require('./views/tenant/items/index.vue'));
 Vue.component('tenant-persons-index', require('./views/tenant/persons/index.vue'));
 // Vue.component('tenant-customers-index', require('./views/tenant/customers/index.vue'));
+ Vue.component('tenant-person-form', require('./views/tenant/persons/form.vue'));
+
 // Vue.component('tenant-suppliers-index', require('./views/tenant/suppliers/index.vue'));
 Vue.component('tenant-users-form', require('./views/tenant/users/form.vue'));
 Vue.component('tenant-documents-index', require('./views/tenant/documents/index.vue'));
@@ -57,6 +59,8 @@ Vue.component('tenant-documents-invoicetensu', require('./views/tenant/documents
 Vue.component('tenant-documents-invoice-old', require('./views/tenant/documents/invoice_old.vue'));
 Vue.component('tenant-documents-note', require('./views/tenant/documents/note.vue'));
 
+// purchase-settlements
+Vue.component('tenant-purchase-settlements-index', require('./views/tenant/purchase-settlements/index.vue'));
 
 Vue.component('tenant-documents-items-list', require('./views/tenant/documents/partials/item.vue'));
 Vue.component('tenant-summaries-index', require('./views/tenant/summaries/index.vue'));
@@ -102,7 +106,7 @@ Vue.component('tenant-contingencies-index', require('./views/tenant/contingencie
 Vue.component('tenant-quotations-index', require('./views/tenant/quotations/index.vue'));
 Vue.component('tenant-quotations-form', require('./views/tenant/quotations/form.vue'));
 Vue.component('tenant-quotations-edit', require('./views/tenant/quotations/form_edit.vue'));
-
+Vue.component('tenant-quotations-item-form', require('./views/tenant/quotations/partials/item.vue'));
 
 Vue.component('tenant-sale-notes-index', require('./views/tenant/sale_notes/index.vue'));
 Vue.component('tenant-sale-notes-form', require('./views/tenant/sale_notes/form.vue'));
@@ -128,6 +132,7 @@ Vue.component('tenant-account-ple', require('../../modules/Account/Resources/ass
 Vue.component('tenant-account-summary-report', require('../../modules/Account/Resources/assets/js/views/summary_report/index.vue'));
 Vue.component('tenant-account-format', require('../../modules/Account/Resources/assets/js/views/account/format.vue'));
 Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
+Vue.component('tenant-ledger-accounts', require('../../modules/Account/Resources/assets/js/views/ledger_accounts/form.vue'));
 Vue.component('tenant-account-tributo', require('../../modules/Account/Resources/assets/js/views/account/tributo.vue'));
 
 //
@@ -341,7 +346,10 @@ Vue.component('tenant-transporte-reportes', require('@viewsModuleTransporte/repo
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
-Vue.component('x-input-service', require('./components/InputService.vue'));
+Vue.component('x-input-service', require('../../modules/ApiPeruDev/Resources/assets/js/components/InputService.vue')); // apiperu - porque cambiar el input si tiene el mismo contenido?
+// Vue.component('x-input-service', require('./components/InputService.vue'));
+
+
 
 Vue.component('tenant-items-ecommerce-index', require('./views/tenant/items_ecommerce/index.vue'));
 Vue.component('tenant-ecommerce-cart', require('./views/tenant/ecommerce/cart_dropdown.vue'));
@@ -385,6 +393,16 @@ Vue.component('tenant-login-page', require('./views/tenant/login/index.vue'))
 /** Modulo DIGEMID **/
 Vue.component('tenant-digemid-index', require('../../modules/Digemid/Resources/assets/js/view/index.vue'));
 
+/** Modulo Suscripcion **/
+Vue.component('tenant-suscription-client-index', require('../../modules/Suscription/Resources/assets/js/clients/index.vue'));
+Vue.component('tenant-suscription-plans-index', require('../../modules/Suscription/Resources/assets/js/plans/index.vue'));
+Vue.component('tenant-suscription-payments-index', require('../../modules/Suscription/Resources/assets/js/payments/index.vue'));
+Vue.component('data-table-payment-receipt', require('../js/components/DataTablePaymentReceipt.vue') );
+Vue.component('tenant-index-payment-receipt', require('../../modules/Suscription/Resources/assets/js/payment_receipt/index.vue') );
+
+/** Prestamos Bancarios **/
+Vue.component('tenant-bankloans-index', require('../../modules/Expense/Resources/assets/js/views/bank_loans/index.vue'));
+Vue.component('tenant-bankloans-form', require('../../modules/Expense/Resources/assets/js/views/bank_loans/form.vue'));
 import moment from 'moment';
 
 Vue.mixin({

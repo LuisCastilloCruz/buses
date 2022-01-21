@@ -2,7 +2,7 @@
     <el-dialog :close-on-click-modal="false"
                :title="titleDialog"
                :visible="showDialog"
-               append-to-body
+               :append-to-body="true"
                @close="close"
                @open="create"
                @opened="opened">
@@ -558,14 +558,24 @@
 </template>
 
 <script>
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 import {serviceNumber} from '../../../mixins/functions'
 
 export default {
     mixins: [serviceNumber],
-    props: ['showDialog', 'type', 'recordId', 'external', 'document_type_id', 'input_person'],
+    props: [
+        'showDialog',
+        'type',
+        'recordId',
+        'external',
+        'document_type_id',
+        'input_person',
+        'parentId',
+    ],
     data() {
         return {
+            parent: null,
             loading_submit: false,
             titleDialog: null,
             titleTabDialog: null,
@@ -591,6 +601,8 @@ export default {
         }
     },
     async created() {
+
+        this.loadConfiguration()
         await this.initForm()
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
@@ -605,9 +617,21 @@ export default {
                 this.locations = response.data.locations;
                 this.person_types = response.data.person_types;
             })
+        .finally(()=>{
+            if(this.api_service_token === false){
+                if(this.config.api_service_token !== undefined){
+                    this.api_service_token = this.config.api_service_token
+                }
+            }
+        })
 
     },
     computed: {
+        ...mapState([
+            'config',
+            'person',
+            'parentPerson',
+        ]),
         maxLength: function () {
             if (this.form.identity_document_type_id === '6') {
                 return 11
@@ -618,6 +642,9 @@ export default {
         },
     },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+        ]),
         initForm() {
             this.errors = {}
             this.form = {
@@ -666,6 +693,15 @@ export default {
         },
         create() {
             // console.log(this.input_person)
+            this.parent = 0;
+            if(this.parentId !== undefined){
+                this.parent = this.parentId;
+            }
+            /*
+
+            'person',
+            'parentPerson',
+            */
             if (this.external) {
                 if (this.document_type_id === '01') {
                     this.form.identity_document_type_id = '6'
@@ -689,6 +725,7 @@ export default {
                 this.titleTabDialog = 'Datos del proveedor';
                 this.typeDialog = 'Tipo de proveedor'
             }
+
             if (this.recordId) {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
@@ -844,7 +881,7 @@ export default {
             }
 
             this.loading_submit = true
-
+            this.form.parent_id = parseInt(this.parent);
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {
@@ -858,6 +895,7 @@ export default {
                     } else {
                         this.$message.error(response.data.message)
                     }
+
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
@@ -866,7 +904,7 @@ export default {
                         console.log(error)
                     }
                 })
-                .then(() => {
+                .finally(() => {
                     this.loading_submit = false
                 })
         },
@@ -893,16 +931,16 @@ export default {
             this.searchServiceNumberByType()
         },
         searchNumber(data) {
-            this.form.name = (this.form.identity_document_type_id === '1') ? data.nombre_completo : data.nombre_o_razon_social;
-            this.form.trade_name = (this.form.identity_document_type_id === '6') ? data.nombre_o_razon_social : '';
+            //cambios apiperu
+            this.form.name = data.name;
+            this.form.trade_name = data.trade_name;
             this.form.location_id = data.ubigeo;
-            this.form.address = data.direccion;
-            this.form.department_id = (data.ubigeo) ? (data.ubigeo[0] != '-' ? data.ubigeo[0] : null) : null;
-            this.form.province_id = (data.ubigeo) ? (data.ubigeo[1] != '-' ? data.ubigeo[1] : null) : null;
-            this.form.district_id = (data.ubigeo) ? (data.ubigeo[2] != '-' ? data.ubigeo[2] : null) : null;
-            this.form.condition = data.condicion;
-            this.form.state = data.estado;
-
+            this.form.address = data.address;
+            this.form.department_id = data.department_id;
+            this.form.province_id = data.province_id;
+            this.form.district_id = data.district_id;
+            this.form.condition = data.condition;
+            this.form.state = data.state;
             this.filterProvinces()
             this.filterDistricts()
 //                this.form.addresses[0].telephone = data.telefono;

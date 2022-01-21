@@ -16,16 +16,18 @@ if ($hostname) {
 
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
+        Route::get('printticket/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toTicket');
         Route::get('/exchange_rate/ecommence/{date}', 'Tenant\Api\ServiceController@exchangeRateTest');
         Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
         Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
+        Route::get('sale-notes/ticket/{external_id}/{format?}', 'Tenant\SaleNoteController@toTicket');
         Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
             // Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('list-reports', 'Tenant\SettingController@listReports');
             Route::get('list-extras', 'Tenant\SettingController@listExtras');
-            Route::get('list-settings', 'Tenant\SettingController@indexSettings');
+            Route::get('list-settings', 'Tenant\SettingController@indexSettings')->name('tenant.general_configuration.index');
             Route::get('list-banks', 'Tenant\SettingController@listBanks');
             Route::get('list-bank-accounts', 'Tenant\SettingController@listAccountBanks');
             Route::get('list-currencies', 'Tenant\SettingController@listCurrencies');
@@ -40,9 +42,9 @@ if ($hostname) {
             Route::get('list-vouchers-type', 'Tenant\SettingController@listVouchersType');
             Route::get('list-transfer-reason-types', 'Tenant\SettingController@listTransferReasonTypes');
 
-            Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
+            Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index')->middleware('redirect.level');
 
-            Route::get('tasks', 'Tenant\TaskController@index')->name('tenant.tasks.index');
+            Route::get('tasks', 'Tenant\TaskController@index')->name('tenant.tasks.index')->middleware('redirect.level');
             Route::post('tasks/commands', 'Tenant\TaskController@listsCommand');
             Route::post('tasks/tables', 'Tenant\TaskController@tables');
             Route::post('tasks', 'Tenant\TaskController@store');
@@ -67,7 +69,7 @@ if ($hostname) {
             Route::get('statusOrder/records', 'Tenant\StatusOrdersController@records');
 
             //Company
-            Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create');
+            Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create')->middleware('redirect.level');
             Route::get('companies/tables', 'Tenant\CompanyController@tables');
             Route::get('companies/record', 'Tenant\CompanyController@record');
             Route::post('companies', 'Tenant\CompanyController@store');
@@ -80,7 +82,7 @@ if ($hostname) {
             Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
 
             //Configurations
-            Route::get('configurations/sale-notes', 'Tenant\SaleNoteController@SetAdvanceConfiguration')->name('tenant.sale_notes.configuration');
+            Route::get('configurations/sale-notes', 'Tenant\SaleNoteController@SetAdvanceConfiguration')->name('tenant.sale_notes.configuration')->middleware('redirect.level');
             Route::post('configurations/sale-notes', 'Tenant\SaleNoteController@SaveSetAdvanceConfiguration');
             Route::get('configurations/addSeeder', 'Tenant\ConfigurationController@addSeeder');
             Route::get('configurations/preprinted/addSeeder', 'Tenant\ConfigurationController@addPreprintedSeeder');
@@ -354,6 +356,7 @@ if ($hostname) {
 
             Route::post('options/delete_documents', 'Tenant\OptionController@deleteDocuments');
 
+            // apiperu no usa estas rutas - revisar
             Route::get('services/ruc/{number}', 'Tenant\Api\ServiceController@ruc');
             Route::get('services/dni/{number}', 'Tenant\Api\ServiceController@dni');
             Route::post('services/exchange_rate', 'Tenant\Api\ServiceController@exchange_rate');
@@ -642,15 +645,19 @@ if ($hostname) {
             //formats PDF
             Route::get('templates', 'Tenant\FormatTemplateController@records');
             // Configuración del Login
-            Route::get('login-page', 'Tenant\LoginConfigurationController@index')->name('tenant.login_page');
+            Route::get('login-page', 'Tenant\LoginConfigurationController@index')->name('tenant.login_page')->middleware('redirect.level');
             Route::post('login-page/upload-bg-image', 'Tenant\LoginConfigurationController@uploadBgImage');
             Route::post('login-page/update', 'Tenant\LoginConfigurationController@update');
 
 
             Route::post('extra_info/items', 'Tenant\ExtraInfoController@getExtraDataForItems');
-        });
 
-        Route::get('test','TestController@test');
+            //liquidacion de compra
+            Route::get('purchase-settlements', 'Tenant\PurchaseSettlementController@index')->name('tenant.purchase-settlements.index');
+            Route::get('purchase-settlements/columns', 'Tenant\PurchaseSettlementController@columns');
+            Route::get('purchase-settlements/records', 'Tenant\PurchaseSettlementController@records');
+
+        });
     });
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
@@ -681,12 +688,13 @@ if ($hostname) {
             Route::post('clients/password/{client}', 'System\ClientController@password');
             Route::post('clients/locked_emission', 'System\ClientController@lockedEmission');
             Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
+            // Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant'); //Linea repetida
+
             Route::post('clients/locked_user', 'System\ClientController@lockedUser');
             Route::post('clients/renew_plan', 'System\ClientController@renewPlan');
 
             Route::post('clients/set_billing_cycle', 'System\ClientController@startBillingCycle');
 
-            Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
 
             Route::post('clients/upload', 'System\ClientController@upload');
 

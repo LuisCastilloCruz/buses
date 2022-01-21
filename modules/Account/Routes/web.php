@@ -35,9 +35,17 @@ if($hostname) {
             });
 
             Route::prefix('company_accounts')->group(function () {
-                Route::get('create', 'CompanyAccountController@create')->name('tenant.company_accounts.create');
+                Route::get('create', 'CompanyAccountController@create')->name('tenant.company_accounts.create')->middleware('redirect.level');
                 Route::get('record', 'CompanyAccountController@record');
                 Route::post('', 'CompanyAccountController@store');
+            });
+
+            Route::prefix('accounting_ledger')->group(function () {
+                Route::get('/', 'LedgerAccountController@index')->name('tenant.accounting_ledger.create');
+                // accounting_ledger?date_end=2021-10-24&date_start=2021-10-24&month_end=2021-10&month_start=2021-10&period=month
+                Route::get('/excel/', 'LedgerAccountController@excel');
+                //->middleware('redirect.level')
+                Route::post('record', 'LedgerAccountController@record');
             });
 
             Route::prefix('accounting')->group(function () {
