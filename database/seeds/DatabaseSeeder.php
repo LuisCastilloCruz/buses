@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
     {
         App\Models\System\User::create([
             'name' => 'Admin Instrador',
-            'email' => 'sistema@reactsdigital.com',
-            'password' => bcrypt('123Sistema@'),
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('123456'),
         ]);
  
 
