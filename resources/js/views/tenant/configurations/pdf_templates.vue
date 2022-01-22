@@ -44,7 +44,7 @@
                         <el-card :id="template.id"
                                  :body-style="{ padding: '0px' }">
                             <a @click="viewImage(template)">
-                                <img v-if="template.urls.invoice!=''" :src="path.origin+'/'+template.urls.invoice"
+                                <img :src="path.origin+'/'+template.urls.invoice"
                                      class="image"
                                      style="width: 100%"></a>
                             <div style="padding: 14px;">
@@ -108,9 +108,9 @@
                 <div class="block">
                     <el-carousel arrow="always" :interval="10000" height="550px">
                         <el-carousel-item>
-                            <img  v-if="template.urls.invoice!=''" :src="path.origin+'/'+template.urls.invoice"
-                                  class="image"
-                                  style="width: 100%; height:100%;">
+                            <img  :src="path.origin+'/'+template.urls.invoice"
+                                class="image"
+                                style="width: 100%; height:100%;">
                         </el-carousel-item>
                         <el-carousel-item v-if="template.urls.guide != ''">
                             <img  :src="path.origin+'/'+template.urls.guide"

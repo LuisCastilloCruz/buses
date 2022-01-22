@@ -7,7 +7,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\{
     DocumentItem,
     DispatchItem,
-    PurchaseItem,
+    PurchaseItem
 };
 use Carbon\Carbon;
 

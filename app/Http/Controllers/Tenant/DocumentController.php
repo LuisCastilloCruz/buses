@@ -64,6 +64,7 @@ use Modules\Item\Http\Requests\BrandRequest;
 use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
+use Html2Text\Html2Text;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;

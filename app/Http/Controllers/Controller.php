@@ -77,18 +77,28 @@
             self::ExtraLog(__FILE__ . "::" . __LINE__ . " \n Validando Host $host  \n>>>>\n$string", $extra_log, $print);
         }
 
-    /**
-     * Guarda un log en facturalo si la variable EXTRA_LOG es verdadera en el archivo .env
-     * @param string $string
-     */
-    public static function ExtraLog($string = ''){
-        if(\Config('extra.extra_log') === true){
-            \Log::channel('facturalo')->debug(
-                "\n**************************************DEBUG SE ENCUENTRA ACTIVADO**********************************************************************************\n".
-                $string.
-                "\n**************************************DEBUG SE ENCUENTRA ACTIVADO**********************************************************************************\n");
+        /**
+         * Guarda un log en facturalo si la variable EXTRA_LOG es verdadera en el archivo .env
+
+         * @param string $string
+         * @param false  $extra_log
+         * @param false  $print
+         */
+        public static function ExtraLog($string = '', $extra_log = false, $print = false)
+        {
+            if ($extra_log == false) {
+                $extra_log = Config('extra.extra_log');
+            }
+            if ($extra_log === true) {
+                $printData = "\n**************************************DEBUG SE ENCUENTRA ACTIVADO**********************************************************************************\n" .
+                    $string .
+                    "\n**************************************DEBUG SE ENCUENTRA ACTIVADO**********************************************************************************\n";
+                Log::channel('facturalo')->debug($printData);
+                if ($print === true) {
+                    echo $printData;
+                }
+            }
         }
-    }
 
         /**
          * @param $id

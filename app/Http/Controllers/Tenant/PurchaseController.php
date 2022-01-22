@@ -22,7 +22,6 @@
     use App\Models\Tenant\Company;
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Establishment;
-    use App\Models\Tenant\GeneralPaymentCondition;
     use App\Models\Tenant\GuideFile;
     use App\Models\Tenant\Item;
     use App\Models\Tenant\ItemUnitType;
@@ -48,6 +47,7 @@
     use stdClass;
     use Symfony\Component\HttpFoundation\StreamedResponse;
     use Throwable;
+    use App\Models\Tenant\GeneralPaymentCondition;
     use App\Models\Tenant\NotePurchase;
     use Modules\Item\Models\Category;
     use Modules\Item\Http\Requests\CategoryRequest;

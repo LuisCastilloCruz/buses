@@ -702,9 +702,12 @@ class SaleNoteController extends Controller
 
     public function mergeData($inputs)
     {
+
         $this->company = Company::active();
 
-
+        // Para matricula, se busca el hijo en atributos
+        $attributes = $inputs['attributes']??[];
+        $children = $attributes['children_customer_id']??null;
         $type_period = isset($inputs['type_period']) ? $inputs['type_period'] : null;
         $quantity_period = isset($inputs['quantity_period']) ? $inputs['quantity_period'] : null;
         $d_of_issue = new Carbon($inputs['date_of_issue']);

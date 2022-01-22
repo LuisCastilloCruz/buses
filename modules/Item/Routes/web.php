@@ -31,6 +31,7 @@ if($hostname) {
             Route::get('items/barcode/{item}', 'ItemController@generateBarcode');
 
             Route::post('items/import/item-price-lists', 'ItemController@importItemPriceLists');
+            Route::post('items/import/item-with-extra-data', 'ItemController@importItemWithExtraData');
 
             //history
             Route::get('items/data-history/{item}', 'ItemController@getDataHistory');

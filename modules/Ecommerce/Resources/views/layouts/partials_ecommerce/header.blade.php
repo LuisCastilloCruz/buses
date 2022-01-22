@@ -112,6 +112,7 @@
          </div><!-- End .container -->
          <div class="container">
              <div id="header_bar" class="header-center header-dropdowns">
+
                  <div class="header-dropdown" style="min-width:400px;">
                      <div class="buscador">
                          <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
@@ -130,9 +131,25 @@
                          </ul>
                      </div><!-- End .header-menu -->
                  </div><!-- End .header-dropown -->
+
+
              </div><!-- End .headeer-center -->
 
-         </div>
+             <div class="header-right">
+                 <button class="mobile-menu-toggler" type="button">
+                     <i class="icon-menu"></i>
+                 </button>
+                 <div class="header-contact">
+                     <span> Atención al</span>
+                     <i class="fab fa-whatsapp"></i> <a href="#"><strong>{{$information->information_contact_phone}}</strong></a>
+                 </div><!-- End .header-contact -->
+
+                @include('ecommerce::layouts.partials_ecommerce.cart_dropdown')
+
+                @include('ecommerce::partials.headers.session')
+
+             </div><!-- End .header-right -->
+         </div><!-- End .container -->
      </div><!-- End .header-middle -->
 
      <div class="header-bottom sticky-header">
