@@ -15,16 +15,16 @@
                             :class="{'has-danger': errors.number}"
                             class="form-group">
                             <label class="control-label">RUC</label>
-                            <!-- <el-input :disabled="form.is_update" v-model="form.number" :maxlength="11" dusk="number">
+                            <el-input :disabled="form.is_update" v-model="form.number" :maxlength="11" dusk="number">
                                 <el-button :disabled="form.is_update" type="primary" slot="append" :loading="loading_search" icon="el-icon-search" @click.prevent="searchSunat">
                                     SUNAT
                                 </el-button>
-                            </el-input> -->
+                            </el-input>
 
                             <!-- apiperu -->
-                            <x-input-service v-model="form.number"
-                                             :identity_document_type_id="form.identity_document_type_id"
-                                             @search="searchNumber"></x-input-service>
+<!--                            <x-input-service v-model="form.number"-->
+<!--                                             :identity_document_type_id="form.identity_document_type_id"-->
+<!--                                             @search="searchNumber"></x-input-service>-->
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -626,6 +626,9 @@ export default {
                 this.soap_username = response.data.soap_username
                 this.soap_password = response.data.soap_password
             })
+
+        console.log('papi')
+        console.log(this.modules)
 
         await this.initForm()
 
