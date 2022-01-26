@@ -44,7 +44,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Modules\Document\Traits\SearchTrait;
 use Modules\Finance\Traits\FinanceTrait;
@@ -52,17 +51,15 @@ use Modules\Inventory\Models\Warehouse;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Sale\Helpers\SaleNoteHelper;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
-use Modules\Sale\Helpers\SaleNoteHelper;
-// use App\Models\Tenant\Warehouse;
-use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
+
 // use App\Models\Tenant\Warehouse;
 use Modules\Item\Models\Category;
 use Mike42\Escpos\EscposImage;
-use Illuminate\Support\Facades\Storage;
 use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
@@ -454,6 +451,10 @@ class SaleNoteController extends Controller
      */
     private function getRecords($request){
         $records = SaleNote::whereTypeUser();
+        // Solo devuelve matriculas
+        if($request != null && $request->has('onlySuscription') && (bool)$request->onlySuscription == true){
+            $records->whereNotNull('grade')->whereNotNull('section') ;
+        }
         if($request->column == 'customer'){
             $records->whereHas('person', function($query) use($request){
                                     $query
@@ -701,9 +702,12 @@ class SaleNoteController extends Controller
 
     public function mergeData($inputs)
     {
+
         $this->company = Company::active();
 
-
+        // Para matricula, se busca el hijo en atributos
+        $attributes = $inputs['attributes']??[];
+        $children = $attributes['children_customer_id']??null;
         $type_period = isset($inputs['type_period']) ? $inputs['type_period'] : null;
         $quantity_period = isset($inputs['quantity_period']) ? $inputs['quantity_period'] : null;
         $d_of_issue = new Carbon($inputs['date_of_issue']);
@@ -759,6 +763,12 @@ class SaleNoteController extends Controller
             'series' => $series,
             'number' => $number
         ];
+        if(!empty($children)){
+            $customer = PersonInput::set($inputs['customer_id']);
+            $customer['children'] = PersonInput::set($children);
+            $values['customer'] = $customer;
+        }
+
 
         unset($inputs['series_id']);
 
@@ -819,7 +829,7 @@ class SaleNoteController extends Controller
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
 
-            $company_logo      = ($this->company->logo) ? 40 : 0;
+            $company_logo      = ($this->company->logo) ? 20 : 0;
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
@@ -983,7 +993,7 @@ class SaleNoteController extends Controller
                         $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
                     }
                 }
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+                //$pdf->SetHTMLFooter($html_footer.$html_footer_legend);
             // }
         }
 

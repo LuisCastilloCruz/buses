@@ -3,22 +3,26 @@
     namespace App\Http\Middleware;
 
     use Closure;
+    use Illuminate\Http\RedirectResponse;
+    use Illuminate\Http\Request;
 
     /**
      * Class RedirectModule
      *
      * @package App\Http\Middleware
      */
-    class RedirectModule {
+    class RedirectModule
+    {
         /**
          * Handle an incoming request.
          *
-         * @param \Illuminate\Http\Request $request
-         * @param \Closure                 $next
+         * @param Request $request
+         * @param Closure $next
          *
          * @return mixed
          */
-        public function handle($request, Closure $next) {
+        public function handle($request, Closure $next)
+        {
 
             $module = $request->user()->getModule();
             $path = explode('/', $request->path());
@@ -52,168 +56,121 @@
          *
          * @return string
          */
-        private function getGroup($path, $module) {
+        private function getGroup($path, $module)
+        {
 
+            $firstLevel = $path[0] ?? null;
+            $secondLevel = $path[1] ?? null;
+            $group = null;
             ///* Module Documents */
-
-            if ($path[0] == "documents") {
+            if (
+                $firstLevel == "documents" ||
+                $firstLevel == "dashboard" ||
+                $firstLevel == "quotations" ||
+                $firstLevel == "items" ||
+                $firstLevel == "summaries" ||
+                $firstLevel == "voided") {
                 $group = "documents";
-
-            } elseif ($path[0] == "dashboard") {
-                $group = "documents";
-
-            } elseif ($path[0] == "quotations") {
-                $group = "documents";
-
-            } elseif ($path[0] == "items") {
-                $group = "documents";
-
-            } elseif ($path[0] == "summaries") {
-                $group = "documents";
-
-            } elseif ($path[0] == "voided") {
-                $group = "documents";
-
             } ///* Module purchases  */
-
-            elseif ($path[0] == "purchases") {
+            elseif (
+                $firstLevel == "purchases" ||
+                $firstLevel == "expenses") {
                 $group = "purchases";
-
-            } elseif ($path[0] == "expenses") {
-                $group = "purchases";
-
             } ///* Module advanced */
-
-            elseif ($path[0] == "retentions") {
+            elseif (
+                $firstLevel == "retentions" ||
+                $firstLevel == "dispatches" ||
+                $firstLevel == "perceptions") {
                 $group = "advanced";
-
-            } elseif ($path[0] == "dispatches") {
-                $group = "advanced";
-
-            } elseif ($path[0] == "perceptions") {
-                $group = "advanced";
-
             } ///* Module reports */
-
-            elseif ($path[0] == "list-reports") {
-                $group = "reports";
-            } elseif ($path[0] == "reports" && $path[1] == "purchases") {
-                $group = "reports";
-            } elseif ($path[0] == "reports" && $path[1] == "sales") {
-                $group = "reports";
-            } elseif ($path[0] == "reports" && $path[1] == "consistency-documents") {
+            elseif (
+                $firstLevel == "list-reports" ||
+                ($firstLevel == "reports" && $secondLevel == "purchases") ||
+                ($firstLevel == "reports" && $secondLevel == "sales") ||
+                ($firstLevel == "reports" && $secondLevel == "consistency-documents")) {
                 $group = "reports";
             } // cuenta / listado de pagos
-            elseif ($path[0] == "cuenta") {
+            elseif (
+                $firstLevel == "cuenta") {
                 $group = "cuenta";
             } ///* Module configuration */
-
-            elseif ($path[0] == "users") {
+            elseif (
+                $firstLevel == "users" ||
+                $firstLevel == "establishments") {
                 $group = "establishments";
                 // $group = "configuration";
-
-            } elseif ($path[0] == "establishments") {
-                $group = "establishments";
-                // $group = "configuration";
-
-            } elseif ($path[0] == "companies") {
-
+            }//
+            elseif (
+                $firstLevel == "companies") {
                 $group = "configuration";
-
-                if (count($path) > 0 && $path[1] == "uploads" && $module == "documents") {
+                if (count($path) > 0 && $secondLevel == "uploads" && $module == "documents") {
                     $group = "documents";
                 }
-
-            } elseif ($path[0] == "catalogs") {
+            }//
+            elseif (
+                $firstLevel == "catalogs" ||
+                $firstLevel == "advanced") {
                 $group = "configuration";
-
-            } elseif ($path[0] == "advanced") {
-                $group = "configuration";
-
             } ///* Determinate type person */
-
-            elseif ($path[0] == "persons") {
-                if ($path[1] == "suppliers") {
+            elseif (
+                $firstLevel == "persons") {
+                if ($secondLevel == "suppliers") {
                     $group = "purchases";
-
-                } elseif ($path[1] == "customers") {
+                }//
+                elseif ($secondLevel == "customers") {
                     $group = "persons";
-
                 } else {
                     $group = null;
                 }
-            } elseif ($path[0] == "person-types") {
+            }//
+            elseif (
+                $firstLevel == "person-types") {
                 $group = "persons";
-
             } ///* Module pos */
-            elseif ($path[0] == "pos") {
+            elseif (
+                $firstLevel == "pos" ||
+                $firstLevel == "cash") {
                 $group = "pos";
-
-            } elseif ($path[0] == "cash") {
-                $group = "pos";
-
             } ///* Module inventory */
-            elseif ($path[0] == "warehouses") {
-                $group = "inventory";
-            } elseif ($path[0] == "inventory") {
-                $group = "inventory";
-            } elseif ($path[0] == "reports" && $path[1] == "kardex") {
-                $group = "inventory";
-            } elseif ($path[0] == "reports" && $path[1] == "inventory") {
+            elseif (
+                $firstLevel == "warehouses"||
+                $firstLevel == "inventory" ||
+                ($firstLevel == "reports" && $secondLevel == "kardex") ||
+                ($firstLevel == "reports" && $secondLevel == "inventory")) {
                 $group = "inventory";
             } ///* Module accounting */
-            elseif ($path[0] == "account") {
+            elseif (
+                $firstLevel == "account") {
                 $group = "accounting";
             } ///* Module finance */
-            elseif ($path[0] == "finances") {
+            elseif (
+                $firstLevel == "finances") {
                 $group = "finance";
-            } elseif ($path[0] == "orders") {
+            }//
+            elseif (
+                $firstLevel == "orders" ||
+                ($firstLevel == "ecommerce" && $secondLevel == "configuration") ||
+                $firstLevel == "items_ecommerce" ||
+                $firstLevel == "tags" ||
+                $firstLevel == "promotions") {
                 $group = "ecommerce";
-
-            } elseif ($path[0] == "ecommerce" && $path[1] == "configuration") {
-                $group = "ecommerce";
-            } elseif ($path[0] == "items_ecommerce") {
-                $group = "ecommerce";
-            } elseif ($path[0] == "tags") {
-                $group = "ecommerce";
-            } elseif ($path[0] == "promotions") {
-                $group = "ecommerce";
-            } elseif ($path[0] == "hotels") {
+            }//
+            elseif (
+                $firstLevel == "hotels" ||
+                ($firstLevel == "hotels" && $secondLevel == "document-hotels")) {
                 $group = "hotels";
-            } elseif ($path[0] == "transportes") {
-//                if ($path[1] == "cash") {
-//                    $group = "transporte";
-//                } elseif ($path[1] == "choferes") {
-//                    $group = "transporte";
-//                } elseif ($path[1] == "vehiculos") {
-//                    $group = "transporte";
-//                }elseif ($path[1] == "destinos") {
-//                    $group = "transporte";
-//                }elseif ($path[1] == "terminales") {
-//                    $group = "transporte";
-//                }elseif ($path[1] == "programaciones") {
-//                    $group = "transporte";
-//                }elseif ($path[1] == "pasajes") {
-//                    $group = "transporte";
-//                }elseif ($path[1] == "encomiendas") {
-//                    $group = "transporte";
-//                }elseif ($path[1] == "manifiestos") {
-//                    $group = "transporte";
-//                }elseif ($path[1] == "usuarios-terminales") {
-//                    $group = "transporte";
-//                }
-//                else {
-//                    $group = null;
-//                }
-
-                $group = "transporte";
-
-            } elseif ($path[0] == "documentary-procedure") {
+            }//
+            elseif (
+                $firstLevel == "documentary-procedure") {
                 $group = "documentary-procedure";
-            }elseif ($path[0] == "digemid") {
+            }//
+            elseif (
+                $firstLevel == "digemid") {
                 $group = "digemid";
-            } else {
-                $group = null;
+            }//
+            elseif (
+                $firstLevel == "suscription") {
+                $group = "suscription_app";
             }
 
             return $group;
@@ -225,7 +182,8 @@
          *
          * @return mixed
          */
-        private function getModuleByGroup($modules, $group) {
+        private function getModuleByGroup($modules, $group)
+        {
 
             $modules_x_group = $modules->filter(function ($module, $key) use ($group) {
                 return $module->value === $group;
@@ -237,9 +195,10 @@
         /**
          * @param $module
          *
-         * @return \Illuminate\Http\RedirectResponse
+         * @return RedirectResponse
          */
-        private function redirectRoute($module) {
+        private function redirectRoute($module)
+        {
 
             switch ($module) {
 
@@ -273,6 +232,7 @@
                 case 'establishments':
                     return redirect()->route('tenant.users.index');
 
+                case 'documentary-procedure':
                 case 'hotels':
                     return redirect()->url('/');
 
@@ -284,9 +244,10 @@
 
                 case 'documentary-procedure':
                     return redirect()->url('/');
-
                 case 'digemid':
                     return redirect()->route('tenant.digemid.index');
+                case 'suscription_app':
+                    return redirect()->route('tenant.suscription.client.index');
 
                 default;
                     return redirect()->route('tenant.dashboard.index');

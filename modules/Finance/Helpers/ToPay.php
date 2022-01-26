@@ -23,7 +23,7 @@ class ToPay
      */
     public static function getToPay($request)
     {
-        $establishment_id = $request['establishment_id'];
+        $establishment_id = $request['establishment_id']??0;
         $period = $request['period'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
@@ -31,11 +31,19 @@ class ToPay
         $month_end = $request['month_end'];
         $supplier_id = isset($request['supplier_id']) ? (int)$request['supplier_id'] : 0;
         $user = isset($request['user']) ? (int)$request['user'] : 0;
+        // Obtendrá todos los establecimientos
+        $stablishmentTopaidAll = $request['stablishmentTopaidAll']??0;
 
 
         $d_start = null;
         $d_end = null;
 
+        /** @todo: Eliminar periodo, fechas y cambiar por
+
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+        \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
+         */
         switch ($period) {
             case 'month':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
@@ -69,8 +77,12 @@ class ToPay
             ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
             ->leftJoinSub($purchase_payments, 'payments', function ($join) {
                 $join->on('purchases.id', '=', 'payments.purchase_id');
-            })
+            });
+        if($stablishmentTopaidAll !== 1){
+            $purchases
             ->where('purchases.establishment_id', $establishment_id);
+
+        }
         $select = DB::raw('purchases.id as id, '.
                           "DATE_FORMAT(purchases.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
                           "DATE_FORMAT(purchases.date_of_due, '%Y/%m/%d') as date_of_due, ".
@@ -108,8 +120,13 @@ class ToPay
                 $join->on('expenses.id', '=', 'payments.expense_id');
             })
             ->whereIn('state_type_id', ['01','03','05','07','13'])
-            ->where('expenses.establishment_id', $establishment_id)
         ;
+
+        if($stablishmentTopaidAll !== 1){
+            $expenses
+                ->where('expenses.establishment_id', $establishment_id)
+            ;
+        }
         $select = 'expenses.id as id, '.
             "DATE_FORMAT(expenses.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
             'null as date_of_due, '.
@@ -155,6 +172,7 @@ class ToPay
         return $records->transform(function($row) {
 
                 $total_to_pay = (float)$row->total - (float)$row->total_payment;
+                $total_subtraction = (float)$row->total_payment - (float)$row->total;
                 $delay_payment = null;
                 $date_of_due = null;
 
@@ -193,6 +211,9 @@ class ToPay
                     'supplier_id' => $row->supplier_id,
                     'number_full' => $row->number_full,
                     'total' => number_format((float) $row->total,2, ".", ""),
+                    'total_payment' => number_format((float)$row->total_payment),
+                    'total_subtraction' => $total_subtraction,
+
                     'total_to_pay' => number_format($total_to_pay,2, ".", ""),
                     'type' => $row->type,
                     'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,

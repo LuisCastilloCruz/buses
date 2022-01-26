@@ -2,62 +2,142 @@
 
     namespace App\Models\Tenant;
 
-    use App\Models\Tenant\GuideFile;
     use App\Models\Tenant\Catalogs\CurrencyType;
+    use App\Models\Tenant\Catalogs\DocumentType;
+    use App\Traits\SellerIdTrait;
+    use Carbon\Carbon;
+    use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\HasMany;
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Database\Query\Builder;
     use Modules\Item\Models\WebPlatform;
+    use Modules\Order\Models\OrderNote;
+    use Modules\Sale\Models\TechnicalService;
     use Modules\Transporte\Models\TransporteEncomienda;
     use Modules\Transporte\Models\TransportePasaje;
 
     /**
      * Class SaleNote
      *
-     * @package App\Models\Tenant
+     * @package App\Models\Tenant\
      * @mixin ModelTenant
-     * @property CurrencyType                 $currency_type
-     * @property Collection|Document[]        $documents
-     * @property int|null                     $documents_count
-     * @property Establishment                $establishment
-     * @property mixed                        $charges
-     * @property mixed                        $customer
-     * @property mixed                        $detraction
-     * @property mixed                        $discounts
-     * @property mixed                        $guides
-     * @property mixed                        $identifier
-     * @property mixed                        $legends
-     * @property string                       $number_full
-     * @property mixed                        $number_to_letter
-     * @property mixed                        $perception
-     * @property mixed                        $prepayments
-     * @property mixed                        $related
-     * @property Collection|InventoryKardex[] $inventory_kardex
-     * @property int|null                     $inventory_kardex_count
-     * @property Collection|SaleNoteItem[]    $items
-     * @property int|null                     $items_count
-     * @property Collection|Kardex[]          $kardex
-     * @property int|null                     $kardex_count
-     * @property PaymentMethodType            $payment_method_type
-     * @property Collection|SaleNotePayment[] $payments
-     * @property int|null                     $payments_count
-     * @property Person                       $person
-     * @property Quotation                    $quotation
-     * @property SoapType                     $soap_type
-     * @property StateType                    $state_type
-     * @property User                         $user
-     * @property User                         $seller
+     * @property CurrencyType                                   $currency_type
+     * @property Collection|Document[]                          $documents
+     * @property int|null                                       $documents_count
+     * @property Establishment                                  $establishment
+     * @property mixed                                          $charges
+     * @property mixed                                          $customer
+     * @property mixed                                          $detraction
+     * @property mixed                                          $discounts
+     * @property mixed                                          $guides
+     * @property mixed                                          $identifier
+     * @property mixed                                          $legends
+     * @property string                                         $number_full
+     * @property mixed                                          $number_to_letter
+     * @property mixed                                          $perception
+     * @property mixed                                          $prepayments
+     * @property mixed                                          $related
+     * @property Collection|InventoryKardex[]                   $inventory_kardex
+     * @property int|null                                       $inventory_kardex_count
+     * @property Collection|SaleNoteItem[]                      $items
+     * @property int|null                                       $items_count
+     * @property Collection|Kardex[]                            $kardex
+     * @property int|null                                       $kardex_count
+     * @property PaymentMethodType                              $payment_method_type
+     * @property Collection|SaleNotePayment[]                   $payments
+     * @property int|null                                       $payments_count
+     * @property Person                                         $person
+     * @property Quotation                                      $quotation
+     * @property SoapType                                       $soap_type
+     * @property StateType                                      $state_type
+     * @property User                                           $user
+     * @property User                                           $seller
+     * @property int                                            $id
+     * @property string|null                    $grade
+     * @property string|null                    $section
+     * @property int                                            $user_id
+     * @property string                                         $external_id
+     * @property int                                            $establishment_id
+     * @property string                                         $soap_type_id
+     * @property string                                         $state_type_id
+     * @property string                                         $prefix
+     * @property string|null                                    $series
+     * @property int|null                                       $number
+     * @property Carbon                                         $date_of_issue
+     * @property Carbon                                         $time_of_issue
+     * @property int                                            $customer_id
+     * @property string                                         $currency_type_id
+     * @property string|null                                    $payment_method_type_id
+     * @property float                                          $exchange_rate_sale
+     * @property bool                                           $apply_concurrency
+     * @property bool                                           $enabled_concurrency
+     * @property Carbon|null                                    $automatic_date_of_issue
+     * @property int|null                                       $quantity_period
+     * @property string|null                                    $type_period
+     * @property float                                          $total_prepayment
+     * @property float                                          $total_charge
+     * @property float                                          $total_discount
+     * @property float                                          $total_exportation
+     * @property float                                          $total_free
+     * @property float                                          $total_taxed
+     * @property float                                          $total_unaffected
+     * @property float                                          $total_exonerated
+     * @property float                                          $total_igv
+     * @property float                                          $total_base_isc
+     * @property float                                          $total_isc
+     * @property float                                          $total_base_other_taxes
+     * @property float                                          $total_other_taxes
+     * @property float                                          $total_plastic_bag_taxes
+     * @property float                                          $total_taxes
+     * @property float                                          $total_value
+     * @property float                                          $total
+     * @property string|null                                    $additional_information
+     * @property string|null                                    $filename
+     * @property int|null                                       $quotation_id
+     * @property int|null                                       $order_note_id
+     * @property int|null                                       $technical_service_id
+     * @property int|null                                       $order_id
+     * @property bool                                           $total_canceled
+     * @property bool                                           $changed
+     * @property bool                                           $paid
+     * @property string|null                                    $license_plate
+     * @property string|null                                    $plate_number
+     * @property string|null                                    $reference_data
+     * @property string|null                                    $observation
+     * @property string|null                                    $purchase_order
+     * @property int|null                                       $document_id
+     * @property int|null                                       $user_rel_suscription_plan_id
+     * @property Carbon|null                                    $due_date
+     * @property Carbon|null                                    $created_at
+     * @property Carbon|null                                    $updated_at
+     * @property int|null                                       $seller_id
+     * @property Order|null                                     $order
+     * @property OrderNote|null                                 $order_note
+     * @property TechnicalService|null                          $technical_service
+     * @property Collection|CashDocument[]                      $cash_documents
+     * @property Collection|Kardex[]                            $kardexes
+     * @property Collection|SaleNotePayment[]                   $sale_note_payments
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote query()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereNotChanged()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereStateTypeAccepted()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereTypeUser()
+     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote WhereEstablishmentId()
+     * @property-read int|null                                  $cash_documents_count
+     * @property-read Collection|\App\Models\Tenant\GuideFile[] $guide_files
+     * @property-read int|null                                  $guide_files_count
+     * @property-read int|null                                  $kardexes_count
+     * @property-read int|null                                  $sale_note_payments_count
+     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereEstablishmentId($establishment_id = 0)
      */
     class SaleNote extends ModelTenant
     {
+        use UsesTenantConnection;
+        use SellerIdTrait;
+
         protected $with = [
             'user',
             'soap_type',
@@ -74,7 +154,8 @@
             'establishment',
             'soap_type_id',
             'state_type_id',
-
+            'grade',
+            'section',
             'prefix',
 
             'date_of_issue',
@@ -131,13 +212,61 @@
             'document_id',
             'seller_id',
             'order_id',
+            'technical_service_id',
+            // 'changed',
+            'user_rel_suscription_plan_id',
+            'subtotal',
         ];
 
         protected $casts = [
+            'user_id' => 'int',
+            'establishment_id' => 'int',
+            'number' => 'int',
+            'customer_id' => 'int',
+            'exchange_rate_sale' => 'float',
+            'apply_concurrency' => 'bool',
+            'enabled_concurrency' => 'bool',
+            'quantity_period' => 'int',
+            'total_prepayment' => 'float',
+            'total_charge' => 'float',
+            'total_discount' => 'float',
+            'total_exportation' => 'float',
+            'total_free' => 'float',
+            'total_taxed' => 'float',
+            'total_unaffected' => 'float',
+            'total_exonerated' => 'float',
+            'total_igv' => 'float',
+            'total_base_isc' => 'float',
+            'total_isc' => 'float',
+            'total_base_other_taxes' => 'float',
+            'total_other_taxes' => 'float',
+            'total_plastic_bag_taxes' => 'float',
+            'total_taxes' => 'float',
+            'total_value' => 'float',
+            'total' => 'float',
+            'quotation_id' => 'int',
+            'order_note_id' => 'int',
+            'technical_service_id' => 'int',
+            'order_id' => 'int',
+            'total_canceled' => 'bool',
+            // 'changed' => 'bool',
+            'paid' => 'bool',
+            'document_id' => 'int',
+            'user_rel_suscription_plan_id' => 'int',
+            'seller_id' => 'int',
             'date_of_issue' => 'date',
             'automatic_date_of_issue' => 'date',
             'due_date' => 'date',
         ];
+
+        public static function boot()
+        {
+            parent::boot();
+            static::creating(function (self $model) {
+                self::adjustSellerIdField($model);
+            });
+
+        }
 
         /**
          * Busca el ultimo numero basado en series y el prefijo.
@@ -158,10 +287,18 @@
                 ->orderBy('number', 'desc')
                 ->first();
             $return = 0;
-            if (!empty($sn)) {
+            if ( !empty($sn)) {
                 $return += $sn->number;
             }
             return $return + 1;
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function customer()
+        {
+            return $this->belongsTo(Person::class, 'customer_id');
         }
 
         /**
@@ -365,6 +502,10 @@
         }
 
         /**
+         * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
+         * Tambien se debe tener en cuenta modules/Inventory/Providers/InventoryKardexServiceProvider.php y
+         * app/Providers/KardexServiceProvider.php para la correcta gestion de kardex
+         *
          * @return MorphMany
          */
         public function inventory_kardex()
@@ -387,6 +528,14 @@
         public function order()
         {
             return $this->belongsTo(Order::class);
+        }
+
+        /**
+         * @return BelongsTo
+         */
+        public function technical_service()
+        {
+            return $this->belongsTo(TechnicalService::class);
         }
 
         /**
@@ -476,19 +625,19 @@
             // se guarda el id del documento en el NV
             /** @var Collection $documents */
             $documents = $this->documents;
-            if (!empty($document_id) && $documents->count() < 1) {
+            if ( !empty($document_id) && $documents->count() < 1) {
                 $documents = Document::where('id', $document_id)->get();
             }
             $total_documents = $documents->count();
 
             $btn_generate = ($total_documents > 0) ? false : true;
             $btn_payments = ($total_documents > 0) ? false : true;
-            $due_date = (!empty($this->due_date)) ? $this->due_date->format('Y-m-d') : null;
+            $due_date = ( !empty($this->due_date)) ? $this->due_date->format('Y-m-d') : null;
 
             $this->seller_id = $this->user_id;
             $this->payments = $this->getTransformPayments();
             $message_text = '';
-            if (!empty($this->number_full) && !empty($this->external_id)) {
+            if ( !empty($this->number_full) && !empty($this->external_id)) {
                 $message_text = "Su comprobante de nota de venta {$this->number_full} ha sido generado correctamente, puede revisarlo en el siguiente enlace: " .
                     url('') . "/sale-notes/print/{$this->external_id}/a4" . '';
             }
@@ -503,6 +652,14 @@
                 }
             }
             $web_platforms = $this->getPlatformThroughItems();
+            $child_name = '';
+            $child_number = '';
+            $customer = $this->customer;
+            if(property_exists($customer,'children')){
+                $child = $customer->children;
+                $child_name= $child->name;
+                $child_number= $child->number;
+            }
 
             return [
                 'id' => $this->id,
@@ -512,8 +669,10 @@
                 'time_of_issue' => $this->time_of_issue,
                 'identifier' => $this->identifier,
                 'full_number' => $this->series . '-' . $this->number,
-                'customer_name' => $this->customer->name,
-                'customer_number' => $this->customer->number,
+                'customer_name' => $customer->name,
+                'customer_number' => $customer->number,
+                'children_name' => $child_name,
+                'children_number' => $child_number,
                 'currency_type_id' => $this->currency_type_id,
                 'total_exportation' => self::FormatNumber($this->total_exportation),
                 'total_free' => self::FormatNumber($this->total_free),
@@ -563,6 +722,8 @@
                 'serie' => $this->series,
                 'number' => $this->number,
                 // 'number' => $this->number_full,
+                'grade' => $this->getGrade(),
+                'section' => $this->getSection(),
                 'send_other_server' => $canSentToOtherServer,
                 'web_platforms' => $web_platforms,
                 // 'number' => $this->number,
@@ -622,7 +783,19 @@
                 ->wherein("$item_table_name.id", $items)
                 ->get();
         }
+        /**
+         * Devuelve el vendedor asociado, Si seller id es nulo, devolverá el usuario del campo user.
+         *
+         * @return User
+         */
+        public function getSellerData()
+        {
+            if ( !empty($this->seller_id)) {
+                return $this->seller;
+            }
+            return $this->user;
 
+        }
         public static function FormatNumber($number, $decimal = 2)
         {
             return number_format($number, $decimal);
@@ -828,6 +1001,134 @@
             return $this->hasMany(GuideFile::class);
         }
 
+        /**
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param int                                   $establishment_id
+         *
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereEstablishmentId(\Illuminate\Database\Eloquent\Builder $query, $establishment_id = 0)
+        {
+
+            if ($establishment_id != 0) {
+                $query->where('establishment_id', $establishment_id);
+            }
+            return $query;
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function order_note()
+        {
+            return $this->belongsTo(OrderNote::class);
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function cash_documents()
+        {
+            return $this->hasMany(CashDocument::class);
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function kardexes()
+        {
+            return $this->hasMany(Kardex::class);
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function sale_note_payments()
+        {
+            return $this->hasMany(SaleNotePayment::class);
+        }
+
+
+        /**
+         *
+         * Filtros para reportes de comisiones
+         * Usado en:
+         * Modules\Report\Http\Controllers\ReportCommissionController
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param $date_start
+         * @param $date_end
+         * @param $establishment_id
+         * @param $user_type
+         * @param $user_seller_id
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterCommission($query, $date_start, $date_end, $establishment_id, $user_type, $user_seller_id, $row_user_id){
+
+            $query->whereStateTypeAccepted()
+                    ->whereBetween('date_of_issue', [$date_start, $date_end])
+                    ->whereEstablishmentId($establishment_id);
+
+            if($user_seller_id){
+                $query->where($user_type, $user_seller_id);
+            }else{
+                $query->where($user_type, $row_user_id);
+            }
+
+            return $query;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getGrade(): ?string
+        {
+            return $this->grade;
+        }
+
+        /**
+         * @param string|null $grade
+         *
+         * @return SaleNote
+         */
+        public function setGrade(?string $grade): SaleNote
+        {
+            $this->grade = $grade;
+            return $this;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getSection(): ?string
+        {
+            return $this->section;
+        }
+
+        /**
+         * @param string|null $section
+         *
+         * @return SaleNote
+         */
+        public function setSection(?string $section): SaleNote
+        {
+            $this->section = $section;
+            return $this;
+        }
+
+        /**
+         * Devuelve el modelo del tipo de documetno actual
+         *
+         * @return DocumentType
+         */
+        public function getDocumentType(){
+            return DocumentType::find('80');
+        }
+
         public function transporte_encomienda(){
             return $this->hasOne(TransporteEncomienda::class,'document_id','id');
         }
@@ -839,4 +1140,5 @@
         public function pasaje(){
             return $this->hasOne(TransportePasaje::class,'note_id','id');
         }
+
     }

@@ -15,7 +15,9 @@
         || $visual->sidebar_theme == 'green'
         || $visual->sidebar_theme == 'warning'
         || $visual->sidebar_theme == 'ligth-blue') ? 'sidebar-light' : '' }}
-        {{$vc_compact_sidebar->compact_sidebar == true || $path[0] === 'documents' && $path[1] === 'create' ? 'sidebar-left-collapsed' : ''}}
+        {{$vc_compact_sidebar->compact_sidebar == true
+        || $path[0] === 'pos'
+        || $path[0] === 'documents' && $path[1] === 'create' ? 'sidebar-left-collapsed' : ''}}
         {{-- header-{{$visual->navbar ?? 'fixed'}} --}}
         {{-- {{$visual->header == 'dark' ? 'header-dark' : ''}} --}}
         {{-- {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}} --}}
@@ -36,13 +38,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Facturación Electrónica 2021</title>
+    <title>Facturación Electrónica 2022</title>
 
     <link async href="{{ asset(mix('css/app.css')) }}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css?id=5') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css?id=10') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/5.11/css/all.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2/css/select2.css') }}" />
@@ -65,18 +67,17 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('porto-light/master/style-switcher/style-switcher.css')}}">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=7') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=5') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=6') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=10') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=10') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=10') }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=5') }}" />
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=10') }}" />
     @endif
 
     {{-- @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
     @endif --}}
-    @notifyCss
 
 
     @stack('styles')

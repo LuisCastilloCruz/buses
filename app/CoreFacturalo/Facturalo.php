@@ -37,6 +37,7 @@ use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
 use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
+use App\Models\Tenant\PurchaseSettlement;
 
 /**
  * Class Facturalo
@@ -117,6 +118,7 @@ class Facturalo
                     $document->items()->create($row);
                 }
                 $document->note()->create($inputs['note']);
+                if($this->type === 'credit') $this->saveFee($document, $inputs['fee']);
                 $this->document = Document::find($document->id);
                 break;
             case 'invoice':
@@ -162,6 +164,13 @@ class Facturalo
                     $document->documents()->create($row);
                 }
                 $this->document = Perception::find($document->id);
+                break;
+            case 'purchase_settlement':
+                $document = PurchaseSettlement::create($inputs);
+                foreach ($inputs['items'] as $row) {
+                    $document->items()->create($row);
+                }
+                $this->document = PurchaseSettlement::find($document->id);
                 break;
             default:
                 $document = Dispatch::create($inputs);
@@ -295,7 +304,7 @@ class Facturalo
         return $qr;
     }
 
-    public function createPdf($document = null, $type = null, $format = null) {
+    public function createPdf($document = null, $type = null, $format = null, $output = 'pdf') {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
@@ -314,12 +323,6 @@ class Facturalo
         $pdf_margin_bottom = 15;
         $pdf_margin_left = 15;
 
-        if (in_array($base_pdf_template, ['aqpfact_01'])) {
-            $pdf_margin_top = 8;
-            $pdf_margin_right = 5;
-            $pdf_margin_bottom = 5;
-            $pdf_margin_left = 10;
-        }
         if (in_array($base_pdf_template, ['full_height', 'default3_new','rounded'])) {
             $pdf_margin_top = 5;
             $pdf_margin_right = 5;
@@ -370,6 +373,7 @@ class Facturalo
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
             $document_payments     = count($this->document->payments);
             $document_transport     = ($this->document->transport) ? 30 : 0;
+            $document_retention     = ($this->document->retention) ? 10 : 0;
 
             $extra_by_item_additional_information = 0;
             $extra_by_item_description = 0;
@@ -431,7 +435,8 @@ class Facturalo
                     $quotation_id+
                     $extra_by_item_additional_information+
                     $height_legend+
-                    $document_transport
+                    $document_transport+
+                    $document_retention
                 ],
                 'margin_top' => 0,
                 'margin_right' => 1,
@@ -558,16 +563,22 @@ class Facturalo
 
 
         if(config('tenant.pdf_template_footer')) {
-            if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
-                $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+                $html_footer = '';
+                if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+                    $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+                    $html_footer_legend = "";
+                }
+                // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
+                // se quiere visuzalizar ahora la legenda amazona en todos los formatos
                 $html_footer_legend = '';
                 if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
                     $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
                 }
 
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend); // genera esacio en blanco
+                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+
             }
-        }
+
 
         if ($base_pdf_template === 'brand') {
 
@@ -589,9 +600,41 @@ class Facturalo
             $pdf->SetHTMLFooter($html_footer_blank);
         }
 
-        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        if ($base_pdf_template === 'default3_929' && in_array($this->document->document_type_id, ['03','01'])) {
+            // Solo boleta o factura #929
+            $html_header = $template->pdfHeader($base_pdf_template, $this->company, $this->document);
+            $pdf->SetHTMLHeader($html_header);
+            $html_footer = $template->pdfFooter($base_pdf_template, $this->document);
+            $pdf->SetHTMLFooter($html_footer);
+        }
 
+        if ($base_pdf_template === 'distpatch_pharmacy' && in_array($this->document->document_type_id, ['09'])) {
+            // Solo para guia #1192
+            $pdf->setAutoTopMargin = 'stretch'; //margen autommatico
+            $pdf->autoMarginPadding  = 0;
+            $pdf->setAutoBottomMargin = 'stretch';
+            $html_header = $template->pdfHeader($base_pdf_template, $this->company, $this->document);
+            $pdf->SetHTMLHeader($html_header);
+            $html_footer = $template->pdfFooterDispatch($base_pdf_template, $this->document);
+            $pdf->SetHTMLFooter($html_footer);
+        }
+
+        // para impresion automatica se requiere el resultado en html ya que es lo que se envia a las funciones de impresión
+        if($output == 'html') {
+            $path_html = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                             DIRECTORY_SEPARATOR.'pdf'.
+                                             DIRECTORY_SEPARATOR.'ticket_html.css');
+            $ticket_html = file_get_contents($path_html);
+            $pdf->WriteHTML($ticket_html, HTMLParserMode::HEADER_CSS);
+            $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+            return "<style>".$ticket_html.$stylesheet."</style>".$html;
+        }
+        else {
+            $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+            $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        }
+
+        // echo $html_header.$html.$html_footer; exit();
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
         return $this;
     }
@@ -663,13 +706,29 @@ class Facturalo
         //Errors
         if(!is_numeric($code)){
 
-            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception', 'purchase_settlement'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
             $this->updateRegularizeShipping($code, $message);
             return;
         }
+
+        // if($code === 'ERROR_CDR') {
+        //     return;
+        // }
+
+        // if($code === 'HTTP') {
+        //     // $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
+
+        //     if(in_array($this->type, ['retention', 'dispatch'])){
+        //         throw new Exception("Code: {$code}; Description: {$message}");
+        //     }
+
+        //     $this->updateRegularizeShipping($code, $message);
+        //     return;
+        // }
+
         if((int)$code === 0) {
             $this->updateState(self::ACCEPTED);
             return;
@@ -677,7 +736,7 @@ class Facturalo
         if((int)$code < 2000) {
             //Excepciones
 
-            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception', 'purchase_settlement'])){
             // if(in_array($this->type, ['retention', 'dispatch'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }

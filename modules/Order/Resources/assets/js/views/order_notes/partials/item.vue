@@ -202,23 +202,29 @@
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
                                         <th class="text-center">Factor</th>
-                                        <th class="text-center">Precio</th>
+                                        <th class="text-center">Precio 1</th>
+                                        <th class="text-center">Precio 2</th>
+                                        <th class="text-center">Precio 3</th>
+                                        <th class="text-center">Precio Default</th>
                                         <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr v-for="(row, index) in item_unit_types"
                                         :key="index">
-                                        <td class="text-center">{{row.unit_type_id}}</td>
-                                        <td class="text-center">{{row.description}}</td>
-                                        <td class="text-center">{{row.quantity_unit}}</td>
-                                        <td class="text-center">
-                                            <select v-model="precio_var" @change="selectedPrice(row)">
-                                                <option :selected="true"> Seleccione</option>
-                                                <option v-if="row.price1" :value="row.price1" :label="row.price1"></option>
-                                                <option v-if="row.price2" :value="row.price2" :label="row.price2"></option>
-                                                <option v-if="row.price3" :value="row.price3" :label="row.price3"></option>
-                                            </select>
+                                        <td class="text-center">{{ row.unit_type_id }}</td>
+                                        <td class="text-center">{{ row.description }}</td>
+                                        <td class="text-center">{{ row.quantity_unit }}</td>
+                                        <td class="text-center">{{ row.price1 }}</td>
+                                        <td class="text-center">{{ row.price2 }}</td>
+                                        <td class="text-center">{{ row.price3 }}</td>
+                                        <td class="text-center">Precio {{ row.price_default }}</td>
+                                        <td class="series-table-actions text-right">
+                                            <button class="btn waves-effect waves-light btn-xs btn-success"
+                                                    type="button"
+                                                    @click.prevent="selectedPrice(row)">
+                                                <i class="el-icon-check"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -508,7 +514,6 @@ export default {
             editors: {
                 classic: ClassicEditor
             },
-            precio_var:'Seleccione'
         }
     },
 
@@ -1094,22 +1099,20 @@ export default {
             this.form.unit_price = price;
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
-        selectedPrice(row)
-        {
-            let valor = this.precio_var;
-            // switch(row.price_default)
-            // {
-            //     case 1:
-            //         valor = row.price1
-            //         break
-            //     case 2:
-            //          valor = row.price2
-            //         break
-            //     case 3:
-            //          valor = row.price3
-            //         break
-            //
-            // }
+        selectedPrice(row) {
+            let valor = 0
+            switch (row.price_default) {
+                case 1:
+                    valor = row.price1
+                    break
+                case 2:
+                    valor = row.price2
+                    break
+                case 3:
+                    valor = row.price3
+                    break
+
+            }
 
 
             this.item_unit_type = row

@@ -6,6 +6,7 @@ use App\Models\Tenant\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Modules\Transporte\Models\TransportePasaje;
+use Modules\Transporte\Models\TransporteProgramacion;
 use Modules\Transporte\Models\TransporteTerminales;
 use Mpdf\Mpdf;
 use App\Models\Tenant\Company;
@@ -163,11 +164,15 @@ class TransporteReportes extends Controller
 
         extract($request->only(['fecha','page','limit']));
 
-        $transportes = TransporteVehiculo::with('programaciones')
-        ->whereHas('programaciones',function($builder){
-            $builder->where('active',true);
-        })
-        ->take($limit)->skip($limit * ($page - 1) );
+//        $transportes = TransporteVehiculo::with('programaciones')
+//        ->whereHas('programaciones',function($builder){
+//            $builder->where('active',true);
+//        });
+
+        $transportes = TransporteProgramacion::with('vehiculo','origen','destino')
+            ->where('active',true)
+            ->where('hidden',0)
+            ->take($limit)->skip($limit * ($page - 1) );
 
 
         $total = $transportes->count();
@@ -175,7 +180,7 @@ class TransporteReportes extends Controller
 
         foreach($transportes as $transporte){
 
-            $totalAsientos = $transporte->asientos;
+            $totalAsientos = $transporte->vehiculo->asientos;
             $idsProgramaciones = $transporte->programaciones->map(function($item){
                 return $item->id;
             });

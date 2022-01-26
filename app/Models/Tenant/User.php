@@ -41,47 +41,116 @@ use Modules\Transporte\Models\TransporteUserTerminal;
  * @property int $id
  * @property string $name
  * @property string $email
- * @property string|null $email_verified_at
  * @property string $password
  * @property string|null $api_token
+ * @property int|null $establishment_id
+ * @property string $type
+ * @property bool $permission_edit_cpe
+ * @property bool $recreate_documents
+ * @property bool $locked
+ * @property string|null $identity_document_type_id
+ * @property string|null $number
+ * @property string|null $address
+ * @property string|null $telephone
  * @property string|null $remember_token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property string|null $document_id
+ * @property int|null $series_id
+ * @property string|null $email_verified_at
  * @property string|null $phone
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $documents
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $seller_documents
- * @property-read int|null $documents_count
- * @property-read \App\Models\Tenant\Establishment $establishment
- * @property-read \Illuminate\Database\Eloquent\Collection|ModuleLevel[] $levels
- * @property-read int|null $levels_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Module[] $modules
- * @property-read int|null $modules_count
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
- * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNote[] $sale_notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNote[] $seller_sale_notes
- * @property-read int|null $sale_notes_count
- * @property-read UserCommission|null $user_commission
- * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|User query()
- * @method static \Illuminate\Database\Eloquent\Builder|User whereApiToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User wherePhone($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereTypeUser()
- * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $documents
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $seller_documents
+ * @property int|null $documents_count
+ * @property \App\Models\Tenant\Establishment $establishment
+ * @property \Illuminate\Database\Eloquent\Collection|ModuleLevel[] $levels
+ * @property int|null $levels_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Module[] $modules
+ * @property int|null $modules_count
+ * @property \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property int|null $notifications_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNote[] $sale_notes
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNote[] $seller_sale_notes
+ * @property int|null $sale_notes_count
+ * @property UserCommission|null $user_commission
+ * @property Collection|Cash[] $cashes
+ * @property Collection|Contract[] $contracts
+ * @property Collection|Devolution[] $devolutions
+ * @property Collection|Dispatch[] $dispatches
+ * @property Collection|DocumentaryFile[] $documentary_files
+ * @property Collection|Document[] $documents_where_seller
+ * @property Collection|Expense[] $expenses
+ * @property Collection|FixedAssetPurchase[] $fixed_asset_purchases
+ * @property Collection|GlobalPayment[] $global_payments
+ * @property Collection|Income[] $incomes
+ * @property Collection|ItemsRating[] $items_ratings
+ * @property Collection|OrderForm[] $order_forms
+ * @property Collection|OrderNote[] $order_notes
+ * @property Collection|Perception[] $perceptions
+ * @property Collection|PurchaseOrder[] $purchase_orders
+ * @property Collection|PurchaseQuotation[] $purchase_quotations
+ * @property Collection|PurchaseSettlement[] $purchase_settlements
+ * @property Collection|Purchase[] $purchases
+ * @property Collection|Quotation[] $quotations
+ * @property Collection|Retention[] $retentions
+ * @property Collection|SaleOpportunity[] $sale_opportunities
+ * @property Collection|Summary[] $summaries
+ * @property Collection|TechnicalService[] $technical_services
+ * @property Collection|Voided[] $voideds
+ * @method static Builder|User newModelQuery()
+ * @method static Builder|User newQuery()
+ * @method static Builder|User query()
+ * @method static Builder|User whereApiToken($value)
+ * @method static Builder|User whereCreatedAt($value)
+ * @method static Builder|User whereEmail($value)
+ * @method static Builder|User whereEmailVerifiedAt($value)
+ * @method static Builder|User whereId($value)
+ * @method static Builder|User whereName($value)
+ * @method static Builder|User wherePassword($value)
+ * @method static Builder|User wherePhone($value)
+ * @method static Builder|User whereRememberToken($value)
+ * @method static Builder|User whereTypeUser()
+ * @method static Builder|User whereUpdatedAt($value)
+ * @property int|null $seller_documents_count
+ * @property int|null $seller_sale_notes_count
+ * @method static Builder|User getSellers($withEstablishment = true)
+ * @method static Builder|User getWorkers()
+ * @property int|null $cashes_count
+ * @property int|null $contracts_count
+ * @property int|null $devolutions_count
+ * @property int|null $dispatches_count
+ * @property int|null $documentary_files_count
+ * @property int|null $documents_where_seller_count
+ * @property int|null $expenses_count
+ * @property int|null $fixed_asset_purchases_count
+ * @property int|null $global_payments_count
+ * @property int|null $incomes_count
+ * @property int|null $items_ratings_count
+ * @property int|null $order_forms_count
+ * @property int|null $order_notes_count
+ * @property int|null $perceptions_count
+ * @property int|null $purchase_orders_count
+ * @property int|null $purchase_quotations_count
+ * @property int|null $purchase_settlements_count
+ * @property int|null $purchases_count
+ * @property int|null $quotations_count
+ * @property int|null $retentions_count
+ * @property int|null $sale_opportunities_count
+ * @property int|null $summaries_count
+ * @property int|null $technical_services_count
+ * @property Collection|UserCommission[] $user_commissions
+ * @property int|null $user_commissions_count
+ * @property int|null $voideds_count
+
  */
 class User extends Authenticatable
 {
-    use Notifiable, UsesTenantConnection;
+    use Notifiable;
+    use UsesTenantConnection;
 
-    protected $with = ['establishment'];
+    protected $with = [
+        'establishment'
+    ];
     /**
      * The attributes that are mass assignable.
      *
@@ -142,7 +211,8 @@ class User extends Authenticatable
         if ($this->hasAnyModule($modules)) {
             return true;
         }
-        abort(401, 'Esta acción no está autorizada.');
+        abort(401,
+ 'Esta acción no está autorizada.');
     }
 
     public function hasAnyModule($modules)
@@ -164,7 +234,8 @@ class User extends Authenticatable
 
     public function hasModule($module)
     {
-        if ($this->modules()->where('name', $module)->first()) {
+        if ($this->modules()->where('name',
+ $module)->first()) {
             return true;
         }
         return false;
@@ -193,7 +264,8 @@ class User extends Authenticatable
 
     public function searchModule($module)
     {
-        if ($this->modules()->where('value', $module)->first()) {
+        if ($this->modules()->where('value',
+ $module)->first()) {
             return true;
         }
         return false;
@@ -206,6 +278,18 @@ class User extends Authenticatable
     }
 
 
+    /* *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    /*
+    public function inventory_transfer()
+    {
+        return $this->hasMany(InventoryTransfer::class);
+    }
+    */
+    /**
+     * @return HasMany
+     */
     public function documents()
     {
         return $this->hasMany(Document::class);
@@ -213,7 +297,9 @@ class User extends Authenticatable
 
     public function seller_documents()
     {
-        return $this->hasMany(Document::class,'seller_id','id');
+        return $this->hasMany(Document::class,
+'seller_id',
+'id');
     }
 
     public function sale_notes()
@@ -223,13 +309,16 @@ class User extends Authenticatable
 
     public function seller_sale_notes()
     {
-        return $this->hasMany(SaleNote::class,'seller_id','id');
+        return $this->hasMany(SaleNote::class,
+'seller_id',
+'id');
     }
 
     public function scopeWhereTypeUser($query)
     {
         $user = auth()->user();
-        return ($user->type == 'seller') ? $query->where('id', $user->id) : null;
+        return ($user->type == 'seller') ? $query->where('id',
+ $user->id) : null;
     }
 
 
@@ -255,13 +344,17 @@ class User extends Authenticatable
 
     public function searchLevel($Level)
     {
-        if ($this->levels()->where('value', $Level)->first()) {
+        if ($this->levels()->where('value',
+ $Level)->first()) {
             return true;
         }
         return false;
     }
 
-    public function user_commission()
+    /**
+     * @return HasOne
+     */
+    public function user_commission(): HasOne
     {
         return $this->hasOne(UserCommission::class);
     }
@@ -329,9 +422,11 @@ class User extends Authenticatable
      *
      * @return $this
      */
-    public function setModuleAndLevelModule($modules= [],$modules_levels = []){
+    public function setModuleAndLevelModule($modules= [],
+$modules_levels = []){
         $user_array = [
             'user_id' => $this->id,
+
         ];
         /*** Estableciendo los modulos */
         /** @var array $module_array */
@@ -342,7 +437,8 @@ class User extends Authenticatable
                   ->where($user_array);
 
         $deletes = $work
-            ->whereNotIn('module_id', $module_array)
+            ->whereNotIn('module_id',
+ $module_array)
             ->delete();
         $total_modules = count($module_array);
         for ($i = 0; $i < $total_modules; $i++) {
@@ -350,6 +446,7 @@ class User extends Authenticatable
             $module_ = $work
                 ->where([
                             'module_id' => $item,
+
                         ])->first();
             if (empty($module_)) {
                 $user_array['module_id'] = $item;
@@ -364,7 +461,8 @@ class User extends Authenticatable
                  ->table('module_level_user')
                  ->where($user_array)
         ;
-        $deletes = $work->whereNotIn('module_level_id', $levels_array)
+        $deletes = $work->whereNotIn('module_level_id',
+ $levels_array)
                         ->delete();
 
         $total_modules_levels = count($levels_array);
@@ -376,6 +474,7 @@ class User extends Authenticatable
             $module_ = $work
                 ->where([
                             'module_level_id' => $item,
+
                         ])->first();
             if (empty($module_)) {
                 $user_array['module_level_id'] = $item;
@@ -394,7 +493,8 @@ class User extends Authenticatable
         return  DB::connection('tenant')
                       ->table('module_level_user')
                       ->select('module_level_id')
-                      ->where('user_id', $this->id)
+                      ->where('user_id',
+ $this->id)
                       ->get();
 
     }
@@ -407,30 +507,36 @@ class User extends Authenticatable
         return  DB::connection('tenant')
                   ->table('module_user')
                   ->select('module_id')
-                  ->where('user_id', $this->id)
+                  ->where('user_id',
+ $this->id)
                   ->get();
 
     }
 
     /**
      * Devuelve una lista de usuarios vendedores junto con el usuario actual.
-     * Si $withEstablishment es verdadero, devuelve usuarios con establecimientos asignados carlomagno83/facturadorpro4#627
-     * Si $withEstablishment es falso, devuelve usuarios sin establecimientos asignados carlomagno83/facturadorpro4#233
+     * Si $withEstablishment es verdadero,
+ * devuelve usuarios con establecimientos asignados carlomagno83/facturadorpro4#627
+     * Si $withEstablishment es falso,
+ * devuelve usuarios sin establecimientos asignados carlomagno83/facturadorpro4#233
      *
-     * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query
-     * @param bool                               $withEstablishment
+     * @param \Illuminate\Database\Query\Builder|Builder $query
+     * @param bool                                       $withEstablishment
      *
-     * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Query\Builder|Builder
      */
-    public function scopeGetSellers(  $query,$withEstablishment = true){
+    public function scopeGetSellers(  $query,
+$withEstablishment = true){
         if($withEstablishment == false) {
             $query->without(['establishment']);
         }else{
             $query->with(['establishment']);
 
         }
-        $query->whereIn('type', ['seller']);
-        $query->orWhere('id', auth()->user()->id);
+        $query->whereIn('type',
+ ['seller']);
+        $query->orWhere('id',
+ auth()->user()->id);
         return  $query;
     }
 
@@ -440,7 +546,9 @@ class User extends Authenticatable
      * @return mixed
      */
     public function scopeGetWorkers($query){
-        $query->whereIn('type', ['seller','admin']);
+        $query->whereIn('type',
+ ['seller',
+'admin']);
         return  $query;
     }
 
@@ -486,14 +594,23 @@ class User extends Authenticatable
 
         return [
             'id' => $this->id,
+
             'email' => $this->email,
+
             'name' => $this->name,
+
             'api_token' => $this->api_token,
+
             'document_id' => $this->document_id,
+
             'serie_id' => ($this->series_id == 0)?null:$this->series_id,
+
             'establishment_description' => optional($this->establishment)->description,
+
             'type' => $type,
+
             'locked' => (bool) $this->locked,
+
         ];
     }
 

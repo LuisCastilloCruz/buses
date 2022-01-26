@@ -16,28 +16,36 @@
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
         </div>
-
-        <a class="topbar-links" href="{{ route('tenant.documents.create') }}" title="Nueva factura" data-toggle="tooltip" data-placement="bottom">
-            <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-            <span>FA</span>
-        </a>
-        <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}" title="POS" data-toggle="tooltip" data-placement="bottom">
-            <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-            <span>POS</span>
-        </a>
-        <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Mi empresa" data-toggle="tooltip" data-placement="bottom">
-            <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-            <span>ME</span>
-        </a>
-        <a class="topbar-links" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}" title="Nuevo establecimiento" data-toggle="tooltip" data-placement="bottom">
-            <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-            <span>ES</span>
-        </a>
-
+        <div class="d-md-none d-lg-block">
+            <a class="topbar-links" href="{{ route('tenant.documents.create') }}" title="Nueva factura" data-toggle="tooltip" data-placement="bottom">
+                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+                <span>FA</span>
+            </a>
+            <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}" title="POS" data-toggle="tooltip" data-placement="bottom">
+                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+                <span>POS</span>
+            </a>
+            <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Mi empresa" data-toggle="tooltip" data-placement="bottom">
+                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+                <span>ME</span>
+            </a>
+            <a class="topbar-links" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}" title="Nuevo establecimiento" data-toggle="tooltip" data-placement="bottom">
+                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+                <span>ES</span>
+            </a>
+            <a class="topbar-links" href="#" title="947474096 - 950360472" data-toggle="tooltip" data-placement="bottom">
+                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+                <span>SOPORTE</span>
+            </a>
+        </div>
     </div>
     <div class="header-right">
-    @include('notify::messages')
-    @notifyJs
+        <a href="https://youtube.com/playlist?list=PLRfWQIWTl4WQnUwpMDBs8iAlcti3s_UNY" target="_blank">
+            <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="Video Tutoriales en Youtube">
+                <img src="{{asset("/logo/youtube.png")}}" alt="">
+            </div>
+        </a>
+        <span class="separator"></span>
 
         <ul class="notifications mx-2">
             @if($vc_company->soap_type_id == "01")
@@ -96,7 +104,8 @@
         <span class="separator"></span>
         <ul class="notifications">
             <li>
-                <a href="{{route('tenant.documents.not_sent')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes pendientes de envío">
+                <a href="{{route('tenant.documents.not_sent')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes enviados/por enviar">
+                {{-- <a href="{{route('tenant.documents.not_sent')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes pendientes de envío"> --}}
                     <i class="far fa-bell text-secondary"></i>
                     <span class="badge badge-pill badge-danger badge-up cart-item-count">{{ $vc_document }}</span>
                 </a>

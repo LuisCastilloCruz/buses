@@ -17,9 +17,8 @@ use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Services\IntegratedQuery\{
     AuthApi,
-    ValidateCpe
+    ValidateCpe,
 };
-use Carbon\Carbon;
 
 class ValidateDocumentController extends Controller
 {

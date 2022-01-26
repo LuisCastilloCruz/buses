@@ -48,7 +48,7 @@ class MobileController extends Controller
         $company = Company::active();
         $logo_base64 = base64_encode(file_get_contents(public_path("storage/uploads/logos/".$company->logo."")));
 
-        
+
 
         $user = $request->user();
         return [
@@ -347,7 +347,7 @@ class MobileController extends Controller
                             'description' => $row->description,
                             'currency_type_id' => $row->currency_type_id,
                             'internal_id' => $row->internal_id,
-                            'item_code' => $row->item_code,
+                            'item_code' => $row->item_code ?? '',
                             'currency_type_symbol' => $row->currency_type->symbol,
                             'sale_unit_price' => number_format( $row->sale_unit_price, 2),
                             'purchase_unit_price' => $row->purchase_unit_price,
@@ -358,15 +358,28 @@ class MobileController extends Controller
                             'has_igv' => (bool) $row->has_igv,
                             'is_set' => (bool) $row->is_set,
                             'aux_quantity' => 1,
-                    'brand' => $row->brand->name,
-                    'category' => $row->brand->name,
-                    'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
-                    'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
+                            'barcode' => $row->barcode ?? '',
+                            'brand' => optional($row->brand)->name,
+                            'category' => optional($row->category)->name,
+                            'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
+                            'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
                             'warehouses' => collect($row->warehouses)->transform(function($row) {
                                 return [
                                     'warehouse_description' => $row->warehouse->description,
                                     'stock' => $row->stock,
                                     'warehouse_id' => $row->warehouse_id,
+                                ];
+                            }),
+                            'item_unit_types' => $row->item_unit_types->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->description,
+                                    'unit_type_id' => $row->unit_type_id,
+                                    'quantity_unit' => $row->quantity_unit,
+                                    'price1' => $row->price1,
+                                    'price2' => $row->price2,
+                                    'price3' => $row->price3,
+                                    'price_default' => $row->price_default,
                                 ];
                             }),
                         ];

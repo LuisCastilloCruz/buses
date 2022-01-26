@@ -11,11 +11,16 @@
     use App\Models\Tenant\SoapType;
     use App\Models\Tenant\Person;
     use App\Models\Tenant\ModelTenant;
+    // use App\Traits\SellerIdTrait;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\HasMany;
     use Carbon\Carbon;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Collection;
+    use App\Models\Tenant\{
+        Document,
+        SaleNote
+    };
 
     /**
      * Class TechnicalService
@@ -81,6 +86,8 @@
     class TechnicalService extends ModelTenant
     {
         use UsesTenantConnection;
+       // use SellerIdTrait;
+
 
         protected $perPage = 25;
 
@@ -187,6 +194,7 @@
                     $item->establishment_id = $item->user->establishment_id;
                 }
                 if(empty($item->currency_type_id)) $item->currency_type_id = 'PEN';
+                //self::adjustSellerIdField($model);
             });
             static::retrieved(function (self $item) {
 
@@ -295,6 +303,22 @@
         }
 
         /**
+         * @return HasOne
+         */
+        public function document()
+        {
+            return $this->hasOne(Document::class);
+        }
+
+        /**
+         * @return HasOne
+         */
+        public function sale_note()
+        {
+            return $this->hasOne(SaleNote::class);
+        }
+
+        /**
          * @param $value
          *
          * @return array|null
@@ -364,6 +388,15 @@
             });
             $total = $this->cost + $this->total;
 
+            //docs asociados
+            $has_document_sale_note = false;
+            $number_document_sale_note = null;
+
+            if($this->sale_note || $this->document){
+                $has_document_sale_note = true;
+                $number_document_sale_note = ($this->sale_note) ? $this->sale_note->number_full : $this->document->number_full;
+            }
+
             $data = array_merge($this->toArray(), [
                 'id' => $this->id,
                 'soap_type_id' => $this->soap_type_id,
@@ -393,6 +426,11 @@
                 'maintenance' => (bool)$this->maintenance,
                 'diagnosis' => (bool)$this->diagnosis,
                 'items' => $items,
+                'payments' => $this->payments,
+
+                'has_document_sale_note' => $has_document_sale_note,
+                'number_document_sale_note' => $number_document_sale_note,
+
             ]);
 
             return $data;

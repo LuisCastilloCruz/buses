@@ -448,7 +448,7 @@ a:active {
 }
 .header .logo-container {
     float: left;
-    width: 300px;
+    /* width: 300px; */
     padding: 0;
     height: 100%;
     display: flex;
@@ -6860,7 +6860,7 @@ h6 .inverted {
 }
 
 html.dark .text-muted {
-    color: #fff !important;
+    color: #505461 !important;
 }
 
 /* Colors */
@@ -8266,8 +8266,8 @@ html:not(.sidebar-left-collapsed).boxed
 
 /* Dark - Cards */
 html.dark .card-header {
-    background: #283046;
-    border-bottom-color: #dee2e6;
+    background: #282d36;
+    border-bottom-color: #1d2127;
 }
 
 html.dark .card-actions a:hover {
@@ -8279,24 +8279,8 @@ html.dark .card-body {
 }
 
 html.dark .card-footer {
-    background: #283046;
-    border-top-color: #dee2e6;
-}
-
-html.dark .negrita .control-label{
-    color:#fff
-}
-
-html.dark .negrita{
-    color:#fff
-}
-
-html.dark .el-dialog__body h1, html.dark .el-dialog__body .h1, html.dark .el-dialog__body h2, html.dark .el-dialog__body .h2, html.dark .el-dialog__body h3, html.dark .el-dialog__body .h3, html.dark .el-dialog__body h4, html.dark .el-dialog__body .h4, html.dark .el-dialog__body h5, html.dark .el-dialog__body .h5, html.dark .el-dialog__body h6, html.dark .el-dialog__body .h6{
-    color:#606266
-}
-
-html.dark .el-dialog__body .control-label{
-    color:#606266
+    background: #242830;
+    border-top-color: #191c21;
 }
 
 html .card-primary .card-header {
@@ -9376,7 +9360,7 @@ html.dark .CodeMirror pre {
 
 /* Colorpicker */
 html.dark .colorpicker {
-    background-color: #283046;
+    background-color: #282d36;
 }
 
 html.dark .colorpicker:before {

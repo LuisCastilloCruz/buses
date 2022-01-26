@@ -393,7 +393,7 @@
                                                 <el-popover
                                                     placement="top"
                                                     title="Precios"
-                                                    width="240"
+                                                    width="370"
                                                     trigger="click"
                                                 >
                                                     <el-table
@@ -446,6 +446,12 @@
                                                             label="Unidad"
                                                             property="unit_type_id"
                                                         ></el-table-column>
+                                                        <el-table-column
+                                                            width="120"
+                                                            label="Descripción"
+                                                            property="description"
+                                                        ></el-table-column>
+
                                                         <el-table-column
                                                             width="80"
                                                             label=""
@@ -737,6 +743,17 @@
                                     </td>
                                 </tr>
                                 <tr
+                                    v-if="form.total_isc > 0"
+                                    class="font-weight-semibold  m-0"
+                                >
+                                    <td class="font-weight-semibold">ISC</td>
+                                    <td class="font-weight-semibold">:</td>
+                                    <td class="text-right text-blue">
+                                        {{ currency_type.symbol }}
+                                        {{ form.total_isc }}
+                                    </td>
+                                </tr>
+                                <tr
                                     v-if="form.total_plastic_bag_taxes > 0"
                                     class="font-weight-semibold  m-0"
                                 >
@@ -828,6 +845,7 @@
                 :customer="customer"
                 :soapCompany="soapCompany"
                 :businessTurns="businessTurns"
+                :is-print="isPrint"
             ></payment-form>
         </template>
 
@@ -938,7 +956,7 @@ import TableItems from "./partials/table.vue";
 import ItemUnitTypes from "./partials/item_unit_types.vue";
 
 export default {
-    props: ["configuration", "soapCompany", "businessTurns", "typeUser"],
+    props: ["configuration", "soapCompany", "businessTurns", "typeUser", "isPrint"],
     components: {
         PaymentForm,
         ItemForm,
@@ -958,6 +976,7 @@ export default {
             showDialogItemUnitTypes: false,
             history_item_id: null,
             search_item_by_barcode: false,
+            is_print: true,
             warehousesDetail: [],
             unittypeDetail: [],
             input_person: {},
@@ -1001,11 +1020,13 @@ export default {
         await this.initCurrencyType();
         this.customer = await this.getLocalStorageIndex("customer");
 
-        if (document.querySelector(".sidebar-toggle")) {
-            document.querySelector(".sidebar-toggle").click();
-        }
+        // if (document.querySelector(".sidebar-toggle")) {
+        //     document.querySelector(".sidebar-toggle").click();
+        // }
 
         await this.selectDefaultCustomer();
+        await this.enabledSearchItemByBarcode()
+
     },
 
     computed: {
@@ -1051,6 +1072,12 @@ export default {
         }
     },
     methods: {
+        enabledSearchItemByBarcode(){
+
+            if (this.configuration.search_item_by_barcode) {
+                this.search_item_by_barcode = true
+            }
+        },
         keyupEnterQuantity() {
             this.initFocus();
         },
@@ -1340,7 +1367,11 @@ export default {
             });
             this.customer = customer;
 
-            if (this.configuration.default_document_type_03) {
+            if (this.configuration.default_document_type_80) {
+
+                this.form.document_type_id = "80"
+
+            }else if (this.configuration.default_document_type_03) {
                 this.form.document_type_id = "03";
             } else {
                 this.form.document_type_id =
@@ -1452,6 +1483,7 @@ export default {
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
+                subtotal: 0,
                 operation_type_id: "0101",
                 date_of_due: moment().format("YYYY-MM-DD"),
                 items: [],
@@ -1466,6 +1498,7 @@ export default {
                     format_pdf: "a4"
                 },
                 reference_data: null,
+                is_print: true,
                 recent_item:null,
                 exist_stock:null
             };
@@ -1540,17 +1573,32 @@ export default {
             this.form.recent_item=item.description;
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
+            let presentation = item.presentation
 
-            // console.log(item.unit_type_id)
-            // console.log(exist_item)
-            // console.log(item)
+            let exist_item = false;
+            if(presentation === undefined) {
+                exist_item = _.find(this.form.items, {
+                    item_id: item.item_id,
+                    unit_type_id: item.unit_type_id
+                });
+            }else{
+                // Se evalua si existe presentation de item
+                    exist_item = _.find(this.form.items, {
+                    item_id: item.item_id,
+                    presentation: presentation,
+                    unit_type_id: item.unit_type_id
+                });
+            }
 
-            let exist_item = _.find(this.form.items, {
-                item_id: item.item_id,
-                unit_type_id: item.unit_type_id
-            });
+            /*
+            console.log(exist_item)
+            console.log(item.unit_type_id)
+            console.log(exist_item)
+            console.log(item)
+            console.log(presentation)
+            console.log(presentation)
+            */
 
-            // console.log(exist_item)
 
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
@@ -1606,6 +1654,12 @@ export default {
 
                 exist_item.has_plastic_bag_taxes = exist_item.item.has_plastic_bag_taxes;
 
+
+                //asignar variables isc
+                exist_item.has_isc = exist_item.item.has_isc
+                exist_item.percentage_isc = exist_item.item.percentage_isc
+                exist_item.system_isc_type_id = exist_item.item.system_isc_type_id
+
                 this.row = calculateRowItem(
                     exist_item,
                     this.form.currency_type_id,
@@ -1620,8 +1674,8 @@ export default {
 
                 response = await this.getStatusStock(
                     item.item_id,
-                    item.presentation
-                        ? parseInt(item.presentation.quantity_unit)
+                    presentation
+                        ? parseInt(presentation.quantity_unit)
                         : 1
                 );
                 if (!response.success) {
@@ -1644,8 +1698,8 @@ export default {
 
                 this.form_item.unit_price = unit_price;
                 this.form_item.item.unit_price = unit_price;
-                this.form_item.item.presentation = item.presentation
-                    ? item.presentation
+                this.form_item.presentation = presentation
+                    ? presentation
                     : null;
 
                 this.form_item.charges = [];
@@ -1655,6 +1709,11 @@ export default {
                     this.affectation_igv_types,
                     {id: this.form_item.affectation_igv_type_id}
                 );
+
+                //asignar variables isc
+                this.form_item.has_isc = this.form_item.item.has_isc
+                this.form_item.percentage_isc = this.form_item.item.percentage_isc
+                this.form_item.system_isc_type_id = this.form_item.item.system_isc_type_id
 
                 // console.log(this.form_item)
                 this.row = calculateRowItem(
@@ -1666,10 +1725,12 @@ export default {
 
                 // this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : 'NIU';
 
-                this.row["unit_type_id"] = item.presentation
-                    ? item.presentation.unit_type_id
+                this.row["unit_type_id"] = presentation
+                    ? presentation.unit_type_id
                     : this.form_item.item.unit_type_id;
 
+                // Se añade la presentation directamente al item para filtrarlo posteriormente
+                this.row.presentation = presentation;
                 this.form.items.unshift(this.row);
                 item.aux_quantity = 1;
             }
@@ -1727,8 +1788,11 @@ export default {
             let total_value = 0;
             let total = 0;
             let total_plastic_bag_taxes = 0
+            let total_base_isc = 0
+            let total_isc = 0
 
             this.form.items.forEach(row => {
+
                 total_discount += parseFloat(row.total_discount);
                 total_charge += parseFloat(row.total_charge);
 
@@ -1762,7 +1826,15 @@ export default {
                 total_value += parseFloat(row.total_value);
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
+                // isc
+                total_isc += parseFloat(row.total_isc)
+                total_base_isc += parseFloat(row.total_base_isc)
+
             });
+
+            // isc
+            this.form.total_base_isc = _.round(total_base_isc, 2)
+            this.form.total_isc = _.round(total_isc, 2)
 
             this.form.total_exportation = _.round(total_exportation, 2);
             this.form.total_exonerated = _.round(total_exonerated, 2);
@@ -1776,7 +1848,11 @@ export default {
             this.form.total_free = _.round(total_free, 2);
             this.form.total_igv = _.round(total_igv, 2);
             this.form.total_value = _.round(total_value, 2);
-            this.form.total_taxes = _.round(total_igv, 2);
+            // this.form.total_taxes = _.round(total_igv, 2);
+
+            //impuestos (isc + igv)
+            this.form.total_taxes = _.round(total_igv + total_isc, 2);
+
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2);
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
@@ -1880,7 +1956,7 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/search_items?${parameters}`)
                     .then(response => {
-                        console.log("buah");
+                        // console.log("buah");
                         this.items = response.data.items;
                         this.enabledSearchItemsBarcode();
                         this.loading = false;

@@ -4,6 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\GuideFile;
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Traits\SellerIdTrait;
 use Illuminate\Support\Collection;
 use Modules\Order\Models\OrderNote;
 use Modules\Sale\Models\SaleOpportunity;
@@ -12,6 +13,8 @@ use Modules\Sale\Models\Contract;
 
 class Quotation extends ModelTenant
 {
+    use SellerIdTrait;
+
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'];
 
     protected $fillable = [
@@ -70,8 +73,17 @@ class Quotation extends ModelTenant
         'phone',
         'seller_id',
         'total_igv_free',
+        'subtotal',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function (self $model) {
+            self::adjustSellerIdField($model);
+        });
+
+    }
     protected $casts = [
         'date_of_issue' => 'date',
         // 'date_of_due' => 'date',
@@ -378,4 +390,25 @@ class Quotation extends ModelTenant
     public function guide_files()
     {
         return $this->hasMany(GuideFile::class);
-    }}
+    }
+
+    /**
+     * Devuelve un standar para la fecha de entrega.
+     *
+     * Si es string devuelve dicho string. Contrario devolveria un formato de fecha
+     *
+     * @return mixed|string|null
+     */
+    public function getStringDeliveryDate(){
+
+        if(empty($this->delivery_date)) {
+            return null;
+        }
+        if(is_string($this->delivery_date)) {
+            return $this->delivery_date;
+        }
+
+        return $this->delivery_date->format('Y-m-d');
+    }
+
+}

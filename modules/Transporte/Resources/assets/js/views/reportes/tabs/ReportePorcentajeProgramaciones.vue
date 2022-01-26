@@ -28,6 +28,8 @@
                         <tr>
                             <td>Placa</td>
                             <td>Nombre</td>
+                            <td>Hora de Partida y Ruta</td>
+                            <td></td>
                             <td>Asientos vendidos</td>
                             <td>Asientos disponibles</td>
                             <td>Porcentaje vendido</td>
@@ -37,11 +39,23 @@
                     <tbody>
 
                         <tr v-for="(row, index) in records" :key="index">
-                            <td>{{ row.placa }}</td>
-                            <td>{{ row.nombre }}</td>
+                            <td>{{ row.vehiculo.placa }}</td>
+                            <td>{{ row.vehiculo.nombre }}</td>
+                            <td>
+                                {{ row.hora_salida }}  {{ row.origen.nombre }} - {{ row.destino.nombre }}
+                            </td>
+                            <td>
+                                <el-button type="success" size="mini" @click="recien" >
+                                    <i class="fa fa-check"></i>
+                                </el-button>
+                            </td>
                             <td>{{ row.asientos_ocupados }}</td>
                             <td>{{ row.asientos_disponibles }}</td>
-                            <td>%{{ row.porcentaje }}</td>
+                            <td>
+
+
+                                <progress :value="row.asientos_ocupados" :max="row.vehiculo.asientos"> </progress> {{ row.porcentaje }} %
+                            </td>
                             <td>{{ row.total_vendido }}</td>
                         </tr>
 
@@ -116,6 +130,8 @@ export default {
             this.total = data.total;
             this.records = data.data;
 
+            console.log(this.records)
+
             this.loading = false;
         },
         changePage(page){
@@ -132,6 +148,9 @@ export default {
             form.submit();
             $("#form1").remove();
 
+        },
+        recien(){
+            alert('En proceso de implementación')
         }
     },
 

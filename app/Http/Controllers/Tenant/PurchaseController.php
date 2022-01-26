@@ -47,11 +47,7 @@
     use stdClass;
     use Symfony\Component\HttpFoundation\StreamedResponse;
     use Throwable;
-    use Carbon\Carbon;
-    use Modules\Item\Models\ItemLot;
-    use App\Models\Tenant\InventoryKardex;
-    use Modules\Purchase\Models\PurchaseOrder;
-    use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
+    use App\Models\Tenant\GeneralPaymentCondition;
     use App\Models\Tenant\NotePurchase;
     use Modules\Item\Models\Category;
     use Modules\Item\Http\Requests\CategoryRequest;
@@ -145,15 +141,17 @@
             $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
             $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
             $company = Company::active();
-            $payment_method_types = PaymentMethodType::all();
+            $payment_method_types = PaymentMethodType::getPaymentMethodTypes();
+            // $payment_method_types = PaymentMethodType::all();
             $payment_destinations = $this->getPaymentDestinations();
             $customers = $this->getPersons('customers');
             $configuration = Configuration::first();
+            $payment_conditions = GeneralPaymentCondition::get();
             $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
             $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
             $note_debit_types = NoteDebitType::whereActive()->orderByDescription()->get();
 
-            return compact('suppliers', 'establishment','currency_types', 'discount_types', 'configuration',
+            return compact('suppliers', 'establishment','currency_types', 'discount_types', 'configuration', 'payment_conditions',
                 'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations', 'customers',
                 'document_types_note','note_credit_types','note_debit_types');
         }
@@ -424,6 +422,8 @@
                         }
                     }
 
+                    $this->savePurchaseFee($doc, $data['fee']);
+
                     $this->setFilename($doc);
                     $this->createPdf($doc, "a4", $doc->filename);
 
@@ -442,6 +442,14 @@
                     'success' => false,
                     'message' => $th->getMessage(),
                 ], 500);
+            }
+        }
+
+
+        private function savePurchaseFee($purchase, $fee)
+        {
+            foreach ($fee as $row) {
+                $purchase->fee()->create($row);
             }
         }
 
@@ -651,6 +659,10 @@
                         ]);
                     }
                 }
+
+                $doc->fee()->delete();
+                $this->savePurchaseFee($doc, $request['fee']);
+
 
                 if (!$doc->filename) {
                     $this->setFilename($doc);
