@@ -25,59 +25,38 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Origen</th>
-                            <th>Destino</th>
-                            <th>Vehiculo</th>
-                            <!-- <th>Fecha Salida</th> -->
-                            <th>Hora Salida</th>
-                            <!-- <th>Tiempo aproximado</th> -->
-                            <!-- <th>Ciudad</th> -->
-                            <th></th>
-                            <!-- <th>Licencia</th>
-                            <th>Categoría</th> -->
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="programacion in listProgramaciones" :key="programacion.id" :class="{'text-danger': (programacion.active === 0), 'border-danger': (programacion.active === 0)}">
-                            <td class="text-right">{{ programacion.id }}</td>
-                            <td>{{ programacion.origen.nombre }}</td>
-                            <td>{{ programacion.destino.nombre }}</td>
-                            <td>{{ programacion.vehiculo.placa }}</td>
-                            <td>{{ programacion.hora_view }}</td>
-                            <!-- <td>{{ programacion.tiempo_aproximado }} hr</td> -->
-                            <!-- <td>{{ item.licencia }}</td>
-                            <td>{{ item.categoria }}</td> -->
-                            <td class="text-center">
-                                <!-- <el-button type="primary" @click="onConfigRutas(programacion)">
-                                    <i class="fa fa-cogs"></i>
-                                </el-button> -->
-                                <!-- <el-tooltip class="item" effect="dark" content="Generar manifiesto" placement="top-start">
-                                    <el-button type="secondary" @click="openModalGenerarManifiesto(programacion)">
-                                        <i class="fa fa-file"></i>
-                                    </el-button>
-                                </el-tooltip> -->
+                    <el-table v-loading="loading" :data="listProgramaciones" border stripe>
 
-                                <el-button type="success" @click="onEdit(programacion)">
-                                    <i class="fa fa-edit"></i>
-                                </el-button>
-                                <el-button type="danger" @click="onDelete(programacion)">
-                                    <i class="fa fa-trash"></i>
-                                </el-button>
+                        <el-table-column prop="origen" label="Origen" v-slot="{ row }">
+                            {{ row.origen.nombre}}
+                        </el-table-column>
 
-                                <el-button v-if="programacion.active==1" type="disable" @click="desactivar(programacion)" title="Desactivar">
-                                    <i class="fa fa-eye-slash"></i>
-                                </el-button>
-                                <el-button  v-else type="success" @click="activar(programacion)" title="Activar">
-                                    <i class="fa fa-eye"></i>
-                                </el-button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                        <el-table-column prop="destino" label="Destino" v-slot="{ row }">
+                            {{ row.destino.nombre}}
+                        </el-table-column>
+
+                        <el-table-column prop="vehiculo" label="Vehiculo" v-slot="{ row }">
+                            {{ row.vehiculo.placa }}
+                        </el-table-column>
+
+                        <el-table-column prop="hora_salida" label="Hora salida"  />
+                        <el-table-column prop="actions" label="" v-slot="{ row:programacion }">
+                            <el-button type="success" @click="onEdit(programacion)">
+                                <i class="fa fa-edit"></i>
+                            </el-button>
+                            <el-button type="danger" @click="onDelete(programacion)">
+                                <i class="fa fa-trash"></i>
+                            </el-button>
+
+                            <el-button v-if="programacion.active==1" type="disable" @click="desactivar(programacion)" title="Desactivar">
+                                <i class="fa fa-eye-slash"></i>
+                            </el-button>
+                            <el-button  v-else type="success" @click="activar(programacion)" title="Activar">
+                                <i class="fa fa-eye"></i>
+                            </el-button>
+                        </el-table-column>
+                    </el-table>
+                  
                 </div>
             </div>
         </div>
@@ -121,10 +100,6 @@ export default {
             type: Array,
             required: true,
         },
-        programaciones:{
-            type: Array,
-            required:true,
-        },
         vehiculos:{
             type:Array,
             required:true
@@ -148,7 +123,7 @@ export default {
         GenerarManifiesto
     },
     created(){
-        this.listProgramaciones = this.programaciones;
+        this.getProgramaciones();
         this.listVehiculos = this.vehiculos;
     },
     data() {
@@ -166,6 +141,20 @@ export default {
         // this.listTerminales = this.terminales;
     },
     methods: {
+
+        async getProgramaciones(){
+
+            try{
+                this.loading = true;
+                const {data} = await this.$http.get(`/transportes/programaciones/programaciones`);
+                this.listProgramaciones = data;
+            }catch(error){
+                this.axiosError(error);
+            }finally{
+                this.loading = false;
+            }
+
+        },
         onDelete(item) {
             this.$confirm(`¿Estás seguro de eliminar la programación ?`, 'Atención', {
                 confirmButtonText: 'Si, continuar',
@@ -192,15 +181,10 @@ export default {
             this.openModalAddEdit = true;
         },
         onUpdateItem(programacion) {
-            this.listProgramaciones = this.listProgramaciones.map((i) => {
-                if (i.id === programacion.id) {
-                    return programacion;
-                }
-                return i;
-            });
+            this.getProgramaciones();
         },
         onAddItem(programacion) {
-            this.listProgramaciones.unshift(programacion);
+            this.getProgramaciones();
         },
         onCreate() {
             this.programacion = null;

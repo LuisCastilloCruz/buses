@@ -683,18 +683,18 @@ export default {
             let data = {
                 document_id: doc,
                 note_id: note,
-                cliente_id:this.clienteId,
+                cliente_id: this.estadoAsiento == 2 ? this.clienteId : null,
                 nombre_pasajero: this.nombrePasajero,
-                pasajero_id: client,
+                pasajero_id: this.estadoAsiento == 2 ? client : null,
                 asiento_id:this.tipoVenta == 2 ? this.asiento.id : null,
                 numero_asiento:this.numeroAsiento,
                 estado_asiento_id:this.estadoAsiento,
-                programacion_id: this.tipoVenta == 2 ? this.programacion.id : null,
                 fecha_salida:this.fechaSalida,
                 precio:this.precio,
                 tipo_venta:this.tipoVenta, //venta asiento libre
-                destino_id:this.destino.id,
-                hora_salida: this.tipoVenta == 2 ?  this.programacion.hora_salida : this.horaSalida
+                destino_id: this.destino.id,
+                hora_salida: this.tipoVenta == 2 ?  this.programacion.hora_salida : this.horaSalida,
+                viaje_id: this.tipoVenta == 2 ? this.programacion.id : null,
             };
 
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)

@@ -9,7 +9,7 @@
                     <div class="clock-inner">
                         <div class="hour">{{fecha}}</div>
                         <div class="dots"> &nbsp  &nbsp</div>
-                        <div class="secs">{{hora}}</div>
+                        <div class="secs">{{timer}}</div>
                         <div class="mode"></div>
                     </div>
                 </div>
@@ -61,9 +61,9 @@
                                            placeholder="Destino"
                                            @change="getProgramaciones"
                                 >
-                                    <template v-for="destino in destinos">
+                                    <template v-for="destino in terminales">
                                         <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
-                                        <el-option  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
+                                        <el-option v-if="destino.id != terminalId"  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
                                         </el-option>
                                     </template>
 
@@ -100,7 +100,7 @@
                                         <tbody>
                                         <tr v-for="programacion in programaciones" :key="programacion.id">
                                             <td>{{ programacion.destino.nombre }}</td>
-                                            <td>{{ programacion.transporte.placa }}</td>
+                                            <td>{{ programacion.vehiculo.placa }}</td>
                                             <td>{{ programacion.hora_salida.substring(0,5) }}</td>
                                             <td>
                                                 <template v-if="!selectProgramacion">
@@ -228,8 +228,8 @@
                         </div>
                     </template>
                     <div v-if="asientos.length > 0 && tipoVenta == 2 && vehiculo" style="width: 100%">
-                        <bus v-if="piso == 1" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back" :seats.sync="asientosPisoUno" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
-                        <bus v-if="piso == 2" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back"  :seats.sync="asientosPisoDos" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
+                        <bus v-if="piso == 1" :change-color="changeColor" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back" :seats.sync="asientosPisoUno" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
+                        <bus v-if="piso == 2" :change-color="changeColor" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back"  :seats.sync="asientosPisoDos" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
                     </div>
                 </div>
 
@@ -289,6 +289,7 @@
         :payment-method-types="paymentMethodTypes"
         :configuration="configuration"
         :asiento="asiento"
+        :pasaje="pasajero"
         :user="user"
         @anularBoleto="anularBoleto"
         @onSuccessVenta="onSuccessVenta"
@@ -343,6 +344,7 @@ import DocumentOptions from "@views/documents/partials/options.vue";
 import DocumentsVoided from '@views/documents/partials/voided.vue';
 import DetalleBoleto from './DetalleBoleto.vue';
 import SocketClient from '@mixins/socket.js'
+import moment from 'moment';
 
 export default {
     mixins:[SocketClient],
@@ -422,6 +424,10 @@ export default {
         //     let exist = this.destinos.find( destino => destino.destino.id == newVal );
         //     if(exist) this.destino = exist.destino;
         // }
+
+        destino(){
+            console.log(this.destino);
+        }
     },
     mounted() {
         this.setTime();
@@ -435,7 +441,7 @@ export default {
 
         await this.searchTerminales();
         this.terminalId = this.terminal.id;
-        await this.searchDestinos();
+        // await this.searchDestinos();
         await this.onCreate();
         this.load = false;
 
@@ -449,7 +455,6 @@ export default {
             tipoVenta:2,
             visibleAsientoLibre:false,
             pasajero:this.itemPasajero,
-
             pasajeroId:null,
             showDialogVoided:false,
             vehiculo:null,
@@ -491,20 +496,91 @@ export default {
             fecha:null,
             hora:null,
             socketClient:null,
+
+
+            timeHora: null,
+            timeMinuto: null,
+            timeSegundo: null,
+            asientosOcupados: []
         });
     },
     computed:{
-
 
         asientosPisoUno:function(){
             return this.asientos.filter(  asiento => asiento.piso == 1);
         },
         asientosPisoDos:function(){
             return this.asientos.filter(  asiento => asiento.piso == 2);
+        },
+
+        timer(){
+
+            if(this.timeHora == null && this.timeMinuto == null && this.timeSegundo == null) return '';
+
+            const formatHora = this.timeHora < 10 ? `0${this.timeHora}` : this.timeHora;
+            const formatMinuto = this.timeMinuto < 10 ? `0${this.timeMinuto}` : this.timeMinuto;
+            const formatSegundo = this.timeSegundo < 10 ? `0${this.timeSegundo}` : this.timeSegundo;
+            return `${formatHora}:${formatMinuto}:${formatSegundo}`
         }
 
     },
     methods:{
+
+        changeColor(asiento,config){
+
+            const existePasaje = this.asientosOcupados.find(  item => item.asiento_id == asiento.id );
+
+            if(existePasaje) {
+                if(existePasaje.estado_asiento_id == 2){
+                    if(config.isBelt){ //Hay un path que se pinta de azul
+                        return{
+                            fill:'#fff'
+                        };
+                    }
+
+                    return {
+                        fill: existePasaje.origen.color || '#ff0000', // '#ff0000'
+                        animation:'none',
+                        color: '#fff'
+                    }
+                }
+
+                if(existePasaje.estado_asiento_id == 3){
+                    if(config.isSeat){
+                        return {
+                            fill:'#fff',
+                            animation:'reservado 1s infinite'
+                        }
+                    }
+
+                    return {
+                        fill:'#fff',
+                        animation:'none'
+                    }
+                }
+            }
+
+            if(this.asiento) {
+                if(asiento.id == this.asiento.id){
+                    if(config.isSeat){
+                        return {
+                            fill:'#ff6600',
+                            animation:'reservado 1s infinite'
+                        }
+                    }
+                    return {
+                        fill:'#ff6600',
+                        animation:'none'
+                    }
+
+                } 
+            } 
+
+            return {
+                fill:'#fff',
+                animation:'none'
+            }
+        },
 
         initSocket(){
             try{
@@ -533,6 +609,44 @@ export default {
             this.fecha_salida = null;
             //this.horaSalida = null;
             this.origen = null;
+        },
+        stateAsiento(estado,config={}){
+
+            /** Manejo de los estados del asiento */
+            if(estado == 1){//Disponible
+                return {
+                    fill:'#fff',
+                    animation:'none'
+                }
+            }else if(estado == 2 ){ //Ocupado
+
+                if(config.isBelt){ //Hay un path que se pinta de azul
+                    return{
+                        fill:'#fff'
+                    };
+                }
+                return {
+                    fill: this.terminal.color || '#ff0000',
+                    animation:'none'
+                }
+
+            }else if(estado == 3){ //Reservado
+
+                if(config.isSeat){
+                    return {
+                        fill:'#fff',
+                        animation:'reservado 1s infinite'
+                    }
+                }
+
+                return {
+                    fill:'#fff',
+                    animation:'none'
+                }
+
+
+
+            }
         },
 
         async onCreate(){
@@ -576,44 +690,6 @@ export default {
             // }
 
         },
-        stateAsiento(estado,config={}){
-
-            /** Manejo de los estados del asiento */
-            if(estado == 1){//Disponible
-                return {
-                    fill:'#fff',
-                    animation:'none'
-                }
-            }else if(estado == 2 ){ //Ocupado
-
-                if(config.isBelt){ //Hay un path que se pinta de azul
-                    return{
-                        fill:'#fff'
-                    };
-                }
-                return {
-                    fill: this.terminal.color || '#ff0000',
-                    animation:'none'
-                }
-
-            }else if(estado == 3){ //Reservado
-
-                if(config.isSeat){
-                    return {
-                        fill:'#fff',
-                        animation:'reservado 1s infinite'
-                    }
-                }
-
-                return {
-                    fill:'#fff',
-                    animation:'none'
-                }
-
-
-
-            }
-        },
 
         quitar(){
             this.selectProgramacion = null;
@@ -647,11 +723,17 @@ export default {
         dbClick(asiento){
 
             if(asiento.type != 'ss') return;
-            if(asiento.estado_asiento_id == 2 || asiento.estado_asiento_id == 3) {
+
+            const existePasaje = this.asientosOcupados.find(  item => item.asiento_id == asiento.id );
+
+            if(existePasaje){
+                this.pasajero = existePasaje;
                 this.asiento = asiento;
+                this.asiento.estado_asiento_id = existePasaje.estado_asiento_id;
                 this.visible = true;
                 return;
-            };
+            }
+
             this.asientos = this.asientos.map( seat => {
                 if(seat.estado_asiento_id == 4){
                     seat.estado_asiento_id = 1;
@@ -678,8 +760,11 @@ export default {
             this.visibleAsientoLibre = false;
             this.selectProgramacion = programacion;
             if(this.tipoVenta == 2){
-                this.vehiculo = programacion.transporte;
-                this.asientos = programacion.transporte.asientos;
+                this.vehiculo = programacion.vehiculo;
+                this.asientosOcupados = programacion.asientos_ocupados;
+                this.asientos = programacion.vehiculo.seats;
+
+                this.$nextTick(() => this.$forceUpdate());
             }
 
         },
@@ -689,8 +774,9 @@ export default {
                 await this.getProgramaciones();
                 this.selectProgramacion = this.programaciones
                 .find(  programacion => programacion.id == program.id );
-                this.asientos = this.selectProgramacion.transporte.asientos;
-                this.vehiculo = this.selectProgramacion.transporte;
+                this.asientos = this.selectProgramacion.vehiculo.seats;
+                this.vehiculo = this.selectProgramacion.vehiculo;
+                this.asientosOcupados = this.selectProgramacion.asientos_ocupados;
             }else if(this.tipoVenta == 1){
                 this.destino = null;
                 this.horaSalida = null;
@@ -743,16 +829,41 @@ export default {
                 this.asiento = null;
             }
         },
-        setTime(){
+        async setTime(){
+           const {data} = await this.$http.get(`/documents/fecha-actual`);
+
+            this.fecha  = data.fecha
+            this.hora  = data.hora
+
+            const time = moment(`${this.fecha} ${this.hora}`);
+
+            this.timeHora = time.hours();
+            this.timeMinuto = time.minutes();
+            this.timeSegundo = time.seconds();
+
+            this.startTimer();
+        },
+        startTimer(){
             setInterval(() => {
-                this.$http
-                    .get(`/documents/fecha-actual`)
-                    .then((response) => {
-                        this.fecha  = response.data.fecha
-                        this.hora  = response.data.hora
-                        this.reloj= response.data.fecha + " "+ response.data.hora
-                    });
-            }, 5000)
+
+                this.timeSegundo++;
+
+                if(this.timeSegundo >= 60){
+                    this.timeMinuto++;
+                    this.timeSegundo = 0;
+                } 
+
+                if(this.timeMinuto >= 60){
+                    this.timeHora++;
+                    this.timeMinuto = 0;
+                }
+
+                if(this.timeHora > 23){
+                    this.timeHora = 0;
+                    this.timeMinuto = 0;
+                }
+                
+            }, 1000);
         }
     }
 }

@@ -26,7 +26,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="" class="d-block">Asiento</label>
-                            <el-input type="number" v-model="asiento.numero_asiento" style="width: 65%"></el-input>
+                                <el-input type="number" v-model="asiento.numero_asiento" style="width: 65%"  @keypress.enter="agregarItem('ss')"></el-input>
                             <el-button type="info" @click="agregarItem('ss')">+</el-button>
                         </div>
                     </div>

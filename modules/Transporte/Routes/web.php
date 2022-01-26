@@ -3,9 +3,12 @@
 
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
+
+
 if ($hostname) {
 	Route::domain($hostname->fqdn)->group(function () {
-		Route::middleware(['auth', 'redirect.module', 'locked.tenant'])
+		// Route::post('transportes/sales/programaciones-disponibles', 'TransporteSalesController@getProgramacionesDisponibles');
+		Route::middleware(['web', 'auth', 'redirect.module', 'locked.tenant'])
 			->prefix('transportes')
 			->group(function () {
 			    //index
@@ -65,6 +68,7 @@ if ($hostname) {
 				Route::get('pasajes/get-pasajes','TransportePasajeController@getPasajes');
 				//programaciones
 				Route::get('programaciones','TransporteProgramacionesController@index');
+				Route::get('programaciones/programaciones','TransporteProgramacionesController@getProgramaciones');
 				Route::post('programaciones/store','TransporteProgramacionesController@store');
 				Route::put('programaciones/{programacion}/update','TransporteProgramacionesController@update');
 				Route::put('programaciones/{programacion}/configuracion-rutas','TransporteProgramacionesController@configuracionRutas');

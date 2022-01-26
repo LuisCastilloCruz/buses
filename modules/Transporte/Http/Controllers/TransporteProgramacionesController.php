@@ -12,15 +12,19 @@ use Modules\Transporte\Models\TransporteUserTerminal;
 use Modules\Transporte\Models\TransporteVehiculo;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Modules\Transporte\Models\TransporteChofer;
 use Illuminate\Support\Facades\Session;
+use Modules\Transporte\Models\TransporteDestinoHorario;
 use Modules\Transporte\Models\TransporteRuta;
 
 class TransporteProgramacionesController extends Controller
 {
     //
+
+    
 
     public function index(Request $request){
         $terminales = TransporteTerminales::all();
@@ -31,27 +35,7 @@ class TransporteProgramacionesController extends Controller
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
         }
-
-        if(auth()->user()->type=='admin'){
-
-            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
-            ->where('hidden',0)
-            ->get()
-                ->map(function($programacion){
-                    $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
-                    return $programacion;
-                });
-        }
-        else{
-            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
-                ->where('terminal_origen_id',$user_terminal->terminal_id)
-                ->where('hidden',0)
-                ->get()
-                ->map(function($programacion){
-                    $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
-                    return $programacion;
-                });
-        }
+        
         $vehiculos = TransporteVehiculo::all();
 
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
@@ -61,12 +45,29 @@ class TransporteProgramacionesController extends Controller
 
         return view('transporte::programaciones.index',compact(
             'terminales',
-            'programaciones',
             'vehiculos',
             'series',
             'choferes',
             'user_terminal'
         ));
+    }
+
+    public function getProgramaciones(){
+        $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
+        if(auth()->user()->type=='admin'){
+
+            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
+            ->where('hidden',0)
+            ->get();
+        }
+        else{
+            $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
+            ->where('terminal_origen_id',$user_terminal->terminal_id)
+            ->where('hidden',0)
+            ->get();
+        }
+
+        return $programaciones;
     }
 
 
@@ -155,10 +156,14 @@ class TransporteProgramacionesController extends Controller
             DB::connection('tenant')->beginTransaction();
 
             $formProgramacion = $request->input('programacion');
+            $progamacionesGeneradas = $request->input('programaciones');
+            $destinosHorarios = $request->input('destinos_horarios');
 
 
             $formProgramacion['hidden'] = false;
-            $programacion = TransporteProgramacion::create($formProgramacion);
+            $programacion = TransporteProgramacion::create( array_merge($formProgramacion, [
+                'destinos_horarios' => json_encode($destinosHorarios),
+            ]));
             $programacion->update(['programacion_id' => $programacion->id]);
 
             $intermedios =  collect($request->input('intermedios'));
@@ -172,41 +177,55 @@ class TransporteProgramacionesController extends Controller
                 $i++;
             }
 
+            // foreach($destinosHorarios as $destinoHorario){
 
-            $terminales = $programacion->rutas;
+            //     TransporteDestinoHorario::create([
+            //         'origen_id' => $destinoHorario['origen']['id'],
+            //         'destino_id' => $destinoHorario['destino']['id'],
+            //         'tiempo_estimado' => $destinoHorario['tiempo_estimado'],
+            //         'programacion_id' => $programacion->id
+            //     ]);
 
-            $this->createRoutes($programacion,$terminales);
+            // }
 
-            $terminales->push($programacion->destino);
+            foreach($progamacionesGeneradas as $programation){
+                TransporteProgramacion::create([
+                    'terminal_origen_id' => $programation['origen']['id'],
+                    'terminal_destino_id' => $programation['destino']['id'],
+                    'vehiculo_id' => $formProgramacion['vehiculo_id'],
+                    'hora_salida' => $programation['hora_salida'],
+                    'tiempo_estimado' => $programation['tiempo_estimado'],
+                    'programacion_id' => $programacion->id,
+                    'hidden' => true,
+                    'active' => true
+                ]);
+            }
+
+
+            // $terminales = $programacion->rutas;
+
+            // $this->createRoutes($programacion,$terminales);
+
+            // $terminales->push($programacion->destino);
 
             //agrego el destino para poder hacer las combinaciones
 
 
-            $this->routes($programacion,$terminales);
+            // $this->routes($programacion,$terminales);
 
 
             DB::connection('tenant')->commit();
 
-            $programacion->load([
-                'rutas',
-                'origen',
-                'destino',
-                'routes.destino',
-                'programacion',
-                'vehiculo'
-            ]);
-
             return response()->json([
                 'success' => true,
-                'data'    => $programacion
+                'msg' => 'Se ha agregado la programación',
             ]);
 
         }catch(Exception $e){
 
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage(),
-                'line' => $e->getLine()
+                'msg' => 'Ocurrio un error al agregar la programación',
             ]);
 
         }
@@ -359,20 +378,22 @@ class TransporteProgramacionesController extends Controller
         try{
 
             DB::connection('tenant')->beginTransaction();
-
-            $oldTerminales = $programacion->rutas()->get();
-            // return $request->only('terminal_destino_id');
-
+            
+            $destinosHorarios = $request->input('destinos_horarios');
             $formProgramacion = $request->input('programacion');
-            $programacion->update($formProgramacion);
+            $progamacionesGeneradas = $request->input('programaciones');
+            $programacion->update( array_merge($formProgramacion,[
+                'destinos_horarios' => json_encode($destinosHorarios),
+            ]));
             $programacion->update(['programacion_id' => $programacion->id]);
-
-            $programacion->where('programacion_id',$programacion->id)
-                ->update(['vehiculo_id' => $programacion->vehiculo_id]);
 
             $intermedios = collect($request->input('intermedios'));
 
             TransporteRuta::where('programacion_id',$programacion->id)
+            ->delete();
+
+            TransporteProgramacion::where('programacion_id',$programacion->id)
+            ->where('id','!=', $programacion->id)
             ->delete();
 
 
@@ -382,39 +403,23 @@ class TransporteProgramacionesController extends Controller
                     'hora_salida' => $terminal['hora_salida'],
                     'orden' => $orden
                 ]);
-
-
                 $orden++;
             }
 
-            $newTerminales = $programacion->rutas()->get();
 
-            $list1 = $this->getCombination($programacion,$oldTerminales);
-            $list2 = $this->getCombination($programacion,$newTerminales);
-
-            $listUnion = $list1->union($list2);
-
-            // dd($listUnion);
-
-            $this->checkIfExistOrCreate($programacion,$listUnion);
-
-
-            $collection1 = $this->listExcepts($list1,$list2);
-            $collection2 = $this->listExcepts($list2,$list1);
-
-            $newCollection = $collection1->merge($collection2);
-
-            $this->updateOrCreateProgramaciones($programacion,$newCollection);
-
-
-            $programacion->load([
-                'destino',
-                'origen',
-                'vehiculo',
-                'rutas',
-            ]);
-
-            $programacion->hora_view = date('g:i a',strtotime($programacion->hora_salida));
+            foreach($progamacionesGeneradas as $programation){
+                TransporteProgramacion::create([
+                    'terminal_origen_id' => $programation['origen']['id'],
+                    'terminal_destino_id' => $programation['destino']['id'],
+                    'vehiculo_id' => $formProgramacion['vehiculo_id'],
+                    'hora_salida' => $programation['hora_salida'],
+                    'tiempo_estimado' => $programation['tiempo_estimado'],
+                    'programacion_id' => $programacion->id,
+                    'hidden' => true,
+                    'active' => true
+                ]);
+            }
+            
 
             DB::connection('tenant')->commit();
 

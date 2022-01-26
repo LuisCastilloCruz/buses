@@ -17,14 +17,14 @@ trait Rutas {
     }
     private function getRutasMayores($position,Collection $rutas){
         $rutasSuperiores = $rutas->filter(function($item,$index) use ($position){
-            return $index >= $position;
+            return $index > $position;
         });
         return $rutasSuperiores;
     }
 
     private function getRutasMenores($position,Collection $rutas){
         $rutasMenores = $rutas->filter(function($item,$index) use ($position){
-            return $index <= $position;
+            return $index < $position;
         });
         return $rutasMenores;
     }

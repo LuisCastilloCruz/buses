@@ -19,10 +19,15 @@ class TransporteProgramacion extends ModelTenant
         'vehiculo_id',
         'fecha_salida',
         'hora_salida',
-        'tiempo_aproximado',
+        'tiempo_estimado',
         'programacion_id',
         'hidden',
         'active',
+        'destinos_horarios'
+    ];
+
+    protected $appends = [
+        'destino_horarios'
     ];
 
 
@@ -96,6 +101,14 @@ class TransporteProgramacion extends ModelTenant
                 'programacion_id' => $this->id
             ]);
         }
+    }
+
+
+    
+
+    public function getDestinoHorariosAttribute(){
+        if(is_null($this->destinos_horarios)) return [];
+        return json_decode($this->destinos_horarios,true);
     }
 
 

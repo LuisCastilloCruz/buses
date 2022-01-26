@@ -2,8 +2,7 @@
 
 @section('content')
     <tenant-transporte-programaciones 
-    :terminales='@json($terminales)' 
-    :programaciones='@json($programaciones)'
+    :terminales='@json($terminales)'
     :vehiculos='@json($vehiculos)'
     :series='@json($series)'
     :choferes='@json($choferes)' 

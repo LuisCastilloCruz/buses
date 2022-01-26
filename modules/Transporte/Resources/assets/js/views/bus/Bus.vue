@@ -41,7 +41,7 @@
                                         <path class="fil4 str1" :style="stateAsiento(asiento)" d="M42 1l-18 0c0,0 0,0 0,0l0 3c0,0 0,0 0,0l18 0c0,0 0,0 0,0l0 -3c0,0 0,0 0,0z"></path>
                                     </g>
                                 </svg>
-                                    <span @mousedown="childOnMouseDown($event,asiento,index)" :style="(asiento.estado_asiento_id == 2) ? 'color:#fff':  'color:#000'">{{ asiento.numero_asiento }}</span>
+                                    <span @mousedown="childOnMouseDown($event,asiento,index)" :style="stateAsiento(asiento)">{{ asiento.numero_asiento }}</span>
                                 </template>
 
                                 <!-- Baño -->
@@ -161,6 +161,11 @@ export default {
         anchoVehiculo:{
             type:Number,
             default:null
+        },
+
+        changeColor:{
+            type:Function,
+            default: null,
         }
     },
     created(){
@@ -198,61 +203,65 @@ export default {
 
         stateAsiento(asiento,config={}){
             /** Manejo de los estados del asiento */
-            
-            if(asiento.estado_asiento_id == 1){//Disponible
-                return {
-                    fill:'#fff',
-                    animation:'none'
-                }
-            }else if(asiento.estado_asiento_id == 2 ){ //Ocupado
 
-                if(config.isBelt){ //Hay un path que se pinta de azul
-                    return{
-                        fill:'#fff'
-                    };
-                }
-
-                let color = asiento.transporte_pasaje 
-                ? asiento.transporte_pasaje.color
-                : '#ff0000';
-
-                return {
-                    fill: color, // '#ff0000'
-                    animation:'none',
-                    color: asiento.color
-                }
-
-            }else if(asiento.estado_asiento_id == 3){ //Reservado
-
-                if(config.isSeat){
-                    return {
-                        fill:'#fff',
-                        animation:'reservado 1s infinite'
-                    }
-                }
-
-                return {
-                    fill:'#fff',
-                    animation:'none'
-                }
+            if(this.changeColor) return this.changeColor(asiento, config);
 
 
-
-            }else if(asiento.estado_asiento_id == 4){ //Seleccionado
-
-                if(config.isSeat){
-                    return {
-                        fill:'#ff6600',
-                        animation:'reservado 1s infinite'
-                    }
-                }
-
-                return {
-                    fill:'#ff6600',
-                    animation:'none'
-                }
-
+            return {
+                fill:'#fff',
+                animation:'none'
             }
+            
+            // if(asiento.estado_asiento_id == 1){//Disponible
+            //     return {
+            //         fill:'#fff',
+            //         animation:'none'
+            //     }
+            // }else if(asiento.estado_asiento_id == 2 ){ //Ocupado
+
+            //     if(config.isBelt){ //Hay un path que se pinta de azul
+            //         return{
+            //             fill:'#fff'
+            //         };
+            //     }
+
+            //     return {
+            //         fill: this.changeColor ? this.changeColor(asiento) : '#ff0000', // '#ff0000'
+            //         animation:'none',
+            //         color: this.changeColor ? this.changeColor(asiento) : '#fff'
+            //     }
+
+            // }else if(asiento.estado_asiento_id == 3){ //Reservado
+
+            //     if(config.isSeat){
+            //         return {
+            //             fill:'#fff',
+            //             animation:'reservado 1s infinite'
+            //         }
+            //     }
+
+            //     return {
+            //         fill:'#fff',
+            //         animation:'none'
+            //     }
+
+
+
+            // }else if(asiento.estado_asiento_id == 4){ //Seleccionado
+
+            //     if(config.isSeat){
+            //         return {
+            //             fill:'#ff6600',
+            //             animation:'reservado 1s infinite'
+            //         }
+            //     }
+
+            //     return {
+            //         fill:'#ff6600',
+            //         animation:'none'
+            //     }
+
+            // }
         },
         childOnMouseDown(evt,asiento,index){
             evt.stopPropagation();

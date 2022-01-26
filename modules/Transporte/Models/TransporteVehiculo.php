@@ -30,7 +30,10 @@ class TransporteVehiculo extends ModelTenant
     }
 
     public function seats() : HasMany{
-        //traigo solo
+        return $this->hasMany(TransporteAsiento::class,'vehiculo_id','id');
+    }
+
+    public function asientos() : HasMany{
         return $this->hasMany(TransporteAsiento::class,'vehiculo_id','id');
     }
 

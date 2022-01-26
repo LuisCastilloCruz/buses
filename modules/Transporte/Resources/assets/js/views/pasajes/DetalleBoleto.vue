@@ -1,11 +1,11 @@
 <template>
     <el-dialog title="Venta" :visible="visible" @close="onClose" @open="onCreate" :close-on-click-modal="false" width="800px">
         <div class="row">
-            <div class="col-5">
+            <div class="col-6">
                 <div class="form-group">
                     <label for="">Tipo de comprobante</label>
                     <el-select v-if="transportePasaje"
-                        v-model="this.transportePasaje.document.document_type_id"
+                        v-model="this.document.document_type_id"
                         @change="changeDocumentType"
                         popper-class="el-select-document_type"
                         dusk="document_type_id"
@@ -22,7 +22,7 @@
                     </el-select>
                 </div>
             </div>
-            <div class="col-3" v-if="(!transportePasaje && !isReserva)">
+            <div class="col-6" v-if="(!transportePasaje && !isReserva)">
                 <div class="form-group">
                     <label for="">Serie</label>
                     <!-- <el-input v-model="document.serie" disabled></el-input> -->
@@ -36,7 +36,7 @@
                     </el-select>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-6">
                 <div class="form-group">
                     <label for="dni">Estado de asiento</label>
                     <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
@@ -95,7 +95,11 @@
 
                 </div>
             </div>
-            <div class="col-5">
+          
+
+        </div>
+        <div class="row">
+            <div class="col-6">
                 <div class="form-group">
                     <label for="dni">
                         Vendido por:
@@ -105,7 +109,9 @@
 
                 </div>
             </div>
-
+            <div v-if="transportePasaje" class="col-6 d-flex align-items-center" style="font-size: 15px">
+                Viaje de <el-tag style="color:white" :color="transportePasaje.origen.color"> {{ transportePasaje.origen.nombre }} </el-tag>  a <el-tag style="color:white" :color="transportePasaje.destino.color"> {{ transportePasaje.destino.nombre }} </el-tag>
+            </div>
         </div>
         <div v-if="(transportePasaje && !isReserva)" class="row justify-content-center">
 
@@ -327,7 +333,12 @@ export default {
         user:{
             type:Object,
             required:true,
-        }
+        },
+        pasaje:{
+            type:Object,
+            required:false,
+            default: () => ({})
+        },
     },
     created(){
 
@@ -442,9 +453,8 @@ export default {
             this.tempClientes = this.clientes  = data.clientes;
         },
         async onCreate(){
-            this.transportePasaje = this.asiento.transporte_pasaje || null;
+            this.transportePasaje = this.pasaje || null;
 
-            console.log(this.transportePasaje)
 
             this.initProducto();
             //this.initDocument();
@@ -460,6 +470,9 @@ export default {
                 this.estadoAsiento = 2;
                 this.documentId = this.transportePasaje.document_id;
                 this.usuario = this.transportePasaje.user_name;
+                this.document.document_type_id = this.transportePasaje.document 
+                ? this.transportePasaje.document.document_type_id
+                : (this.documentTypesInvoice.length > 1) ? this.documentTypesInvoice[1].id : null
             }
 
             const date = moment().format("YYYY-MM-DD");
