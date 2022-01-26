@@ -22,8 +22,6 @@ class CreateTransportePasajesTable extends Migration
             $table->double('precio');
             $table->unsignedInteger('asiento_id');
             $table->foreign('asiento_id','tp_tva_foreign_id')->references('id')->on('transporte_vehiculo_asientos');
-            $table->unsignedInteger('programacion_id');
-            $table->foreign('programacion_id')->references('id')->on('transporte_programaciones');
             $table->unsignedInteger('estado_asiento_id');
             $table->foreign('estado_asiento_id')->references('id')->on('transporte_estado_asientos');
             $table->dateTime('fecha_salida');

@@ -15,7 +15,6 @@ class AddForeingDestinoIdPasajes extends Migration
     {
         Schema::table('transporte_pasajes', function (Blueprint $table) {
             //
-            $table->unsignedInteger('programacion_id')->nullable()->change();
             $table->unsignedInteger('origen_id');
             $table->foreign('origen_id')->references('id')->on('transporte_terminales');
             $table->unsignedInteger('destino_id');

@@ -23,6 +23,8 @@ class CreateTransporteViajesTable extends Migration
             $table->foreign('vehiculo_id')->references('id')->on('transporte_vehiculos');
             $table->unsignedInteger('terminal_destino_id');
             $table->foreign('terminal_destino_id')->references('id')->on('transporte_terminales');
+            $table->unsignedInteger('programacion_id');
+            $table->foreign('programacion_id')->references('id')->on('transporte_programaciones');
             $table->timestamps();
         });
     }
