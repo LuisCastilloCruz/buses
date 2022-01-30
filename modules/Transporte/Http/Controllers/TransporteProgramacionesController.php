@@ -24,7 +24,7 @@ class TransporteProgramacionesController extends Controller
 {
     //
 
-    
+
 
     public function index(Request $request){
         $terminales = TransporteTerminales::all();
@@ -35,7 +35,7 @@ class TransporteProgramacionesController extends Controller
             Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
             return redirect()->back();
         }
-        
+
         $vehiculos = TransporteVehiculo::all();
 
         $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
@@ -64,6 +64,7 @@ class TransporteProgramacionesController extends Controller
             $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
             ->where('terminal_origen_id',$user_terminal->terminal_id)
             ->where('hidden',0)
+            ->where('active',1)
             ->get();
         }
 
@@ -378,7 +379,7 @@ class TransporteProgramacionesController extends Controller
         try{
 
             DB::connection('tenant')->beginTransaction();
-            
+
             $destinosHorarios = $request->input('destinos_horarios');
             $formProgramacion = $request->input('programacion');
             $progamacionesGeneradas = $request->input('programaciones');
@@ -419,7 +420,7 @@ class TransporteProgramacionesController extends Controller
                     'active' => true
                 ]);
             }
-            
+
 
             DB::connection('tenant')->commit();
 
