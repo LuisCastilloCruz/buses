@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFieldViajeIdTransportePasajes extends Migration
+class TenantAddForeignViajeIdToTransportePasajes extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class AddFieldViajeIdTransportePasajes extends Migration
     public function up()
     {
         Schema::table('transporte_pasajes', function (Blueprint $table) {
-            //
-            $table->unsignedInteger('viaje_id')->nullable();
+            $table->foreign('viaje_id')->references('id')->on('transporte_viajes');
         });
     }
 

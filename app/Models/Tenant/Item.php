@@ -99,7 +99,6 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemWarehouse[] $warehouses
  * @property int|null $warehouses_count
  * @property WebPlatform $web_platform
- * @method  array getCollectionData()
  * @method static Builder|Item whereFilterValuedKardexFormatSunat($params)
  */
 class Item extends ModelTenant

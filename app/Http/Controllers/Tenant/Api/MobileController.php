@@ -46,9 +46,14 @@ class MobileController extends Controller
         }
 
         $company = Company::active();
-        $logo_base64 = base64_encode(file_get_contents(public_path("storage/uploads/logos/".$company->logo."")));
 
+        $logo = file_get_contents(public_path("storage/uploads/logos/".$company->logo.""));
 
+        if(!$logo){
+            $logo=file_get_contents(public_path("public/logo/700x300.jpg"));
+        }
+
+        $logo_base64 = base64_encode($logo);
 
         $user = $request->user();
         return [
