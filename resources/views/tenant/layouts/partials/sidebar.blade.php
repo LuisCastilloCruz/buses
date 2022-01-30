@@ -768,6 +768,7 @@
                         {{ ($firstLevel === 'dispatchers')?'nav-active nav-expanded':'' }}
                         {{ ($firstLevel === 'order-forms')?'nav-active nav-expanded':'' }}
                         {{ ($firstLevel === 'purchase-settlements')?'nav-active nav-expanded':'' }}
+                        {{ ($firstLevel === 'documents_old')?'nav-active nav-expanded':'' }}
 
                             ">
                             <a class="nav-link"
@@ -796,6 +797,13 @@
                                            href="{{route('tenant.perceptions.index')}}">Percepciones</a>
                                     </li>
                                 @endif
+
+                                    <li class="{{ ($firstLevel === 'documents_old'  && $secondLevel === 'create_old')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.documents.create_old')}}">
+                                            Facturas pasadas
+                                        </a>
+                                    </li>
+
                                 @if(in_array('advanced_purchase_settlements', $vc_module_levels))
                                     <li class="{{ ($firstLevel === 'purchase-settlements')?'nav-active':'' }}">
                                         <a class="nav-link"
