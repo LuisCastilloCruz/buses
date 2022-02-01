@@ -25,7 +25,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <el-table v-loading="loading" :data="programaciones" border stripe>
+                    <el-table v-loading="loading" :data="listProgramaciones" border stripe>
                         <el-table-column prop="origen" label="Origen" v-slot="{ row }">
                             <template>
                                 <span :class="{'text-danger': (row.active === 0)}">{{row.origen.nombre}}</span>
@@ -120,11 +120,7 @@ export default {
         userTerminal:{
             type:Object,
             default:{}
-        },
-        programaciones:{
-            type:Array,
-            default:() => []
-        },
+        }
     },
     components: {
         ModalAddEdit,
@@ -133,6 +129,7 @@ export default {
     },
     created(){
         this.listVehiculos = this.vehiculos;
+        this.getProgramaciones()
     },
     data() {
         return {
@@ -142,6 +139,7 @@ export default {
             openModalConfigRutas:false,
             loading: false,
             visible:false,
+            listProgramaciones:[]
         };
     },
     mounted() {
@@ -153,7 +151,7 @@ export default {
 
             try{
                 this.loading = true;
-                const {data} = await this.$http.get(`/transportes/programaciones/programaciones`);
+                const {data} = await this.$http.get(`/transportes/programaciones/programaciones/list`);
                 this.listProgramaciones = data;
             }catch(error){
                 this.axiosError(error);

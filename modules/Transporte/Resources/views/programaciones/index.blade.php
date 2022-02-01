@@ -7,6 +7,5 @@
     :series='@json($series)'
     :choferes='@json($choferes)'
     :user-terminal='@json($user_terminal)'
-    :programaciones='@json($programaciones)'
     />
 @endsection
