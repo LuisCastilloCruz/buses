@@ -200,7 +200,8 @@ class TransporteEncomiendaController extends Controller
                 'id' => $cliente->id,
                 'number' => $cliente->number,
                 'name' => $cliente->name,
-                'address' => $cliente->address
+                'address' => $cliente->address,
+                'edad' => $cliente->edad
             ]);
         }else{
             return response()->json([
