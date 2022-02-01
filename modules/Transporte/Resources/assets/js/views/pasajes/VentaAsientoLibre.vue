@@ -408,13 +408,13 @@ export default {
         this.changeDocumentType();
         //this.document.document_type_id = '03';
         // this.onCreate();
-        this.$eventHub.$on('reloadDataPersons', (clienteId) => {
-                this.reloadDataCustomers(clienteId)
-            })
-
-        this.$eventHub.$on('reloadDataPasajeros', (pasajeroId) => {
-                this.reloadDataPasajeros(pasajeroId)
-        })
+        // this.$eventHub.$on('reloadDataPersons', (clienteId) => {
+        //         this.reloadDataCustomers(clienteId)
+        //     })
+        //
+        // this.$eventHub.$on('reloadDataPasajeros', (pasajeroId) => {
+        //         this.reloadDataPasajeros(pasajeroId)
+        // })
 
     },
     watch:{
@@ -540,36 +540,36 @@ export default {
             this.buscar_pasajero = buscar_pasajero
 
         },
-        reloadDataCustomers(cliente_Id) {
-            this.$http
-                .get(`/documents/search/customer/${cliente_Id}`)
-                .then((response) => {
-                    this.tempClientes = this.clientes  = response.data.customers;
-                    this.clienteId = cliente_Id;
-                });
-        },
-        reloadDataPasajeros(pasajero_id) {
-            this.$http
-                .get(`/documents/search/customer/${pasajero_id}`)
-                .then((response) => {
-                    this.tempPasajeros = this.pasajeros  = response.data.customers;
-                    this.pasajeroId = pasajero_id;
-                });
-        },
-        async searchCliente(input=''){
-            this.loadingCliente = true;
-            const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
-            this.loadingCliente = false;
-            this.tempClientes = this.clientes  = data.clientes;
-        },
-        async searchPasajero(input=''){
-            this.loadingPasajero = true;
-            const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
-            this.loadingPasajero = false;
-            this.tempPasajeros = this.pasajeros  = data.clientes;
-            this.personas =  _.filter(data.clientes, (c) => { return c.identity_document_type_id !== '6' });
-
-        },
+        // reloadDataCustomers(cliente_Id) {
+        //     this.$http
+        //         .get(`/documents/search/customer/${cliente_Id}`)
+        //         .then((response) => {
+        //             this.tempClientes = this.clientes  = response.data.customers;
+        //             this.clienteId = cliente_Id;
+        //         });
+        // },
+        // reloadDataPasajeros(pasajero_id) {
+        //     this.$http
+        //         .get(`/documents/search/customer/${pasajero_id}`)
+        //         .then((response) => {
+        //             this.tempPasajeros = this.pasajeros  = response.data.customers;
+        //             this.pasajeroId = pasajero_id;
+        //         });
+        // },
+        // async searchCliente(input=''){
+        //     this.loadingCliente = true;
+        //     const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
+        //     this.loadingCliente = false;
+        //     this.tempClientes = this.clientes  = data.clientes;
+        // },
+        // async searchPasajero(input=''){
+        //     this.loadingPasajero = true;
+        //     const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
+        //     this.loadingPasajero = false;
+        //     this.tempPasajeros = this.pasajeros  = data.clientes;
+        //     this.personas =  _.filter(data.clientes, (c) => { return c.identity_document_type_id !== '6' });
+        //
+        // },
 
 
         async onCreate(){
@@ -612,7 +612,7 @@ export default {
             //await this.searchCliente();
             //await this.searchPasajero();
             this.filterSeries();
-            this.filterCustomers();
+            //this.filterCustomers();
         },
 
         async saveDocument(){
@@ -707,7 +707,7 @@ export default {
         },
         async guardarPasaje(){
 
-            //this.actualizar_pasajero()
+            this.actualizar_pasajero()
 
             let doc = null;
             let note = null;
@@ -768,7 +768,7 @@ export default {
                 this.document.cliente_id =
                 this.nombrePasajero = null;
                 this.filterSeries();
-                this.filterCustomers();
+                //this.filterCustomers();
                 this.initProducto();
                 this.document.payments= [];
 
@@ -778,14 +778,13 @@ export default {
                 this.empresa.address= null
                 this.empresa.condition= null
                 this.empresa.state = null
-
                 this.empresa.department_id= null
                 this.empresa.district_id= null
                 this.empresa.province_id= null
                 this.empresa.trade_name= null
-
+                //
                 this.persona.id  = null
-                this.pasajero.number = null
+                this.persona.number = null
                 this.persona.name = null
                 this.persona.edad  = null
 
@@ -801,7 +800,7 @@ export default {
 
 
             }).catch( error => {
-                // alert(error);
+                 alert(error);
                 this.axiosError(error);
             }).finally(() => {
                 this.loading = false;
@@ -1079,8 +1078,8 @@ export default {
 
                 this.is_document_type_invoice = false;
             }
-            this.cleanCustomer();
-            this.filterCustomers();
+            //this.cleanCustomer();
+            //this.filterCustomers();
         },
         cleanCustomer(){
             this.document.customer_id = null
@@ -1297,6 +1296,7 @@ export default {
             if(response_local.data.success){
                 this.pasajeroId   = response_local.data.id
                 this.persona.id  = response_local.data.id
+                this.persona.number = response_local.data.number
                 this.persona.name = response_local.data.name
                 this.persona.edad = response_local.data.edad
             }
