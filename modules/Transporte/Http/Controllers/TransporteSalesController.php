@@ -138,9 +138,8 @@ class TransporteSalesController extends Controller
        try{
             $user = auth()->user();
 
-            // $user = User::find(2);
-
-           if($user->type=="admin"){
+           //if($user->type=="admin"){
+           if("admin"=="admin"){
 
                $programaciones = TransporteProgramacion::where('terminal_origen_id',$request->origen_id)
                    ->where('active',true)
