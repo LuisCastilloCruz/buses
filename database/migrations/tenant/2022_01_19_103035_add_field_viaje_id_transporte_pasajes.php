@@ -27,7 +27,7 @@ class AddFieldViajeIdTransportePasajes extends Migration
     public function down()
     {
         Schema::table('transporte_pasajes', function (Blueprint $table) {
-            //
+            $table->dropColumn('viaje_id');
         });
     }
 }

@@ -28,7 +28,7 @@ class AddFieldColorTerminales extends Migration
     public function down()
     {
         Schema::table('transporte_terminales', function (Blueprint $table) {
-            //
+            $table->dropColumn('color');
         });
     }
 }

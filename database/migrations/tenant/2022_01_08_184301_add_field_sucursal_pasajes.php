@@ -30,7 +30,7 @@ class AddFieldSucursalPasajes extends Migration
     public function down()
     {
         Schema::table('transporte_pasajes', function (Blueprint $table) {
-            //
+            $table->dropColumn(['sucursal_id','color','user_id']);
         });
     }
 }

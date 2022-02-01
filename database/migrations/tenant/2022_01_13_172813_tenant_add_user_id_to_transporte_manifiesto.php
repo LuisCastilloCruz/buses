@@ -26,7 +26,7 @@ class TenantAddUserIdToTransporteManifiesto extends Migration
     public function down()
     {
         Schema::table('transporte_manifiesto', function (Blueprint $table) {
-            //
+            $table->dropColumn('user_id');
         });
     }
 }

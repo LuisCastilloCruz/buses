@@ -28,7 +28,8 @@ class AddFieldHoraEstimadaProgramaciones extends Migration
     public function down()
     {
         Schema::table('transporte_programaciones', function (Blueprint $table) {
-            //
+            $table->dropColumn('tiempo_estimado');
+            $table->dropColumn('destinos_horarios');
         });
     }
 }
