@@ -72,7 +72,7 @@
                                                 Ruc
 <!--                                                <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>-->
                                             </label>
-                                            <input name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left"> </input>
+                                            <input name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left" title="Ingrese el RUC y presione enter"> </input>
                                             <label class="ml-2 mr-2"  style="display: inline; float: left" id="cliente">Razón Social</label><input name="nombre" class="form-control" v-model="empresa.name" type="text" style="width:30%;float: left"></input>
                                             <label class="ml-2 mr-2" style="display: inline; float: left">Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text" style="width:30%;float: left"></input>
 
@@ -120,7 +120,7 @@
 <!--                                                </el-option>-->
 <!--                                            </el-select>-->
 
-                                            <input name="dni" ref="pasajero" id="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" type="number" style="width:20%;float: left"> </input>
+                                            <input name="dni" ref="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" type="number" style="width:20%;float: left" title="Ingrese el DNI y presione enter"> </input>
                                             <label class="ml-2 mr-2" for="nombre" style="display: inline; float: left">Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" style="width:40%;float: left"></input>
                                             <label class="ml-2 mr-2" for="edad" style="display: inline; float: left">Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" style="width:20%;float: left"></input>
                                         </div>
@@ -511,7 +511,12 @@ export default {
                 address:null,
                 condition:null,
                 state:null,
-                addresses: []
+                addresses: [],
+
+                department_id: null,
+                district_id: null,
+                province_id: null,
+                trade_name: null
             },
             persona: {
                 id: null,
@@ -604,8 +609,8 @@ export default {
             this.$nextTick(() => element && element.focus());
             this.document.document_type_id = '03';
             this.changeDocumentType();
-            await this.searchCliente();
-            await this.searchPasajero();
+            //await this.searchCliente();
+            //await this.searchPasajero();
             this.filterSeries();
             this.filterCustomers();
         },
@@ -702,7 +707,7 @@ export default {
         },
         async guardarPasaje(){
 
-            this.actualizar_pasajero()
+            //this.actualizar_pasajero()
 
             let doc = null;
             let note = null;
@@ -766,6 +771,25 @@ export default {
                 this.filterCustomers();
                 this.initProducto();
                 this.document.payments= [];
+
+                this.empresa.id    = null
+                this.empresa.number = null
+                this.empresa.name  = null
+                this.empresa.address= null
+                this.empresa.condition= null
+                this.empresa.state = null
+
+                this.empresa.department_id= null
+                this.empresa.district_id= null
+                this.empresa.province_id= null
+                this.empresa.trade_name= null
+
+                this.persona.id  = null
+                this.pasajero.number = null
+                this.persona.name = null
+                this.persona.edad  = null
+
+
 
                 this.$emit('onUpdateItem');
                 this.$message({
@@ -1284,7 +1308,8 @@ export default {
                     this.$http
                         .post("/persons", this.persona)
                         .then((response) => {
-                            this.pasajeroId= response.data.data.id
+                            this.pasajeroId= response.data.id
+                            this.persona.id  = response.data.id
                         })
                         .finally(() => {
                             this.loading = false;
@@ -1314,19 +1339,25 @@ export default {
                 if(response.data.success) {
                     this.empresa.name = response.data.data.name
                     this.empresa.address= response.data.data.address
+                    this.empresa.department_id= response.data.data.department_id
+                    this.empresa.district_id= response.data.data.district_id
+                    this.empresa.province_id= response.data.data.province_id
+                    this.empresa.trade_name= response.data.data.trade_name
+
 
                     this.$http
                         .post("/persons", this.empresa)
                         .then((response) => {
-                            this.clienteId = response.data.data.id
+                            console.log('mama')
+                            console.log(response.data.id)
+                            this.clienteId = response.data.id
+                            this.empresa.id    = response.data.id
+
                         })
                         .finally(() => {
                             this.loading = false;
                             this.errors = {};
                         })
-                        .catch((error) => {
-                            this.axiosError(error);
-                        });
                 }
             }
         },
