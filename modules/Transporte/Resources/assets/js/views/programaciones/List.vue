@@ -25,21 +25,26 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <el-table v-loading="loading" :data="listProgramaciones" border stripe>
-
+                    <el-table v-loading="loading" :data="programaciones" border stripe>
                         <el-table-column prop="origen" label="Origen" v-slot="{ row }">
-                            {{ row.origen.nombre}}
+                            <template>
+                                <span :class="{'text-danger': (row.active === 0)}">{{row.origen.nombre}}</span>
+                            </template>
                         </el-table-column>
 
                         <el-table-column prop="destino" label="Destino" v-slot="{ row }">
-                            {{ row.destino.nombre}}
+                            <template>
+                                <span :class="{'text-danger': (row.active === 0)}">{{ row.destino.nombre}}</span>
+                            </template>
                         </el-table-column>
 
                         <el-table-column prop="vehiculo" label="Vehiculo" v-slot="{ row }">
-                            {{ row.vehiculo.placa }}
+                            <template>
+                                <span :class="{'text-danger': (row.active === 0)}">{{ row.vehiculo.placa }}</span>
+                            </template>
                         </el-table-column>
 
-                        <el-table-column prop="hora_salida" label="Hora salida"  />
+                        <el-table-column prop="hora_salida" label="Hora salida" />
                         <el-table-column prop="actions" label="" v-slot="{ row:programacion }">
                             <el-button type="success" @click="onEdit(programacion)">
                                 <i class="fa fa-edit"></i>
@@ -56,7 +61,7 @@
                             </el-button>
                         </el-table-column>
                     </el-table>
-                  
+
                 </div>
             </div>
         </div>
@@ -115,7 +120,11 @@ export default {
         userTerminal:{
             type:Object,
             default:{}
-        }
+        },
+        programaciones:{
+            type:Array,
+            default:() => []
+        },
     },
     components: {
         ModalAddEdit,
@@ -123,12 +132,10 @@ export default {
         GenerarManifiesto
     },
     created(){
-        this.getProgramaciones();
         this.listVehiculos = this.vehiculos;
     },
     data() {
         return {
-            listProgramaciones: [],
             listVehiculos:[],
             programacion: null,
             openModalAddEdit: false,

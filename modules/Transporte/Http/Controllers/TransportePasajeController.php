@@ -174,7 +174,7 @@ class TransportePasajeController extends Controller
         }
 
         return response()->json([
-            'clientes' => $clientes->get()
+            'clientes' => $clientes->take(10)->get()
         ]);
     }
 

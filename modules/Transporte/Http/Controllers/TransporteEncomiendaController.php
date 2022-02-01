@@ -187,8 +187,52 @@ class TransporteEncomiendaController extends Controller
         }
 
         return response()->json([
-            'clientes' => $clientes->get()
+            'clientes' => $clientes->take(10)->get()
         ]);
+    }
+    public function getPasajero(Request $request){
+
+        $cliente = Person::where('number',$request->number)->first();
+
+        if($cliente){
+            return response()->json([
+                'success' => true,
+                'id' => $cliente->id,
+                'number' => $cliente->number,
+                'name' => $cliente->name,
+                'address' => $cliente->address
+            ]);
+        }else{
+            return response()->json([
+                'success' => false,
+            ]);
+        }
+
+
+
+    }
+    public function getEmpresa(Request $request){
+
+        $cliente = Person::where('number',$request->number)->first();
+
+        if($cliente){
+            return response()->json([
+                'success' => true,
+                'id' => $cliente->id,
+                'number' => $cliente->number,
+                'name' => $cliente->name,
+                'address' => $cliente->address,
+                'condition'=> $cliente->condition,
+                'state'=> $cliente->state
+            ]);
+        }else{
+            return response()->json([
+                'success' => false,
+            ]);
+        }
+
+
+
     }
 
     public function getTerminales(Request $request){

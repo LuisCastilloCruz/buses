@@ -131,7 +131,7 @@ class TransporteSalesController extends Controller
         }
     }
 
-    
+
 
     public function getProgramacionesDisponibles(ProgramacionesDisponiblesRequest $request){
 
@@ -144,31 +144,16 @@ class TransporteSalesController extends Controller
 
                $programaciones = TransporteProgramacion::where('terminal_origen_id',$request->origen_id)
                    ->where('active',true)
-                   ->where('terminal_destino_id', $request->destino_id);   
+                   ->where('terminal_destino_id', $request->destino_id);
                 //    ->whereHas('destino',function($destino) use($request){
                 //        $destino->where('destino_id',$request->destino_id);
                 //    });
-
-                $date = Carbon::parse($request->fecha_salida);
-                $today = Carbon::now();
-
-                
-
-                 /* váliddo si es el mismo dia  */
-                 if($date->isSameDay($today)){
-                    
-                    /* Si es el mismo traigo las programaciones que aun no hayan cumplido la hora */
-                    $time = date('H:i:s');
-                    // $time = date('H:i:s',strtotime("-120 minutes")); //doy una hora para que aún esté disponible la programación
-                    $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
-
-                    
-                }
+                     $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s')");
 
            }else{
                $programaciones = TransporteProgramacion::where('terminal_origen_id',$request->origen_id)
-               ->where('terminal_destino_id', $request->destino_id)    
-            //    ->where('active',true)
+               ->where('terminal_destino_id', $request->destino_id)
+                ->where('active',true)
             //        ->whereHas('destino',function($destino) use($request){
             //            $destino->where('destino_id',$request->destino_id);
             //        })
@@ -185,19 +170,19 @@ class TransporteSalesController extends Controller
                 }
            }
 
-           
+
 
 
             $listProgramaciones = $programaciones->get();
 
             $viajes = collect([]);
-            
+
 
 
             foreach($listProgramaciones as $programacion){
 
                 $pasajes = collect([]);
-               
+
                 $programacionPadre = $programacion->programacion;
 
                 $rutas = $programacionPadre->rutas()->get();
@@ -215,7 +200,7 @@ class TransporteSalesController extends Controller
                     'terminal_origen_id' => $programacion->terminal_origen_id,
                     'hora_salida' => $programacion->hora_salida,
                     'fecha_salida' => $request->fecha_salida,
-                    'vehiculo_id' => $programacion->vehiculo_id,  
+                    'vehiculo_id' => $programacion->vehiculo_id,
                     'terminal_destino_id' => $programacion->terminal_destino_id,
                     'programacion_id' => $programacionPadre->id
                 ]);
@@ -252,7 +237,7 @@ class TransporteSalesController extends Controller
                 ->where('programacion_id',$programacionPadre->id)
                 ->get(); // obtengo los intemedios entre el punto de origen y destino si es que existen
 
-                // return  
+                // return
 
                 // return response()->json($merged->map(function($item){
                 //     return sprintf('%s -> %s',$item->origen->nombre,$item->destino->nombre);
@@ -284,7 +269,7 @@ class TransporteSalesController extends Controller
                    $pasajes = [...$pasajes, ...$searchPasajes];
 
                 }
-                
+
                 foreach($listIntermedios as $intermedio){
                     $timeClone = clone $date;
 
@@ -334,7 +319,7 @@ class TransporteSalesController extends Controller
 
                 }
 
-                
+
                 $viaje->load('vehiculo.seats');
                 $viaje->setAttribute('asientos_ocupados',$pasajes);
 
@@ -360,7 +345,7 @@ class TransporteSalesController extends Controller
        }
 
     }
-    
+
     public function realizarVenta(Request $request){
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
@@ -382,7 +367,7 @@ class TransporteSalesController extends Controller
                 'destino_id' => ['required'],
                 'numero_asiento' => ['required'],
                 'hora_salida' => ['required']
-            ]);            
+            ]);
 
         }
 

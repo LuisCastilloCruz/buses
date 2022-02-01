@@ -54,6 +54,7 @@ if ($hostname) {
 				Route::put('encomiendas/{encomienda}/update','TransporteEncomiendaController@update');
 				Route::delete('encomiendas/{encomienda}/delete','TransporteEncomiendaController@destroy');
 				Route::get('encomiendas/get-productos','TransporteEncomiendaController@getProductos');
+                Route::get('encomiendas/get-pasajero/{number}','TransporteEncomiendaController@getPasajero');
 
 				//terminales
 				Route::get('terminales','TransporteTerminalesController@index');
