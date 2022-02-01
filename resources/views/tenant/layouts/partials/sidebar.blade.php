@@ -1307,9 +1307,7 @@
                                 <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'terminales')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/terminales') }}">Terminales</a>
                                 </li>
-                                <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'programaciones')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ url('transportes/programaciones') }}">Programaciones</a>
-                                </li>
+
                                 <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'pasajes' || $secondLevel === 'sales')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/pasajes') }}">Pasajes</a>
                                 </li>
@@ -1319,11 +1317,14 @@
                                 <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'manifiestos')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/manifiestos') }}">Manifiestos</a>
                                 </li>
-                                <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'reportes')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ url('transportes/reportes') }}">Reportes</a>
-                                </li>
 
                                 @if(auth()->user()->type == 'admin')
+                                    <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'programaciones')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link" href="{{ url('transportes/programaciones') }}">Programaciones</a>
+                                    </li>
+                                    <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'reportes')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link" href="{{ url('transportes/reportes') }}">Reportes</a>
+                                    </li>
                                     <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'usuarios-terminales')) ? 'nav-active' : '' }}">
                                         <a class="nav-link" href="{{ url('transportes/usuarios-terminales') }}">Usuarios terminales</a>
                                     </li>
