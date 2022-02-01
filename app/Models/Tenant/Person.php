@@ -141,7 +141,8 @@
             'credit_days',
             'optional_email',
             'status',
-            'parent_id'
+            'parent_id',
+            'edad'
         ];
 
         // protected static function boot()
@@ -526,6 +527,7 @@
                 'optional_email' => $optional_mail,
                 'optional_email_send' => implode(',', $optional_mail_send),
                 'childrens' => [],
+                'edad'=>$this->edad
             ];
             if($childrens == true){
                 $child = $this->children_person->transform(function($row){
