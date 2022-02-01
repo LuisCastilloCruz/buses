@@ -387,7 +387,7 @@ class TransporteProgramacionesController extends Controller
             DB::connection('tenant')->beginTransaction();
 
             $destinosHorarios = $request->input('destinos_horarios');
-            $formProgramacion = $request->input('programacion');
+            $formProgramacion = Arr::except($request->input('programacion'),['destinos_horarios']) ;
             $progamacionesGeneradas = $request->input('programaciones');
             $programacion->update( array_merge($formProgramacion,[
                 'destinos_horarios' => json_encode($destinosHorarios),

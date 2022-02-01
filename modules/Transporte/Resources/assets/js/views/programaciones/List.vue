@@ -121,10 +121,6 @@ export default {
             type:Object,
             default:{}
         },
-        programaciones:{
-            type:Array,
-            default:() => []
-        },
     },
     components: {
         ModalAddEdit,
@@ -133,6 +129,7 @@ export default {
     },
     created(){
         this.listVehiculos = this.vehiculos;
+        this.getProgramaciones();
     },
     data() {
         return {
@@ -142,6 +139,7 @@ export default {
             openModalConfigRutas:false,
             loading: false,
             visible:false,
+            programaciones: []
         };
     },
     mounted() {
@@ -154,7 +152,7 @@ export default {
             try{
                 this.loading = true;
                 const {data} = await this.$http.get(`/transportes/programaciones/programaciones`);
-                this.listProgramaciones = data;
+                this.programaciones = data;
             }catch(error){
                 this.axiosError(error);
             }finally{
