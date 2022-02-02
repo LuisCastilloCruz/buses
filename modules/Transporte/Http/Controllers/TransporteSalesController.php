@@ -140,10 +140,9 @@ class TransporteSalesController extends Controller
     public function getProgramacionesDisponibles(ProgramacionesDisponiblesRequest $request){
 
        try{
-            $user = auth()->user();
-
-           //if($user->type=="admin"){
-           if("admin"=="admin"){
+           $user = auth()->user();
+           
+           if($user->type=="admin"){
 
                $programaciones = TransporteProgramacion::where('terminal_origen_id',$request->origen_id)
                    ->where('active',true)
