@@ -61,7 +61,7 @@ class TransporteManifiestosController extends Controller
 
             $manifiesto = TransporteManifiesto::create([
                 'soap_type_id'=>$soap_type_id,
-                'serie' => 6,
+                'serie' => $request->serie,
                 'tipo' => $request->tipo,
                 'numero' => $numero,
                 'chofer_id' => $request->chofer_id,
