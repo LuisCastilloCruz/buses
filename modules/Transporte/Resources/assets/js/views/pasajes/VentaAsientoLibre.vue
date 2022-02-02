@@ -72,7 +72,7 @@
                                                 Ruc
 <!--                                                <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>-->
                                             </label>
-                                            <input name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left" title="Ingrese el RUC y presione enter" maxlength="8" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
+                                            <input name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left" title="Ingrese el RUC y presione enter" maxlength="11" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
                                             <label class="ml-2 mr-2"  style="display: inline; float: left" id="cliente">Razón Social</label><input name="nombre" class="form-control" v-model="empresa.name" type="text" style="width:30%;float: left"></input>
                                             <label class="ml-2 mr-2" style="display: inline; float: left">Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text" style="width:30%;float: left"></input>
 

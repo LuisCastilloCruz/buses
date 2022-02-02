@@ -69,9 +69,10 @@ class TransporteManifiestosController extends Controller
                 'observaciones' => $request->observaciones,
                 'programacion_id' => $programacion->id,
                 'fecha' => $request->fecha,
-                'hora' => $request->hora
+                'hora' => $request->hora,
+                'user_id'=> auth()->user()->id
             ]);
-            
+
             $manifiesto->load([
                 'chofer',
                 'copiloto',
