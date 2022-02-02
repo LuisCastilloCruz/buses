@@ -39,7 +39,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="" class="control-label">Origen</label>
-                                <el-select v-model="terminalId" filterable remote disabled  popper-class="el-select-customers"
+                                <el-select v-model="terminalId" filterable remote  popper-class="el-select-customers"
                                            placeholder="Buscar origen"
                                            :remote-method="searchTerminales"
                                            :loading="loadingTerminales"
@@ -232,7 +232,15 @@
                         <bus v-if="piso == 2" :change-color="changeColor" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back"  :seats.sync="asientosPisoDos" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
                     </div>
                 </div>
+                <div class="row card-body no-gutters">
+                    <div class="col-md-12 text-center">
+                        <p>Leyenda( Se vendió en el terminal de )</p>
 
+                        <span v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :style="{'background':terminal.color,'padding': '10px','margin': '0 5px'}">
+                            <b class="text-white">{{terminal.nombre}}</b>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -573,8 +581,8 @@ export default {
                         animation:'none'
                     }
 
-                } 
-            } 
+                }
+            }
 
             return {
                 fill:'#fff',
@@ -731,6 +739,11 @@ export default {
 
         dbClick(asiento){
 
+            if(this.terminalId !== this.terminal.id){
+                alert('Para evitar confusiones, solo se puede visualizar los estados, mas nó vender. Cambie a su terminal asignado por el administrador.')
+                return
+            }
+
             if(asiento.type != 'ss') return;
 
             const existePasaje = this.asientosOcupados.find(  item => item.asiento_id == asiento.id );
@@ -831,6 +844,8 @@ export default {
             const { data } = await this.$http.get(`/transportes/pasajes/${this.terminalId}/get-destinos`);
             this.loadingDestinos = false;
             this.destinos = data.destinos;
+
+            this.getProgramaciones()
         },
         onCancel(){
             if(this.asiento){
@@ -860,7 +875,7 @@ export default {
                 if(this.timeSegundo >= 60){
                     this.timeMinuto++;
                     this.timeSegundo = 0;
-                } 
+                }
 
                 if(this.timeMinuto >= 60){
                     this.timeHora++;
@@ -871,7 +886,7 @@ export default {
                     this.timeHora = 0;
                     this.timeMinuto = 0;
                 }
-                
+
             }, 1000);
         }
     }

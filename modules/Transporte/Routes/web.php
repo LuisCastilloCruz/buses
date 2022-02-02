@@ -70,6 +70,7 @@ if ($hostname) {
 				//programaciones
 				Route::get('programaciones','TransporteProgramacionesController@index');
 				Route::get('programaciones/programaciones','TransporteProgramacionesController@getProgramaciones');
+                Route::get('programaciones/programaciones/list','TransporteProgramacionesController@getProgramacionesList');
 				Route::post('programaciones/store','TransporteProgramacionesController@store');
 				Route::put('programaciones/{programacion}/update','TransporteProgramacionesController@update');
 				Route::put('programaciones/{programacion}/configuracion-rutas','TransporteProgramacionesController@configuracionRutas');

@@ -72,7 +72,7 @@
                                                 Ruc
 <!--                                                <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>-->
                                             </label>
-                                            <input name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left" title="Ingrese el RUC y presione enter"> </input>
+                                            <input name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left" title="Ingrese el RUC y presione enter" maxlength="8" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
                                             <label class="ml-2 mr-2"  style="display: inline; float: left" id="cliente">Razón Social</label><input name="nombre" class="form-control" v-model="empresa.name" type="text" style="width:30%;float: left"></input>
                                             <label class="ml-2 mr-2" style="display: inline; float: left">Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text" style="width:30%;float: left"></input>
 
@@ -120,7 +120,7 @@
 <!--                                                </el-option>-->
 <!--                                            </el-select>-->
 
-                                            <input name="dni" ref="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" type="number" style="width:20%;float: left" title="Ingrese el DNI y presione enter"> </input>
+                                            <input name="dni" ref="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" type="number"  style="width:20%;float: left" title="Ingrese el DNI y presione enter" > </input>
                                             <label class="ml-2 mr-2" for="nombre" style="display: inline; float: left">Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" style="width:40%;float: left"></input>
                                             <label class="ml-2 mr-2" for="edad" style="display: inline; float: left">Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" style="width:20%;float: left"></input>
                                         </div>

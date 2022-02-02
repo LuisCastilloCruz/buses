@@ -43,18 +43,22 @@ class TransporteProgramacionesController extends Controller
 
         $choferes = TransporteChofer::all();
 
-        $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
-            ->where('hidden',0)
-            ->get();
+
 
         return view('transporte::programaciones.index',compact(
             'terminales',
             'vehiculos',
             'series',
             'choferes',
-            'user_terminal',
-            'programaciones'
+            'user_terminal'
         ));
+    }
+    public function getProgramacionesList(){
+        $programaciones = TransporteProgramacion::with('rutas','vehiculo','origen','destino','rutas')
+            ->where('hidden',0)
+            ->get();
+
+        return $programaciones;
     }
 
     public function getProgramaciones(){
