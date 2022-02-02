@@ -30,6 +30,12 @@ trait PasajerosRuta{
         ->where('programacion_id',$programacionPadre->id)
         ->first();
 
+        if(is_null($viaje)) return [
+            $pasajes, 
+            $pasajesEnTerminal,
+            $recogidosEnRuta
+        ];
+
 
 
         $rutas->prepend($programacionPadre->origen);
