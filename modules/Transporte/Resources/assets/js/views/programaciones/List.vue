@@ -151,7 +151,7 @@ export default {
 
             try{
                 this.loading = true;
-                const {data} = await this.$http.get(`/transportes/programaciones/programaciones`);
+                const {data} = await this.$http.get(`/transportes/programaciones/programaciones/list`);
                 this.programaciones = data;
             }catch(error){
                 this.axiosError(error);

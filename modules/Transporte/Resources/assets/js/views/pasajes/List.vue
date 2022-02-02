@@ -37,6 +37,7 @@
                                                 <th>#</th>
                                                 <th>Número</th>
                                                 <th>Fecha y hora salida </th>
+                                                <th># Asiento</th>
                                                 <th>Cliente</th>
                                                 <th>T.Gravado</th>
                                                 <th>T.Igv</th>
@@ -59,6 +60,7 @@
                                                         <td class="text-right">{{ pasaje.id }}</td>
                                                         <td>{{ pasaje.document.series }}-{{pasaje.document.number}}</td>
                                                         <td>{{ pasaje.fecha_salida }} {{ pasaje.hora_salida }}</td>
+                                                        <td class="text-center"> <div style="background: limegreen;color:white"><b>{{ pasaje.numero_asiento }}</b></div></td>
                                                         <td>{{ pasaje.pasajero.name }}</td>
                                                         <td>{{ pasaje.document.total_taxed }}</td>
                                                         <td>{{ pasaje.document.total_igv }}</td>
@@ -136,6 +138,7 @@
                                                 <th>#</th>
                                                 <th>Número</th>
                                                 <th>Fecha y hora salida </th>
+                                                <th># Asiento</th>
                                                 <th>Cliente</th>
                                                 <th>T.Gravado</th>
                                                 <th>T.Igv</th>
@@ -149,6 +152,7 @@
                                                 <td class="text-right">{{ index+1 }}</td>
                                                 <td>{{ note.sale_note.series + '-' + note.sale_note.number}}</td>
                                                 <td>{{ note.fecha_salida }} {{ note.hora_salida }}</td>
+                                                <td class="text-center"> <div style="background: limegreen;color:white"><b>{{ note.numero_asiento }}</b></div></td>
                                                 <td>{{ note.pasajero.name }}</td>
                                                 <td>{{ note.sale_note.total_taxed }}</td>
                                                 <td>{{ note.sale_note.total_igv }}</td>
@@ -285,7 +289,7 @@ export default {
         Sales
     },
     created(){
-        this.listPasajes = this.pasajes;
+        //this.listPasajes = this.pasajes;
         this.$eventHub.$on('reloadData',async() => {
             this.cancelarBoleto();
         });
@@ -336,6 +340,8 @@ export default {
                 if(error.response) this.axiosError(error);
 
             }
+
+            console.log(this.listPasajes)
         },
         async getEncomiendasNotes(){
             try{
