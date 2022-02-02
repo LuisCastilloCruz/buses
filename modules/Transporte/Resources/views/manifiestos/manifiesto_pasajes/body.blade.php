@@ -199,7 +199,7 @@
             <tr>
                 <td>{{$index+1}}</td>
                 <td>{{ $pasajero->name }}</td>
-                <td>{{ $pasaje->programacion->destino->nombre }}</td>
+                <td>{{ $pasaje->destino->nombre }}</td>
                 <td>{{ $pasajero->identity_document_type->description }}</td>
                 <td>{{ $pasajero->number  }}</td>
                 <td>{{ $pasaje->numero_asiento }}</td>
@@ -212,7 +212,7 @@
             <tr>
                 <td>{{$index+1}}</td>
                 <td>{{ $pasajero->name }}</td>
-                <td>{{ $pasaje->programacion->destino->nombre }}</td>
+                <td>{{ $pasaje->destino->nombre }}</td>
                 <td>{{ $pasajero->identity_document_type->description }}</td>
                 <td>{{ $pasajero->number  }}</td>
                 <td>{{ $pasaje->numero_asiento }}</td>

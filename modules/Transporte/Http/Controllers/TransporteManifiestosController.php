@@ -19,12 +19,15 @@ use Modules\Transporte\Models\TransporteEncomienda;
 use Modules\Transporte\Models\TransporteManifiesto;
 use Modules\Transporte\Models\TransportePasaje;
 use Modules\Transporte\Models\TransporteProgramacion;
+use Modules\Transporte\Traits\PasajerosRuta;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 
 class TransporteManifiestosController extends Controller
 {
     //
+    use PasajerosRuta;
+
     protected $company;
     protected $configuration;
 
@@ -58,7 +61,7 @@ class TransporteManifiestosController extends Controller
 
             $manifiesto = TransporteManifiesto::create([
                 'soap_type_id'=>$soap_type_id,
-                'serie' => $request->serie,
+                'serie' => 6,
                 'tipo' => $request->tipo,
                 'numero' => $numero,
                 'chofer_id' => $request->chofer_id,
@@ -68,10 +71,12 @@ class TransporteManifiestosController extends Controller
                 'fecha' => $request->fecha,
                 'hora' => $request->hora
             ]);
-
-            $manifiesto->chofer;
-            $manifiesto->copiloto;
-            $manifiesto->serie;
+            
+            $manifiesto->load([
+                'chofer',
+                'copiloto',
+                'serie'
+            ]);
 
 
             return response()->json([
@@ -117,46 +122,9 @@ class TransporteManifiestosController extends Controller
         $programacion = $manifiesto->programacion;
         $vehiculo = $programacion->vehiculo;
 
-        $pasajes = TransportePasaje::with([
-            'pasajero.identity_document_type',
-            'asiento',
-        ])
-        ->where('programacion_id',$programacion->id)
-        ->whereDate('fecha_salida',$manifiesto->fecha)
-        ->where('estado_asiento_id','!=',4)
-        ->get();
-
-        $user = $request->user();
+        [$pasajes, $pasajesEnTerminal, $pasajesRecogidosRuta] = $this->getPasajeros($programacion, $manifiesto->fecha);
 
 
-        $pasajesEnTerminal = TransportePasaje::whereHas('programacion',function($programacion) use($user,$manifiesto){
-            $programacion->where('terminal_origen_id',$user->terminal_id)
-            ->whereTime('hora_salida',$manifiesto->hora);
-        })
-        ->where('estado_asiento_id','!=',4)
-        ->whereDate('fecha_salida',$manifiesto->fecha)->count();
-
-
-        $pasajesRecogidosRuta = 0;
-
-        foreach($programacion->rutas as $ruta){
-            $tempPasajes = TransportePasaje::with([
-                'pasajero',
-                'asiento',
-            ])
-            ->whereHas('programacion',function($program) use($programacion,$ruta){
-                $program->where('vehiculo_id',$programacion->vehiculo_id)
-                ->where('terminal_origen_id',$ruta->terminal_id);
-            })
-            ->whereDate('fecha_salida',$manifiesto->fecha)
-            ->where('estado_asiento_id','!=',4)
-            ->get();
-            $pasajesRecogidosRuta += count($tempPasajes);
-
-            foreach($tempPasajes as $pasaje){
-                $pasajes->add($pasaje);
-            }
-        }
 
         $content = view('transporte::manifiestos.manifiesto_pasajes.body',compact(
             'programacion',

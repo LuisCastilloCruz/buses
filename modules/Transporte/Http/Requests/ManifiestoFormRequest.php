@@ -24,7 +24,7 @@ class ManifiestoFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'serie' => ['required'],
+            // 'serie' => ['required'],
             'fecha' => ['required'],
             'programacion_id' => ['required'],
             'hora' => ['required'],

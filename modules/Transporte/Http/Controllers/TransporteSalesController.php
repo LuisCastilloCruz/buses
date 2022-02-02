@@ -47,7 +47,7 @@ class TransporteSalesController extends Controller
     const MINUTES = 60;
     CONST DAYS = 1440;
 
-    use FinanceTrait, Rutas, Dates;
+    use FinanceTrait, Rutas;
     public function index(Request $request, TransportePasaje $pasaje = null)
     {
 
