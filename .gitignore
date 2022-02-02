@@ -33,5 +33,7 @@ public/templates/pdf/personalizada*
 
 app/Http/Controllers/TestController.php
 
+/socket/client_*
+
 
 

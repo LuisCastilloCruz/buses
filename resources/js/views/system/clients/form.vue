@@ -529,7 +529,30 @@
                             </div>
                         </div>
                     </el-collapse-item>
-                    <!-- Configuracion de correo -->
+                    <!-- Configuracion socket -->
+                    <el-collapse-item name="4" title="Configuración Socket">
+                        <el-form ref="form" :model="form" @submit.prevent="" :rules="rules">
+                            
+                            <el-form-item class="mt-1" label="Activar">
+                                <el-switch
+                                    style="display: block"
+                                    v-model="form.socket"
+                                ></el-switch>
+                            </el-form-item>
+                            <template v-if="form.socket">
+                                <el-form-item class="mt-1" label="Production">
+                                    <el-switch
+                                        style="display: block"
+                                        v-model="form.production"
+                                    ></el-switch>
+                                </el-form-item>
+                                <el-form-item label="Puerto" prop="port">
+                                    <el-input type="number" v-model="form.port"></el-input>
+                                </el-form-item>
+                            </template>
+                            
+                        </el-form>
+                    </el-collapse-item>
 
                 </el-collapse>
 
@@ -593,7 +616,11 @@ export default {
             resource: 'clients',
             error: {},
             errors: {},
-            form: {},
+            form: {
+                socket:false,
+                port:null,
+                production: false,
+            },
             url_base: null,
             plans: [],
             modules: [],
@@ -606,6 +633,11 @@ export default {
             soap_username: null,
             soap_password: null,
             collapse: 1,
+            rules: {
+                port:[
+                    {  required: true, message: 'Ingrese el puerto', trigger: 'blur'}
+                ]
+            }
         }
     },
     updated() {
@@ -626,9 +658,6 @@ export default {
                 this.soap_username = response.data.soap_username
                 this.soap_password = response.data.soap_password
             })
-
-        console.log('papi')
-        console.log(this.modules)
 
         await this.initForm()
 
@@ -719,6 +748,9 @@ export default {
                 smtp_user: 'username',
                 smtp_password: null,
                 smtp_encryption: 'ssl',
+                port:null,
+                socket: false,
+                production:false,
             }
         },
         create() {
@@ -784,6 +816,16 @@ export default {
                             })
                         });
 
+                        if(this.form.configuracion_socket){
+                            const { production, port } = this.form.configuracion_socket;
+                            // this.form.production = production;
+                            // this.form.port = parseInt(port);
+                            this.form = {...this.form, port, production}
+                        }
+
+
+
+
 
                         setTimeout(() => {
                             this.$refs.tree.setCheckedKeys(preSelecteds);
@@ -835,6 +877,14 @@ export default {
                     return this.$message.error('Si carga un certificado, es necesario ingresar el password del certificado')
                 }
             }
+
+            const valid = await this.$refs.form.validate().then( valid => {
+                if(valid) return valid;
+                else return false
+            }).catch( error => false );
+
+            if(!valid) return;
+
 
             this.button_text = (this.form.is_update) ? 'Actualizando cliente...' : 'Creando base de datos...'
             this.loading_submit = true

@@ -62,6 +62,8 @@
                 'smtp_user' => $this->smtp_user,
                 'smtp_password' => null, // dont show smtp password
                 'smtp_encryption' => $this->smtp_encryption,
+                'socket' => (bool) $this->socket,
+                'configuracion_socket' => !is_null($this->configuracion_socket) ? json_decode($this->configuracion_socket) : null,
 
             ];
 

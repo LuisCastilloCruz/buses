@@ -11,7 +11,8 @@
     use App\Models\System\Configuration;
     use App\Models\System\Module;
     use App\Models\System\Plan;
-    use Carbon\Carbon;
+use App\Services\ServerSocketService;
+use Carbon\Carbon;
     use Exception;
     use Hyn\Tenancy\Contracts\Repositories\HostnameRepository;
     use Hyn\Tenancy\Contracts\Repositories\WebsiteRepository;
@@ -284,6 +285,8 @@
             $smtp_port = ($request->has('smtp_port')) ? $request->smtp_port : null;
             $smtp_user = ($request->has('smtp_user')) ? $request->smtp_user : null;
             $smtp_encryption = ($request->has('smtp_encryption')) ? $request->smtp_encryption : null;
+            $activeSocket = $request->input('socket');
+            
             try {
 
                 $temp_path = $request->input('temp_path');
@@ -324,6 +327,7 @@
                     $client->setSmtpPassword($smtp_password);
                 }
                 $client->plan_id = $request->plan_id;
+                $client->socket = $activeSocket;
                 $client->save();
 
                 $plan = Plan::find($request->plan_id);
@@ -340,7 +344,48 @@
                     'smtp_password' => $client->smtp_password,
                     'smtp_encryption' => $client->smtp_encryption,
                 ];
-                if (empty($client->smtp_password)) unset($clientData['smtp_password']);
+
+                $oldConfiguration = json_decode($client->configuracion_socket, true);
+                $cliente = $client;
+
+                if($oldConfiguration){
+
+                    $confSocket = array_merge($oldConfiguration,[
+                        'active' => $activeSocket,
+                        'domain' => $client->hostname->fqdn,
+                        'production' => $request->input('production'),
+                        'port' => $request->input('port')
+                    ]);
+
+                }else {
+                    $confSocket = [
+                        'active' => $activeSocket,
+                        'production' => $request->input('production'),
+                        'client' => uniqid('client_'),
+                        'domain' => $client->hostname->fqdn,
+                        'port' => $request->input('port')
+                    ];
+
+                }
+                
+
+                
+                
+
+                extract($confSocket);
+
+                $cliente->configuracion_socket = json_encode($confSocket);
+                $cliente->save();
+
+                $clientData = array_merge($clientData,[
+                    'configuracion_socket' => json_encode($confSocket)
+                ]);
+
+                $service = new ServerSocketService($client, $production, $port);
+                $service->setConfig($port, $production);
+                $service->restart();
+
+                if (empty($cliente->smtp_password)) unset($clientData['smtp_password']);
                 DB::connection('tenant')
                     ->table('configurations')
                     ->where('id', 1)
@@ -494,61 +539,11 @@
             $subDom = strtolower($request->input('subdomain'));
             $uuid = config('tenant.prefix_database') . '_' . $subDom;
             $fqdn = $subDom . '.' . config('tenant.app_url_base');
-
-            $website = new Website();
-            $hostname = new Hostname();
-            $this->validateWebsite($uuid, $website);
-
-            DB::connection('system')->beginTransaction();
-            try {
-                $website->uuid = $uuid;
-                app(WebsiteRepository::class)->create($website);
-                $hostname->fqdn = $fqdn;
-                app(HostnameRepository::class)->attach($hostname, $website);
-
-                $tenancy = app(Environment::class);
-                $tenancy->tenant($website);
-
-                $token = str_random(50);
-
-                $client = new Client();
-                $client->hostname_id = $hostname->id;
-                $client->token = $token;
-                $client->email = strtolower($request->input('email'));
-                $client->name = $request->input('name');
-                $client->number = $request->input('number');
-                $client->plan_id = $request->input('plan_id');
-                $client->locked_emission = $request->input('locked_emission');
-                $client->save();
-
-                DB::connection('system')->commit();
-            } catch (Exception $e) {
-                DB::connection('system')->rollBack();
-                app(HostnameRepository::class)->delete($hostname, true);
-                app(WebsiteRepository::class)->delete($website, true);
-
-                return [
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ];
-            }
-
-            DB::connection('tenant')->table('companies')->insert([
-                'identity_document_type_id' => '6',
-                'number' => $request->input('number'),
-                'name' => $request->input('name'),
-                'trade_name' => $request->input('name'),
-                'soap_type_id' => $request->soap_type_id,
-                'soap_send_id' => $request->soap_send_id,
-                'soap_username' => $request->soap_username,
-                'soap_password' => $request->soap_password,
-                'soap_url' => $request->soap_url,
-                'certificate' => $name_certificate,
-            ]);
+            $activeSocket = $request->input('socket');
 
             $plan = Plan::findOrFail($request->input('plan_id'));
 
-            DB::connection('tenant')->table('configurations')->insert([
+            $attributes = [
                 'send_auto' => true,
                 'locked_emission' => $request->input('locked_emission'),
                 'locked_tenant' => false,
@@ -571,7 +566,94 @@
                     'instagram' => null,
                     'linkedin' => null,
                 ])
+            ];
+
+            $website = new Website();
+            $hostname = new Hostname();
+            $this->validateWebsite($uuid, $website);
+
+
+
+            DB::connection('system')->beginTransaction();
+            try {
+                $website->uuid = $uuid;
+                app(WebsiteRepository::class)->create($website);
+                $hostname->fqdn = $fqdn;
+                app(HostnameRepository::class)->attach($hostname, $website);
+
+                $tenancy = app(Environment::class);
+                $tenancy->tenant($website);
+
+                $token = str_random(50);
+
+                $client = new Client();
+                $client->hostname_id = $hostname->id;
+                $client->token = $token;
+                $client->email = strtolower($request->input('email'));
+                $client->name = $request->input('name');
+                $client->number = $request->input('number');
+                $client->plan_id = $request->input('plan_id');
+                $client->locked_emission = $request->input('locked_emission');
+                $client->socket = $activeSocket;
+                $client->save();
+
+                
+
+                if( $activeSocket ){
+                    $cliente = $client;
+                    
+                    $confSocket = [
+                        'active' => $activeSocket,
+                        'production' => $request->input('production'),
+                        'client' => uniqid('client_'),
+                        'domain' => $fqdn,
+                        'port' => $request->input('port')
+                    ];
+
+                    extract($confSocket);
+
+                    $cliente->configuracion_socket = json_encode($confSocket);
+                    $cliente->save();
+
+                    $attributes = array_merge($attributes,[
+                        'configuracion_socket' => json_encode($confSocket)
+                    ]);
+
+                    $service = new ServerSocketService($client, $production, $port);
+                    $service->run();
+
+                   
+
+                }
+
+                DB::connection('system')->commit();
+            } catch (Exception $e) {
+                DB::connection('system')->rollBack();
+                app(HostnameRepository::class)->delete($hostname, true);
+                app(WebsiteRepository::class)->delete($website, true);
+
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'line' => $e->getLine()
+                ];
+            }
+
+            DB::connection('tenant')->table('companies')->insert([
+                'identity_document_type_id' => '6',
+                'number' => $request->input('number'),
+                'name' => $request->input('name'),
+                'trade_name' => $request->input('name'),
+                'soap_type_id' => $request->soap_type_id,
+                'soap_send_id' => $request->soap_send_id,
+                'soap_username' => $request->soap_username,
+                'soap_password' => $request->soap_password,
+                'soap_url' => $request->soap_url,
+                'certificate' => $name_certificate,
             ]);
+
+        
+            DB::connection('tenant')->table('configurations')->insert($attributes);
 
 
             $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([

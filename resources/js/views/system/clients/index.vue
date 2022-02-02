@@ -285,34 +285,34 @@
                   </el-tooltip>
 
                 </td>
-                  <td>
-                      <template v-if="row.start_billing_cycle">
-                          <span></span>
-                          <span>{{row.start_billing_cycle}}</span>
-                      </template>
-                      <template v-else>
-                          <el-date-picker
-                              @change="setStartBillingCycle($event, row.id)"
-                              v-model="row.select_date_billing"
-                              value-format="yyyy-MM-dd"
-                              type="date"
-                              placeholder="..."
-                          ></el-date-picker>
-                      </template>
-                  </td>
-                  <td class="text-center">
-                      <strong>
-                          {{ row.count_doc_month ? row.count_doc_month : 0 }} /
-                          <template v-if="row.max_documents == 0">
-                              <i class="fas fa-infinity"></i>
-                          </template>
-                          <template v-else>
-                              <strong>{{ row.max_documents }}</strong>
-                          </template>
-                      </strong>
-                  </td>
+                <td>
+                    <template v-if="row.start_billing_cycle">
+                        <span></span>
+                        <span>{{row.start_billing_cycle}}</span>
+                    </template>
+                    <template v-else>
+                        <el-date-picker
+                            @change="setStartBillingCycle($event, row.id)"
+                            v-model="row.select_date_billing"
+                            value-format="yyyy-MM-dd"
+                            type="date"
+                            placeholder="..."
+                        ></el-date-picker>
+                    </template>
+                </td>
+                <td class="text-center">
+                    <strong>
+                        {{ row.count_doc_month ? row.count_doc_month : 0 }} /
+                        <template v-if="row.max_documents == 0">
+                            <i class="fas fa-infinity"></i>
+                        </template>
+                        <template v-else>
+                            <strong>{{ row.max_documents }}</strong>
+                        </template>
+                    </strong>
+                </td>
 
-                  <td class="text-center">
+                <td class="text-center">
                   <template v-if="row.max_users !== 0 && row.count_user > row.max_users">
                     <el-popover
                       placement="top-start"
@@ -365,6 +365,13 @@
                     @change="changeLockedUser(row)"
                   ></el-switch>
                 </td>
+                <td>
+                  <el-switch
+                    style="display: block"
+                    v-model="row.socket"
+                    disabled
+                  ></el-switch>
+                </td>
 
                 <td class="text-right">
                   <template v-if="!row.locked">
@@ -412,6 +419,7 @@
         </div>
       </div>
     </div>
+  
 
     <system-clients-form :showDialog.sync="showDialog" :recordId="recordId"></system-clients-form>
 
@@ -439,6 +447,7 @@ export default {
   components: { CompaniesForm, ChartLine, ClientPayments, AccountStatus },
   data() {
     return {
+      showConfigSocket:false,
       selectBillingDate: "",
       showDialogEdit: false,
       showDialog: false,
@@ -447,6 +456,7 @@ export default {
       resource: "clients",
       recordId: null,
       records: [],
+      record:null,
       text_limit_doc: null,
       text_limit_users: null,
       loaded: false,
@@ -600,6 +610,10 @@ export default {
     clickEdit(recordId) {
       this.recordId = recordId;
       this.showDialog = true;
+    },
+    configuracionSocket(record){
+      this.record = record;
+      this.showConfigSocket = true;
     }
   }
 };

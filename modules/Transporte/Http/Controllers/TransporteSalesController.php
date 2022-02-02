@@ -53,6 +53,7 @@ class TransporteSalesController extends Controller
 
         $user = $request->user();
         $terminal = $request->user()->terminal;
+        $config = Configuration::first();
 
         $isCashOpen =  !is_null(Cash::where([['user_id',$user->id],['state',true]])->first());
         //dd($isCashOpen);
@@ -72,6 +73,8 @@ class TransporteSalesController extends Controller
                 }
             ]);
         }
+
+        $configuracion_socket = json_decode($config->configuracion_socket, true);
 
         $estadosAsientos = TransporteEstadoAsiento::where('id','!=',1)
         ->get();
@@ -97,7 +100,8 @@ class TransporteSalesController extends Controller
             'payment_destinations',
             'configuration',
             'isCashOpen',
-            'user'
+            'user',
+            'configuracion_socket'
         ));
     }
 
@@ -148,7 +152,7 @@ class TransporteSalesController extends Controller
                 //    ->whereHas('destino',function($destino) use($request){
                 //        $destino->where('destino_id',$request->destino_id);
                 //    });
-                     $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s')");
+                    //  $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
 
            }else{
                $programaciones = TransporteProgramacion::where('terminal_origen_id',$request->origen_id)

@@ -79,6 +79,7 @@ class Client extends Model
         'smtp_user',
         'smtp_password',
         'smtp_encryption',
+        'configuracion_socket'
     ];
 
     /**

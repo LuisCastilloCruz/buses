@@ -794,3 +794,5 @@ if ($hostname) {
         });
     });
 }
+
+Route::get('/prueba-ficheros','TestController@test');

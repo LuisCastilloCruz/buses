@@ -349,9 +349,9 @@ import moment from 'moment';
 export default {
     mixins:[SocketClient],
     props:{
-        socketHost:{
-            type:String,
-            default: ''
+        configuracionSocket:{
+            type: Object,
+            default: () => ({})
         },
         isCashOpen:{
             type:Boolean,
@@ -445,7 +445,7 @@ export default {
         await this.onCreate();
         this.load = false;
 
-        //this.initSocket();
+        this.initSocket();
 
     },
     data(){
@@ -583,11 +583,20 @@ export default {
         },
 
         initSocket(){
+
+            if(!this.configuracionSocket) return
+
+            if(!this.configuracionSocket.active) return;
+
             try{
+
+                const protocol = window.location.protocol;
+
+                const { domain, port } = this.configuracionSocket;
 
                 const { Manager } = this.io;
 
-                const manager = new Manager("https://transporte.pse.aqpfact.pe:3000");
+                const manager = new Manager(`${protocol}//${domain}:${port}`);
 
                 this.socketClient = manager.socket("/");
 
