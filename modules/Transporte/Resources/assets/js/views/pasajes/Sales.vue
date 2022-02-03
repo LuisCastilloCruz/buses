@@ -604,7 +604,9 @@ export default {
 
                 const { Manager } = this.io;
 
-                const manager = new Manager(`${protocol}//${domain}:${port}`);
+                const url = `${protocol}//${domain}:${port}`;
+                
+                const manager = new Manager(`${url}`);
 
                 this.socketClient = manager.socket("/");
 
