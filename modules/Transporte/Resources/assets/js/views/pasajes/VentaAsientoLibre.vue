@@ -660,6 +660,10 @@ export default {
                     });
             }
 
+            else{
+                this.saveDocument()
+            }
+
         },
 
         async saveDocument(){
