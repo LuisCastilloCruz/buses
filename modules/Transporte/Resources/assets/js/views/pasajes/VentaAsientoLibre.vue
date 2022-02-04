@@ -72,7 +72,7 @@
                                                 Ruc
 <!--                                                <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>-->
                                             </label>
-                                            <input name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left" title="Ingrese el RUC y presione enter" maxlength="11" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
+                                            <input placeholder="Ingrese el Ruc y presione enter" name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left"  maxlength="11" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
                                             <label class="ml-2 mr-2"  style="display: inline; float: left" id="cliente">Razón Social</label><input name="nombre" class="form-control" v-model="empresa.name" type="text" style="width:30%;float: left"></input>
                                             <label class="ml-2 mr-2" style="display: inline; float: left">Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text" style="width:30%;float: left"></input>
 
@@ -95,7 +95,7 @@
                                                 Cliente
 
                                             </label>
-                                            <el-input ref="nombrePasajero" v-model="nombrePasajero" type="text" placeholder="Nombre del cliente" ></el-input>
+                                            <el-input ref="nombrePasajero" id="nombrePasajero" v-model="nombrePasajero" type="text" placeholder="Nombre del cliente" ></el-input>
 
                                         </div>
                                     </div>
@@ -120,7 +120,7 @@
 <!--                                                </el-option>-->
 <!--                                            </el-select>-->
 
-                                            <input name="dni" ref="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" type="number"  style="width:20%;float: left" title="Ingrese el DNI y presione enter" > </input>
+                                            <input placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" type="number"  style="width:20%;float: left"  maxlength="8" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
                                             <label class="ml-2 mr-2" for="nombre" style="display: inline; float: left">Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" style="width:40%;float: left"></input>
                                             <label class="ml-2 mr-2" for="edad" style="display: inline; float: left">Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" style="width:20%;float: left"></input>
                                         </div>
@@ -241,7 +241,7 @@
             <div class="row mt-4">
             <div class="col-12 d-flex justify-content-center">
                     <el-button v-if="transportePasaje && destino" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
-                    <el-button v-else :loading="loading" type="primary" @click="saveDocument">Guardar</el-button>
+                    <el-button v-else :loading="loading" type="primary" @click="guardarComprobante">Guardar</el-button>
                 </div>
             </div>
         </el-dialog>
@@ -604,9 +604,9 @@ export default {
 
 
 
-            let element = this.$refs.pasajero;
-
-            this.$nextTick(() => element && element.focus());
+            // let element = this.$refs.pasajero;
+            //
+            // this.$nextTick(() => element && element.focus());
             this.document.document_type_id = '03';
             this.changeDocumentType();
             //await this.searchCliente();
@@ -615,100 +615,136 @@ export default {
             //this.filterCustomers();
         },
 
-        async saveDocument(){
-
-           let validator = this.validate();
-
-            if(validator.fails){
-               return this.$message.info(validator.first);
-            }
-
-
-
-
-            let precio = parseFloat(this.precio);
-            if(!precio) {
-                this.$message.info('Por favor indique el precio de el asiento');
-                return;
-            }
-
+        async guardarComprobante(){
             this.loading = true;
 
-            if(this.isReserva) return this.guardarPasaje()
+            if(!this.pasajeroId) {
+                this.$http
+                    .post("/persons", this.persona)
+                    .then((response) => {
 
-            this.document.items.length=0;
+                        if(!this.pasajeroId){
+                            this.pasajeroId   = response.data.id
 
-            this.producto.input_unit_price_value=precio;
-            this.producto.item.description = 'Pasaje -'+this.nameItem;
-            this.producto.item.name = 'Pasaje -'+this.nameItem;
-            this.producto.item.sale_unit_price = precio;
-            this.producto.item.unit_price=precio;
-            this.producto.total=precio;
-            this.producto.total_base_igv=precio;
-            this.producto.total_value=precio;
-            this.producto.unit_price=precio;
-            this.producto.unit_value=precio;
-
-
-
-            const id = await this.createItem(this.producto.item);
-            if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
-            this.producto.item_id = this.producto.item.id = id;
-
-            this.document.items.push(this.producto);
-            this.payment.payment= precio;
-            this.document.payments.push(this.payment);
-
-            this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
-            this.onCalculateTotals();
-
-            let validate_payment_destination = this.validatePaymentDestination();
-            if (validate_payment_destination.error_by_item > 0) {
-                return this.$message.error("El destino del pago es obligatorio");
-            }
-            if (this.document.document_type_id === "nv") {
-                this.document.prefix = "NV";
-                this.resource_documents = "sale-notes";
-            } else {
-                this.document.prefix = null;
-                this.resource_documents = "documents";
-            }
-
-
-            await this.$http
-                .post(`/${this.resource_documents}`, this.document)
-                .then(async (response) => {
-                    if (response.data.success) {
-                        this.documentId = response.data.data.id;
-
-                        if (this.document.document_type_id === "nv"){
-                            this.form_cash_document.sale_note_id = response.data.data.id;
-                            this.sale_note_id = response.data.data.id;
+                            if(this.document.document_type_id=='03'){
+                                this.clienteId   = response.data.id
+                                this.saveDocument()
+                            }
                         }
-                        else{
-                            this.form_cash_document.document_id = response.data.data.id;
+                    })
+                    .finally(() => {
+                        //this.loading = false;
+                        this.errors = {};
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+
+            }
+            if(!this.clienteId && this.document.document_type_id == '01') {
+                this.$http
+                    .post("/persons", this.empresa)
+                    .then((response) => {
+
+                        if(!this.clienteId){
+                            this.clienteId   = response.data.id
                         }
+                        this.saveDocument()
+                    })
+                    .finally(() => {
+                        //this.loading = false;
+                        this.errors = {};
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
 
-                        await this.saveCashDocument();
-                        await this.guardarPasaje();
-                    } else {
-                        this.$message.error(response.data.message);
-                    }
-                })
-                .catch((error) => {
-                    if (error.response) {
-                        this.$message.error(error.response.data.message);
-                    }
+        },
 
-                }).then(() => {
-                    this.loading_submit = false;
-                });
+        async saveDocument(){
+
+               let validator = this.validate();
+
+               if(validator.fails){
+                   return this.$message.info(validator.first);
+               }
+
+               let precio = parseFloat(this.precio);
+               if(!precio) {
+                   this.$message.info('Por favor indique el precio de el asiento');
+                   return;
+               }
+
+               if(this.isReserva) return this.guardarPasaje()
+
+               this.document.items.length=0;
+
+               this.producto.input_unit_price_value=precio;
+               this.producto.item.description = 'Pasaje -'+this.nameItem;
+               this.producto.item.name = 'Pasaje -'+this.nameItem;
+               this.producto.item.sale_unit_price = precio;
+               this.producto.item.unit_price=precio;
+               this.producto.total=precio;
+               this.producto.total_base_igv=precio;
+               this.producto.total_value=precio;
+               this.producto.unit_price=precio;
+               this.producto.unit_value=precio;
+
+               const id = await this.createItem(this.producto.item);
+               if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
+               this.producto.item_id = this.producto.item.id = id;
+
+               this.document.items.push(this.producto);
+               this.payment.payment= precio;
+               this.document.payments.push(this.payment);
+
+               this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
+               this.onCalculateTotals();
+
+               let validate_payment_destination = this.validatePaymentDestination();
+               if (validate_payment_destination.error_by_item > 0) {
+                   return this.$message.error("El destino del pago es obligatorio");
+               }
+               if (this.document.document_type_id === "nv") {
+                   this.document.prefix = "NV";
+                   this.resource_documents = "sale-notes";
+               } else {
+                   this.document.prefix = null;
+                   this.resource_documents = "documents";
+               }
+
+               await this.$http
+                   .post(`/${this.resource_documents}`, this.document)
+                   .then(async (response) => {
+                       if (response.data.success) {
+                           this.documentId = response.data.data.id;
+
+                           if (this.document.document_type_id === "nv"){
+                               this.form_cash_document.sale_note_id = response.data.data.id;
+                               this.sale_note_id = response.data.data.id;
+                           }
+                           else{
+                               this.form_cash_document.document_id = response.data.data.id;
+                           }
+
+                           await this.saveCashDocument();
+                           await this.guardarPasaje();
+                       } else {
+                           this.$message.error(response.data.message);
+                       }
+                   })
+                   .catch((error) => {
+                       if (error.response) {
+                           this.$message.error(error.response.data.message);
+                       }
+
+                   }).then(() => {
+                       this.loading_submit = false;
+                   });
 
         },
         async guardarPasaje(){
-
-            this.actualizar_pasajero()
-
             let doc = null;
             let note = null;
             let client = null;
@@ -1188,16 +1224,9 @@ export default {
 
                 if(!this.nombrePasajero || this.nombrePasajero == ''){
                     valid = false;
-                    this.$refs.nombrePasajero.focus();
+                    //this.$refs.nombrePasajero.focus();
                     errors.push('Debe poner el nombre del pasajero');
                 }
-            }
-
-
-            if(this.document.document_type_id=='01' && !this.pasajeroId){
-                valid = false;
-                errors.push('Debe seleccionar un pasajero');
-
             }
 
 
@@ -1220,7 +1249,7 @@ export default {
                     errors.push('Debe ingresar hora de salida');
 
                     let element = document.getElementById('hora-salida');
-                    element.focus();
+                    //element.focus();
                 }
 
                 if(!this.precio){
@@ -1228,7 +1257,7 @@ export default {
                     errors.push('Debe poner un precio');
 
                     let element = document.getElementById('precio-boleto');
-                    element.focus();
+                    //element.focus();
                 }
 
                 if(!this.clienteId && !this.isReserva){
@@ -1236,7 +1265,7 @@ export default {
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
                     let element = document.getElementById('cliente');
-                    element.focus();
+                    //element.focus();
                 }
 
                 if(!this.numeroAsiento){
@@ -1244,7 +1273,7 @@ export default {
                     errors.push('Debe ingresar un asiento');
 
                     let element = document.getElementById('numero-asiento');
-                    element.focus();
+                    //element.focus();
                 }
             }
 
@@ -1260,22 +1289,22 @@ export default {
                     errors.push('Debe poner un precio');
 
                     let element = document.getElementById('precio-boleto');
-                    element.focus();
+                    //element.focus();
                 }
                 if(!this.pasajeroId && this.document.document_type_id=='03' && !this.isReserva){
 
                     valid = false;
                     errors.push('Debe seleccionar un pasajero');
                     let element = document.getElementById('pasajero');
-                    element.focus();
+                    //element.focus();
                 }
-                if(!this.clienteId && this.document.document_type_id=='01' && !this.isReserva){
-
-                    valid = false;
-                    errors.push('Debe seleccionar un Cliente');
-                    let element = document.getElementById('cliente');
-                    element.focus();
-                }
+                // if(!this.clienteId && this.document.document_type_id=='01' && !this.isReserva){
+                //
+                //     valid = false;
+                //     errors.push('Debe seleccionar un Cliente');
+                //     let element = document.getElementById('cliente');
+                //     //element.focus();
+                // }
                 if(!this.asiento) {
                     valid = false;
                     errors.push('Debe seleccionar un asiento');
@@ -1348,8 +1377,6 @@ export default {
                     this.$http
                         .post("/persons", this.empresa)
                         .then((response) => {
-                            console.log('mama')
-                            console.log(response.data.id)
                             this.clienteId = response.data.id
                             this.empresa.id    = response.data.id
 
@@ -1365,14 +1392,38 @@ export default {
             this.$http
                 .post("/persons", this.persona)
                 .then((response) => {
-                    // nada
+
+                    if(!this.pasajeroId){
+                        this.pasajeroId   = response.data.id
+
+                        if(this.document.document_type_id=='03'){
+                            this.clienteId   = response.data.id
+                        }
+                    }
                 })
                 .finally(() => {
                     this.loading = false;
                     this.errors = {};
                 })
                 .catch((error) => {
-                    this.axiosError(error);
+                    console.log(error);
+                });
+        },
+        async actualizar_empresa() {
+            this.$http
+                .post("/persons", this.empresa)
+                .then((response) => {
+
+                    if(!this.clienteId){
+                        this.clienteId   = response.data.id
+                    }
+                })
+                .finally(() => {
+                    this.loading = false;
+                    this.errors = {};
+                })
+                .catch((error) => {
+                    console.log(error);
                 });
         },
 
