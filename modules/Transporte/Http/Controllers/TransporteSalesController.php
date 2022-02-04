@@ -207,6 +207,10 @@ class TransporteSalesController extends Controller
                     'programacion_id' => $programacionPadre->id
                 ]);
 
+                $viaje->update([
+                    'vehiculo_id' => $programacion->vehiculo_id,
+                ]);
+
                 $viajes->push($viaje);
 
                 $rutas->prepend($programacionPadre->origen);
