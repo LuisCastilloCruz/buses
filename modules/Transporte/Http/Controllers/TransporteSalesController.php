@@ -270,6 +270,7 @@ class TransporteSalesController extends Controller
 
                    $searchPasajes = TransportePasaje::with( 'origen', 'destino', 'pasajero','document:id,document_type_id')
                    ->whereIn('viaje_id',$travels->pluck('id'))
+                   ->where('estado_asiento_id','!=',4) //diferente de cancelado
                    ->get();
 
                    $pasajes = [...$pasajes, ...$searchPasajes];
@@ -300,6 +301,7 @@ class TransporteSalesController extends Controller
 
                    $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id')
                    ->whereIn('viaje_id',$travels->pluck('id'))
+                   ->where('estado_asiento_id','!=',4) //diferente de cancelado
                    ->get();
 
                    $pasajes = [...$pasajes, ...$searchPasajes];
@@ -319,6 +321,7 @@ class TransporteSalesController extends Controller
 
                    $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id')
                    ->whereIn('viaje_id',$travels->pluck('id'))
+                   ->where('estado_asiento_id','!=',4) //diferente de cancelado
                    ->get();
 
                    $pasajes = [...$pasajes, ...$searchPasajes];

@@ -432,10 +432,6 @@ export default {
         //     let exist = this.destinos.find( destino => destino.destino.id == newVal );
         //     if(exist) this.destino = exist.destino;
         // }
-
-        destino(){
-            console.log(this.destino);
-        }
     },
     mounted() {
         this.setTime();
