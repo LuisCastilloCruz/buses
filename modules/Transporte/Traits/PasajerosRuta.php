@@ -89,7 +89,7 @@ trait PasajerosRuta{
             ->get();
 
 
-            $searchPasajes = TransportePasaje::with( 'origen', 'destino', 'pasajero','document:id,document_type_id')
+            $searchPasajes = TransportePasaje::with( 'origen', 'destino', 'pasajero','document:id,document_type_id,series,number')
             ->whereIn('viaje_id',$travels->pluck('id'))
             ->get();
 
@@ -121,7 +121,7 @@ trait PasajerosRuta{
             ->get();
 
 
-            $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id')
+            $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id,series,number')
             ->whereIn('viaje_id',$travels->pluck('id'))
             ->get();
 
@@ -142,7 +142,7 @@ trait PasajerosRuta{
             ->get();
 
 
-            $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id')
+            $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id,series,number')
             ->whereIn('viaje_id',$travels->pluck('id'))
             ->get();
 
