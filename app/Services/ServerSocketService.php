@@ -1,14 +1,14 @@
-<?php 
+<?php
 namespace App\Services;
 
 use Exception;
 use Symfony\Component\Process\Process;
 class ServerSocketService{
-    
+
     private $production = null;
     private $port = null;
     private $cliente = null;
-    
+
     function __construct($cliente = null, $production = false,$port = 3000){
         $this->production = $production;
         $this->port = $port;
@@ -22,8 +22,8 @@ class ServerSocketService{
         return "module.exports = config = {
             production:{$prod},
             port: {$port},
-            key: './certificados_ssl/certificado.key',
-            cert: './certificados_ssl/certificado.crt'
+            key: '/etc/letsencrypt/live/pse.aqpfact.pe/pse.aqpfact.pe.key',
+            cert: '/etc/letsencrypt/live/pse.aqpfact.pe/pse.aqpfact.pe.crt'
         }";
     }
 
@@ -31,7 +31,7 @@ class ServerSocketService{
     private function getFolder() : string{
 
         $folder = base_path('socket'.DIRECTORY_SEPARATOR .$this->cliente);
-        
+
         if(!is_dir($folder)) mkdir($folder);
 
         return $folder;
@@ -60,7 +60,7 @@ class ServerSocketService{
     }
 
     public function run(){
-        
+
         $this->setConfig($this->port, $this->production);
 
         $this->create();
@@ -92,7 +92,7 @@ class ServerSocketService{
         if(!$this->existFile()){
             $this->create();
         }
-        
+
         $this->start();
     }
 
