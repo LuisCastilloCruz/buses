@@ -30,7 +30,7 @@ class ServerSocketService{
 
     private function getFolder() : string{
 
-        $folder = base_path('socket\\'.$this->cliente);
+        $folder = base_path('socket'.DIRECTORY_SEPARATOR .$this->cliente);
         
         if(!is_dir($folder)) mkdir($folder);
 
@@ -39,11 +39,11 @@ class ServerSocketService{
     }
 
     private function getConfigFile(){
-        return $this->getFolder().'\\config.js';
+        return $this->getFolder().DIRECTORY_SEPARATOR.'config.js';
     }
 
     private function getIndexFile(){
-        return $this->getFolder().'\\index.js';
+        return $this->getFolder().DIRECTORY_SEPARATOR.'index.js';
     }
 
     private function existFile(){
@@ -51,7 +51,7 @@ class ServerSocketService{
     }
 
     private function create(){
-        $indexFile = base_path('socket\\index.js.base');
+        $indexFile = base_path('socket'.DIRECTORY_SEPARATOR.'index.js.base');
         $toIndex = $this->getIndexFile();
         if(copy($indexFile, $toIndex)){
             return true;
