@@ -78,7 +78,7 @@ class ServerSocketService{
 
     public function start(){
         $toIndex = $this->getIndexFile();
-        $process = new Process("pm2 start {$toIndex} --name={$this->cliente}");
+        $process = new Process("forever start -a --uid {$this->cliente} {$toIndex}");
         $process->run();
 
         // executes after the command finishes
@@ -89,7 +89,7 @@ class ServerSocketService{
     }
 
     public function stop(){
-        $process = new Process("pm2 stop {$this->cliente}");
+        $process = new Process("forever stop {$this->cliente}");
         $process->run();
     }
 
@@ -104,7 +104,7 @@ class ServerSocketService{
     }
 
     public function destroy(){
-        $stopProcess = new Process("pm2 delete {$this->cliente}");
+        $stopProcess = new Process("forever stop {$this->cliente}");
         $stopProcess->run();
     }
 
