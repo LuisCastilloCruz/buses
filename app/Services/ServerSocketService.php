@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use Exception;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 class ServerSocketService{
     
@@ -79,6 +80,12 @@ class ServerSocketService{
         $toIndex = $this->getIndexFile();
         $process = new Process("pm2 start {$toIndex} --name={$this->cliente}");
         $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
     }
 
     public function stop(){
