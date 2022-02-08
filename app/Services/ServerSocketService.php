@@ -22,8 +22,8 @@ class ServerSocketService{
         return "module.exports = config = {
             production:{$prod},
             port: {$port},
-            key: '/etc/letsencrypt/live/pse.aqpfact.pe/pse.aqpfact.pe.key',
-            cert: '/etc/letsencrypt/live/pse.aqpfact.pe/pse.aqpfact.pe.crt'
+            key: '/etc/letsencrypt/live/pse.aqpfact.pe/fullchain.pem',
+            cert: '/etc/letsencrypt/live/pse.aqpfact.pe/privkey.pem'
         }";
     }
 
