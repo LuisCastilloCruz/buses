@@ -78,7 +78,7 @@ class ServerSocketService{
 
     public function start(){
         $toIndex = $this->getIndexFile();
-        $process = new Process("forever start --uid {$this->cliente} {$toIndex}");
+        $process = new Process("sudo forever start --uid {$this->cliente} {$toIndex}");
         $process->run();
 
         // executes after the command finishes
@@ -89,7 +89,7 @@ class ServerSocketService{
     }
 
     public function stop(){
-        $process = new Process("forever stop {$this->cliente}");
+        $process = new Process("sudo forever stop {$this->cliente}");
         $process->run();
     }
 
@@ -104,7 +104,7 @@ class ServerSocketService{
     }
 
     public function destroy(){
-        $stopProcess = new Process("forever stop {$this->cliente}");
+        $stopProcess = new Process("sudo forever stop {$this->cliente}");
         $stopProcess->run();
     }
 
