@@ -195,7 +195,7 @@ class TransporteReportes extends Controller
 
             $asientosOcupados = $copyQuery->count();
 
-            $porcentaje = ((int)($asientosOcupados * 100 / $totalAsientos));
+            $porcentaje = ((int)($asientosOcupados * 100 / ($totalAsientos >0 ? $totalAsientos :1 )));
 
             $transporte->setAttribute('asientos_ocupados',$asientosOcupados);
             $transporte->setAttribute('asientos_disponibles', $totalAsientos - $asientosOcupados);
