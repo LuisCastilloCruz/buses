@@ -78,7 +78,8 @@ class ServerSocketService{
 
     public function start(){
         $toIndex = $this->getIndexFile();
-        $process = new Process("sudo /root/.nvm/versions/node/v14.0.0/bin/forever start --uid {$this->cliente} {$toIndex}");
+
+        $process = new Process("/root/.nvm/versions/node/v14.0.0/bin/pm2 start {$toIndex} --name={$this->cliente}");
         $process->run();
 
         // executes after the command finishes
@@ -89,7 +90,7 @@ class ServerSocketService{
     }
 
     public function stop(){
-        $process = new Process("sudo /root/.nvm/versions/node/v14.0.0/bin/forever stop {$this->cliente}");
+        $process = new Process("/root/.nvm/versions/node/v14.0.0/bin/pm2 stop {$this->cliente}");
         $process->run();
     }
 
@@ -104,7 +105,8 @@ class ServerSocketService{
     }
 
     public function destroy(){
-        $stopProcess = new Process("sudo /root/.nvm/versions/node/v14.0.0/bin/forever stop {$this->cliente}");
+
+        $stopProcess = new Process("/root/.nvm/versions/node/v14.0.0/bin/pm2 delete {$this->cliente}");
         $stopProcess->run();
     }
 
