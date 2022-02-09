@@ -314,18 +314,18 @@
         <td class="desc"><b>Destinatario: </b></td>
         <td class="desc">{{ $encomienda->destinatario->name }}</td>
     </tr>
-    @if ($encomienda->programacion)
+    @if ($encomienda->viaje)
         <tr>
             <td class="desc"><b>Origen: </b></td>
             <td class="desc">
-                {{ $encomienda->programacion->origen->nombre  }}
+                {{ $encomienda->viaje->origen->nombre  }}
             </td>
         </tr>
         <tr style="margin-top: 20px">
             <td class="desc"><h3><b>Destino: </b></h3> </td>
             <td class="desc">
                 <h3>
-                    <b>{{ $encomienda->programacion->destino->nombre }}</b>
+                    <b>{{ $encomienda->viaje->destino->nombre }}</b>
                 </h3>
             </td>
         </tr>
@@ -364,17 +364,17 @@
         <td class="text-left desc"><h4>{{ $pasaje->pasajero->name }}</h4></td>
     </tr>
     @endif
-    @if ($pasaje->programacion)
+    @if ($pasaje->viaje)
         <tr>
         <td class="desc" with="40"><h3 style="padding: 0px;"><b>Origen: </b></h3> </td>
             <td class="desc">
-            <h3><b>{{ $pasaje->programacion->origen->nombre  }}</b></h3>
+            <h3><b>{{ $pasaje->viaje->origen->nombre  }}</b></h3>
             </td>
         </tr>
         <tr style="margin-top: 20px">
             <td class="desc"><h3><b>Destino: </b></h3> </td>
             <td class="desc">
-                <h3><b>{{ $pasaje->programacion->destino->nombre }}</b></h3>
+                <h3><b>{{ $pasaje->viaje->destino->nombre }}</b></h3>
             </td>
         </tr>
         <tr>
@@ -383,7 +383,7 @@
         </tr>
         <tr>
             <td class="desc"> <h5> <b>Hora viaje: </b> </h4> </td>
-            <td class="desc"> <h4> <strong>{{ $pasaje->programacion->hora_salida }}</strong></h4></td>
+            <td class="desc"> <h4> <strong>{{ $pasaje->viaje->hora_salida }}</strong></h4></td>
         </tr>
     @else
         <tr>
@@ -727,5 +727,46 @@
         </tr>
     @endif
 </table>
+@if(!is_null($pasaje))
+    <pagebreak/>
+
+    <table class="full-width">
+        <tr>
+            <td class="text-center pt-4" colspan="2"><h5><b>Control REF: {{$document_number}}</b></h5></td>
+        </tr>
+        <tr><td colspan="2"><b>PASAJERO:</b></td></tr>
+        <tr><td colspan="2">SR(A): {{$pasaje->pasajero->number}} - {{$pasaje->pasajero->name}}</td></tr>
+
+        <tr><td colspan="2"><b>AGENCIA DE EMBARQUE:</b></td></tr>
+        <tr><td colspan="2">{{ ($establishment->address !== '-')? $establishment->address : '' }}</td></tr>
+
+        @if ($pasaje->viaje)
+            <tr><td width="50%"><b>ORIGEN:</b> {{ $pasaje->viaje->origen->nombre  }}</td> <td width="50%"><b>FECHA:</b> {{ $pasaje->fecha_salida }}</td></tr>
+            <tr><td><b>DESTINO:</b> {{ $pasaje->viaje->destino->nombre  }}</td> <td><b>HORA VIAJE:</b> {{$pasaje->viaje->hora_salida}}</td></tr>
+        @endif
+        <tr><td class="pt-3"><b>ASIENTO: {{ $pasaje->numero_asiento }}</b></td> <td class="pt-3"><b>PRECIO: {{ number_format($document->total, 2) }}</b></td></tr>
+
+        <tr><td class="pt-3" colspan="2">Fecha - Hora impresión: {{ $document->date_of_issue->format('Y-m-d') }} - {{ $document->time_of_issue }} </td></tr>
+        <tr>
+            <td colspan="2">USUARIO:
+                @if ($document->seller)
+                    {{ $document->seller->name }}
+                @else
+                    {{ $document->user->name }}
+                @endif
+           </td>
+        </tr>
+
+        <tr>
+            <td class="text-center pt-3" colspan="2"><b>************************************</b></td>
+        </tr>
+        <tr>
+            <td class="text-center" colspan="2">Este documento es con fines de control interno de la empresa y no tiene validez tributario.</td>
+        </tr>
+        <tr>
+            <td class="text-center" colspan="2"><b>************************************</b></td>
+        </tr>
+    </table>
+@endif
 </body>
 </html>
