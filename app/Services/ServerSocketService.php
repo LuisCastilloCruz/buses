@@ -9,22 +9,26 @@ class ServerSocketService{
     private $production = null;
     private $port = null;
     private $cliente = null;
+    private $pm2 = null;
 
     function __construct($cliente = null, $production = false,$port = 3000){
         $this->production = $production;
         $this->port = $port;
         $this->cliente = is_null($cliente) ? uniqid() : $cliente;
+        $this->pm2 = env('RUTA_PM2', false);
     }
 
     private function getConfig($production = false, $port){
 
         $prod = $production ? 'true' : 'false';
+        $cert =env('CERT_SSL', false);
+        $key =env('CERT_KEY', false);
 
         return "module.exports = config = {
             production:{$prod},
             port: {$port},
-            key: '/etc/letsencrypt/live/pse.aqpfact.pe/privkey.pem',
-            cert: '/etc/letsencrypt/live/pse.aqpfact.pe/fullchain.pem'
+            key: {$key},
+            cert: {$cert}
         }";
     }
 
@@ -78,8 +82,7 @@ class ServerSocketService{
 
     public function start(){
         $toIndex = $this->getIndexFile();
-
-        $process = new Process("sudo /root/.nvm/versions/node/v14.0.0/bin/pm2 start {$toIndex} --name={$this->cliente}");
+        $process = new Process("sudo {$this->pm2} start {$toIndex} --name={$this->cliente}");
         $process->run();
 
         // executes after the command finishes
@@ -90,7 +93,7 @@ class ServerSocketService{
     }
 
     public function stop(){
-        $process = new Process("sudo /root/.nvm/versions/node/v14.0.0/bin/pm2 stop {$this->cliente}");
+        $process = new Process("sudo {$this->pm2} stop {$this->cliente}");
         $process->run();
     }
 
@@ -106,7 +109,7 @@ class ServerSocketService{
 
     public function destroy(){
 
-        $stopProcess = new Process("sudo /root/.nvm/versions/node/v14.0.0/bin/pm2 delete {$this->cliente}");
+        $stopProcess = new Process("sudo {$this->pm2} delete {$this->cliente}");
         $stopProcess->run();
     }
 
