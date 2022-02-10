@@ -82,7 +82,6 @@ class ServerSocketService{
 
     public function start(){
         $toIndex = $this->getIndexFile();
-        dd($this->pm2);
         $process = new Process("sudo {$this->pm2} start {$toIndex} --name={$this->cliente}");
         $process->run();
 
