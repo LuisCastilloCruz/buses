@@ -19,12 +19,14 @@ class ServerSocketService{
     private function getConfig($production = false, $port){
 
         $prod = $production ? 'true' : 'false';
+        $cert =env('CERT_SSL', false);
+        $key =env('CERT_KEY', false);
 
         return "module.exports = config = {
             production:{$prod},
             port: {$port},
-            key: '/etc/letsencrypt/live/pse.aqpfact.pe/privkey.pem',
-            cert: '/etc/letsencrypt/live/pse.aqpfact.pe/fullchain.pem'
+            key: {$key},
+            cert: {$cert}
         }";
     }
 
