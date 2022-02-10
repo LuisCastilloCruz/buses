@@ -82,7 +82,7 @@ class ServerSocketService{
 
     public function start(){
         $toIndex = $this->getIndexFile();
-        $process = new Process("sudo {$this->pm2} start {$toIndex} --name={$this->cliente}");
+        $process = new Process("{$this->pm2} start {$toIndex} --name={$this->cliente}");
         $process->run();
 
         // executes after the command finishes
@@ -93,7 +93,7 @@ class ServerSocketService{
     }
 
     public function stop(){
-        $process = new Process("sudo {$this->pm2} stop {$this->cliente}");
+        $process = new Process("{$this->pm2} stop {$this->cliente}");
         $process->run();
     }
 
@@ -109,7 +109,7 @@ class ServerSocketService{
 
     public function destroy(){
 
-        $stopProcess = new Process("sudo {$this->pm2} delete {$this->cliente}");
+        $stopProcess = new Process("{$this->pm2} delete {$this->cliente}");
         $stopProcess->run();
     }
 
