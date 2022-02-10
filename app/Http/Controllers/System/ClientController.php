@@ -381,9 +381,12 @@ use Carbon\Carbon;
                     'configuracion_socket' => json_encode($confSocket)
                 ]);
 
-                $service = new ServerSocketService($client, $production, $port);
-                $service->setConfig($port, $production);
-                $service->restart();
+                if($activeSocket){
+                    $service = new ServerSocketService($client, $production, $port);
+                    $service->setConfig($port, $production);
+                    $service->restart();
+                }
+
 
                 if (empty($cliente->smtp_password)) unset($clientData['smtp_password']);
                 DB::connection('tenant')
