@@ -144,7 +144,7 @@
          */
         public function scopeOnlyAvaibleDocuments($query)
         {
-            return $query->OnlyActive()->wherein('id', ['01', '03', '07', '08', '09', '20', '40', '80', '04']);
+            return $query->OnlyActive()->wherein('id', ['01', '03', '07', '08', '09', '20', '40', '80', '100','33','04']);
         }
 
         /**
@@ -154,7 +154,7 @@
          */
         public function scopeDocumentsActiveToPurchase($query)
         {
-            return $query->OnlyActive()->wherein('id', ['01', '02', '03', 'GU75', 'NE76', '14', '07', '08']);
+            return $query->OnlyActive()->wherein('id', ['01', '02', '03', 'GU75', 'NE76', '14', '07', '08', '04']);
         }
 
 
