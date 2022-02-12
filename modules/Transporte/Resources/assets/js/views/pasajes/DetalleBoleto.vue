@@ -4,7 +4,7 @@
             <div class="col-6">
                 <div class="form-group">
                     <label for="">Tipo de comprobante</label>
-                    <el-select v-if="transportePasaje"
+                    <el-select v-if="transportePasaje && !isReserva"
                         v-model="this.document.document_type_id"
                         @change="changeDocumentType"
                         popper-class="el-select-document_type"
@@ -20,6 +20,7 @@
                         ></el-option>
                         <el-option key="nv" value="nv" label="NOTA DE VENTA"></el-option>
                     </el-select>
+                    <input v-else  class="form-control" value="Sin comprobante" disabled="disabled" />
                 </div>
             </div>
             <div class="col-6" v-if="(!transportePasaje && !isReserva)">
@@ -51,7 +52,7 @@
             </div>
         </div>
         <div class="row pt-2">
-            <div class="col-5">
+            <div  v-if="!isReserva" class="col-5">
                 <div class="form-group">
                     <label for="dni">
                         Cliente
@@ -95,7 +96,7 @@
 
                 </div>
             </div>
-          
+
 
         </div>
         <div class="row">
@@ -127,7 +128,7 @@
         </div>
         <div v-if="(isReserva)" class="row justify-content-center">
 
-            <el-button type="danger" @click="eliminarReserva(asiento.transporte_pasaje.id)" :style="{marginTop:'1.90rem'}">
+            <el-button type="danger" @click="eliminarReserva(transportePasaje.id)" :style="{marginTop:'1.90rem'}">
                 Eliminar reserva
                 <i class="fa fa-trash"></i>
             </el-button>
@@ -454,8 +455,6 @@ export default {
         },
         async onCreate(){
             this.transportePasaje = this.pasaje || null;
-
-
             this.initProducto();
             //this.initDocument();
             this.clickAddPayment();
@@ -470,7 +469,7 @@ export default {
                 this.estadoAsiento = 2;
                 this.documentId = this.transportePasaje.document_id;
                 this.usuario = this.transportePasaje.user_name;
-                this.document.document_type_id = this.transportePasaje.document 
+                this.document.document_type_id = this.transportePasaje.document
                 ? this.transportePasaje.document.document_type_id
                 : (this.documentTypesInvoice.length > 1) ? this.documentTypesInvoice[1].id : null
             }

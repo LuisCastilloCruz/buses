@@ -141,7 +141,7 @@ class TransporteSalesController extends Controller
 
        try{
            $user = auth()->user();
-           
+
            if($user->type=="admin"){
 
                $programaciones = TransporteProgramacion::where('terminal_origen_id',$request->origen_id)
@@ -368,10 +368,10 @@ class TransporteSalesController extends Controller
         if($request->tipo_venta == 2){
 
             $request->validate([
-                'cliente_id'=> ['required'],
+                //'cliente_id'=> ['required'],
                 'estado_asiento_id' => ['required'],
                 'fecha_salida' => ['required'],
-                'pasajero_id' => ['required'],
+                //'pasajero_id' => ['required'],
                 // 'programacion_id' => ['required'],
                 'destino_id' => ['required'],
                 'numero_asiento' => ['required'],

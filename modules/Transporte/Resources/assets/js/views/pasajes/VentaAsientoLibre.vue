@@ -100,7 +100,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row pt-2">
+                                <div v-if="!isReserva" class="row pt-2">
 
                                     <div class="col-12">
                                         <div class="form-group">
@@ -618,7 +618,7 @@ export default {
         async guardarComprobante(){
             this.loading = true;
 
-            if(!this.pasajeroId) {
+            if(!this.pasajeroId && !this.isReserva) {
                 this.$http
                     .post("/persons", this.persona)
                     .then((response) => {
@@ -641,7 +641,7 @@ export default {
                     });
 
             }
-            if(!this.clienteId && this.document.document_type_id == '01') {
+            if(!this.clienteId && this.document.document_type_id == '01' && !this.isReserva) {
                 this.$http
                     .post("/persons", this.empresa)
                     .then((response) => {
