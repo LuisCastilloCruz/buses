@@ -27,8 +27,8 @@ class ServerSocketService{
         return "module.exports = config = {
             production:{$prod},
             port: {$port},
-            key: {$key},
-            cert: {$cert}
+            key: '{$key}',
+            cert: '{$cert}'
         }";
     }
 
