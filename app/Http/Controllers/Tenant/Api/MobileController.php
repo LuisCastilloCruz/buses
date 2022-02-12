@@ -75,7 +75,7 @@ class MobileController extends Controller
 
     public function customers()
     {
-        $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+        $customers = Person::whereType('customers')->orderBy('id')->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
