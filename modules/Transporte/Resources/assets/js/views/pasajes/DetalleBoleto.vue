@@ -4,7 +4,7 @@
             <div class="col-6">
                 <div class="form-group">
                     <label for="">Tipo de comprobante</label>
-                    <el-select v-if="transportePasaje && !isReserva"
+                    <el-select v-if="transportePasaje"
                         v-model="this.document.document_type_id"
                         @change="changeDocumentType"
                         popper-class="el-select-document_type"
@@ -20,10 +20,10 @@
                         ></el-option>
                         <el-option key="nv" value="nv" label="NOTA DE VENTA"></el-option>
                     </el-select>
-                    <input v-else  class="form-control" value="Sin comprobante" disabled="disabled" />
+<!--                    <input v-else  class="form-control" value="Sin comprobante" disabled="disabled" />-->
                 </div>
             </div>
-            <div class="col-6" v-if="(!transportePasaje && !isReserva)">
+            <div class="col-6" v-if="(transportePasaje)">
                 <div class="form-group">
                     <label for="">Serie</label>
                     <!-- <el-input v-model="document.serie" disabled></el-input> -->
@@ -52,7 +52,7 @@
             </div>
         </div>
         <div class="row pt-2">
-            <div  v-if="!isReserva" class="col-5">
+            <div  class="col-5">
                 <div class="form-group">
                     <label for="dni">
                         Cliente
@@ -134,8 +134,7 @@
             </el-button>
 
         </div>
-        <div class="row pt-2" v-if="document.document_type_id === '01'">
-
+        <div class="row pt-2" v-if="document.document_type_id == '01'">
             <div class="col-5">
                 <div class="form-group">
                     <label for="dni">
@@ -147,7 +146,6 @@
                         placeholder="Buscar pasajero"
                         :remote-method="searchPasajero"
                         :loading="loadingPasajero"
-                        :disabled="(transportePasaje && !isReserva) ? true : false"
                     >
                         <el-option v-for="persona in tempPasajeros" :key="persona.id" :value="persona.id" :label="persona.name">
 
@@ -346,7 +344,7 @@ export default {
         this.initDocument();
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
-        this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
+        //this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
         this.allSeries = this.series;
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
@@ -459,7 +457,6 @@ export default {
             //this.initDocument();
             this.clickAddPayment();
             this.onCalculateTotals();
-            //this.validateIdentityDocumentType();
 
             if(this.transportePasaje){
                 this.nombrePasajero = this.transportePasaje.nombre_pasajero;
@@ -662,7 +659,6 @@ export default {
                     description: null,
                     full_description: "",
                     has_igv: false,
-                    id: 2,
                     internal_id: null,
                     item_unit_types: [],
                     lots: [],
@@ -893,7 +889,7 @@ export default {
             } else {
                 this.document_types = this.all_document_types;
             }
-            this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
+            //this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
             this.changeDocumentType();
         },
         viewComprobante(){
