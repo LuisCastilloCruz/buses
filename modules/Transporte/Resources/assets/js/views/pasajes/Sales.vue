@@ -789,6 +789,7 @@ export default {
 
         },
         async onUpdateItem(){
+            this.pasajero = null;
             if(this.tipoVenta == 2){
                 let program = this.selectProgramacion;
                 await this.getProgramaciones();
