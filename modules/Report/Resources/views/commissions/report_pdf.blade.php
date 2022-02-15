@@ -62,7 +62,7 @@
                         <p><strong>Empresa: </strong>{{$company->name}}</p>
                     </td>
                     <td>
-                        <p><strong>Fecha: </strong>{{date('Y-m-d')}}</p>
+                        <p><strong>Fecha impresión: </strong>{{date('Y-m-d')}}</p>
                     </td>
                 </tr>
                 <tr>
