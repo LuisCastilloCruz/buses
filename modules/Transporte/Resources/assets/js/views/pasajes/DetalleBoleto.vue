@@ -5,7 +5,7 @@
                 <div class="form-group">
                     <label for="">Tipo de comprobante</label>
                     <el-select v-if="transportePasaje"
-                        v-model="this.document.document_type_id"
+                        v-model="document.document_type_id"
                         @change="changeDocumentType"
                         popper-class="el-select-document_type"
                         dusk="document_type_id"
@@ -96,6 +96,26 @@
 
                 </div>
             </div>
+            <div v-if="isReserva && document.document_type_id == '01'" class="col-5">
+                <div class="form-group">
+                    <label for="dni">
+                        Pasajero
+                        <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>
+                    </label>
+                    <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
+                               dusk="pasajeroId"
+                               placeholder="Buscar pasajero"
+                               :remote-method="searchPasajero"
+                               :loading="loadingPasajero"
+                    >
+                        <el-option v-for="persona in tempPasajeros" :key="persona.id" :value="persona.id" :label="persona.name">
+
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+
+
 
 
         </div>
@@ -114,7 +134,7 @@
                 Viaje de <el-tag style="color:white" :color="transportePasaje.origen.color"> {{ transportePasaje.origen.nombre }} </el-tag>  a <el-tag style="color:white" :color="transportePasaje.destino.color"> {{ transportePasaje.destino.nombre }} </el-tag>
             </div>
         </div>
-        <div v-if="(transportePasaje && !isReserva)" class="row justify-content-center">
+        <div v-if="(this.documentId && !isReserva)" class="row justify-content-center">
 
             <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
                 Comprobante
@@ -133,26 +153,6 @@
                 <i class="fa fa-trash"></i>
             </el-button>
 
-        </div>
-        <div class="row pt-2" v-if="document.document_type_id == '01'">
-            <div class="col-5">
-                <div class="form-group">
-                    <label for="dni">
-                        Pasajero
-                        <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>
-                    </label>
-                    <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
-                        dusk="pasajeroId"
-                        placeholder="Buscar pasajero"
-                        :remote-method="searchPasajero"
-                        :loading="loadingPasajero"
-                    >
-                        <el-option v-for="persona in tempPasajeros" :key="persona.id" :value="persona.id" :label="persona.name">
-
-                        </el-option>
-                    </el-select>
-                </div>
-            </div>
         </div>
         <div v-if="!transportePasaje || isReserva" class="row mt-2">
             <div class="col-md-12">
@@ -344,7 +344,7 @@ export default {
         this.initDocument();
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
-        //this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
+        this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
         this.allSeries = this.series;
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
@@ -436,8 +436,11 @@ export default {
         onClose(){
             this.$emit("update:visible", false);
             this.pasajeroId = null;
+            this.clienteId= null;
             this.estadoAsiento = null;
             this.precio = null;
+            this.transportePasaje.id=null;
+            this.documentId=null;
         },
         async searchPasajero(input=''){
             this.loadingPasajero = true;
