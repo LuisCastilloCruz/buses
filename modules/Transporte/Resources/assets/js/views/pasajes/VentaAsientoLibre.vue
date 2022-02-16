@@ -66,7 +66,7 @@
                                     </div>
                                 </div>
                                 <div class="row pt-2">
-                                     <div v-if="(!isReserva && document.document_type_id === '01')" class="col-12">
+                                    <div v-if="(!isReserva && document.document_type_id === '01')" class="col-12">
                                         <div class="form-group">
                                             <label for="ruc" class="mr-2"  style="display: inline; float: left">
                                                 Ruc
@@ -100,7 +100,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="!isReserva" class="row pt-2">
+                                <div v-if="!isReserva && document.document_type_id !== '01'" class="row pt-2">
 
                                     <div class="col-12">
                                         <div class="form-group">
@@ -430,7 +430,7 @@ export default {
 
             if(!value){
                 this.estadoAsiento = 2;
-                this.pasajeroId = null;
+                this.pasajeroId = {};
                 this.precio = null;
                 this.clienteId =null;
             }
@@ -590,7 +590,7 @@ export default {
             });
 
             if(this.transportePasaje){
-                this.pasajero = this.transportePasaje.pasajero;
+                this.pasajero = this.transportePasaje.pasajero || {};
                 this.precio = this.transportePasaje.precio;
                 this.pasajeroId = this.pasajero.id;
                 this.clienteId = this.transportePasaje.cliente_id;
@@ -828,9 +828,8 @@ export default {
                 this.persona.name = null
                 this.persona.edad  = null
 
-
-
                 this.$emit('onUpdateItem');
+                this.$emit('notificationAll'); //sirve para notificar que se ha hecho una venta de un pasaje
                 this.$message({
                     type: 'success',
                     message: data.message
