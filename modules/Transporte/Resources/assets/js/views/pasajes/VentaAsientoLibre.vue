@@ -1391,44 +1391,6 @@ export default {
                 }
             }
         },
-        async actualizar_pasajero() {
-            this.$http
-                .post("/persons", this.persona)
-                .then((response) => {
-
-                    if(!this.pasajeroId){
-                        this.pasajeroId   = response.data.id
-
-                        if(this.document.document_type_id=='03'){
-                            this.clienteId   = response.data.id
-                        }
-                    }
-                })
-                .finally(() => {
-                    this.loading = false;
-                    this.errors = {};
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
-        async actualizar_empresa() {
-            this.$http
-                .post("/persons", this.empresa)
-                .then((response) => {
-
-                    if(!this.clienteId){
-                        this.clienteId   = response.data.id
-                    }
-                })
-                .finally(() => {
-                    this.loading = false;
-                    this.errors = {};
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
 
         onClose(){
             this.$emit('update:visible',false);
