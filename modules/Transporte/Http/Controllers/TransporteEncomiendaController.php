@@ -190,9 +190,9 @@ class TransporteEncomiendaController extends Controller
             'clientes' => $clientes->take(10)->get()
         ]);
     }
-    public function getPasajero(int $number = null){
+    public function getPasajero(Request $request){
 
-        $cliente = Person::where('number',$number)->first();
+        $cliente = Person::where('number',$request->number)->first();
 
         if($cliente){
             return response()->json([
