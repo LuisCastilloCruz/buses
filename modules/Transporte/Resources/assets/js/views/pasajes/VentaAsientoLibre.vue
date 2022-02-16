@@ -100,7 +100,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="!isReserva && document.document_type_id !== '01'" class="row pt-2">
+                                <div v-if="!isReserva && document.document_type_id == '01'" class="row pt-2">
 
                                     <div class="col-12">
                                         <div class="form-group">
