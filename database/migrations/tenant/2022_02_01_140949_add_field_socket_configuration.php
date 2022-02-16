@@ -27,7 +27,7 @@ class AddFieldSocketConfiguration extends Migration
     public function down()
     {
         Schema::table('configurations', function (Blueprint $table) {
-            //
+            Schema::dropIfExists('configuracion_socket');
         });
     }
 }

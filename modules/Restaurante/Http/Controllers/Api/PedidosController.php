@@ -2,12 +2,13 @@
 
 namespace Modules\Restaurante\Http\Controllers\Api;
 
+use App\Models\Tenant\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\Restaurante\Models\Mesa;
+use Modules\Restaurante\Models\Pedido;
 
-class MesasController extends Controller
+class PedidosController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -77,21 +78,28 @@ class MesasController extends Controller
     {
         //
     }
-    public function records(Request $request)
-    {
-        $mesas = Mesa::where('activo',true)
-                ->where('nivel_id',$request['nivel'])
-                ->orderBy('numero')->take(10)->get()->transform(function($row) {
-            return [
-                'id' => $row->id,
-                'numero' => $row->numero
-            ];
-        });
+    public function  records(){
+
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
+        $pedidos = Pedido::where('estado',1)
+            ->take(20)
+            ->get()
+            ->transform(function($row){
+                    return [
+                    'id' => $row->id,
+                    'mesa_id' => $row->mesa_id,
+                    'document_id' => $row->document_id,
+                    'user_id' => $row->user_id,
+                    'tipo' => $row->tipo
+                ];
+            });
+
 
         return [
             'success' => true,
-            'data' => array('mesas' => $mesas)
+            'data' => array('pedidos' => $pedidos)
         ];
-
     }
 }

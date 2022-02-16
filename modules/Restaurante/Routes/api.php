@@ -28,5 +28,11 @@ Route::middleware(['auth:api', 'locked.tenant'])->prefix('restaurante')->group(f
 
     //MESAS
     Route::get('{nivel}/mesas', 'Api\MesasController@records') ->name('tenant.restaurante.mesas.records');
-    
+
+    //ITEMS
+    Route::get('items', 'Api\ItemsController@records')->name('tenant.restaurante.items.records');
+
+    //PEDIDOS
+    Route::get('pedidos', 'Api\PedidosController@records')->name('tenant.restaurante.pedidos.records');
+
 });
