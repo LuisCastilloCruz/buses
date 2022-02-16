@@ -619,7 +619,6 @@ export default {
                 this.document.payments= [];
                 this.$emit('onUpdateItem');
                 this.$emit('notificationAll');
-                console.log('LLega aqui')
                 this.$message({
                     type: 'success',
                     message: data.message
