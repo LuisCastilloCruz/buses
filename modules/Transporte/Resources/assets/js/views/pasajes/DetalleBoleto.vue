@@ -4,8 +4,8 @@
             <div class="col-6">
                 <div class="form-group">
                     <label for="">Tipo de comprobante</label>
-                    <el-select v-if="transportePasaje && !isReserva"
-                        v-model="this.document.document_type_id"
+                    <el-select v-if="transportePasaje"
+                        v-model="document.document_type_id"
                         @change="changeDocumentType"
                         popper-class="el-select-document_type"
                         dusk="document_type_id"
@@ -20,10 +20,10 @@
                         ></el-option>
                         <el-option key="nv" value="nv" label="NOTA DE VENTA"></el-option>
                     </el-select>
-                    <input v-else  class="form-control" value="Sin comprobante" disabled="disabled" />
+<!--                    <input v-else  class="form-control" value="Sin comprobante" disabled="disabled" />-->
                 </div>
             </div>
-            <div class="col-6" v-if="(!transportePasaje && !isReserva)">
+            <div class="col-6" v-if="(transportePasaje)">
                 <div class="form-group">
                     <label for="">Serie</label>
                     <!-- <el-input v-model="document.serie" disabled></el-input> -->
@@ -52,7 +52,7 @@
             </div>
         </div>
         <div class="row pt-2">
-            <div  v-if="!isReserva" class="col-5">
+            <div  class="col-5">
                 <div class="form-group">
                     <label for="dni">
                         Cliente
@@ -96,6 +96,26 @@
 
                 </div>
             </div>
+            <div v-if="isReserva && document.document_type_id == '01'" class="col-5">
+                <div class="form-group">
+                    <label for="dni">
+                        Pasajero
+                        <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>
+                    </label>
+                    <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
+                               dusk="pasajeroId"
+                               placeholder="Buscar pasajero"
+                               :remote-method="searchPasajero"
+                               :loading="loadingPasajero"
+                    >
+                        <el-option v-for="persona in tempPasajeros" :key="persona.id" :value="persona.id" :label="persona.name">
+
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+
+
 
 
         </div>
@@ -114,7 +134,7 @@
                 Viaje de <el-tag style="color:white" :color="transportePasaje.origen.color"> {{ transportePasaje.origen.nombre }} </el-tag>  a <el-tag style="color:white" :color="transportePasaje.destino.color"> {{ transportePasaje.destino.nombre }} </el-tag>
             </div>
         </div>
-        <div v-if="(transportePasaje && !isReserva)" class="row justify-content-center">
+        <div v-if="(this.documentId && !isReserva)" class="row justify-content-center">
 
             <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
                 Comprobante
@@ -133,28 +153,6 @@
                 <i class="fa fa-trash"></i>
             </el-button>
 
-        </div>
-        <div class="row pt-2" v-if="document.document_type_id === '01'">
-
-            <div class="col-5">
-                <div class="form-group">
-                    <label for="dni">
-                        Pasajero
-                        <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>
-                    </label>
-                    <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
-                        dusk="pasajeroId"
-                        placeholder="Buscar pasajero"
-                        :remote-method="searchPasajero"
-                        :loading="loadingPasajero"
-                        :disabled="(transportePasaje && !isReserva) ? true : false"
-                    >
-                        <el-option v-for="persona in tempPasajeros" :key="persona.id" :value="persona.id" :label="persona.name">
-
-                        </el-option>
-                    </el-select>
-                </div>
-            </div>
         </div>
         <div v-if="!transportePasaje || isReserva" class="row mt-2">
             <div class="col-md-12">
@@ -438,8 +436,11 @@ export default {
         onClose(){
             this.$emit("update:visible", false);
             this.pasajeroId = null;
+            this.clienteId= null;
             this.estadoAsiento = null;
             this.precio = null;
+            this.transportePasaje.id=null;
+            this.documentId=null;
         },
         async searchPasajero(input=''){
             this.loadingPasajero = true;
@@ -459,7 +460,6 @@ export default {
             //this.initDocument();
             this.clickAddPayment();
             this.onCalculateTotals();
-            //this.validateIdentityDocumentType();
 
             if(this.transportePasaje){
                 this.nombrePasajero = this.transportePasaje.nombre_pasajero;
@@ -662,7 +662,6 @@ export default {
                     description: null,
                     full_description: "",
                     has_igv: false,
-                    id: 2,
                     internal_id: null,
                     item_unit_types: [],
                     lots: [],
@@ -893,7 +892,7 @@ export default {
             } else {
                 this.document_types = this.all_document_types;
             }
-            this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
+            //this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
             this.changeDocumentType();
         },
         viewComprobante(){
