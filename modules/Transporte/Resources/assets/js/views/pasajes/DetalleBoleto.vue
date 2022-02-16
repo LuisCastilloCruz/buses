@@ -618,6 +618,7 @@ export default {
                 this.initProducto();
                 this.document.payments= [];
                 this.$emit('onUpdateItem');
+                this.$emit('notificationAll');
                 this.$message({
                     type: 'success',
                     message: data.message

@@ -262,6 +262,7 @@
             :configuration="configuration"
             @onSuccessVenta="onSuccessVenta"
             @anularBoleto="anularBoleto"
+            @notificationAll="notificationAll"
             :document_type_03_filter="document_type_03_filter"
             :is-cash-open="isCashOpen"
             :destino="destino"
@@ -302,6 +303,7 @@
         @anularBoleto="anularBoleto"
         @onSuccessVenta="onSuccessVenta"
         @onUpdateItem="onUpdateItem"
+        @notificationAll="notificationAll"
         />
 
 
@@ -617,7 +619,7 @@ export default {
 
         },
         nuevaVenta(){
-            this.pasajero = null;
+            this.pasajero = {};
             this.selectProgramacion = {};
             this.programaciones = [];
             this.destino = null;
@@ -690,11 +692,14 @@ export default {
 
         },
 
+        notificationAll(){
+            if(this.socketClient) this.socketClient.emit('venta-completada',true);
+        },
         async onSuccessVenta(documentId){
             this.documentId = documentId;
             this.showDialogDocumentOptions = true;
 
-            if(this.socketClient) this.socketClient.emit('venta-completada',true);
+           
             // if(this.tipoVenta == 2){
             //     await this.onUpdateItem()
             //     this.documentId = documentId;
@@ -736,6 +741,7 @@ export default {
         },
 
         dbClick(asiento){
+            this.pasajero = null;
 
             if(this.terminalId !== this.terminal.id){
                 alert('Para evitar confusiones, solo se puede visualizar los estados, mas nó vender. Cambie a su terminal asignado por el administrador.')
@@ -789,7 +795,7 @@ export default {
 
         },
         async onUpdateItem(){
-            this.pasajero = null;
+            this.pasajero = {};
             if(this.tipoVenta == 2){
                 let program = this.selectProgramacion;
                 await this.getProgramaciones();
@@ -847,6 +853,7 @@ export default {
             this.getProgramaciones()
         },
         onCancel(){
+            this.pasajero = {};
             if(this.asiento){
                 this.asiento.estado_asiento_id = 1;
                 this.asiento = null;
