@@ -195,7 +195,7 @@
         <?php $pasajero = $pasaje->pasajero; ?>
         <?php $document = $pasaje->document; ?>
         <?php $sale_note = $pasaje->saleNote; ?>
-        @if($document)
+        @if($document && $pasajero)
             <tr>
                 <td>{{$index+1}}</td>
                 <td>{{ $pasajero->name }}</td>
@@ -208,7 +208,7 @@
             </tr>
         @endif
 
-        @if($sale_note)
+        @if($sale_note && $pasajero)
             <tr>
                 <td>{{$index+1}}</td>
                 <td>{{ $pasajero->name }}</td>
