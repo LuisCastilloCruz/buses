@@ -94,11 +94,11 @@
                                                                 </el-button>
                                                             </el-tooltip>
 
-                                                            <el-tooltip class="item" effect="dark" content="Anular" placement="top-start">
-                                                                <el-button :disabled="user.type != 'admin'" type="danger" @click="anular(pasaje)">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </el-button>
-                                                            </el-tooltip>
+<!--                                                            <el-tooltip class="item" effect="dark" content="Anular" placement="top-start">-->
+<!--                                                                <el-button :disabled="user.type != 'admin'" type="danger" @click="anular(pasaje)">-->
+<!--                                                                    <i class="fa fa-trash"></i>-->
+<!--                                                                </el-button>-->
+<!--                                                            </el-tooltip>-->
 
                                                         </td>
                                                     </tr>
@@ -161,8 +161,8 @@
                                                     <el-button type="primary" @click="verNota(note)">
                                                         <i class="fa fa-file-alt"></i>
                                                     </el-button>
-                                                    <button :disabled="user.type != 'admin'" data-toggle="tooltip" data-placement="top" title="Anular" v-if="note.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                                            @click.prevent="anularNota(note.id)"><i class="fas fa-trash"></i></button>
+<!--                                                    <button :disabled="user.type != 'admin'" data-toggle="tooltip" data-placement="top" title="Anular"  type="button" class="btn waves-effect waves-light btn-xs btn-danger"-->
+<!--                                                            @click="anularNota(note)"><i class="fas fa-trash"></i></button>-->
                                                 </td>
                                             </tr>
 
@@ -341,7 +341,6 @@ export default {
 
             }
 
-            console.log(this.listPasajes)
         },
         async getEncomiendasNotes(){
             try{
@@ -402,6 +401,10 @@ export default {
             this.documentNewId = pasaje.document_id;
             this.showDialogDocumentOptions = true;
         },
+        verNota(pasaje){
+            this.documentNewId = pasaje.note_id;
+            this.showDialogSaleNoteOptions = true;
+        },
         tooltip(row, message = true) {
             if (message) {
                 if (row.shipping_status) return row.shipping_status.message;
@@ -432,11 +435,41 @@ export default {
             });
 
         },
+        anularNota(note) {
+            var url = `/sale-notes/anulate/${note.sale_note.id}`
+            return new Promise((resolve) => {
+                this.$confirm('¿Desea anular el registro?', 'Anular', {
+                    confirmButtonText: 'Anular',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.get(url)
+                        .then(res => {
+                            if (res.data.success) {
+                                this.$message.success('Se anuló correctamente el registro')
+                                this.cancelarBoleto(note.id)
+                                resolve()
+                            } else {
+                                const {message = 'Error al intentar anular'} = res.data
+                                this.$message.error(message)
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar anular');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+                }).catch(error => {
+                    console.log(error)
+                });
+            })
+        },
 
-
-        async cancelarBoleto(){
+        async cancelarBoleto(pasaje_id){
             try{
-                const { data } = await axios.delete(`/transportes/pasajes/${this.pasajeId}/delete`);
+                const { data } = await axios.delete(`/transportes/pasajes/${pasaje_id}/delete`);
 
                 if(!data.success){
                     this.$message({

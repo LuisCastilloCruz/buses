@@ -1,4 +1,5 @@
 <template>
+    <div>
     <el-dialog title="Venta" :visible="visible" @close="onClose" @open="onCreate" :close-on-click-modal="false" width="800px">
         <div class="row">
             <div class="col-6">
@@ -58,7 +59,7 @@
                         Cliente
                         <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>
                     </label>
-                    <el-select v-model="clienteId" filterable remote  popper-class="el-select-customers"
+                    <el-select v-if="transportePasaje && isReserva" v-model="clienteId" filterable remote  popper-class="el-select-customers"
                         dusk="clienteId"
                         placeholder="Buscar cliente"
                         :remote-method="searchCliente"
@@ -69,6 +70,8 @@
 
                         </el-option>
                     </el-select>
+
+                    <el-input v-if="transportePasaje && !isReserva && transportePasaje.pasajero"  v-model="transportePasaje.pasajero.name" disabled type="text">   ></el-input>
                 </div>
             </div>
 
@@ -134,7 +137,7 @@
                 Viaje de <el-tag style="color:white" :color="transportePasaje.origen.color"> {{ transportePasaje.origen.nombre }} </el-tag>  a <el-tag style="color:white" :color="transportePasaje.destino.color"> {{ transportePasaje.destino.nombre }} </el-tag>
             </div>
         </div>
-        <div v-if="(this.documentId && !isReserva)" class="row justify-content-center">
+        <div v-if="((this.documentId || this.sale_note_id) && !isReserva)" class="row justify-content-center">
 
             <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
                 Comprobante
@@ -228,6 +231,8 @@
             </div>
         </div>
 
+
+
         <document-options
         :showDialog.sync="showDialogDocumentOptions"
         :recordId="documentId"
@@ -235,16 +240,6 @@
         :showClose="true"
         :configuration="configuration"
         ></document-options>
-
-        <sale-note-options
-        :showDialog.sync="showDialogSaleNoteOptions"
-        :recordId="documentId"
-        :configuration="configuration"
-        :showClose="true"
-        >
-        </sale-note-options>
-
-
 
         <person-form :showDialog.sync="showDialogNewPerson"
         type="customers"
@@ -261,6 +256,15 @@
             </div>
         </div>
     </el-dialog>
+    <sale-note-options
+        :showDialog.sync="showDialogSaleNoteOptions"
+        :recordId="sale_note_id"
+        :configuration="configuration"
+        :showClose="true"
+    >
+    </sale-note-options>
+
+    </div>
 </template>
 <script>
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
@@ -441,6 +445,7 @@ export default {
             this.precio = null;
             this.transportePasaje.id=null;
             this.documentId=null;
+            //this.sale_note_id=null;
         },
         async searchPasajero(input=''){
             this.loadingPasajero = true;
@@ -467,11 +472,19 @@ export default {
                 this.precio = this.transportePasaje.precio;
                 this.pasajeroId = this.pasajero ? this.pasajero.id : null;
                 this.estadoAsiento = 2;
-                this.documentId = this.transportePasaje.document_id;
+                this.documentId = this.transportePasaje.document_id
+                this.sale_note_id = this.transportePasaje.note_id ;
                 this.usuario = this.transportePasaje.user_name;
-                this.document.document_type_id = this.transportePasaje.document
-                ? this.transportePasaje.document.document_type_id
-                : (this.documentTypesInvoice.length > 1) ? this.documentTypesInvoice[1].id : null
+
+                if(this.transportePasaje.document_id){
+                    this.document.document_type_id= this.transportePasaje.document.document_type_id;
+                }
+                if(this.transportePasaje.note_id){
+                    this.document.document_type_id= "nv";
+                }
+                // this.document.document_type_id = this.transportePasaje.document
+                // ? this.transportePasaje.document.document_type_id
+                // : (this.documentTypesInvoice.length > 1) ? this.documentTypesInvoice[1].id : null
             }
 
             const date = moment().format("YYYY-MM-DD");
@@ -552,14 +565,12 @@ export default {
                 .post(`/${resourceDocuments}`, this.document)
                 .then(async (response) => {
                     if (response.data.success) {
-                        this.documentId = response.data.data.id;
-                        this.form_cash_document.document_id = response.data.data.id;
-
-                         if (this.document.document_type_id === "nv"){
+                        if (this.document.document_type_id === "nv"){
                             this.form_cash_document.sale_note_id = response.data.data.id;
                             this.sale_note_id = response.data.data.id;
                         }
                         else{
+                            this.documentId = response.data.data.id;
                             this.form_cash_document.document_id = response.data.data.id;
                         }
 
@@ -599,7 +610,6 @@ export default {
                 this.loading = false;
 
                 if (this.document.document_type_id === "nv") {
-                    this.$eventHub.$emit('reloadDataNotes')
                     this.showDialogSaleNoteOptions= true
                 } else {
                     this.$emit('onSuccessVenta',this.documentId);
@@ -897,7 +907,11 @@ export default {
             this.changeDocumentType();
         },
         viewComprobante(){
-            this.showDialogDocumentOptions = true;
+            if(this.transportePasaje.document_id){
+                this.showDialogDocumentOptions = true;
+            }else{
+                this.showDialogSaleNoteOptions= true
+            }
         },
         filterSeries() {
             this.document.series_id = null
@@ -922,9 +936,72 @@ export default {
             }
         },
         anularBoleto(){
+            console.log(this.transportePasaje)
+            if(this.transportePasaje.document_id){
+                this.$emit('anularBoleto',this.transportePasaje);
+            }else{
+                this.anularNota(`/sale-notes/anulate/${this.sale_note_id}`)
+            }
 
-            this.$emit('anularBoleto',this.transportePasaje);
+        },
+        anularNota(url) {
+            return new Promise((resolve) => {
+                this.$confirm('¿Desea anular el registro?', 'Anular', {
+                    confirmButtonText: 'Anular',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.get(url)
+                        .then(res => {
+                            if (res.data.success) {
+                                this.$message.success('Se anuló correctamente el registro')
+                                this.cancelarBoleto(this.transportePasaje.id)
+                                resolve()
+                            }
+                            else{
+                                const {message = 'Error al intentar anular'} = res.data
+                                this.$message.error(message)
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar anular');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+                }).catch(error => {
+                    console.log(error)
+                });
+            })
+        },
+        async cancelarBoleto(id){
+            try{
+                const { data } = await axios.delete(`/transportes/pasajes/${id}/delete`);
 
+                if(!data.success){
+                    this.$message({
+                        type: 'error',
+                        message: data.message
+                    });
+                }
+
+                this.$message({
+                    type: 'success',
+                    message: data.message
+                });
+
+                this.$emit('onUpdateItem');
+                this.$emit('notificationAll');
+
+            }catch(error){
+
+                this.$message({
+                    type: 'error',
+                    message: 'Lo sentimos ha ocurrido un error'
+                });
+
+            }
         },
         modalPerson(buscar_pasajero){
             this.showDialogNewPerson=true;
