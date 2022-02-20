@@ -9,33 +9,24 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Modules\Transporte\Http\Requests\ProgramacionesDisponiblesRequest;
-use Modules\Transporte\Http\Requests\RealizarVentaRequest;
 use Modules\Transporte\Models\TransporteCategory;
 use Modules\Transporte\Http\Requests\TransporteCategoryRequest;
-use Modules\Transporte\Models\TransporteAsiento;
 use Modules\Transporte\Models\TransporteDestino;
 use Modules\Transporte\Models\TransporteEstadoAsiento;
 use Modules\Transporte\Models\TransportePasaje;
 use Modules\Transporte\Models\TransporteProgramacion;
-use Modules\Transporte\Models\TransporteVehiculo;
-use Modules\Transporte\Models\TransporteUserTerminal;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\PaymentMethodType;
-use App\Models\Tenant\User;
 use Exception;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Modules\Finance\Traits\FinanceTrait;
-use Modules\Transporte\Models\TransporteDestinoHorario;
 use Modules\Transporte\Models\TransporteViajes;
-use Modules\Transporte\Traits\Dates;
-use Modules\Transporte\Traits\Rutas;
+use Modules\Transporte\Traits\PasajerosRuta;
 
 class TransporteSalesController extends Controller
 {
@@ -47,7 +38,7 @@ class TransporteSalesController extends Controller
     const MINUTES = 60;
     CONST DAYS = 1440;
 
-    use FinanceTrait, Rutas;
+    use FinanceTrait, PasajerosRuta;
     public function index(Request $request, TransportePasaje $pasaje = null)
     {
 
@@ -144,7 +135,7 @@ class TransporteSalesController extends Controller
 
            if($user->type=="admin"){
 
-               $programaciones = TransporteProgramacion::where('terminal_origen_id',$request->origen_id)
+               $programaciones = TransporteProgramacion::with('origen','destino','vehiculo','vehiculo.seats')->where('terminal_origen_id',$request->origen_id)
                    ->where('active',true)
                    ->where('terminal_destino_id', $request->destino_id);
                 //    ->whereHas('destino',function($destino) use($request){
@@ -153,7 +144,7 @@ class TransporteSalesController extends Controller
                     //  $programaciones->whereRaw("TIME_FORMAT(hora_salida,'%H:%i:%s') >= '{$time}'");
 
            }else{
-               $programaciones = TransporteProgramacion::where('terminal_origen_id',$request->origen_id)
+               $programaciones = TransporteProgramacion::with('origen','destino','vehiculo.seats')->where('terminal_origen_id',$request->origen_id)
                ->where('terminal_destino_id', $request->destino_id)
                 ->where('active',true)
             //        ->whereHas('destino',function($destino) use($request){
@@ -177,171 +168,171 @@ class TransporteSalesController extends Controller
 
             $listProgramaciones = $programaciones->get();
 
-            $viajes = collect([]);
+            // $viajes = collect([]);
 
 
 
-            foreach($listProgramaciones as $programacion){
+            // foreach($listProgramaciones as $programacion){
 
-                $pasajes = collect([]);
+            //     $pasajes = collect([]);
 
-                $programacionPadre = $programacion->programacion;
+            //     $programacionPadre = $programacion->programacion;
 
-                $rutas = $programacionPadre->rutas()->get();
+            //     // $rutas = $programacionPadre->rutas()->get();
 
-                $date = new Carbon(sprintf('%s %s', $request->fecha_salida,$programacion->hora_salida));
+            //     $date = new Carbon(sprintf('%s %s', $request->fecha_salida,$programacion->hora_salida));
 
-                $viaje = TransporteViajes::where('terminal_origen_id',$programacion->terminal_origen_id)
-                ->where('terminal_destino_id',$programacion->terminal_destino_id)
-                ->whereTime('hora_salida', $programacion->hora_salida)
-                ->whereDate('fecha_salida', $request->fecha_salida )
-                ->where('programacion_id',$programacionPadre->id)
-                ->first();
+            //     $viaje = TransporteViajes::where('terminal_origen_id',$programacion->terminal_origen_id)
+            //     ->where('terminal_destino_id',$programacion->terminal_destino_id)
+            //     ->whereTime('hora_salida', $programacion->hora_salida)
+            //     ->whereDate('fecha_salida', $request->fecha_salida )
+            //     ->where('programacion_id',$programacionPadre->id)
+            //     ->first();
 
-                $viaje = !is_null($viaje) ? $viaje : TransporteViajes::create([
-                    'terminal_origen_id' => $programacion->terminal_origen_id,
-                    'hora_salida' => $programacion->hora_salida,
-                    'fecha_salida' => $request->fecha_salida,
-                    'vehiculo_id' => $programacion->vehiculo_id,
-                    'terminal_destino_id' => $programacion->terminal_destino_id,
-                    'programacion_id' => $programacionPadre->id
-                ]);
+            //     $viaje = !is_null($viaje) ? $viaje : TransporteViajes::create([
+            //         'terminal_origen_id' => $programacion->terminal_origen_id,
+            //         'hora_salida' => $programacion->hora_salida,
+            //         'fecha_salida' => $request->fecha_salida,
+            //         'vehiculo_id' => $programacion->vehiculo_id,
+            //         'terminal_destino_id' => $programacion->terminal_destino_id,
+            //         'programacion_id' => $programacionPadre->id
+            //     ]);
 
-                $viaje->update([
-                    'vehiculo_id' => $programacion->vehiculo_id,
-                ]);
+            //     $viaje->update([
+            //         'vehiculo_id' => $programacion->vehiculo_id,
+            //     ]);
 
-                $viajes->push($viaje);
+            //     $viajes->push($viaje);
 
-                $rutas->prepend($programacionPadre->origen);
-                $rutas->push($programacionPadre->destino);
+            //     // $rutas->prepend($programacionPadre->origen);
+            //     // $rutas->push($programacionPadre->destino);
 
-                // return response()->json($viaje->terminal_origen_id);
-                $indexOrigen = $this->getPositionInRoute($viaje->origen,$rutas);
-                $indexDestino = $this->getPositionInRoute($viaje->destino, $rutas);
+            //     // // return response()->json($viaje->terminal_origen_id);
+            //     // $indexOrigen = $this->getPositionInRoute($viaje->origen,$rutas);
+            //     // $indexDestino = $this->getPositionInRoute($viaje->destino, $rutas);
 
-                $mayores = $this->getRutasMayores($indexOrigen,$rutas)->pluck('id');
-                $menores = $this->getRutasMenores($indexOrigen,$rutas)->pluck('id');
+            //     // $mayores = $this->getRutasMayores($indexOrigen,$rutas)->pluck('id');
+            //     // $menores = $this->getRutasMenores($indexOrigen,$rutas)->pluck('id');
 
-                $intermedios = $this->getRoutesBeetween($indexOrigen,$indexDestino,$rutas)->pluck('id');
+            //     // $intermedios = $this->getRoutesBeetween($indexOrigen,$indexDestino,$rutas)->pluck('id');
 
-                $listMenores = TransporteProgramacion::with('origen','destino')
-                ->whereIn('terminal_origen_id',$menores)
-                ->whereIn('terminal_destino_id',$mayores)
-                ->where('programacion_id',$programacionPadre->id)
-                ->get(); // obtengo todas las programaciones que vienen hacia mi
-
-
-                $list = TransporteProgramacion::with('origen','destino')
-                ->where('terminal_origen_id',$viaje->terminal_origen_id)
-                ->where('programacion_id',$programacionPadre->id)
-                ->get(); // obtengo todas las programaciones que vienen hacia mi
+            //     // $listMenores = TransporteProgramacion::with('origen','destino')
+            //     // ->whereIn('terminal_origen_id',$menores)
+            //     // ->whereIn('terminal_destino_id',$mayores)
+            //     // ->where('programacion_id',$programacionPadre->id)
+            //     // ->get(); // obtengo todas las programaciones que vienen hacia mi
 
 
-                $listIntermedios = TransporteProgramacion::with('origen','destino')
-                ->whereIn('terminal_origen_id',$intermedios)
-                ->where('programacion_id',$programacionPadre->id)
-                ->get(); // obtengo los intemedios entre el punto de origen y destino si es que existen
-
-                // return
-
-                // return response()->json($merged->map(function($item){
-                //     return sprintf('%s -> %s',$item->origen->nombre,$item->destino->nombre);
-                // }));
-
-                foreach($listMenores as $menor){
-                    $timeClone = clone $date;
-
-                    $tiempoEstimado = TransporteProgramacion::where('terminal_origen_id',$menor->terminal_origen_id)
-                    ->where('terminal_destino_id',$viaje->terminal_origen_id)
-                    ->where('programacion_id',$programacionPadre->id)
-                    ->first();
+            //     // $list = TransporteProgramacion::with('origen','destino')
+            //     // ->where('terminal_origen_id',$viaje->terminal_origen_id)
+            //     // ->where('programacion_id',$programacionPadre->id)
+            //     // ->get(); // obtengo todas las programaciones que vienen hacia mi
 
 
-                    $timeClone = $timeClone->subMinutes($tiempoEstimado->tiempo_estimado);
+            //     // $listIntermedios = TransporteProgramacion::with('origen','destino')
+            //     // ->whereIn('terminal_origen_id',$intermedios)
+            //     // ->where('programacion_id',$programacionPadre->id)
+            //     // ->get(); // obtengo los intemedios entre el punto de origen y destino si es que existen
 
-                    $travels = TransporteViajes::where('terminal_origen_id',$menor->terminal_origen_id)
-                    ->where('terminal_destino_id',$menor->terminal_destino_id)
-                    ->whereDate('fecha_salida',$timeClone->format('Y-m-d'))
-                    ->whereTime('hora_salida' , $timeClone->format('H:i:s'))
-                    ->where('programacion_id',$programacionPadre->id)
-                    ->get();
+            //     // // return
 
+            //     // // return response()->json($merged->map(function($item){
+            //     // //     return sprintf('%s -> %s',$item->origen->nombre,$item->destino->nombre);
+            //     // // }));
 
-                   $searchPasajes = TransportePasaje::with( 'origen', 'destino', 'pasajero','document:id,document_type_id')
-                   ->whereIn('viaje_id',$travels->pluck('id'))
-                   ->where('estado_asiento_id','!=',4) //diferente de cancelado
-                   ->get();
+            //     // foreach($listMenores as $menor){
+            //     //     $timeClone = clone $date;
 
-                   $pasajes = [...$pasajes, ...$searchPasajes];
-
-                }
-
-                foreach($listIntermedios as $intermedio){
-                    $timeClone = clone $date;
-
-                    $tiempoEstimado = TransporteProgramacion::where('terminal_origen_id',$viaje->terminal_origen_id)
-                    ->where('terminal_destino_id',$intermedio->terminal_origen_id)
-                    ->where('programacion_id',$programacionPadre->id)
-                    ->first();
-
-                    if(is_null($tiempoEstimado)) continue;
-
-                    // $minutos = $this->hoursToMinutes();
-
-                    $timeClone = $timeClone->addMinutes($tiempoEstimado->tiempo_estimado);
-
-                    $travels = TransporteViajes::where('terminal_origen_id',$intermedio->terminal_origen_id)
-                    ->where('terminal_destino_id',$intermedio->terminal_destino_id)
-                    ->whereDate('fecha_salida',$timeClone->format('Y-m-d'))
-                    ->whereTime('hora_salida', $timeClone->format('H:i:s'))
-                    ->where('programacion_id',$programacionPadre->id)
-                    ->get();
+            //     //     $tiempoEstimado = TransporteProgramacion::where('terminal_origen_id',$menor->terminal_origen_id)
+            //     //     ->where('terminal_destino_id',$viaje->terminal_origen_id)
+            //     //     ->where('programacion_id',$programacionPadre->id)
+            //     //     ->first();
 
 
-                   $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id')
-                   ->whereIn('viaje_id',$travels->pluck('id'))
-                   ->where('estado_asiento_id','!=',4) //diferente de cancelado
-                   ->get();
+            //     //     $timeClone = $timeClone->subMinutes($tiempoEstimado->tiempo_estimado);
 
-                   $pasajes = [...$pasajes, ...$searchPasajes];
-
-
-
-                }
-
-                foreach($list as $item){
-                    $travels = TransporteViajes::where('terminal_origen_id',$item->terminal_origen_id)
-                    ->where('terminal_destino_id',$item->terminal_destino_id)
-                    ->whereDate('fecha_salida', $request->fecha_salida)
-                    ->whereTime('hora_salida', $programacion->hora_salida)
-                    ->where('programacion_id',$programacionPadre->id)
-                    ->get();
+            //     //     $travels = TransporteViajes::where('terminal_origen_id',$menor->terminal_origen_id)
+            //     //     ->where('terminal_destino_id',$menor->terminal_destino_id)
+            //     //     ->whereDate('fecha_salida',$timeClone->format('Y-m-d'))
+            //     //     ->whereTime('hora_salida' , $timeClone->format('H:i:s'))
+            //     //     ->where('programacion_id',$programacionPadre->id)
+            //     //     ->get();
 
 
-                   $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id')
-                   ->whereIn('viaje_id',$travels->pluck('id'))
-                   ->where('estado_asiento_id','!=',4) //diferente de cancelado
-                   ->get();
+            //     //    $searchPasajes = TransportePasaje::with( 'origen', 'destino', 'pasajero','document:id,document_type_id')
+            //     //    ->whereIn('viaje_id',$travels->pluck('id'))
+            //     //    ->where('estado_asiento_id','!=',4) //diferente de cancelado
+            //     //    ->get();
 
-                   $pasajes = [...$pasajes, ...$searchPasajes];
+            //     //    $pasajes = [...$pasajes, ...$searchPasajes];
 
-                }
+            //     // }
+
+            //     // foreach($listIntermedios as $intermedio){
+            //     //     $timeClone = clone $date;
+
+            //     //     $tiempoEstimado = TransporteProgramacion::where('terminal_origen_id',$viaje->terminal_origen_id)
+            //     //     ->where('terminal_destino_id',$intermedio->terminal_origen_id)
+            //     //     ->where('programacion_id',$programacionPadre->id)
+            //     //     ->first();
+
+            //     //     if(is_null($tiempoEstimado)) continue;
+
+            //     //     // $minutos = $this->hoursToMinutes();
+
+            //     //     $timeClone = $timeClone->addMinutes($tiempoEstimado->tiempo_estimado);
+
+            //     //     $travels = TransporteViajes::where('terminal_origen_id',$intermedio->terminal_origen_id)
+            //     //     ->where('terminal_destino_id',$intermedio->terminal_destino_id)
+            //     //     ->whereDate('fecha_salida',$timeClone->format('Y-m-d'))
+            //     //     ->whereTime('hora_salida', $timeClone->format('H:i:s'))
+            //     //     ->where('programacion_id',$programacionPadre->id)
+            //     //     ->get();
 
 
-                $viaje->load('vehiculo.seats');
-                $viaje->setAttribute('asientos_ocupados',$pasajes);
+            //     //    $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id')
+            //     //    ->whereIn('viaje_id',$travels->pluck('id'))
+            //     //    ->where('estado_asiento_id','!=',4) //diferente de cancelado
+            //     //    ->get();
+
+            //     //    $pasajes = [...$pasajes, ...$searchPasajes];
 
 
-                // return response()->json($listMenores->map(function($item){
-                //     return sprintf('%s -> %s',$item->origen->nombre,$item->destino->nombre);
-                // }));
 
-            }
+            //     // }
+
+            //     // foreach($list as $item){
+            //     //     $travels = TransporteViajes::where('terminal_origen_id',$item->terminal_origen_id)
+            //     //     ->where('terminal_destino_id',$item->terminal_destino_id)
+            //     //     ->whereDate('fecha_salida', $request->fecha_salida)
+            //     //     ->whereTime('hora_salida', $programacion->hora_salida)
+            //     //     ->where('programacion_id',$programacionPadre->id)
+            //     //     ->get();
+
+
+            //     //    $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id')
+            //     //    ->whereIn('viaje_id',$travels->pluck('id'))
+            //     //    ->where('estado_asiento_id','!=',4) //diferente de cancelado
+            //     //    ->get();
+
+            //     //    $pasajes = [...$pasajes, ...$searchPasajes];
+
+            //     // }
+
+
+            //     $viaje->load('vehiculo.seats');
+            //     // $viaje->setAttribute('asientos_ocupados',$pasajes);
+
+
+            //     // return response()->json($listMenores->map(function($item){
+            //     //     return sprintf('%s -> %s',$item->origen->nombre,$item->destino->nombre);
+            //     // }));
+
+            // }
 
 
             return response()->json( [
-                'programaciones' => $viajes
+                'programaciones' => $listProgramaciones
             ]);
 
        }catch(Exception $e){
@@ -352,6 +343,17 @@ class TransporteSalesController extends Controller
             'line' => $e->getLine()
         ]);
        }
+
+    }
+
+    public function getAsientosOcupados(Request $request){
+
+        $programacion = TransporteProgramacion::find($request->input('programacion_id'));
+        $fechaSalida = $request->input('fecha_salida');
+
+        $pasajes = $this->getPasajeros($programacion, $fechaSalida, true);
+
+        return response()->json($pasajes);
 
     }
 
@@ -375,7 +377,8 @@ class TransporteSalesController extends Controller
                 // 'programacion_id' => ['required'],
                 'destino_id' => ['required'],
                 'numero_asiento' => ['required'],
-                'hora_salida' => ['required']
+                'hora_salida' => ['required'],
+                'programacion_id' => ['required']
             ]);
 
         }
@@ -398,7 +401,28 @@ class TransporteSalesController extends Controller
                 'numero_asiento',
                 'destino_id',
                 'hora_salida',
-                'viaje_id',
+            ]);
+
+            $programacion = TransporteProgramacion::with('programacion')
+            ->find($request->input('programacion_id'));
+
+            $parentProgramacion = $programacion->programacion;
+
+
+            $viaje = TransporteViajes::where('terminal_origen_id',$programacion->terminal_origen_id)
+            ->where('terminal_destino_id',$programacion->terminal_destino_id)
+            ->whereTime('hora_salida', $programacion->hora_salida)
+            ->whereDate('fecha_salida', $request->fecha_salida )
+            ->where('programacion_id',$parentProgramacion->id)
+            ->first();
+
+            $viaje = !is_null($viaje) ? $viaje : TransporteViajes::create([
+                'terminal_origen_id' => $programacion->terminal_origen_id,
+                'hora_salida' => $programacion->hora_salida,
+                'fecha_salida' => $request->fecha_salida,
+                'vehiculo_id' => $programacion->vehiculo_id,
+                'terminal_destino_id' => $programacion->terminal_destino_id,
+                'programacion_id' => $parentProgramacion->id
             ]);
 
 
@@ -411,6 +435,7 @@ class TransporteSalesController extends Controller
                         // 'fecha_llegada' => $fechaLLegada,
                         'sucursal_id' => $terminal->id,
                         'user_id' => $user->id,
+                        'viaje_id' => $viaje->id
                     ])
                 );
 
@@ -441,6 +466,7 @@ class TransporteSalesController extends Controller
                         'sucursal_id' => $terminal->id,
                         'color' => $terminal->color,
                         'user_id' => $user->id,
+                        'viaje_id' => $viaje->id
                     ])
                 );
 

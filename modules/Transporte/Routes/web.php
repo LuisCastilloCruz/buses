@@ -17,6 +17,7 @@ if ($hostname) {
                 Route::get('sales/{pasaje?}', 'TransporteSalesController@index');
 				Route::get('sales/get-ciudades', 'TransporteSalesController@getCiudades');
 				Route::post('sales/programaciones-disponibles', 'TransporteSalesController@getProgramacionesDisponibles');
+				Route::post('sales/obtener-asientos', 'TransporteSalesController@getAsientosOcupados');
 				Route::post('sales/realizar-venta-boleto', 'TransporteSalesController@realizarVenta');
 				Route::put('sales/{pasaje}/actualizar-boleto', 'TransporteSalesController@updateVenta');
 				Route::put('sales/{pasaje}/venta-boleto-reservado', 'TransporteSalesController@ventaReservado');

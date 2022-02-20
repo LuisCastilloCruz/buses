@@ -227,6 +227,7 @@
                             </div>
                         </div>
                     </template>
+                    <div style="width: 100%" v-loading="loadAsientosOcupados"></div>
                     <div v-if="asientos.length > 0 && tipoVenta == 2 && vehiculo" style="width: 100%">
                         <bus v-if="piso == 1" :change-color="changeColor" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back" :seats.sync="asientosPisoUno" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
                         <bus v-if="piso == 2" :change-color="changeColor" :image-front="vehiculo.img_front" :image-back="vehiculo.img_back"  :seats.sync="asientosPisoDos" :ancho-vehiculo="vehiculo.ancho_vehiculo" @dbclick="dbClick"  />
@@ -507,7 +508,8 @@ export default {
             timeHora: null,
             timeMinuto: null,
             timeSegundo: null,
-            asientosOcupados: []
+            asientosOcupados: [],
+            loadAsientosOcupados:false,
         });
     },
     computed:{
@@ -782,28 +784,47 @@ export default {
                 this.axiosError(error);
             })
         },
-        seleccionar(programacion){
+        async seleccionar(programacion){
             this.visibleAsientoLibre = false;
             this.selectProgramacion = programacion;
             if(this.tipoVenta == 2){
+                this.loadAsientosOcupados = true;
+                this.asientosOcupados = await this.getAsientosOcupados(programacion, this.fecha_salida)
                 this.vehiculo = programacion.vehiculo;
-                this.asientosOcupados = programacion.asientos_ocupados;
+                
+                // this.asientosOcupados = programacion.asientos_ocupados;
                 this.asientos = programacion.vehiculo.seats;
+
+                this.loadAsientosOcupados = false;
 
                 this.$nextTick(() => this.$forceUpdate());
             }
 
         },
+        async getAsientosOcupados(programacion, fechaSalida){
+           
+            const {data} = await this.$http.post('/transportes/sales/obtener-asientos',{
+                programacion_id:programacion.id,
+                fecha_salida: fechaSalida
+            });
+            
+            return data;
+
+
+        },
+
         async onUpdateItem(){
             this.pasajero = {};
             if(this.tipoVenta == 2){
-                let program = this.selectProgramacion;
-                await this.getProgramaciones();
-                this.selectProgramacion = this.programaciones
-                .find(  programacion => programacion.id == program.id );
+                this.visibleAsientoLibre = true;
+                // let program = this.selectProgramacion;
+                // await this.getProgramaciones();
+                // this.selectProgramacion = this.programaciones
+                // .find(  programacion => programacion.id == program.id );
                 this.asientos = this.selectProgramacion.vehiculo.seats;
                 this.vehiculo = this.selectProgramacion.vehiculo;
-                this.asientosOcupados = this.selectProgramacion.asientos_ocupados;
+                this.asientosOcupados = await this.getAsientosOcupados(this.selectProgramacion, this.fecha_salida);
+                this.visibleAsientoLibre = false;
             }else if(this.tipoVenta == 1){
                 this.destino = null;
                 this.horaSalida = null;
