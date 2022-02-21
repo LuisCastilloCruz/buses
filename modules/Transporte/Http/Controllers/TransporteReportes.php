@@ -12,6 +12,7 @@ use Mpdf\Mpdf;
 use App\Models\Tenant\Company;
 use DateTime;
 use Modules\Transporte\Models\TransporteVehiculo;
+use Modules\Transporte\Models\TransporteViajes;
 
 class TransporteReportes extends Controller
 {
@@ -169,7 +170,7 @@ class TransporteReportes extends Controller
 //            $builder->where('active',true);
 //        });
 
-        $transportes = TransporteProgramacion::with('vehiculo','origen','destino')
+        $transportes = TransporteProgramacion::with('vehiculo.seats','origen','destino')
             ->where('active',true)
             ->where('hidden',0)
             ->take($limit)->skip($limit * ($page - 1) );
@@ -181,11 +182,17 @@ class TransporteReportes extends Controller
         foreach($transportes as $transporte){
 
             $totalAsientos = $transporte->vehiculo->asientos;
-            $idsProgramaciones = $transporte->programaciones->map(function($item){
-                return $item->id;
-            });
 
-            $query = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            $viajes = TransporteViajes::where('programacion_id',$transporte->programacion_id)
+            ->get()
+            ->pluck('id');
+            
+            // $idsProgramaciones = $transporte->programaciones->map(function($item){
+            //     return $item->id;
+            // });
+
+            $query = TransportePasaje::with('origen','destino')
+            ->whereIn('viaje_id',$viajes)
             ->where('estado_asiento_id',2) //solo asientos vendidos
             ->whereDate('fecha_salida',$fecha);
 
@@ -201,6 +208,7 @@ class TransporteReportes extends Controller
             $transporte->setAttribute('asientos_disponibles', $totalAsientos - $asientosOcupados);
             $transporte->setAttribute('total_vendido',number_format($efectivo,2,'.',''));
             $transporte->setAttribute('porcentaje',$porcentaje);
+            $transporte->setAttribute('ocupados',$copyQuery->get());
 
         }
 
@@ -214,10 +222,9 @@ class TransporteReportes extends Controller
 
         extract($request->only(['fecha','page','limit']));
 
-        $transportes = TransporteVehiculo::with('programaciones')
-        ->whereHas('programaciones',function($builder){
-            $builder->where('active',true);
-        });
+        $transportes = TransporteProgramacion::with('vehiculo.seats','origen','destino')
+        ->where('active',true)
+        ->where('hidden',0);
 
 
         $transportes = $transportes->get();
@@ -226,12 +233,12 @@ class TransporteReportes extends Controller
 
         foreach($transportes as $transporte){
 
-            $totalAsientos = $transporte->asientos;
-            $idsProgramaciones = $transporte->programaciones->map(function($item){
-                return $item->id;
-            });
+            $totalAsientos = $transporte->vehiculo->asientos;
+            $viajes = TransporteViajes::where('programacion_id',$transporte->programacion_id)
+            ->get()
+            ->pluck('id');
 
-            $query = TransportePasaje::whereIn('programacion_id',$idsProgramaciones)
+            $query = TransportePasaje::whereIn('viaje_id',$viajes)
             ->where('estado_asiento_id',2) //solo asientos vendidos
             ->whereDate('fecha_salida',$fecha);
 
@@ -241,7 +248,7 @@ class TransporteReportes extends Controller
 
             $asientosOcupados = $copyQuery->count();
 
-            $porcentaje = ((int)($asientosOcupados * 100 / $totalAsientos));
+            $porcentaje = ((int)($asientosOcupados * 100 / ($totalAsientos >0 ? $totalAsientos :1 )));
 
             $transporte->setAttribute('asientos_ocupados',$asientosOcupados);
             $transporte->setAttribute('asientos_disponibles', $totalAsientos - $asientosOcupados);
@@ -286,6 +293,8 @@ class TransporteReportes extends Controller
     public function getPreviewReporteVentaBuses(Request $request){
 
         extract($request->only(['fecha','page','limit']));
+
+        abort(404);
 
         $transportes = TransporteVehiculo::with('programaciones')
         ->whereHas('programaciones',function($builder){

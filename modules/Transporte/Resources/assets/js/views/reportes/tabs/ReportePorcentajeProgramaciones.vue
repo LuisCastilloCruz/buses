@@ -45,7 +45,7 @@
                                 {{ row.hora_salida }}  {{ row.origen.nombre }} - {{ row.destino.nombre }}
                             </td>
                             <td>
-                                <el-button type="success" size="mini" @click="recien" >
+                                <el-button type="success" size="mini" @click="recien(row)" >
                                     <i class="fa fa-check"></i>
                                 </el-button>
                             </td>
@@ -76,12 +76,17 @@
 
         </div>
 
+        <ModalDetalleBus v-model="showDetails" :transporte-programacion="transporteProgramacion" :fecha="fecha" />
+
     </div>
 </template>
 <script>
 import moment from 'moment';
-export default {
 
+import ModalDetalleBus from './ModelDetalleBus.vue'
+
+export default {
+    components:{ ModalDetalleBus },
     created(){
         this.fecha = this.now = moment().format('YYYY-MM-DD');
     },
@@ -94,6 +99,9 @@ export default {
             total:1000,
             records:[],
             loading:false,
+            showDetails:false,
+
+            transporteProgramacion:null,
 
         }
     },
@@ -149,8 +157,12 @@ export default {
             $("#form1").remove();
 
         },
-        recien(){
-            alert('En proceso de implementación')
+        recien(row){
+            this.transporteProgramacion = row;
+
+            this.$nextTick(() =>  this.showDetails = true)
+           
+            // alert('En proceso de implementación')
         }
     },
 
