@@ -34,7 +34,16 @@ class NivelesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $nivel = new Nivel();
+        $data = $request->all();
+        $nivel->fill($data);
+        $nivel->save();
+
+        return [
+            'success' => true,
+            'message' => 'Nivel agregado con corréctamente',
+            'id' => $nivel->id
+        ];
     }
 
     /**
@@ -63,9 +72,22 @@ class NivelesController extends Controller
      * @param int $id
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $row = Nivel::findOrFail($request->id);
+
+        $row->fill($request->only('activo','nombre'));
+        $row->save();
+
+        return [
+            'success' => true,
+            'msg' => 'Nivel editado con éxito',
+            'data' => (object)[
+                'id' => $row->id,
+                'activo' => $row->activo,
+                'nombre' => $row->nombre,
+            ],
+        ];
     }
 
     /**
@@ -73,9 +95,26 @@ class NivelesController extends Controller
      * @param int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        try {
+
+            $item = Nivel::findOrFail($request->id);
+            $item->delete();
+
+            return [
+                'success' => true,
+                'message' => 'Nivel eliminado con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return [
+                'success' => false,
+                'message' =>  $e->getMessage()
+            ];
+
+        }
     }
     public function records(Request $request)
     {

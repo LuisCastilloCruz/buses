@@ -8,7 +8,7 @@ use http\Env\Request;
 class Nivel extends ModelTenant
 {
     protected $table = 'restaurante_niveles';
-    protected $fillable = ['nombre', 'activo'];
+    protected $fillable = ['id','nombre', 'activo'];
 
 	public function getActiveAttribute($value)
 	{

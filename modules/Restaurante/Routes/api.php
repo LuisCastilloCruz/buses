@@ -25,6 +25,9 @@ Route::middleware(['auth:api', 'locked.tenant'])->prefix('restaurante')->group(f
 
     //NIVELES
     Route::get('niveles', 'Api\NivelesController@records') ->name('tenant.restaurante.niveles.records');
+    Route::post('niveles/{id}/update', 'Api\NivelesController@update');
+    Route::delete('niveles/{id}/delete', 'Api\NivelesController@destroy');
+    Route::post('niveles', 'Api\NivelesController@store');
 
     //MESAS
     Route::get('{nivel}/mesas', 'Api\MesasController@records') ->name('tenant.restaurante.mesas.records');
