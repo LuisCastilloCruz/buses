@@ -77,7 +77,7 @@ class NivelesController extends Controller
         $row = Nivel::findOrFail($request->id);
 
         $row->fill($request->only('activo','nombre'));
-        $row->save();
+        $row->update();
 
         return [
             'success' => true,
