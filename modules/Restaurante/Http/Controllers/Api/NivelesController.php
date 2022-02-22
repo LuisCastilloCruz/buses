@@ -82,7 +82,7 @@ class NivelesController extends Controller
 
         return [
             'success' => true,
-            'msg' => 'Nivel editado con éxito',
+            'message' => 'Nivel editado con éxito',
         ];
     }
 
