@@ -405,7 +405,7 @@ class MobileController extends Controller
                             ->orWhere('number','like', "%{$request->input}%")
                             ->whereType('customers')
                             ->whereIn('identity_document_type_id', $identity_document_type_id)
-                            ->orderBy('name')
+                            ->orderBy('id')
                             ->get()
                             ->transform(function($row) {
                                 return [
