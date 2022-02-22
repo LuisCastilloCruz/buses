@@ -74,19 +74,15 @@ class NivelesController extends Controller
      */
     public function update(Request $request)
     {
-        $row = Nivel::findOrFail($request->id);
-
-        $row->fill($request->only('activo','nombre'));
-        $row->update();
+        $id = $request->id;
+        $nivel = Nivel::findOrFail($id);
+        $data = $request->all();
+        $nivel->fill($data);
+        $nivel->save();
 
         return [
             'success' => true,
             'msg' => 'Nivel editado con éxito',
-            'data' => (object)[
-                'id' => $row->id,
-                'activo' => $row->activo,
-                'nombre' => $row->nombre,
-            ],
         ];
     }
 
