@@ -114,9 +114,10 @@ class NivelesController extends Controller
     }
     public function records()
     {
-        $nivel = Nivel::where('activo',1)->orderBy('nombre')->get()->transform(function($row) {
+        $nivel = Nivel::orderBy('id','DESC')->get()->transform(function($row) {
             return [
                 'id' => $row->id,
+                'activo' => $row->activo,
                 'nombre' => $row->nombre
             ];
         });
