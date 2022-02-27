@@ -13,6 +13,7 @@ use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
 use Modules\Account\Exports\ReportAccountingSumeriusExport;
+use Modules\Account\Exports\ReportAccountingSiscontExport;
 
 class AccountController extends Controller
 {
@@ -46,18 +47,15 @@ class AccountController extends Controller
 
             case 'siscont':
 
-                $records = $this->getStructureSiscont($records);
+                $data = [
+                    'records' => $this->getStructureSiscont($this->getAllDocuments($d_start, $d_end)),
+                ];
 
-                $temp = tempnam(sys_get_temp_dir(), 'txt');
-                $file = fopen($temp, 'w+');
-                foreach ($records as $record)
-                {
-                    $line = implode('', $record);
-                    fwrite($file, $line."\r\n");
-                }
-                fclose($file);
+                $report = (new ReportAccountingSiscontExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
 
-                return response()->download($temp, $filename.'.txt');
+                return $report;
 
             case 'foxcont':
 
@@ -589,146 +587,36 @@ class AccountController extends Controller
 
     private function getStructureSiscont($documents)
     {
+        return $documents->transform(function($row) {
+            $company_account = CompanyAccount::first();
+            return [
+                'col_A' => number_format($row->id, 2, ".", ""),
+                'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                'date_of_due' => ($row->invoice) ? $row->invoice->date_of_due->format('d/m/Y') : '',
+                'document_type_id' => $row->document_type_id,
+                'state_type_id' => $row->state_type_id,
+                'series' => $row->series,
+                'number' => str_pad($row->number, 7, '0', STR_PAD_LEFT),
+                'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
+                'customer_number' => $row->customer->number,
+                'customer_name' => $row->customer->name,
+                'currency' => ($row->currency_type_id === 'PEN')?'S':'D',
+                'total_isc' => ($row->total_isc>0) ? number_format($row->total_isc, 2, ".", "") : "",
+                'total_exportation' =>($row->total_exportation>0) ? number_format($row->total_exportation, 2, ".", ""): "",
+                'total_unaffected' =>($row->total_unaffected>0) ? number_format($row->total_unaffected, 2, ".", ""): "",
+                'total_taxed' => ($row->total_taxed>0) ?number_format($row->total_taxed, 2, ".", ""): "",
+                'total_igv' => ($row->total_igv>0) ?number_format($row->total_igv, 2, ".", ""): "",
+                'total_plastic_bag_taxes' => ($row->total_plastic_bag_taxes>0) ?number_format($row->total_plastic_bag_taxes, 2, ".", ""): "",
+                'total' => number_format($row->total, 2, ".", ""),
+                'total_exonerated' => ($row->total_exonerated>0) ?number_format($row->total_exonerated, 2, ".", ""): "",
+                'total_retention' => number_format(0, 2, ".", ""),
+                'cta_ingreso' => ($row->currency_type_id === 'PEN') ? $company_account->subtotal_pen : $company_account->subtotal_usd,
+                'cta_igv' => ($row->currency_type_id === 'PEN') ? $company_account->igv_pen : $company_account->ig_usd,
+                'cta_x_cobrar' => ($row->currency_type_id === 'PEN') ? $company_account->total_pen : $company_account->total_pen,
+                'exchange_rate_sale' => ($row->exchange_rate_sale >1) ?$row->exchange_rate_sale : "1.00"
+            ];
+        });
 
-        $company_account = CompanyAccount::first();
-        $rows = [];
-        foreach ($documents as $index => $row)
-        {
-            $date_of_issue = Carbon::parse($row->date_of_issue);
-            $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
-            $document_type_id = ($row->document_type_id === '01')?'01':'03';
-            $detail = substr($row->customer->name.', '.$document_type_id.' '.$row->number_full, 0, 60);
-
-            $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
-
-            foreach ($row->items as $item) {
-
-
-                $rows[] = [
-                    'col_001_002' => '02',
-                    'col_003_006' => $number_index,
-                    'col_007_014' => $date_of_issue->format('d/m/y'),
-                    // 'col_015_024' => '12102',
-                    'col_015_024' => ($row->currency_type_id === 'PEN') ? $company_account->total_pen : $company_account->total_usd,
-                    'col_025_036' => ($row->state_type_id == '11') ? str_pad(0, 12, '0', STR_PAD_LEFT) : str_pad($item->total, 12, '0', STR_PAD_LEFT),
-                    'col_037_037' => 'D',
-                    'col_038_038' => $currency_type_id,
-                    'col_039_048' => str_pad(number_format($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
-                    'col_049_050' => $document_type_id,
-                    'col_051_070' => $row->series.'-'.str_pad($row->number, 15,'0', STR_PAD_LEFT),
-                    'col_071_078' => str_pad(($row->date_of_due)?$row->date_of_due->format('d/m/y'):$row->date_of_issue->format('d/m/y'), 8,' ', STR_PAD_LEFT),
-                    'col_079_089' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                    'col_090_099' => str_pad('', 10, ' ', STR_PAD_LEFT),
-                    'col_100_103' => str_pad('', 4, ' ', STR_PAD_LEFT),
-                    'col_104_113' => str_pad('', 10, ' ', STR_PAD_LEFT),
-                    'col_114_114' => str_pad('', 1, ' ', STR_PAD_LEFT),
-                    'col_115_122' => $date_of_issue->format('d/m/y'),
-                    'col_123_134' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                    'col_135_146' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                    'col_147_158' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                    'col_159_170' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                    'col_171_182' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                    'col_183_193' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                    'col_194_194' => str_pad('', 1, ' ', STR_PAD_LEFT),
-                    'col_195_234' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                    'col_235_264' => str_pad($detail, 30, ' ', STR_PAD_LEFT),
-                    'col_265_265' => $row->customer->identity_document_type_id,
-                    'col_266_268' => str_pad('', 3, ' ', STR_PAD_LEFT),
-                    'col_269_288' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                    'col_289_308' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                    'col_309_328' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                    'col_329_348' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                    'col_349_350' => str_pad('', 2, ' ', STR_PAD_LEFT),
-                    'col_351_358' => str_pad('', 8, ' ', STR_PAD_LEFT),
-                ];
-
-                $rows[] = [
-                    'col_001_002' => '02',
-                    'col_003_006' => $number_index,
-                    'col_007_014' => $date_of_issue->format('d/m/y'),
-                    // 'col_015_024' => '40111',
-                    'col_015_024' =>  ($row->currency_type_id === 'PEN') ? $company_account->igv_pen : $company_account->igv_usd,
-                    // 'col_025_036' => str_pad($row->total, 12, '0', STR_PAD_LEFT),
-                    'col_025_036' => ($row->state_type_id == '11') ? str_pad(0, 12, '0', STR_PAD_LEFT) : str_pad($item->total_igv, 12, '0', STR_PAD_LEFT),
-                    'col_037_037' => 'H',
-                    'col_038_038' => $currency_type_id,
-                    'col_039_048' => str_pad(number_format($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
-                    'col_049_050' => $document_type_id,
-                    'col_051_070' => $row->series.'-'.str_pad($row->number, 15,'0', STR_PAD_LEFT),
-                    'col_071_078' => str_pad(($row->date_of_due)?$row->date_of_due->format('d/m/y'):$row->date_of_issue->format('d/m/y'), 8,' ', STR_PAD_LEFT),
-                    'col_079_089' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                    'col_090_099' => str_pad('', 10, ' ', STR_PAD_LEFT),
-                    'col_100_103' => str_pad('', 4, ' ', STR_PAD_LEFT),
-                    'col_104_113' => str_pad('', 10, ' ', STR_PAD_LEFT),
-                    'col_114_114' => 'V',
-                    'col_115_122' => $date_of_issue->format('d/m/y'),
-                    'col_123_134' => ($row->state_type_id == '11') ? str_pad(0, 12, '0', STR_PAD_LEFT) : str_pad($item->total_value, 12, '0', STR_PAD_LEFT),
-                    'col_135_146' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                    'col_147_158' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                    'col_159_170' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                    // 'col_171_182' => str_pad($item->total_igv, 12, '0', STR_PAD_LEFT),
-                    'col_171_182' => ($row->state_type_id == '11') ? str_pad(0, 12, '0', STR_PAD_LEFT) : str_pad($item->total_igv, 12, '0', STR_PAD_LEFT),
-                    'col_183_193' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                    'col_194_194' => str_pad('', 1, ' ', STR_PAD_LEFT),
-                    'col_195_234' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                    'col_235_264' => str_pad($detail, 30, ' ', STR_PAD_LEFT),
-                    'col_265_265' => $row->customer->identity_document_type_id,
-                    'col_266_268' => str_pad('', 3, ' ', STR_PAD_LEFT),
-                    'col_269_288' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                    'col_289_308' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                    'col_309_328' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                    'col_329_348' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                    'col_349_350' => str_pad('', 2, ' ', STR_PAD_LEFT),
-                    'col_351_358' => str_pad('', 8, ' ', STR_PAD_LEFT),
-                ];
-
-                if($row->state_type_id != '11'){
-
-                    $rows[] = [
-                        'col_001_002' => '02',
-                        'col_003_006' => $number_index,
-                        'col_007_014' => $date_of_issue->format('d/m/y'),
-                        // 'col_015_024' => '70201',
-                        'col_015_024' => ($row->currency_type_id === 'PEN') ? $company_account->subtotal_pen : $company_account->subtotal_usd,
-                        'col_025_036' => str_pad($item->total_value, 12, '0', STR_PAD_LEFT),
-                        'col_037_037' => 'H',
-                        'col_038_038' => $currency_type_id,
-                        'col_039_048' => str_pad(number_format($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
-                        'col_049_050' => $document_type_id,
-                        'col_051_070' => $row->series.'-'.str_pad($row->number, 15,'0', STR_PAD_LEFT),
-                        'col_071_078' => str_pad(($row->date_of_due)?$row->date_of_due->format('d/m/y'):$row->date_of_issue->format('d/m/y'), 8,' ', STR_PAD_LEFT),
-                        'col_079_089' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                        'col_090_099' => str_pad('', 10, ' ', STR_PAD_LEFT),
-                        'col_100_103' => str_pad('', 4, ' ', STR_PAD_LEFT),
-                        'col_104_113' => str_pad('', 10, ' ', STR_PAD_LEFT),
-                        'col_114_114' => str_pad('', 1, ' ', STR_PAD_LEFT),
-                        'col_115_122' => $date_of_issue->format('d/m/y'),
-                        'col_123_134' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                        'col_135_146' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                        'col_147_158' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                        'col_159_170' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                        'col_171_182' => str_pad('', 12, ' ', STR_PAD_LEFT),
-                        'col_183_193' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                        'col_194_194' => str_pad('', 1, ' ', STR_PAD_LEFT),
-                        'col_195_234' => str_pad($row->customer->number, 11, ' ', STR_PAD_LEFT),
-                        'col_235_264' => str_pad($detail, 30, ' ', STR_PAD_LEFT),
-                        'col_265_265' => $row->customer->identity_document_type_id,
-                        'col_266_268' => str_pad('', 3, ' ', STR_PAD_LEFT),
-                        'col_269_288' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                        'col_289_308' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                        'col_309_328' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                        'col_329_348' => str_pad('', 20, ' ', STR_PAD_LEFT),
-                        'col_349_350' => str_pad('', 2, ' ', STR_PAD_LEFT),
-                        'col_351_358' => str_pad('', 8, ' ', STR_PAD_LEFT),
-                    ];
-
-                }
-
-            }
-
-
-        }
-        return $rows;
     }
 
     private function getStructureContasis($documents)
