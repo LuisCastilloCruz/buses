@@ -539,6 +539,11 @@ class MobileController extends Controller
         ];
     }
 
+    public function suppliers()
+    {
+        return $this->table('suppliers');
+    }
+
 
 }
 
