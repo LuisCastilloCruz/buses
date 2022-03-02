@@ -44,10 +44,12 @@
             <quotation-options :showDialog.sync="showDialogOptions"
                                :recordId="recordId"
                                :showGenerate="true"
+                               :configuration="configuration"
                                :showClose="true"></quotation-options>
 
             <quotation-options-pdf :showDialog.sync="showDialogOptionsPdf"
                                    :recordId="recordId"
+                                   :configuration="configuration"
                                    :showClose="true"></quotation-options-pdf>
         </div>
     </div>
@@ -59,7 +61,7 @@ import QuotationOptionsPdf from './partials/options_pdf.vue'
 import DataTable from '../../components/DataTable.vue'
 
 export default {
-    props:['typeUser', 'isClient'],
+    props:['typeUser', 'isClient','configuration'],
     components: {DataTable,QuotationOptions, QuotationOptionsPdf},
     data() {
         return {

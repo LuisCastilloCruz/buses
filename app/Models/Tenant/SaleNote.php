@@ -131,7 +131,6 @@
      * @property-read int|null                                  $guide_files_count
      * @property-read int|null                                  $kardexes_count
      * @property-read int|null                                  $sale_note_payments_count
-     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereEstablishmentId($establishment_id = 0)
      */
     class SaleNote extends ModelTenant
     {
@@ -726,7 +725,7 @@
                 'section' => $this->getSection(),
                 'send_other_server' => $canSentToOtherServer,
                 'web_platforms' => $web_platforms,
-                // 'number' => $this->number,
+                'seller'=>$this->getSellerData()
             ];
         }
 

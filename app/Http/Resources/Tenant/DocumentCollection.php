@@ -188,6 +188,7 @@ class DocumentCollection extends ResourceCollection
                 'purchase_order' => $row->purchase_order,
                 'is_editable' => $row->is_editable,
                 'dispatches' => $this->getDispatches($row),
+                'seller' =>$row->getSellerData()
             ];
         });
     }

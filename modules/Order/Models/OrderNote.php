@@ -589,6 +589,16 @@
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
                 'print_a4' => url('') . "/order-notes/print/{$this->external_id}/a4",
+                'seller'=>$this->getSellerData(),
+                'items'=>$this->items->transform(function ($row) {
+                    return [
+                        'id' => $row->id,
+                        'cant' => $row->quantity,
+                        'precio' => $row->unit_price,
+                        'nombre' => $row->item->description
+
+                    ];
+                })
             ];
         }
 
@@ -629,6 +639,15 @@
 
         public function scopeWhereNotSent($query)
         {
-            return  $query->whereNotIn('state_type_id', ['11'])->where('date_of_issue','<=',date('Y-m-d'));
+            return  $query->with('documents')->doesnthave('documents')->whereNotIn('state_type_id', ['1'])->where('date_of_issue','<=',date('Y-m-d'));
+        }
+
+        public function getSellerData()
+        {
+            if ( !empty($this->seller_id)) {
+                return $this->seller;
+            }
+            return $this->user;
+
         }
     }

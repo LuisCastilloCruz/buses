@@ -541,7 +541,23 @@ class MobileController extends Controller
 
     public function suppliers()
     {
-        return $this->table('suppliers');
+        $suppliers = Person::whereType('suppliers')->orderBy('name')->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+                'address' => $row->address,
+                'email' => $row->email,
+                'selected' => false
+            ];
+        });
+
+        return [
+            'success' => true,
+            'customers' => $suppliers
+        ];
     }
 
 

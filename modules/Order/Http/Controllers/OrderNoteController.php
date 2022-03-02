@@ -89,8 +89,9 @@
     {
 
         $is_client = $this->getIsClient();
+        $configuration = Configuration::first();
 
-        return view('order::order_notes.not_sent', compact('is_client'));
+        return view('order::order_notes.not_sent', compact('is_client','configuration'));
     }
     public function record_not_sent(Request $request)
     {
@@ -102,7 +103,6 @@
     }
 
     public function getRecordsNotSent($request){
-
         $d_end = $request->d_end;
         $d_start = $request->d_start;
         $date_of_issue = $request->date_of_issue;
@@ -344,7 +344,7 @@
 
                     $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-                    $items = Item::orderBy('description')->whereIsActive()->whereNotIsSet()
+                    $items = Item::orderBy('description')->take(20)->whereIsActive()->whereNotIsSet()
                         // ->with(['warehouses' => function($query) use($warehouse){
                         //     return $query->where('warehouse_id', $warehouse->id);
                         // }])

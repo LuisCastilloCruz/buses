@@ -50,7 +50,7 @@ if ($hostname) {
 
             //liquidacion de compra
             Route::post('purchase-settlements', 'Tenant\Api\PurchaseSettlementController@store');
-            Route::get('list/suppliers', 'Tenant\Api\MobileController@suppliers');
+            Route::get('persons/suppliers', 'Tenant\Api\MobileController@suppliers');
 
             Route::get('document/record/{id}', 'Tenant\Api\DocumentController@record');
 
