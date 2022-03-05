@@ -142,18 +142,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="transportePasaje" class="row justify-content-center">
+<!--                                <div v-if="transportePasaje" class="row justify-content-center">-->
 
-                                    <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">
-                                        Comprobante
-                                        <i class="fa fa-file-alt"></i>
-                                    </el-button>
-                                    <el-button type="danger" @click="anularBoleto" :style="{marginTop:'1.90rem'}">
-                                        Anular
-                                        <i class="fa fa-trash"></i>
-                                    </el-button>
+<!--                                    <el-button type="primary" @click="viewComprobante" :style="{marginTop:'1.90rem'}">-->
+<!--                                        Comprobante-->
+<!--                                        <i class="fa fa-file-alt"></i>-->
+<!--                                    </el-button>-->
+<!--                                    <el-button type="danger" @click="anularBoleto" :style="{marginTop:'1.90rem'}">-->
+<!--                                        Anular-->
+<!--                                        <i class="fa fa-trash"></i>-->
+<!--                                    </el-button>-->
 
-                                </div>
+<!--                                </div>-->
 
                                 <div v-if="!transportePasaje && !isReserva" class="row mt-2">
                                     <div class="col-md-12">
@@ -240,8 +240,9 @@
             </div>
             <div class="row mt-4">
             <div class="col-12 d-flex justify-content-center">
-                    <el-button v-if="transportePasaje && destino" :loading="loading" type="primary" @click="actualizarPasaje">Guardar</el-button>
-                    <el-button v-else :loading="loading" type="primary" @click="guardarComprobante">Guardar</el-button>
+<!--                    <el-button v-if="transportePasaje && destino" :loading="loading" type="primary" @click="actualizarPasaje">Actualizar</el-button>-->
+                    <el-button v-if="!transportePasaje" :loading="loading" type="primary" @click="guardarComprobante">Guardar</el-button>
+                <p v-if="transportePasaje" class="text-red">Este asiento fué vendido en otro punto</p>
                 </div>
             </div>
         </el-dialog>
