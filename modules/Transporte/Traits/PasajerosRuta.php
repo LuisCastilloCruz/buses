@@ -12,8 +12,9 @@ trait PasajerosRuta{
     use Rutas;
 
 
-    public function getPasajeros(TransporteProgramacion $programacion, $fechaSalida){
+    public function getPasajeros(TransporteProgramacion $programacion, $fechaSalida, $onlyPassage = false){
         $pasajes = collect([]);
+        $programacion->load(['programacion','origen','destino']);
         $programacionPadre = $programacion->programacion;
 
         $rutas = $programacionPadre->rutas()->get();
@@ -23,18 +24,24 @@ trait PasajerosRuta{
 
         $date = new Carbon(sprintf('%s %s', $fechaSalida,$programacion->hora_salida));
 
-        $viaje = TransporteViajes::where('terminal_origen_id',$programacion->terminal_origen_id)
-        ->where('terminal_destino_id',$programacion->terminal_destino_id)
-        ->whereTime('hora_salida', $programacion->hora_salida)
-        ->whereDate('fecha_salida', $fechaSalida )
-        ->where('programacion_id',$programacionPadre->id)
-        ->first();
+        // $viaje = TransporteViajes::where('terminal_origen_id',$programacion->terminal_origen_id)
+        // ->where('terminal_destino_id',$programacion->terminal_destino_id)
+        // ->whereTime('hora_salida', $programacion->hora_salida)
+        // ->whereDate('fecha_salida', $fechaSalida )
+        // ->where('programacion_id',$programacionPadre->id)
+        // ->first();
 
-        if(is_null($viaje)) return [
-            $pasajes, 
-            $pasajesEnTerminal,
-            $recogidosEnRuta
-        ];
+        // if(is_null($viaje)) {
+        //     if($onlyPassage) return $pasajes;
+
+        //     return [
+        //         $pasajes, 
+        //         $pasajesEnTerminal,
+        //         $recogidosEnRuta
+        //     ];
+
+
+        // }
 
 
 
@@ -42,8 +49,8 @@ trait PasajerosRuta{
         $rutas->push($programacionPadre->destino);
 
         // return response()->json($viaje->terminal_origen_id);
-        $indexOrigen = $this->getPositionInRoute($viaje->origen,$rutas);
-        $indexDestino = $this->getPositionInRoute($viaje->destino, $rutas);
+        $indexOrigen = $this->getPositionInRoute($programacion->origen,$rutas);
+        $indexDestino = $this->getPositionInRoute($programacion->destino, $rutas);
 
         $mayores = $this->getRutasMayores($indexOrigen,$rutas)->pluck('id');
         $menores = $this->getRutasMenores($indexOrigen,$rutas)->pluck('id');
@@ -58,7 +65,7 @@ trait PasajerosRuta{
 
 
         $list = TransporteProgramacion::with('origen','destino')
-        ->where('terminal_origen_id',$viaje->terminal_origen_id)
+        ->where('terminal_origen_id',$programacion->terminal_origen_id)
         ->where('programacion_id',$programacionPadre->id)
         ->get(); // obtengo todas las programaciones que vienen hacia mi
 
@@ -74,7 +81,7 @@ trait PasajerosRuta{
             $timeClone = clone $date;
 
             $tiempoEstimado = TransporteProgramacion::where('terminal_origen_id',$menor->terminal_origen_id)
-            ->where('terminal_destino_id',$viaje->terminal_origen_id)
+            ->where('terminal_destino_id',$programacion->terminal_origen_id)
             ->where('programacion_id',$programacionPadre->id)
             ->first();
 
@@ -102,7 +109,7 @@ trait PasajerosRuta{
         foreach($listIntermedios as $intermedio){
             $timeClone = clone $date;
 
-            $tiempoEstimado = TransporteProgramacion::where('terminal_origen_id',$viaje->terminal_origen_id)
+            $tiempoEstimado = TransporteProgramacion::where('terminal_origen_id',$programacion->terminal_origen_id)
             ->where('terminal_destino_id',$intermedio->terminal_origen_id)
             ->where('programacion_id',$programacionPadre->id)
             ->first();
@@ -153,6 +160,9 @@ trait PasajerosRuta{
             
 
         }
+
+        if($onlyPassage) return $pasajes;
+
 
         return [
             $pasajes, 

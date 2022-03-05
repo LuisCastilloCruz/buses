@@ -774,7 +774,7 @@ export default {
                 tipo_venta:this.tipoVenta, //venta asiento libre
                 destino_id: this.destino.id,
                 hora_salida: this.tipoVenta == 2 ?  this.programacion.hora_salida : this.horaSalida,
-                viaje_id: this.tipoVenta == 2 ? this.programacion.id : null,
+                programacion_id: this.tipoVenta == 2 ? this.programacion.id : null,
             };
 
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)

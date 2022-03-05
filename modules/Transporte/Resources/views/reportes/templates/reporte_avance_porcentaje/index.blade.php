@@ -68,8 +68,8 @@
 
         @foreach ($transportes as $transporte)
             <tr >
-                <td>{{ $transporte->placa }}</td>
-                <td>{{ $transporte->nombre }}</td>
+                <td>{{ $transporte->vehiculo->placa }}</td>
+                <td>{{ $transporte->vehiculo->nombre }}</td>
                 <td>{{ $transporte->asientos_ocupados }}</td>
                 <td>{{ $transporte->asientos_disponibles }}</td>
                 <td><strong>%{{ $transporte->porcentaje }}</strong> </td>
