@@ -35,7 +35,7 @@ trait PasajerosRuta{
         //     if($onlyPassage) return $pasajes;
 
         //     return [
-        //         $pasajes, 
+        //         $pasajes,
         //         $pasajesEnTerminal,
         //         $recogidosEnRuta
         //     ];
@@ -98,6 +98,7 @@ trait PasajerosRuta{
 
             $searchPasajes = TransportePasaje::with( 'origen', 'destino', 'pasajero','document:id,document_type_id,series,number')
             ->whereIn('viaje_id',$travels->pluck('id'))
+            ->where('estado_asiento_id','!=',4) //diferente de cancelado
             ->get();
 
             // $recogidosEnRuta += count($searchPasajes);
@@ -130,6 +131,7 @@ trait PasajerosRuta{
 
             $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id,series,number')
             ->whereIn('viaje_id',$travels->pluck('id'))
+            ->where('estado_asiento_id','!=',4) //diferente de cancelado
             ->get();
 
             $recogidosEnRuta += count($searchPasajes);
@@ -151,13 +153,14 @@ trait PasajerosRuta{
 
             $searchPasajes = TransportePasaje::with('origen', 'destino', 'pasajero','document:id,document_type_id,series,number')
             ->whereIn('viaje_id',$travels->pluck('id'))
+            ->where('estado_asiento_id','!=',4) //diferente de cancelado
             ->get();
 
             $pasajesEnTerminal += count($searchPasajes);
 
             $pasajes = [...$pasajes, ...$searchPasajes];
 
-            
+
 
         }
 
@@ -165,12 +168,12 @@ trait PasajerosRuta{
 
 
         return [
-            $pasajes, 
+            $pasajes,
             $pasajesEnTerminal,
             $recogidosEnRuta
         ];
     }
 
-    
+
 
 }
