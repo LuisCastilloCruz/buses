@@ -207,7 +207,7 @@ class AccountController extends Controller
         return Document::query()
                                 ->whereBetween('date_of_issue', [$d_start, $d_end])
                                 ->whereIn('currency_type_id', ['PEN','USD'])
-                                ->orderBy('series','asc')
+                                ->orderBy('series','DESC')
                                 ->orderBy('number')
                                 ->get();
 
