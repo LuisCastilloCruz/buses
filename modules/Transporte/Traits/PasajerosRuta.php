@@ -103,7 +103,7 @@ trait PasajerosRuta{
 
             // $recogidosEnRuta += count($searchPasajes);
 
-            $pasajes = array_merge([$pasajes, $searchPasajes]);
+            $pasajes = [...$pasajes, ...$searchPasajes];
 
         }
 
@@ -136,7 +136,7 @@ trait PasajerosRuta{
 
             $recogidosEnRuta += count($searchPasajes);
 
-            $pasajes = array_merge([$pasajes, $searchPasajes]);
+            $pasajes = [...$pasajes, ...$searchPasajes];
 
 
 
@@ -158,7 +158,7 @@ trait PasajerosRuta{
 
             $pasajesEnTerminal += count($searchPasajes);
 
-            $pasajes = array_merge([$pasajes, $searchPasajes]);
+            $pasajes = [...$pasajes, ...$searchPasajes];
 
 
 
