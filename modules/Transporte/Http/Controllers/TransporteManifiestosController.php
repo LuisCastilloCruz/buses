@@ -213,20 +213,31 @@ class TransporteManifiestosController extends Controller
             $fecha = $request->input('fecha');
             $cliente = $request->input('cliente');
 
-            $encomiendas = TransporteEncomienda::with('document:id,total,series,number','document.items','remitente:id,name','programacion')
+            $encomiendas_documents = TransporteEncomienda::with('document:id,total,series,number','document.items','remitente:id,name','programacion')
             ->where('programacion_id',$programacion)
             ->where('fecha_salida',$fecha)
             ->get();
 
+            $encomiendas_notes = TransporteEncomienda::with('saleNote:id,total,series,number','saleNote.items','remitente:id,name','programacion')
+                ->where('programacion_id',$programacion)
+                ->where('fecha_salida',$fecha)
+                ->get();
+
             if(!empty($cliente)){
-                $encomiendas->whereHas('remitente',function($remitente) use ($cliente){
+                $encomiendas_documents->whereHas('remitente',function($remitente) use ($cliente){
+                    $remitente->where('nombre','like',"%{$cliente}%");
+                });
+                $encomiendas_notes->whereHas('remitente',function($remitente) use ($cliente){
                     $remitente->where('nombre','like',"%{$cliente}%");
                 });
 
             }
 
+            return response()->json([
+                'documents' => $encomiendas_documents,
+                'sale_notes' => $encomiendas_notes,
 
-            return response()->json($encomiendas,200);
+            ],200);
 
         }catch(Exception $e){
 
@@ -245,39 +256,27 @@ class TransporteManifiestosController extends Controller
 
             $cliente = $request->input('cliente');
 
-            $encomiendas = TransporteEncomienda::with('document:id,total,series,number','document.items','remitente:id,name')
+            $encomiendas_document = TransporteEncomienda::with('document:id,total,series,number','document.items','remitente:id,name')
             ->whereNull('programacion_id')
-            ->whereBetween('fecha_salida',[$fecha_inicio,$fecha_final]);
+            ->whereNotNull('document_id')
+            ->whereBetween('fecha_salida',[$fecha_inicio,$fecha_final])->get();
 
+            $encomiendas_notes = TransporteEncomienda::with('saleNote:id,total,series,number','saleNote.items','remitente:id,name')
+                ->whereNull('programacion_id')
+                ->whereNotNull('note_id')
+                ->whereBetween('fecha_salida',[$fecha_inicio,$fecha_final])->get();
 
+            return response()->json([
+                    'documents' => $encomiendas_document,
+                    'sale_notes' => $encomiendas_notes,
 
-
-            // $listEncomiendas = collect([]);
-
-            // foreach($encomiendas->get() as $encomienda){
-
-            //     foreach($encomienda->document->items as $item){
-
-            //         $listEncomiendas->push([
-            //             'id' => $encomienda->id,
-            //             ''
-
-            //         ]);
-
-            //     }
-
-            // }
-
-
-
-
-            return response()->json($encomiendas->get(),200);
+            ],200);
 
         }catch(Exception $e){
 
             return response()->json([
                 'error' => $e->getMessage(),
-                'message' => 'Lo sentimos ocurrio un error'
+                'message' => 'Lo sentimos ocurrio un error'. $e->getMessage()
             ],500);
 
         }
@@ -320,7 +319,7 @@ class TransporteManifiestosController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Asignado'
+                'message' => 'Desasignado'
             ],200);
 
         }catch(Exception $e){

@@ -72,7 +72,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="encomienda in listEncomiendas" :key="encomienda.id">
+                                <tr v-if="encomienda.documents" v-for="encomienda in listEncomiendasDocuments" :key="encomienda.id">
                                     <td>{{ encomienda.fecha_salida }}</td>
                                     <td>{{ encomienda.programacion.hora_salida }}</td>
                                     <td>{{ encomienda.remitente.name }}</td>
@@ -90,10 +90,29 @@
                                         </el-button>
                                     </th>
                                 </tr>
+
+                                <tr v-if="encomienda.sale_note" v-for="encomienda in listEncomiendasNotes" :key="encomienda.id">
+                                    <td>{{ encomienda.fecha_salida }}</td>
+                                    <td>{{ encomienda.programacion.hora_salida }}</td>
+                                    <td>{{ encomienda.remitente.name }}</td>
+                                    <td>{{ encomienda.sale_note.series }}-{{ encomienda.sale_note.number }}</td>
+                                    <td>
+                                        <div v-for="(item,index) in encomienda.sale_note.items" :key="index">
+                                            {{ item.item.description }}
+                                        </div>
+                                    </td>
+                                    <td>{{ encomienda.sale_note.items.length }}</td>
+                                    <td>{{ encomienda.sale_note.total }}</td>
+                                    <th>
+                                        <el-button type="primary" @click="desasignar(encomienda)">
+                                            <i class="fa fa-arrow-left"></i>
+                                        </el-button>
+                                    </th>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -112,8 +131,8 @@
                             >
                             </el-date-picker>
                         </div>
-                        
-                        
+
+
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
@@ -127,7 +146,7 @@
                             </el-date-picker>
                         </div>
                     </div>
-                   
+
                 </div>
                 <div class="row mt-2">
                     <div v-loading="loadingTable" class="col-md-12 table-responsive">
@@ -145,7 +164,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="encomienda in encomiendasSinAsignar" :key="encomienda.id">
+                                <tr v-if="encomienda.documents" v-for="encomienda in encomiendasSinAsignarDocuments" :key="encomienda.id">
                                     <th>
                                         <el-button type="primary" @click="asignar(encomienda)">
                                             <i class="fa fa-arrow-right"></i>
@@ -163,17 +182,41 @@
                                     <td>{{ encomienda.document.items.length }}</td>
                                     <td>{{ encomienda.document.total }}</td>
                                 </tr>
+                                <tr v-if="encomienda.sale_note" v-for="encomienda in encomiendasSinAsignarNotes" :key="encomienda.id">
+                                    <th>
+                                        <el-button type="primary" @click="asignar(encomienda)">
+                                            <i class="fa fa-arrow-right"></i>
+                                        </el-button>
+                                    </th>
+                                    <td>{{ encomienda.fecha_salida }}</td>
+                                    <td>{{ programacion.hora_salida }}</td>
+                                    <td>{{ encomienda.remitente.name }}</td>
+                                    <td>
+                                        {{ encomienda.sale_note.series }}-{{ encomienda.sale_note.number }}
+                                    </td>
+                                    <td>
+                                        <div v-for="(item,index) in encomienda.sale_note.items" :key="index">
+                                            {{ item.item.description }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ encomienda.sale_note.items.length }}
+                                    </td>
+                                    <td>
+                                        {{ encomienda.sale_note.total }}
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
-                        
+
 
                     </div>
                 </div>
             </div>
         </div>
-        
+
     </div>
-        
+
 </template>
 <script>
 import moment from "moment";
@@ -197,11 +240,13 @@ export default {
         programacion:null,
         loadingEncomiendas:false,
         loadingTable:false,
-        
+
         fechaInicio:null,
         fechaFinal:null,
-        listEncomiendas:[],
-        encomiendasSinAsignar:[]
+        listEncomiendasDocuments:[],
+        listEncomiendasNotes:[],
+        encomiendasSinAsignarDocuments:[],
+        encomiendasSinAsignarNotes:[]
     }),
     methods:{
 
@@ -213,7 +258,12 @@ export default {
                 this.loadingEncomiendas = true;
                 const { data } = await this.$http.post(`/transportes/manifiestos/get-encomiendas`,form);
                 this.loadingEncomiendas = false;
-                this.listEncomiendas = data;
+                console.log('arriba')
+                console.log(data)
+
+                this.listEncomiendasDocuments = data.documents;
+                this.listEncomiendasNotes = data.sale_notes;
+
 
             }catch(error){
                 this.loadingEncomiendas = false;
@@ -229,7 +279,11 @@ export default {
                 this.loadingTable = true;
                 const { data } = await axios.post('/transportes/manifiestos/get-encomiendas-sin-asignar',form);
                 this.loadingTable = false;
-                this.encomiendasSinAsignar = data;
+
+                console.log('abajo')
+                console.log(data)
+                this.encomiendasSinAsignarDocuments = data.documents;
+                this.encomiendasSinAsignarNotes = data.sale_notes;
 
             }catch(error){
                 this.loadingTable = false;
@@ -281,6 +335,6 @@ export default {
         }
 
     }
-    
+
 }
 </script>
