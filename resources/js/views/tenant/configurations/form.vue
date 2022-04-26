@@ -1081,7 +1081,8 @@ export default {
             },
             affectation_igv_types: [],
             placeholder: '',
-            activeName: 'first'
+            activeName: 'first',
+            printer_silent: localStorage.printer_silent
         }
     },
     created() {
@@ -1099,7 +1100,6 @@ export default {
                 this.$store.commit('setConfiguration', this.form)
 
             }
-            // console.log(this.placeholder)
         });
 
         this.events()

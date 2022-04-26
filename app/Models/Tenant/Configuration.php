@@ -206,7 +206,15 @@
             'update_document_on_dispaches',
             'show_service_on_pos',
             'visual',
-
+            'color1',
+            'color2',
+            'PrinterNombre1',
+            'PrinterRuta1',
+            'PrinterTipoConexion1',
+            'PrinterNombre2',
+            'PrinterRuta2',
+            'PrinterTipoConexion2',
+            'print_silent'
         ];
 
         protected $casts = [
