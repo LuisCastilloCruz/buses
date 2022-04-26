@@ -43,7 +43,7 @@
                     <div v-for="template in formatos" class="my-2 col-sm-12 col-md-6 col-lg-4 col-xl-3">
                         <el-card :id="template.id"
                                  :body-style="{ padding: '0px' }">
-                            <a @click="viewImage(template)">
+                            <a @click="viewImage(template)" v-if="template.urls.invoice">
                                 <img :src="path.origin+'/'+template.urls.invoice"
                                      class="image"
                                      style="width: 100%"></a>
@@ -105,7 +105,7 @@
             :visible.sync="modalImage"
             width="100">
             <span>
-                <div class="block">
+                <div class="block" v-if="template.urls.invoice">
                     <el-carousel arrow="always" :interval="10000" height="550px">
                         <el-carousel-item>
                             <img  :src="path.origin+'/'+template.urls.invoice"
@@ -163,6 +163,12 @@ export default {
             template: {
                 name: '',
                 urls: {}
+            },
+            color1:{
+                dato:''
+            },
+            color2:{
+                dato:''
             }
         }
     },
@@ -217,11 +223,8 @@ export default {
 
         changeColor1(value,e){
             this.modalImage = false
-            this.formatos = {
-                formats: value,
-                color1: e.target.value
-            }
-            this.$http.post(`/${this.resource}/changeColor1`, this.formatos).then(response =>{
+            this.color1.dato=e.target.value
+            this.$http.post(`/${this.resource}/changeColor1`, this.color1).then(response =>{
                 this.$message.success(response.data.message);
                 //alert('El color primario fué cambiado corréctamente, el sistema necesita recargarse.');
                 //location.reload()
@@ -231,11 +234,8 @@ export default {
         },
         changeColor2(value,e){
             this.modalImage = false
-            this.formatos = {
-                formats: value,
-                color2: e.target.value
-            }
-            this.$http.post(`/${this.resource}/changeColor2`, this.formatos).then(response =>{
+            this.color2.dato=e.target.value
+            this.$http.post(`/${this.resource}/changeColor2`, this.color2).then(response =>{
                 this.$message.success(response.data.message);
                 //alert('El color secundario fué cambiado corréctamente, el sistema necesita recargarse.');
                 //location.reload()

@@ -420,8 +420,8 @@ class ConfigurationController extends Controller
 
     public function changeColor1(Request $request){
         $format = Configuration::first();
-        $format->fill($request->all());
-        $format->save();
+        $format->color1=$request->dato;
+        $format->update();
 
         $config_format = config(['tenant.pdf_template' => $format->formats]);
         // $fp = fopen(base_path() .'/config/tenant.php' , 'w');
@@ -436,8 +436,8 @@ class ConfigurationController extends Controller
     public function changeColor2(Request $request)
     {
         $format = Configuration::first();
-        $format->fill($request->all());
-        $format->save();
+        $format->color2=$request->dato;
+        $format->update();
 
         $config_format = config(['tenant.pdf_template' => $format->formats]);
         // $fp = fopen(base_path() .'/config/tenant.php' , 'w');

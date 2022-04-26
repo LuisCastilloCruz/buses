@@ -59,8 +59,9 @@ class QuotationController extends Controller
     {
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
+        $configuration = Configuration::first();
 
-        return view('tenant.quotations.index', compact('soap_company'));
+        return view('tenant.quotations.index', compact('soap_company','configuration'));
     }
 
 

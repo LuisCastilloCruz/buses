@@ -433,6 +433,15 @@
                 ],
                 'auto_print' => (bool)$this->auto_print,
                 'show_service_on_pos' => (bool)$this->show_service_on_pos,
+                'color1'=>$this->color1,
+                'color2'=>$this->color2,
+                'PrinterNombre1'=>$this->PrinterNombre1,
+                'PrinterRuta1'=>$this->PrinterRuta1,
+                'PrinterTipoConexion1'=>$this->PrinterTipoConexion1,
+                'PrinterNombre2'=>$this->PrinterNombre2,
+                'PrinterRuta2'=>$this->PrinterRuta2,
+                'PrinterTipoConexion2'=>$this->PrinterTipoConexion2,
+                'print_silent'=>(bool) $this->print_silent,
 
             ];
         }

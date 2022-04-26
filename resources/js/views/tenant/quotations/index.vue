@@ -195,10 +195,12 @@
             <quotation-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
                               :showGenerate="true"
+                               :configuration="configuration"
                               :showClose="true"></quotation-options>
 
             <quotation-options-pdf :showDialog.sync="showDialogOptionsPdf"
                               :recordId="recordId"
+                              :configuration="configuration"
                               :showClose="true"></quotation-options-pdf>
 
 
@@ -224,7 +226,8 @@
     export default {
         props:[
             'typeUser',
-            'soapCompany'
+            'soapCompany',
+            'configuration'
         ],
         mixins: [
             deletable

@@ -146,6 +146,7 @@ class CashController extends Controller
             $notes = [];
             $usado = '';
 
+
             /** Documentos de Tipo Nota de venta */
             if ($cash_document->sale_note) {
                 $transporte='';
@@ -353,6 +354,38 @@ class CashController extends Controller
                     'usado'                     => $usado." ".__LINE__,
 
                     'tipo' => 'expense_payment',
+                ];
+            }
+            elseif ($cash_document->income_payment) {
+                $income_payment = $cash_document->income_payment;
+                //    $usado = '<br>No se usan pagos<br>';
+
+                if ($income_payment->income->state_type_id == '05') {
+                    $total = self::CalculeTotalOfCurency(
+                        $income_payment->payment,
+                        $income_payment->income->currency_type_id,
+                        $income_payment->income->exchange_rate_sale
+                    );
+                    //        $usado = '<br>Se usan para cash<br>';
+
+                    $cash_income += $total;
+                    $final_balance += $total;
+
+                }
+                //dd($income_payment->income);
+                $temp = [
+                    'type_transaction'          => 'Ingreso',
+                    'document_type_description' => $income_payment->income->income_type->description,
+                    'number'                    => $income_payment->income->number,
+                    'date_of_issue'             => $income_payment->income->date_of_issue->format('Y-m-d'),
+                    'date_sort'                 => $income_payment->income->date_of_issue,
+                    'customer_name'             => $income_payment->income->customer,
+                    'customer_number'           => "",
+                    'total'                     => $income_payment->payment,
+                    'currency_type_id'          => $income_payment->income->currency_type_id,
+                    'usado'                     => $usado." ".__LINE__,
+
+                    'tipo' => 'income_payment',
                 ];
             }
 
