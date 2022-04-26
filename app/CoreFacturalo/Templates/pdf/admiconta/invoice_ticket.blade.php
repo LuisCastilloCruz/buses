@@ -720,6 +720,9 @@
             <tr>
                 <td class="text-center desc pt-2" colspan="2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
             </tr>
+            <tr>
+                <td class="text-center desc pt-2" colspan="2">Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma</td>
+            </tr>
 </table>
 </body>
 </html>
