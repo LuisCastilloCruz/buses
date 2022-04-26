@@ -1329,7 +1329,7 @@
                      :showDialog.sync="showDialogNewPerson"
                      type="customers"></person-form>
 
-        <document-options :configuration="config"
+        <document-options :configuration="configuration"
                           :isContingency="is_contingency"
                           :isUpdate="isUpdate"
                           :recordId="documentNewId"
