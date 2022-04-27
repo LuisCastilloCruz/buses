@@ -336,12 +336,14 @@
             :isContingency="false"
             :recordId="documentNewId"
             :showClose="true"
+            :configuration="configuration"
             :showDialog.sync="showDialogDocumentOptions"
         ></document-options>
 
         <sale-note-options
             :recordId="documentNewId"
             :showClose="true"
+            :configuration="configuration"
             :showDialog.sync="showDialogSaleNoteOptions"
         ></sale-note-options>
     </div>
@@ -369,6 +371,7 @@ export default {
         "showGenerate",
         "type",
         "typeUser",
+        "configuration"
     ],
     data() {
         return {

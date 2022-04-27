@@ -4,7 +4,7 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+    //$document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
     $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
     $allowed_items = 90;
@@ -27,7 +27,7 @@
     {{--<title>{{ $document_number }}</title>--}}
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
-
+<body>
 <table class="full-width">
     <tr>
         @if($company->logo)
@@ -39,96 +39,96 @@
                 {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
             </td>
         @endif
-        <td width="40%" class="pl-3">
+        <td width="45%" class="pl-3">
             <div class="text-left">
-                <h3 class=""><b>{{ $company->name }}</b></h3>
-                <h4><b>RUC: </b>{{$company->number }}</h4>
-                <h5 style="text-transform: uppercase;font-size: smaller">
+                <p style="font-size: medium"><b>{{ $company->name }}</b></p>
+                <h5><b>RUC: </b>{{$company->number }}</h5>
+                <p style="text-transform: uppercase;font-size: 11px">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
-                </h5>
+                </p>
 
                 @if($establishment->email!== '-')
-                   <p><b>Correo: </b> {{$establishment->email}}</p>
+                    <p><b>Correo: </b> {{$establishment->email}}</p>
                 @endif
                 @if($establishment->telephone!== '-')
                     <p><b>Teléfono: </b> {{$establishment->telephone}}</p>
                 @endif
             </div>
         </td>
-        <td width="40%" class="py-2 px-2 text-center" style="border: 1px solid {{$color1}}">
+        <td width="35%" class="py-2 px-2 text-center" style="border: 1px solid {{$color1}}">
             <h3 class="font-bold">{{ 'R.U.C. '.$company->number }}</h3>
-            <h3 class="text-center text-white font-bold" style="background: {{$color1}}">GUIA DE REMISION ELECTRÓNICA REMITENTE</h3>
+            <h5 class="text-center text-white font-bold" style="background: {{$color1}}">GUIA DE REMISION ELECTRÓNICA REMITENTE</h5>
             <h3 class="text-center font-bold">{{ $document_number }}</h3>
         </td>
     </tr>
 </table>
 <div class="mt-2" style="border: 1px solid black; border-radius: 10px">
-<table class="full-width mt-10 mb-10">
-    <tbody >
-    <tr>
-        <td class="pl-3 text-left" width="35%"><strong>Fecha Emisión:</strong> {{ $document->date_of_issue->format('d/m/Y') }}</td>
-        <td class="pl-3 text-center" width="35%"><strong>Fecha de Traslado:</strong> {{ $document->date_of_shipping->format('d/m/Y') }}</td>
-        <td class="pl-3 text-right"width="35%"><strong>Número de factura:</strong>
+    <table class="full-width mt-10 mb-10">
+        <tbody >
+        <tr>
+            <td class="pl-3 text-left" width="35%"><strong>Fecha Emisión:</strong> {{ $document->date_of_issue->format('d/m/Y') }}</td>
+            <td class="pl-3 text-center" width="35%"><strong>Fecha de Traslado:</strong> {{ $document->date_of_shipping->format('d/m/Y') }}</td>
+            <td class="pl-3 text-right"width="35%"><strong>Número de factura:</strong>
             @if ($document->reference_document){{$document->reference_document->number_full}}
             @else
                 <td class="pl-3"></td>
-            @endif
-        </td>
-        <td>
-            @if ($document->reference_document)
-                @if ($document->reference_document->purchase_order)
-                    <td class="pl-3"><strong>O. COMPRA:</strong> {{$document->reference_document->purchase_order}}</td>
+                @endif
+                </td>
+                <td>
+                @if ($document->reference_document)
+                    @if ($document->reference_document->purchase_order)
+                        <td class="pl-3"><strong>O. COMPRA:</strong> {{$document->reference_document->purchase_order}}</td>
+                    @else
+                        <td class="pl-3"></td>
+                    @endif
                 @else
                     <td class="pl-3"></td>
-                @endif
-            @else
-                <td class="pl-3"></td>
-            @endif
-        </td>
-    </tr>
-    </tbody>
-</table>
+                    @endif
+                    </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 <table class="mt-2 full-width mt-10 mb-10">
     <tbody>
-        <tr>
-            <td class="pl-3" width="48%" style="border: 1px solid black">
-                <table>
-                    <tr>
-                        <td class="full-width">
-                            <strong>DIRECCIÓN DE PARTIDA</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            {{ $document->origin->address }} - {{ $document->origin->location_id }}
-                        </td>
-                    </tr>
-                </table>
+    <tr>
+        <td class="pl-3" width="48%" style="border: 1px solid black">
+            <table>
+                <tr>
+                    <td class="full-width">
+                        <strong style="font-size: 11px">DIRECCIÓN DE PARTIDA</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {{ $document->origin->address }} - {{ $document->origin->location_id }}
+                    </td>
+                </tr>
+            </table>
 
-            </td>
-            <td width="4%">
+        </td>
+        <td width="4%">
 
-            </td>
-            <td class="pl-3" width="48%" style="border: 1px solid black">
-                <table>
-                    <tr>
-                        <td class="full-width">
-                            <strong>DIRECCIÓN DE LLEGADA</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            {{ $document->delivery->address }} - {{ $document->delivery->location_id }}
-                        </td>
-                    </tr>
-                </table>
+        </td>
+        <td class="pl-3" width="48%" style="border: 1px solid black">
+            <table>
+                <tr>
+                    <td class="full-width">
+                        <strong style="font-size: 11px">DIRECCIÓN DE LLEGADA</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="font-size: 10px">{{ $document->delivery->address }} - {{ $document->delivery->location_id }}</p>
+                    </td>
+                </tr>
+            </table>
 
-            </td>
-        </tr>
+        </td>
+    </tr>
     </tbody>
 </table>
 <table class="mt-2 full-width mt-10 mb-10">
@@ -138,12 +138,12 @@
             <table>
                 <tr>
                     <td class="full-width">
-                        <strong>REMITENTE</strong>
+                        <strong style="font-size: 11px">REMITENTE</strong>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                       {{$company->name}}
+                        <p style="font-size: 10px">{{$company->name}}</p>
                     </td>
                 </tr>
                 <tr>
@@ -161,12 +161,12 @@
             <table>
                 <tr>
                     <td class="full-width">
-                        <strong>DESTINATARIO</strong>
+                        <strong style="font-size: 11px">DESTINATARIO</strong>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        {{ $customer->name }}
+                        <p style="font-size: 10px">{{ $customer->name }}</p>
                     </td>
                 </tr>
 
@@ -204,10 +204,10 @@
         <td width="50%" class="border-box pl-3" style="border: 1px solid black">
             <table class="full-width">
                 <tr>
-                    <td colspan="2"><strong>EMPRESA DE TRANSPORTE</strong></td>
+                    <td colspan="2"><strong style="font-size: 11px">EMPRESA DE TRANSPORTE</strong></td>
                 </tr>
                 <tr>
-                    <td><strong>Transportista:</strong> {{ $document->dispatcher->name }}</td>
+                    <td><strong>Transportista:</strong> <span style="font-size: 10px">{{ $document->dispatcher->name }}</span></td>
                 </tr>
                 <tr>
                     <td><strong>{{ $document_type_dispatcher->description }}:</strong> {{ $document->dispatcher->number }}</td>
@@ -222,10 +222,10 @@
         <td width="45%" class="pl-3" style="border: 1px solid black; border-radius: 10px">
             <table class="full-width" >
                 <tr>
-                    <td colspan="2"><strong>UNIDAD DE TRANSPORTE - CONDUCTOR</strong></td>
+                    <td colspan="2"><strong style="font-size: 11px">UNIDAD DE TRANSPORTE - CONDUCTOR</strong></td>
                 </tr>
                 <tr>
-                    <td><strong>Placa del vehículo:</strong> {{ $document->license_plate }}</td>
+                    <td><strong style="font-size: 9px">Placa del vehículo:</strong> {{ $document->license_plate }}</td>
                 </tr>
                 <tr>
                     <td><strong>Dni del conductor:</strong>: {{ $document->driver->number }}</td>
@@ -365,6 +365,5 @@
 
     </tr>
 </table>
-</div>
 </body>
 </html>

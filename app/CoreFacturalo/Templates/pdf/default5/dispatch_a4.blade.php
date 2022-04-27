@@ -4,7 +4,7 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+    //$document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
     $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
 @endphp
@@ -62,7 +62,7 @@
         </tr>
         <tr>
             <td>Peso Bruto Total de la Guía: ({{ $document->unit_type_id }}) {{ $document->total_weight }} </td>
-            <td>Documento: 
+            <td>Documento:
                 @if ($document->reference_document)
                     {{$document->reference_document->document_type->description}} {{ $document->reference_document->number_full }}
                 @endif
@@ -175,7 +175,7 @@
                     @foreach($row->relation_item->attributes as $attr)
                         @if($attr->attribute_type_id === '5032')
                         @php
-                            $total_weight_line += $attr->value * $row->quantity;  
+                            $total_weight_line += $attr->value * $row->quantity;
                         @endphp
                         @endif
                     @endforeach
@@ -186,15 +186,15 @@
             <tr>
                 <td class="text-center"></td>
                 @if($row->relation_item->name)
-                <td class="text-left" colspan="4" class="cell-solid" style="padding: 3px !important;">{{ $row->relation_item->name }}</td> 
+                <td class="text-left" colspan="4" class="cell-solid" style="padding: 3px !important;">{{ $row->relation_item->name }}</td>
                 @else
-                <td class="text-left" colspan="4" class="cell-solid" style="padding: 3px !important;"><p style="color:#ffffff !important">X</p></td> 
+                <td class="text-left" colspan="4" class="cell-solid" style="padding: 3px !important;"><p style="color:#ffffff !important">X</p></td>
                 @endif
             </tr>
 
             <tr>
                 <td class="text-center"></td>
-                <td class="text-left" colspan="4" class="cell-solid" style="padding: 3px !important;"><p style="color:#ffffff !important">X</p></td> 
+                <td class="text-left" colspan="4" class="cell-solid" style="padding: 3px !important;"><p style="color:#ffffff !important">X</p></td>
             </tr>
         @endforeach
     </tbody>

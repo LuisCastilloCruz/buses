@@ -62,6 +62,7 @@
         <FormGenerateDocument
             :showDialog.sync="showDialogGenerateDocument"
             :recordId="recordId"
+            :configuration="configuration"
             :showClose="true"
             :showGenerate="true"
         ></FormGenerateDocument>

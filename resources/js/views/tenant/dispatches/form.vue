@@ -6,6 +6,7 @@
         <div class="card-body">
             <form autocomplete="off" @submit.prevent="submit">
                 <div class="form-body">
+                    <h4><b>DATOS DE REMITENTE</b></h4>
                     <div class="row">
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.establishment}" class="form-group">
@@ -55,10 +56,10 @@
                                     Cliente
                                     <!--<a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>-->
                                     <span class="text-danger"> *</span></label>
-                                <el-select v-model="form.customer_id" :disabled="true">
-                                    <el-option v-for="option in customers" :key="option.id" :label="option.description"
-                                               :value="option.id"></el-option>
-                                </el-select>
+
+                                    <el-input v-model="document.customer.name"
+                                              type="text" disabled></el-input>
+
                                 <small v-if="errors.customer" class="form-control-feedback"
                                        v-text="errors.customer[0]"></small>
                             </div>
@@ -70,7 +71,8 @@
                                 <el-select v-model="form.transport_mode_type_id">
                                     <el-option v-for="option in transportModeTypes" :key="option.id"
                                                :label="option.description"
-                                               :value="option.id"></el-option>
+                                               :value="option.id"
+                                    ></el-option>
                                 </el-select>
                                 <small v-if="errors.transport_mode_type_id" class="form-control-feedback"
                                        v-text="errors.transport_mode_type_id[0]"></small>
@@ -129,8 +131,7 @@
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.total_weight}" class="form-group">
                                 <label class="control-label">Peso total<span class="text-danger"> *</span></label>
-                                <el-input-number v-model="form.total_weight" :max="9999999999" :min="0" :precision="2"
-                                                 :step="1"></el-input-number>
+                                <el-input v-model="form.total_weight"></el-input>
                                 <small v-if="errors.total_weight" class="form-control-feedback"
                                        v-text="errors.total_weight[0]"></small>
                             </div>
@@ -163,9 +164,9 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
-                    <h4>Datos envío</h4>
-                    <h6>Dirección partida</h6>
+                    <hr  class="mt-4" style="background: #0088cc">
+                    <h4><b>DATOS DE ENVÍO</b></h4>
+                    <h6><b>Dirección partida</b></h6>
                     <div class="row">
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.origin}" class="form-group">
@@ -227,7 +228,7 @@
                             </div>
                         </div>
                     </div>
-                    <h6>Dirección llegada</h6>
+                    <h6><b>Dirección llegada</b></h6>
                     <div class="row">
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.delivery}" class="form-group">
@@ -280,8 +281,8 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
-                    <h4>Datos transportista</h4>
+                    <hr  class="mt-4" style="background: #0088cc">
+                    <h4><b>DATOS DE EMPRESA DE TRANSPORTE</b></h4>
                     <div class="row">
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.dispacher}" class="form-group">
@@ -339,9 +340,8 @@
                             </div>
                         </div>
                     </div>
-                    <h4>Datos conductor</h4>
-                    <div class="row">
-
+                    <h4 class="ml-5" v-if="this.form.transport_mode_type_id=='02'"><b>Datos conductor</b></h4>
+                    <div class="row ml-5" v-if="this.form.transport_mode_type_id=='02'">
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.driver}" class="form-group">
                                 <label class="control-label">Selección rápida de conductor</label>
@@ -415,7 +415,7 @@
                         </div>
                     </div>
                 </div>
-                <hr>
+                <hr  class="mt-4" style="background: #0088cc">
                 <div class="col-md-12">
                     <div class="table-responsive">
                         <table class="table">
@@ -551,7 +551,7 @@ export default {
             this.provincesAll = response.data.provinces;
             this.districtsAll = response.data.districts;
             this.unitTypes = response.data.unitTypes;
-            this.customers = response.data.customers;
+            //this.customers = response.data.customers;
             this.countries = response.data.countries;
             this.locations = response.data.locations;
             this.all_series = response.data.series;
@@ -564,7 +564,7 @@ export default {
             this.form.date_of_shipping = this.form.date_of_issue
             this.form.customer_id = this.document.customer_id
             this.form.transfer_reason_type_id = '01'
-            this.form.transport_mode_type_id = '02'
+            this.form.transport_mode_type_id = '01'  //01=publico  02=privado
             this.form.items = this.document.items
             this.form.origin.country_id = this.document.establishment.country_id
 
@@ -607,7 +607,7 @@ export default {
                 }
             })
 
-            this.form.total_weight = total_weight
+            this.form.total_weight = (total_weight>0) ? total_weight : ''
 
 
             if (this.dispatch) {
@@ -698,12 +698,12 @@ export default {
                 transshipment_indicator: false,
                 port_code: null,
                 unit_type_id: null,
-                total_weight: 0,
+                total_weight: null,
                 packages_number: null,
                 container_number: null,
                 license_plate: null,
                 dispatcher: {
-                    identity_document_type_id: null
+                    identity_document_type_id: '6'
                 },
                 driver: {
                     identity_document_type_id: null,
