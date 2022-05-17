@@ -271,7 +271,7 @@
                 @endif
             </td>
             <td class="p-1 text-center align-top desc cell-solid-rl">{{ $row->item->unit_type_id }}</td>
-            <td class="p-1 text-left align-top desc text-upp cell-solid-rl">
+            <td class="p-1 text-left align-top desc text-upp cell-solid-rl" style="font-size: 9px">
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
