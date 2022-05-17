@@ -250,10 +250,11 @@
 <table class="full-width mt-0 mb-0">
     <thead>
     <tr class="">
-        <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">CÓDIGO</th>
+        <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">CÓD.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">U.M.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="40%">DESCRIPCIÓN</th>
+        <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="40%">LOTE</th>
         <th class="border-top-bottom text-right py-1 desc" class="cell-solid" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">DCTO.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">TOTAL</th>
@@ -301,6 +302,11 @@
                     @inject('itemSet', 'App\Services\ItemSetService')
                     {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
                 @endif
+            </td>
+            <td class="text-center align-top borde-gris">
+                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
+                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+
             </td>
             <td class="p-1 text-right align-top desc cell-solid-rl">{{ number_format($row->unit_price, 2) }}</td>
             <td class="p-1 text-right align-top desc cell-solid-rl">
