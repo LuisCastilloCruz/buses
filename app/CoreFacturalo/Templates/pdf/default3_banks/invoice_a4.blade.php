@@ -342,7 +342,7 @@
     @endfor
 
     <tr>
-        <td class="p-1 text-left align-top desc cell-solid" colspan="4"><strong>
+        <td class="p-1 text-left align-top desc cell-solid" colspan="3"><strong>
                 VENDEDOR:</strong> {{ $document->user->name }}</td>
         <td class="p-1 text-left align-top desc cell-solid font-bold">
             SON:
@@ -354,14 +354,14 @@
                 @endif
             @endforeach
         </td>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
             OP. GRAVADA {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_taxed, 2) }}</td>
     </tr>
 
     <tr>
-        <td class="p-1 text-left align-top desc cell-solid" colspan="4" rowspan="6">
+        <td class="p-1 text-left align-top desc cell-solid" colspan="3" rowspan="6">
             @php
                 $total_packages = $document->items()->sum('quantity');
 
@@ -395,7 +395,7 @@
 
         </td>
 
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
             OP. INAFECTAS {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
