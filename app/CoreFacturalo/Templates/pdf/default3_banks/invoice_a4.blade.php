@@ -403,33 +403,33 @@
 
 
     <tr>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
             OP. EXONERADAS {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
     </tr>
 
     <tr>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
             OP. GRATUITAS {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_free, 2) }}</td>
     </tr>
     <tr>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
             TOTAL DCTOS. {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount, 2) }}</td>
     </tr>
     <tr>
 
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
             I.G.V. {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_igv, 2) }}</td>
     </tr>
     <tr>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
             TOTAL A PAGAR. {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total, 2) }}</td>
