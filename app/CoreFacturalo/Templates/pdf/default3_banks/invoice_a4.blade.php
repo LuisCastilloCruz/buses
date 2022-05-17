@@ -254,7 +254,7 @@
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">U.M.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="40%">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="40%">LOTE</th>
+        <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">LOTE</th>
         <th class="border-top-bottom text-right py-1 desc" class="cell-solid" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">DCTO.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">TOTAL</th>
@@ -337,11 +337,12 @@
             <td class="p-1 text-right align-top desc cell-solid-rl">
             </td>
             <td class="p-1 text-right align-top desc cell-solid-rl"></td>
+            <td class="p-1 text-right align-top desc cell-solid-rl"></td>
         </tr>
     @endfor
 
     <tr>
-        <td class="p-1 text-left align-top desc cell-solid" colspan="3"><strong>
+        <td class="p-1 text-left align-top desc cell-solid" colspan="4"><strong>
                 VENDEDOR:</strong> {{ $document->user->name }}</td>
         <td class="p-1 text-left align-top desc cell-solid font-bold">
             SON:
@@ -360,7 +361,7 @@
     </tr>
 
     <tr>
-        <td class="p-1 text-left align-top desc cell-solid" colspan="3" rowspan="6">
+        <td class="p-1 text-left align-top desc cell-solid" colspan="4" rowspan="6">
             @php
                 $total_packages = $document->items()->sum('quantity');
 
