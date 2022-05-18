@@ -754,6 +754,7 @@ export default {
                 this.payment_method_types = data.payment_method_types
                 this.payment_destinations = data.payment_destinations
                 this.all_customers = data.customers
+                this.configuration = response.data.configuration
 
                 this.note_credit_types = response.data.note_credit_types
                 this.note_debit_types = response.data.note_debit_types
