@@ -6,7 +6,7 @@
 
 
     <title>Acceso denegado</title>
- 
+
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
 
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/css/fontawesome-all.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" /> 
+    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" />
 
     <style>
         .body-web {
@@ -36,7 +36,7 @@
         }
     </style>
 </head>
-<body class="body-web"> 
+<body class="body-web">
     <section class="body-error error-outside">
         <div class="center-error">
 
@@ -45,10 +45,11 @@
                     <div class="main-error">
                         <h2 class="error-code text-dark text-center font-weight-semibold m-0">403 <i class="fas fa-lock"></i></h2>
                         <p class="error-explanation text-center text-e"><strong>Acceso denegado:</strong> Su cuenta está inactiva, comuníquese con el administrador</p>
+                        <p>947474096</p>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
-    </section>  
+    </section>
 </body>
 </html>
