@@ -43,7 +43,9 @@
                                                         <td>{{ manifiesto.serie }}</td>
                                                         <td>{{ manifiesto.numero }}</td>
                                                         <td>{{ manifiesto.chofer.nombre }}</td>
-                                                        <td>{{ manifiesto.copiloto.nombre }}</td>
+                                                        <td>
+                                                            <span v-if="manifiesto.copiloto">{{ manifiesto.copiloto.nombre }}</span>
+                                                        </td>
                                                         <td>{{ manifiesto.fecha }}</td>
                                                         <td>{{ manifiesto.hora }}</td>
                                                         <td>{{ manifiesto.observaciones }}</td>
@@ -123,7 +125,9 @@
                                                         <td>{{ manifiesto.serie }}</td>
                                                         <td>{{ manifiesto.numero }}</td>
                                                         <td>{{ manifiesto.chofer.nombre }}</td>
-                                                        <td>{{ manifiesto.copiloto.nombre }}</td>
+                                                        <td>
+                                                            <span v-if="manifiesto.copiloto">{{ manifiesto.copiloto.nombre }}</span>
+                                                        </td>
                                                         <td>{{ manifiesto.fecha }}</td>
                                                         <td>{{ manifiesto.hora }}</td>
                                                         <td>{{ manifiesto.observaciones }}</td>
@@ -223,7 +227,7 @@ export default {
         });
     },
     methods:{
-        
+
         onCreate(tipo){
             this.tipo = tipo;
             this.visible = true;

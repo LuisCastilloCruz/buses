@@ -414,6 +414,36 @@ class TransporteEncomiendaController extends Controller
 
     }
 
+    public function entregar(Request $request)
+    {
+        //
+        try{
+            $encomienda = TransporteEncomienda::findOrFail($request->id);
+            $encomienda->estado_envio_id = 4;
+            $encomienda->save();
+
+            $encomienda->remitente;
+            $encomienda->destinatario;
+            $encomienda->programacion;
+            $encomienda->estadoEnvio;
+            $encomienda->estadoPago;
+            $encomienda->document;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se ha actualizado la información',
+                'encomienda' => $encomienda,
+            ]);
+
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al procesar su petición',
+            ]);
+        }
+
+    }
+
     /**
      * Remove the specified resource from storage.
      * @param int $id

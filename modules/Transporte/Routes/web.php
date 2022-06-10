@@ -53,6 +53,7 @@ if ($hostname) {
 				Route::get('encomiendas/{terminal}/get-destinos','TransporteEncomiendaController@getDestinos');
 				Route::post('encomiendas/programaciones-disponibles','TransporteEncomiendaController@getProgramacionesDisponibles');
 				Route::put('encomiendas/{encomienda}/update','TransporteEncomiendaController@update');
+                Route::put('encomiendas/entregar','TransporteEncomiendaController@entregar');
 				Route::delete('encomiendas/{encomienda}/delete','TransporteEncomiendaController@destroy');
 				Route::get('encomiendas/get-productos','TransporteEncomiendaController@getProductos');
                 Route::get('encomiendas/get-pasajero/{number?}','TransporteEncomiendaController@getPasajero');

@@ -23,6 +23,25 @@
             <div class="card-header bg-info">
                 <h3 class="my-0">Listado de encomiendas</h3>
             </div>
+
+            <div class="form-body">
+                <div class="row" >
+                    <div class="col-lg-12 col-md-12 table-responsive">
+                        <div class="col-lg-5 col-md-5 col-sm-12 pb-2">
+                            <el-input placeholder="Buscar serie ..."
+                                      v-model="search"
+                                      style="width: 100%;"
+                                      prefix-icon="el-icon-search"
+                                      @input="filter">
+                            </el-input>
+                        </div>
+
+                        <p>{{recordId}}</p>
+                    </div>
+
+                </div>
+            </div>
+
             <div v-loading="loading" class="card-body">
                 <div class="table-responsive">
                     <el-tabs v-model="tab" >
@@ -56,7 +75,7 @@
                                                     'border-left border-dark': (invoice.document.state_type_id === '09'),
                                                     'border-left border-danger': (invoice.document.state_type_id === '11'),
                                                     'border-left border-warning': (invoice.document.state_type_id === '13')}">
-                                                        <td class="text-right">{{ index+1 }}</td>
+                                                        <td class="text-right">{{ index+1 }} {{invoice.id}}</td>
                                                         <td>{{ invoice.document.series + '-' +invoice.document.number  }}</td>
                                                         <td>{{ invoice.remitente.name }}</td>
                                                         <td>{{ invoice.destinatario.name }}</td>
@@ -80,6 +99,10 @@
                                                             </template>
                                                         </td>
                                                         <td class="text-center">
+                                                            <el-button type="primary" @click="entregarEncomienda(invoice,invoice.id)">
+                                                                <i class="fa fa-file-file"></i>
+                                                                Entregar
+                                                            </el-button>
                                                             <el-button type="primary" @click="verComprobante(invoice)">
                                                                 <i class="fa fa-file-alt"></i>
                                                             </el-button>
@@ -150,6 +173,10 @@
                                                         <td class="text-center">
                                                             <el-button type="primary" @click="verNota(note)">
                                                                 <i class="fa fa-file-alt"></i>
+                                                            </el-button>
+                                                            <el-button type="primary" @click="entregarEncomienda(note.sale_note, note.id)">
+                                                                <i class="fa fa-file-file"></i>
+                                                                Entregar
                                                             </el-button>
                                                             <button :disabled="user.type != 'admin'" data-toggle="tooltip" data-placement="top" title="Anular" v-if="note.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                             @click.prevent="anularNota(note.id)"><i class="fas fa-trash"></i></button>
@@ -223,6 +250,16 @@
         :recordId="recordId">
         </documents-voided>
 
+        <ModalEntregaForm
+            :showDialogEntrega.sync="showDialogEntrega"
+            @onUpdateItem="onUpdateItem"
+            @onUpdateItemNote="onUpdateItemNote"
+            :encomienda = "encomienda"
+            :recordId="recordId">
+        </ModalEntregaForm>
+
+
+
     </div>
 </template>
 
@@ -231,6 +268,7 @@ import ModalAddEdit from "./AddEdit";
 import DocumentOptions from "@views/documents/partials/options.vue";
 import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import DocumentsVoided from '@views/documents/partials/voided.vue'
+import ModalEntregaForm from './EntregaForm'
 
 export default {
     props: {
@@ -293,7 +331,8 @@ export default {
         ModalAddEdit,
         DocumentOptions,
         SaleNoteOptions,
-        DocumentsVoided
+        DocumentsVoided,
+        ModalEntregaForm
     },
     created(){
         this.getEncomiendas();
@@ -322,6 +361,7 @@ export default {
             showDialogDocumentOptions:false,
             showDialogSaleNoteOptions: false,
             showDialogVoided:false,
+            showDialogEntrega:false,
             tab:'invoice',
             loadingInvoices:false,
             loadingNotes:false,
@@ -332,11 +372,32 @@ export default {
     mounted() {
         //silent
     },
+    watch:{
+        lots(val)
+        {
+            this.lots_ = val
+        }
+    },
     methods: {
+        filter()
+        {
+            if(this.search)
+            {
+                this.lots_ = _.filter(this.lots, x => x.series.toUpperCase().includes(this.search.toUpperCase()))
+            }
+            else{
+                this.lots_ = this.lots
+            }
+        },
 
         onSuccessVenta(documentId){
             this.documentNewId = documentId;
             this.showDialogDocumentOptions = true;
+        },
+        entregarEncomienda(encomienda, documentId){
+            this.encomienda = { ...encomienda };
+            this.recordId = documentId;
+            this.showDialogEntrega = true;
         },
 
         async getEncomiendas(){
@@ -391,7 +452,18 @@ export default {
             this.openModalAddEdit = true;
         },
         onUpdateItem(encomienda) {
-            this.getEncomiendas();
+            console.log(encomienda)
+            //this.getEncomiendas();
+
+            this.listInvoices = this.listInvoices.map((i) => {
+                if (i.id === encomienda.id) {
+                    return encomienda;
+                }
+                return i;
+            });
+        },
+        onUpdateItemNote(){
+            this.getEncomiendasNotes();
         },
         onAddItem(encomienda) {
             this.getEncomiendas();
