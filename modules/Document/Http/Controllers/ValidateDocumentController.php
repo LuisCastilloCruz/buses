@@ -2,6 +2,7 @@
 
 namespace Modules\Document\Http\Controllers;
 
+use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -34,6 +35,7 @@ class ValidateDocumentController extends Controller
     public function records(ValidateDocumentsRequest $request)
     {
 
+
         $auth_api = (new AuthApi())->getToken();
         if(!$auth_api['success']) return $auth_api;
         $this->access_token = $auth_api['data']['access_token'];
@@ -48,7 +50,11 @@ class ValidateDocumentController extends Controller
 
     public function validateDocuments($records){
 
-        $records_paginate = $records->paginate(config('tenant.items_per_page'));
+        $config = Configuration::first();
+        if (empty($config)) {
+            $config = new Configuration();
+        }
+        $records_paginate = $records->paginate($config->getNewValidatorPagination());
 
         // dd($this->access_token, $records_paginate->getCollection());
 

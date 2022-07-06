@@ -27,9 +27,23 @@ use Modules\Inventory\Models\{
 use Modules\Sale\Models\SaleOpportunity;
 use Modules\Sale\Models\Contract;
 use Modules\Purchase\Models\FixedAssetPurchase;
+use App\Models\Tenant\{
+    CashDocumentCredit,
+    CashDocument
+};
+use Modules\Payment\Models\PaymentLink;
+use Modules\MercadoPago\Models\Transaction;
+use Modules\Pos\Models\Tip;
+use Modules\Production\Models\{
+    Production,
+    Mill,
+    Packaging,
+};
+
 use Modules\Transporte\Models\TransporteEncomienda;
 use Modules\Transporte\Models\TransporteManifiesto;
 use Modules\Transporte\Models\TransportePasaje;
+
 
 class OptionController extends Controller
 {
@@ -69,7 +83,9 @@ class OptionController extends Controller
 
         Document::where('soap_type_id', '01')
         ->whereIn('document_type_id', ['07', '08'])->delete();
-        Document::where('soap_type_id', '01')->delete();
+
+        $this->deleteRecordsCash(Document::class);
+        // Document::where('soap_type_id', '01')->delete();
 
         $this->update_quantity_documents($quantity);
 
@@ -78,12 +94,17 @@ class OptionController extends Controller
 
         //SaleNote
         $sale_notes = SaleNote::where('soap_type_id', '01')->get();
-        SaleNote::where('soap_type_id', '01')->delete();
+        // SaleNote::where('soap_type_id', '01')->delete();
+
+        $this->deleteRecordsCash(SaleNote::class);
+
         $this->deleteInventoryKardex(SaleNote::class, $sale_notes);
 
 
         Contract::where('soap_type_id', '01')->delete();
-        Quotation::where('soap_type_id', '01')->delete();
+        // Quotation::where('soap_type_id', '01')->delete();
+        $this->deleteQuotation();
+
         SaleOpportunity::where('soap_type_id', '01')->delete();
 
         Expense::where('soap_type_id', '01')->delete();
@@ -91,6 +112,7 @@ class OptionController extends Controller
         OrderForm::where('soap_type_id', '01')->delete();
 
         GlobalPayment::where('soap_type_id', '01')->delete();
+        Tip::where('soap_type_id', '01')->delete();
 
         Income::where('soap_type_id', '01')->delete();
 
@@ -98,12 +120,92 @@ class OptionController extends Controller
 
         $this->updateStockAfterDelete();
 
+        $this->deletePaymentLink();
+
+        // produccion
+
+        Production::where('soap_type_id', '01')->delete();
+        Packaging::where('soap_type_id', '01')->delete();
+        $this->deleteMill();
+
         return [
             'success' => true,
             'message' => 'Documentos de prueba eliminados',
             'delete_quantity' => $this->delete_quantity,
         ];
     }
+
+
+    /**
+     *
+     * Eliminar links de pago y transacciones asociadas en demo
+     *
+     * @return void
+     */
+    private function deletePaymentLink()
+    {
+        $transactions = Transaction::where('soap_type_id', '01')->get();
+
+        foreach ($transactions as $transaction)
+        {
+            $transaction->transaction_queries()->delete();
+            $transaction->delete();
+        }
+
+        PaymentLink::where('soap_type_id', '01')->delete();
+    }
+
+
+    /**
+     *
+     * Eliminar registros de ingresos de insumos
+     *
+     * @return void
+     */
+    private function deleteMill()
+    {
+        $mills = Mill::where('soap_type_id', '01')->get();
+
+        foreach ($mills as $mill)
+        {
+            $mill->relation_mill_items()->delete();
+            $mill->delete();
+        }
+
+    }
+
+    /**
+     *
+     * Eliminar registros relacionados en caja y cotizaciones
+     *
+     * @return void
+     */
+    private function deleteQuotation()
+    {
+        $records_id = Quotation::where('soap_type_id', '01')->whereFilterWithOutRelations()->select('id')->get()->pluck('id')->toArray();
+        // dd($records_id);
+        CashDocument::whereIn('quotation_id', $records_id)->delete();
+        Quotation::where('soap_type_id', '01')->delete();
+    }
+
+
+    /**
+     *
+     * Eliminar registros relacionados en caja - notas de venta/cpe
+     *
+     * @return void
+     */
+    private function deleteRecordsCash($model)
+    {
+        $records_id = $model::where('soap_type_id', '01')->whereFilterWithOutRelations()->select('id')->get()->pluck('id')->toArray();
+
+        $column = ($model === Document::class) ? 'document_id' : 'sale_note_id';
+
+        CashDocumentCredit::whereIn($column, $records_id)->delete();
+
+        $model::where('soap_type_id', '01')->delete();
+    }
+
 
     private function deleteInventoryKardex($model, $records = null){
 

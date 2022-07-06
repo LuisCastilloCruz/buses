@@ -166,7 +166,7 @@
                         <el-select v-model="document.payment_condition_id" dusk="document_type_id"
                                    popper-class="el-select-document_type" style="max-width: 200px;"
                                    @change="changePaymentCondition">
-                            <el-option label="Crédito con cuotas"value="03"></el-option>
+                            <el-option label="Crédito con cuotas" value="03"></el-option>
                             <el-option label="Crédito" value="02"></el-option>
                             <el-option label="Contado" value="01"></el-option>
                         </el-select>
@@ -260,6 +260,14 @@
                         </el-select>
                     </div>
                 </div>
+
+                <div class="col-lg-4 col-md-4 mt-3 mb-3" v-if="show_has_retention">
+                    <div class="form-group">
+                        <label class="control-label">¿Tiene retención de igv?</label>
+                        <el-switch v-model="document.has_retention" @change="changeRetention"></el-switch>
+                    </div>
+                </div>
+
                 <template v-if="is_document_type_invoice">
                     <!-- Crédito con cuotas -->
                     <div v-show=" document.payment_condition_id === '03'" class="col-lg-12">
@@ -456,7 +464,10 @@
                 </template>
             </div>
 
-            <series-form v-if="generate && form.quotation" :items="form.quotation.items"></series-form>
+            <!-- controlar series y lotes -->
+            <series-form v-if="generate && form.quotation" :items="form.quotation.items" :config="config"></series-form>
+            <!-- controlar series y lotes -->
+
             <div  v-show="document.total > 0" class="col-lg-12">
                 <div class="form-group pull-right">
                     <label class="control-label"> Total </label> <br>
@@ -567,6 +578,7 @@ export default {
             loading_search: false,
             // payment_method_types: [],
             sellers: [],
+            show_has_retention: true,
         };
     },
     created() {
@@ -584,6 +596,63 @@ export default {
                 return this.$message.error('El número es obligatorio')
             }
             window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
+        },
+
+        validateCustomerRetention(identity_document_type_id) {
+
+            if (identity_document_type_id != '6') {
+
+                this.disabledRetention()
+
+            } else {
+                this.show_has_retention = true
+            }
+
+        },
+        disabledRetention(){
+
+            if (this.document.has_retention) {
+                this.document.has_retention = false
+                this.changeRetention()
+            }
+
+            this.show_has_retention = false
+
+        },
+        changeRetention() {
+
+            if (this.document.has_retention) {
+
+                let base = this.document.total
+                let percentage = _.round(parseFloat(this.config.igv_retention_percentage) / 100, 5)
+                let amount = _.round(base * percentage, 2)
+
+                this.document.retention = {
+                    base: base,
+                    code: '62', //Código de Retención del IGV
+                    amount: amount,
+                    percentage: percentage
+                }
+
+                this.setTotalPendingAmountRetention(amount)
+
+            } else {
+
+                this.document.retention = {}
+                this.document.total_pending_payment = 0
+                this.calculateAmountToPayments()
+            }
+
+        },
+        setTotalPendingAmountRetention(amount) {
+
+            //monto neto pendiente aplica si la condicion de pago es credito
+            this.document.total_pending_payment = ['02', '03'].includes(this.document.payment_condition_id) ? this.document.total - amount : 0
+            this.calculateAmountToPayments()
+
+        },
+        calculateAmountToPayments() {
+            this.calculateFee()
         },
         changePaymentCondition() {
             this.document.fee = [];
@@ -606,6 +675,11 @@ export default {
                     this.clickAddFee();
                 }
             }
+
+            if (!_.isEmpty(this.document.retention)) {
+                this.setTotalPendingAmountRetention(this.document.retention.amount)
+            }
+
         },
         clickRemoveFee(index) {
             this.document.fee.splice(index, 1);
@@ -643,7 +717,9 @@ export default {
         },
         calculateFee() {
             let fee_count = this.document.fee.length;
-            let total = this.document.total;
+            // let total = this.document.total;
+            let total = this.getTotal()
+
             let accumulated = 0;
             let amount = _.round(total / fee_count, 2);
             _.forEach(this.document.fee, row => {
@@ -653,6 +729,14 @@ export default {
                 }
                 row.amount = amount;
             })
+        },
+        getTotal() {
+
+            if (!_.isEmpty(this.document.retention) && this.document.total_pending_payment > 0) {
+                return this.document.total_pending_payment
+            }
+
+            return this.document.total
         },
         clickCancel(index) {
             this.document.payments.splice(index, 1);
@@ -769,6 +853,11 @@ export default {
                 is_receivable: false,
                 payments: [],
                 hotel: {},
+
+                total_pending_payment: 0,
+                has_retention: false,
+                retention: {},
+
             };
         },
         changeDateOfIssue() {
@@ -798,7 +887,7 @@ export default {
         },
         async submit() {
 
-            let validate_items = await this.validateQuantityandSeries();
+            let validate_items = await this.validateQuantityandSeriesLots();
             if (!validate_items.success)
                 return this.$message.error(validate_items.message);
 
@@ -811,7 +900,6 @@ export default {
             }
 
             this.loading_submit = true;
-
             if (this.document.document_type_id === "nv") {
                 this.document.prefix = "NV";
                 this.resource_documents = "sale-notes";
@@ -832,16 +920,24 @@ export default {
                             .then(() => {
                                 this.$eventHub.$emit("reloadData");
                             });
-                        // console.log(this.document.document_type_id)
+
+                        const payloadCash = {
+                            document_id: null,
+                            sale_note_id: null,
+                        }
+
                         if (this.document.document_type_id === "nv") {
                             this.showDialogSaleNoteOptions = true;
+                            payloadCash.sale_note_id = this.documentNewId;
                         } else {
                             this.showDialogDocumentOptions = true;
+                            payloadCash.document_id = this.documentNewId;
                         }
 
                         this.getRecord()
                         this.$eventHub.$emit("reloadData");
                         this.resetDocument();
+                        this.saveCashDocument(payloadCash);
                         this.document.customer_id = this.form.quotation.customer_id;
                         this.changeCustomer();
                     } else {
@@ -956,9 +1052,13 @@ export default {
             // this.filterSeries()
             this.document.is_receivable = false;
             this.series = [];
+
             if (this.document.document_type_id !== "nv") {
                 this.filterSeries();
                 this.is_document_type_invoice = true;
+
+                this.show_has_retention = true
+
             } else {
                 this.series = _.filter(this.all_series, {
                     document_type_id: "80",
@@ -967,6 +1067,8 @@ export default {
                     this.series.length > 0 ? this.series[0].id : null;
 
                 this.is_document_type_invoice = false;
+
+                this.disabledRetention()
             }
         },
         async validateIdentityDocumentType() {
@@ -993,6 +1095,11 @@ export default {
                     ? this.document_types[0].id
                     : null;
             await this.changeDocumentType();
+
+
+            // retencion para clientes con ruc
+            this.validateCustomerRetention(customer.identity_document_type_id)
+
         },
         filterSeries() {
             this.document.series_id = null;
@@ -1045,16 +1152,35 @@ export default {
                     this.loading = false;
                 });
         },
-        async validateQuantityandSeries() {
+        async validateQuantityandSeriesLots() {
+
             let error = 0;
+            let error_lots_group = 0
+
             await this.form.quotation.items.forEach((element) => {
+
                 if (element.item.series_enabled) {
                     const select_lots = _.filter(element.item.lots, {
                         has_sale: true,
                     }).length;
                     if (select_lots != element.quantity) error++;
                 }
+
+                if (element.item.lots_enabled)
+                {
+                    if (!element.IdLoteSelected) error_lots_group++
+                }
+
             });
+
+            if(error_lots_group > 0)
+            {
+                return {
+                    success: false,
+                    message: 'Las cantidades y lotes seleccionados deben ser iguales.',
+                }
+            }
+
             if (error > 0)
                 return {
                     success: false,
@@ -1111,6 +1237,20 @@ export default {
 
             }
 
+        },
+        async saveCashDocument(payload){
+            if(!this.id){
+                await this.$http.post(`/cash/cash_document`, payload)
+                    .then(response => {
+                        if (response.data.success) {
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            }
         },
 
     },

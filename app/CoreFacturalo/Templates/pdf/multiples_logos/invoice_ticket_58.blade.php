@@ -453,7 +453,7 @@
         </td>
     </tr>
     @endif
-
+    
     @if($document->payment_method_type_id)
         <tr>
             <td class="desc pt-5">
@@ -461,7 +461,7 @@
             </td>
         </tr>
     @endif
-
+    
     @if ($document->payment_condition_id === '01')
         @if($payments->count())
             <tr>

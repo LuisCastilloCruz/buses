@@ -150,7 +150,7 @@
                         <tr>
                             <td>F. ENTREGA</td>
                             <td>:</td>
-                            <td>{{ $document->quotation->delivery_date->format('Y-m-d')}}</td>
+                            <td>{{ $document->quotation->getStringDeliveryDate()}}</td>
                         </tr>
                     @endisset
                 @endif
@@ -259,7 +259,7 @@
         <th class="border-top-bottom text-center py-2 desc" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2 desc" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2 desc">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-center py-2 desc" width="8%">LOTE</th>
+        <th class="border-top-bottom text-left py-2 desc" width="15%">LOTE (CANT.)</th>
         <th class="border-top-bottom text-center py-2 desc" width="8%">SERIE</th>
         <th class="border-top-bottom text-right py-2 desc" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-right py-2 desc" width="8%">DTO.</th>
@@ -303,9 +303,10 @@
                     {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
                 @endif
             </td>
-            <td class="text-center align-top desc">
+            <td class="text-left align-top desc">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+                {{-- {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }} --}}
+                {!! $itemLotGroup->getItemLotGroupWithQuantity($row->item->IdLoteSelected) !!}
 
             </td>
             <td class="text-center align-top desc">
@@ -657,7 +658,7 @@
                         <tr>
                             <td>F. ENTREGA</td>
                             <td>:</td>
-                            <td>{{ $document->quotation->delivery_date->format('Y-m-d')}}</td>
+                            <td>{{ $document->quotation->getStringDeliveryDate()}}</td>
                         </tr>
                     @endisset
                 @endif
@@ -766,7 +767,8 @@
         <th class="border-top-bottom text-center py-2 desc" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2 desc" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2 desc">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-center py-2 desc" width="8%">LOTE</th>
+        <th class="border-top-bottom text-left py-2 desc" width="15%">LOTE (CANT.)</th>
+        {{-- <th class="border-top-bottom text-center py-2 desc" width="8%">LOTE</th> --}}
         <th class="border-top-bottom text-center py-2 desc" width="8%">SERIE</th>
         <th class="border-top-bottom text-right py-2 desc" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-right py-2 desc" width="8%">DTO.</th>
@@ -810,9 +812,10 @@
                     {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
                 @endif
             </td>
-            <td class="text-center align-top desc">
+            <td class="text-left align-top desc">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+                {{-- {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }} --}}
+                {!! $itemLotGroup->getItemLotGroupWithQuantity($row->item->IdLoteSelected) !!}
 
             </td>
             <td class="text-center align-top desc">

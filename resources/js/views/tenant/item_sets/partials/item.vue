@@ -18,14 +18,14 @@
 
                             <small class="form-control-feedback" v-if="errors.individual_item_id" v-text="errors.individual_item_id[0]"></small>
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
                             <el-input-number v-model="form.quantity" :min="0.01"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-2">
@@ -33,7 +33,7 @@
                 <el-button type="primary" native-type="submit" v-if="form.individual_item_id">Agregar</el-button>
             </div>
         </form>
-         
+
     </el-dialog>
 </template>
 <style>
@@ -73,10 +73,11 @@
                 this.form = {
                     individual_item_id: null,
                     sale_unit_price: 0,
+                    purchase_unit_price: 0,
                     quantity: 1,
                     full_description: null
                 }
- 
+
             },
             create() {
             },
@@ -84,13 +85,14 @@
                 this.initForm()
                 this.$emit('update:showDialog', false)
             },
-            changeItem() { 
-            
+            changeItem() {
+
                 let item = _.find(this.individual_items, {'id': this.form.individual_item_id})
                 this.form.sale_unit_price = item.sale_unit_price
                 this.form.full_description = item.full_description
-            
-            }, 
+                this.form.purchase_unit_price = item.purchase_unit_price
+
+            },
             async clickAddItem() {
 
                 this.$emit('add', this.form);

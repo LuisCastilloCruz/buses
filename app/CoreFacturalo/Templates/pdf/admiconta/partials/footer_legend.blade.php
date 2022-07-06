@@ -5,10 +5,10 @@
     <link href="{{ $path_style }}" rel="stylesheet" />
 </head>
 <body>
-{{--<table class="full-width py-0">--}}
-{{--    <tr>--}}
-{{--        <td class="text-center font-bold">Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma</td>--}}
-{{--    </tr>--}}
-{{--    <br><br>--}}
-{{--</table>--}}
+<table class="full-width py-0">
+    <tr>
+        <td class="text-center font-bold">Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma</td>
+    </tr>
+    <br><br>
+</table>
 </body>

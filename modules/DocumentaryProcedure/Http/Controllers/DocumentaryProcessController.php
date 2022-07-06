@@ -7,6 +7,7 @@
     use Modules\DocumentaryProcedure\Http\Requests\ProcessRequest;
     use Modules\DocumentaryProcedure\Models\DocumentaryFilesRequirement as Requirements;
     use Modules\DocumentaryProcedure\Models\DocumentaryOffice as Stages;
+    use Modules\DocumentaryProcedure\Models\DocumentaryProcess;
     use Modules\DocumentaryProcedure\Models\DocumentaryProcess as Process;
     use Modules\DocumentaryProcedure\Models\DocumentaryProcessesRelReq as RequirementsRel;
     use Throwable;
@@ -25,15 +26,15 @@
          */
         public function index(Request $request) {
             $processes = $this->getRecords($request);
+
             if (request()->ajax()) {
-                $processes = $processes->get()->transform(function ($row) {
+                $processes = $processes->get()->transform(function (DocumentaryProcess $row) {
                     return $row->getCollectionData();
                 });
 
                 return response()->json(['data' => $processes], 200);
             }
-            $processes = $processes->get()->transform(function ($row) {
-                /** @var Process $row */
+            $processes = $processes->get()->transform(function (Process $row) {
                 return $row->getCollectionData();
             });
 

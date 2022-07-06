@@ -102,6 +102,12 @@
         <td  colspan="3">{{ $document->purchase_order->number_full }}</td>
     </tr>
     @endif
+    @if ($document->observation)
+    <tr>
+        <td class="align-top">Observación: </td>
+        <td colspan="3">{{ $document->observation }}</td>
+    </tr>
+    @endif
 </table>
 
 
@@ -130,6 +136,11 @@
             <td class="text-center align-top borde-gris">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+
+                @if($row->total_isc > 0)
+                    <br/><span style="font-size: 9px">ISC : {{ $row->total_isc }} ({{ $row->percentage_isc }}%)</span>
+                @endif
+
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -201,15 +212,32 @@
             <td colspan="5" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
+
+        @if($document->total_isc > 0)
+        <tr>
+            <td colspan="5" class="text-right font-bold">ISC: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold">{{ number_format($document->total_isc, 2) }}</td>
+        </tr>
+        @endif
+
         <tr>
             <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>
 </table>
+
+@if($document->payment_condition_id && ($payments->count() || $document->fee->count()))
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>CONDICIÓN DE PAGO: {{ $document->payment_condition->name }} </strong>
+        </td>
+    </tr>
+</table>
+@endif
+
 @if($payments->count())
-
-
     <table class="full-width">
         <tr>
             <td>
@@ -228,6 +256,22 @@
 
     </table>
 @endif
+
+@if($document->fee->count())
+
+<table class="full-width">
+        @foreach($document->fee as $key => $quote)
+            <tr>
+                <td>&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
+            </tr>
+        @endforeach
+    </tr>
+</table>
+
+@endif
+
+
+
 <table class="full-width">
     <tr>
         {{-- <td width="65%">
@@ -237,7 +281,11 @@
             <br/>
             <strong>Información adicional</strong>
             @foreach($document->additional_information as $information)
-                <p>{{ $information }}</p>
+                <p>@if(\App\CoreFacturalo\Helpers\Template\TemplateHelper::canShowNewLineOnObservation())
+                            {!! \App\CoreFacturalo\Helpers\Template\TemplateHelper::SetHtmlTag($information) !!}
+                        @else
+                            {{$information}}
+                        @endif</p>
             @endforeach
         </td> --}}
     </tr>

@@ -31,6 +31,7 @@ class IncomePayment extends ModelTenant
     {
         return $this->belongsTo(Income::class);
     }
+
     public function payment_method_type()
     {
         return $this->belongsTo(PaymentMethodType::class);

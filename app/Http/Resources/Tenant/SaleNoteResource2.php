@@ -25,6 +25,7 @@ class SaleNoteResource2 extends JsonResource
             'prefix' => $this->prefix,
             'establishment_id' => $this->establishment_id,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
+            'due_date' => $this->getFormatDueDate(),
             'time_of_issue' => $this->time_of_issue,
             'customer_id' => $this->customer_id,
             'currency_type_id' => $this->currency_type_id,
@@ -35,6 +36,7 @@ class SaleNoteResource2 extends JsonResource
             'total_discount' => $this->total_discount,
             'total_exportation' => $this->total_exportation,
             'total_free' => $this->total_free,
+            'total_igv_free' => $this->total_igv_free,
             'total_taxed' => $this->total_taxed,
             'total_unaffected' => $this->total_unaffected,
             'total_exonerated' => $this->total_exonerated,
@@ -59,27 +61,28 @@ class SaleNoteResource2 extends JsonResource
             'type_period' => $this->type_period,
             'actions' => $this->actions,
             'observation' => $this->observation,
+            'seller_id' => $this->seller_id,
         ];
     }
 
-    
+
     public static function getTransformPayments($payments){
-        
-        return $payments->transform(function($row, $key){ 
+
+        return $payments->transform(function($row, $key){
             return [
-                'id' => $row->id, 
-                'sale_note_id' => $row->sale_note_id, 
-                'date_of_payment' => $row->date_of_payment->format('Y-m-d'), 
-                'payment_method_type_id' => $row->payment_method_type_id, 
-                'has_card' => $row->has_card, 
-                'card_brand_id' => $row->card_brand_id, 
-                'reference' => $row->reference, 
-                'payment' => $row->payment, 
-                'payment_method_type' => $row->payment_method_type, 
-                'payment_destination_id' => ($row->global_payment) ? ($row->global_payment->type_record == 'cash' ? 'cash':$row->global_payment->destination_id):null, 
-                'payment_filename' => ($row->payment_file) ? $row->payment_file->filename:null, 
+                'id' => $row->id,
+                'sale_note_id' => $row->sale_note_id,
+                'date_of_payment' => $row->date_of_payment->format('Y-m-d'),
+                'payment_method_type_id' => $row->payment_method_type_id,
+                'has_card' => $row->has_card,
+                'card_brand_id' => $row->card_brand_id,
+                'reference' => $row->reference,
+                'payment' => $row->payment,
+                'payment_method_type' => $row->payment_method_type,
+                'payment_destination_id' => ($row->global_payment) ? ($row->global_payment->type_record == 'cash' ? 'cash':$row->global_payment->destination_id):null,
+                'payment_filename' => ($row->payment_file) ? $row->payment_file->filename:null,
             ];
-        }); 
+        });
 
     }
 }

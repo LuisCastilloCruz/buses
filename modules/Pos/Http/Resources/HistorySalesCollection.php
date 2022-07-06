@@ -15,14 +15,15 @@ class HistorySalesCollection extends ResourceCollection
      */
     public function toArray($request) {
         return $this->collection->transform(function($row, $key) {
-            
+
             return [
                 'id' => $row->id,
                 'number_full' => "{$row->series}-{$row->number}",
                 'series' => $row->series,
                 'number' => $row->number,
                 'date_of_issue' => $row->date_of_issue,
-                'price' => $row->price, 
+                'price' => $row->price,
+                'name' => $row->name,
             ];
         });
     }

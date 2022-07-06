@@ -20,6 +20,7 @@ use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Order\Models\OrderNote;
+use App\Models\Tenant\ItemSupply;
 
 /**
  * Se debe tener en cuenta este trait para llevar el control de Kardex
@@ -53,6 +54,30 @@ trait InventoryTrait
             ];
         });
     }
+
+    public function optionsItemProduction()
+    {
+        $records = Item::where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ'], ['is_for_production', 1]])->whereNotIsSet()->get();
+        return collect($records)->transform(function ($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->description
+            ];
+        });
+    }
+
+    public function optionsItemSupplies()
+    {
+        $ids = ItemSupply::select('individual_item_id')->distinct()->pluck('individual_item_id');
+        $records = Item::find($ids);
+        return collect($records)->transform(function ($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->description
+            ];
+        });
+    }
+
 
     /**
      * @return \Illuminate\Support\Collection
@@ -183,6 +208,39 @@ trait InventoryTrait
         });
     }
 
+    public function optionsItemFullProduction($search = null, $take = null)
+    {
+        $query = Item::query()
+            ->with('item_lots', 'item_lots.item_loteable', 'lots_group','supplies')
+            ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ'], ['is_for_production', 1]])
+            ->whereNotIsSet();
+        if ($search) {
+            $query->where('description', 'like', "%{$search}%")
+                ->orWhere('barcode', 'like', "%{$search}%")
+                ->orWhere('internal_id', 'like', "%{$search}%");
+        }
+        if ($take) {
+            $query->take($take);
+        }
+        return $query->get()->transform(function (Item $row) {
+            return $row->getCollectionData();
+            $description = $row->description;
+            if($row->internal_id) {
+                $description .= " | {$row->internal_id}";
+            }
+            if($row->barcode) {
+                $description .= " | {$row->barcode}";
+            }
+            return [
+
+                'id' => $row->id,
+                'description' => $description,
+                'lots_enabled' => (bool)$row->lots_enabled,
+                'series_enabled' => (bool)$row->series_enabled,
+            ];
+        });
+    }
+
     /**
      * @param $id
      *
@@ -309,26 +367,6 @@ trait InventoryTrait
         }
         $item_warehouse->save();
     }
-
-    private function updateStockInitial($item_id, $quantity, $warehouse_id) {
-
-        $inventory_configuration = InventoryConfiguration::firstOrFail();
-        $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
-        $item_warehouse->stock = $quantity;
-        if($quantity < 0 && $item_warehouse->item->unit_type_id !== 'ZZ'){
-            if (($inventory_configuration->stock_control) && ($item_warehouse->stock < 0)){
-                // return [
-                //     'success' => false,
-                //     'message' => 'El producto {$item_warehouse->item->description} no tiene suficiente stock!'
-                // ];
-                // dd('hasta aqui');
-                // return response()->json(['success' => false, 'message' => El producto {$item_warehouse->item->description} no tiene suficiente stock!]);
-                throw new Exception("El producto {$item_warehouse->item->description} no tiene suficiente stock!");
-            }
-        }
-        $item_warehouse->save();
-    }
-
     /**
      * Verifica el inventario
      *
@@ -439,9 +477,28 @@ trait InventoryTrait
         // dd($document_item);
         if (isset($document_item->item->IdLoteSelected)) {
             if ($document_item->item->IdLoteSelected != null) {
-                $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
-                $lot->quantity = $lot->quantity + $document_item->quantity;
-                $lot->save();
+
+                if(is_array($document_item->item->IdLoteSelected)) 
+                { 
+
+                    // presentacion - factor de lista de precios
+                    $quantity_unit = isset($document_item->item->presentation->quantity_unit) ? $document_item->item->presentation->quantity_unit : 1;
+                    $lotesSelecteds = $document_item->item->IdLoteSelected;
+
+                    foreach ($lotesSelecteds as $item) 
+                    {
+                        $lot = ItemLotsGroup::query()->find($item->id);
+                        $lot->quantity = $lot->quantity + ($quantity_unit * $item->compromise_quantity);
+                        $lot->save();
+                    }
+                    
+                }else {
+                    $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
+                    $lot->quantity = $lot->quantity + $document_item->quantity;
+                    $lot->save();
+                }
+
+              
             }
         }
         if (isset($document_item->item->lots)) {
@@ -462,13 +519,15 @@ trait InventoryTrait
     private function deleteItemLots($item)
     {
         $i_lots_group = isset($item->item->lots_group) ? $item->item->lots_group : [];
-        $lot_group_selected = collect($i_lots_group)->first(function ($row) {
-            return $row->checked;
-        });
-        if ($lot_group_selected) {
-            $lot = ItemLotsGroup::find($lot_group_selected->id);
-            $lot->quantity = $lot->quantity + $item->quantity;
-            $lot->save();
+        $lot_group_selecteds_filter = collect($i_lots_group)->where('compromise_quantity', '>', 0);
+        $lot_group_selecteds =  $lot_group_selecteds_filter->all();
+
+        if (count($lot_group_selecteds) > 0) {
+            foreach ($lot_group_selecteds as $lt) {
+                $lot = ItemLotsGroup::find($lt->id);
+                $lot->quantity = $lot->quantity + $lt->compromise_quantity;
+                $lot->save();
+            }
         }
         if (isset($item->item->lots)) {
             foreach ($item->item->lots as $it) {
@@ -499,7 +558,7 @@ trait InventoryTrait
             $factor = 1;
             $warehouse = $this->findWarehouse();
             $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
-            if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
+            if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->sale_notes_relateds) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
         }
     }
     /**
@@ -550,7 +609,11 @@ trait InventoryTrait
                 if (!$lot_group) {
                     throw new Exception("El lote {$purchase_item->lot_code} no existe!");
                 }
-                if ((int)$lot_group->quantity != (int)$purchase_item->quantity) {
+
+                // factor de lista de precios
+                $presentation_quantity = (isset($purchase_item->item->presentation->quantity_unit)) ? $purchase_item->item->presentation->quantity_unit : 1;
+
+                if ((int)$lot_group->quantity != (int) ($purchase_item->quantity * $presentation_quantity)) {
                     throw new Exception("Los productos del lote {$purchase_item->lot_code} han sido vendidos!");
                 }
             }
@@ -605,6 +668,7 @@ trait InventoryTrait
         $item_warehouse->stock = $item_warehouse->stock + $quantity;
         $item_warehouse->save();
     }
+
     /**
      * Al borrar item, se descuenta el stock
      * @param DocumentItem $document_item
@@ -617,16 +681,21 @@ trait InventoryTrait
         $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
         $document = $document_item->document;
         $warehouse = ($document_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($document_item->warehouse_id)->establishment_id) : $this->findWarehouse();
+
         $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-        if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id) {
+
+        if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds) 
+        {
             $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-        } else {
+        } else
+        {
             if ($document_item->document->dispatch) {
                 if (!$document_item->document->dispatch->transfer_reason_type->discount_stock) {
                     $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
                 }
             }
         }
+
     }
 
 
@@ -637,6 +706,26 @@ trait InventoryTrait
     public function allInventoryTransaction()
     {
         return InventoryTransaction::get();
+    }
+    
+    /**
+     * 
+     * Validar si el lote cuenta con stock disponible, controla descuento de lotes individuales y por presentacion
+     * 
+     * Usado en:
+     * InventoryKardexServiceProvider - método sale (venta cpe)
+     * SaleNoteController - método store (registro nota venta)
+     * 
+     * @param $lot
+     * @param $document_item
+     * @return void
+     */
+    public function validateStockLotGroup($lot, $document_item)
+    {
+        if($lot->quantity < 0)
+        {
+            throw new Exception("El lote '{$lot->code}' del producto {$document_item->item->description} no tiene suficiente stock!");
+        }
     }
 
 }

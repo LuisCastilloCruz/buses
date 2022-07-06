@@ -15,6 +15,7 @@
     use Modules\Item\Models\WebPlatform;
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
+    use Modules\Pos\Models\Tip;
     use Modules\Transporte\Models\TransporteEncomienda;
     use Modules\Transporte\Models\TransportePasaje;
 
@@ -131,6 +132,7 @@
      * @property-read int|null                                  $guide_files_count
      * @property-read int|null                                  $kardexes_count
      * @property-read int|null                                  $sale_note_payments_count
+     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereEstablishmentId($establishment_id = 0)
      */
     class SaleNote extends ModelTenant
     {
@@ -215,6 +217,8 @@
             // 'changed',
             'user_rel_suscription_plan_id',
             'subtotal',
+            'total_igv_free',
+            'unique_filename', //registra nombre de archivo unico (campo para evitar duplicidad)
         ];
 
         protected $casts = [
@@ -235,6 +239,7 @@
             'total_unaffected' => 'float',
             'total_exonerated' => 'float',
             'total_igv' => 'float',
+            'total_igv_free' => 'float',
             'total_base_isc' => 'float',
             'total_isc' => 'float',
             'total_base_other_taxes' => 'float',
@@ -441,7 +446,7 @@
          */
         public function seller()
         {
-            return $this->belongsTo(User::class);
+            return $this->belongsTo(User::class,'seller_id');
         }
 
         /**
@@ -538,6 +543,14 @@
         }
 
         /**
+         * @return BelongsTo
+         */
+        public function relation_establishment()
+        {
+            return $this->belongsTo(Establishment::class, 'establishment_id');
+        }
+
+        /**
          * @return mixed
          */
         public function getNumberToLetterAttribute()
@@ -563,9 +576,18 @@
          *
          * @return null
          */
-        public function scopeWhereTypeUser($query)
+        public function scopeWhereTypeUser($query, $params= [])
         {
-            $user = auth()->user();
+            if(isset($params['user_id'])) {
+                $user_id = (int)$params['user_id'];
+                $user = User::find($user_id);
+                if(!$user) {
+                    $user = new User();
+                }
+            }
+            else {
+                $user = auth()->user();
+            }
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }
 
@@ -633,7 +655,9 @@
             $btn_payments = ($total_documents > 0) ? false : true;
             $due_date = ( !empty($this->due_date)) ? $this->due_date->format('Y-m-d') : null;
 
-            $this->seller_id = $this->user_id;
+            if(emptY($this->seller_id)) {
+                $this->seller_id = $this->user_id;
+            }
             $this->payments = $this->getTransformPayments();
             $message_text = '';
             if ( !empty($this->number_full) && !empty($this->external_id)) {
@@ -659,6 +683,9 @@
                 $child_name= $child->name;
                 $child_number= $child->number;
             }
+            $person = $this->person;
+            $mails = $person->getCollectionData();
+            $customer_email=  $mails['optional_email_send'];
 
             return [
                 'id' => $this->id,
@@ -725,7 +752,11 @@
                 'section' => $this->getSection(),
                 'send_other_server' => $canSentToOtherServer,
                 'web_platforms' => $web_platforms,
-                'seller'=>$this->getSellerData()
+                'customer_email' => $customer_email,
+                'customer_telephone' => optional($this->person)->telephone,
+                'seller' => $this->seller,
+                'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
+// 'number' => $this->number,
             ];
         }
 
@@ -1051,6 +1082,10 @@
             return $this->hasMany(SaleNotePayment::class);
         }
 
+        public function tip()
+        {
+            return $this->morphOne(Tip::class, 'origin');
+        }
 
         /**
          *
@@ -1128,6 +1163,232 @@
             return DocumentType::find('80');
         }
 
+
+        /**
+         *
+         * Filtros para reporte utilidades
+         * Usado en:
+         * DashboardUtility - Obtener total descuentos globales
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param $establishment_id
+         * @param $d_start
+         * @param $d_end
+         * @param $item_id
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterDashboardUtility($query, $establishment_id, $d_start, $d_end, $item_id)
+        {
+
+            $query->where([['establishment_id', $establishment_id], ['changed', false]])->whereStateTypeAccepted();
+
+            if($d_start && $d_end) $query->whereBetween('date_of_issue', [$d_start, $d_end]);
+
+            if($item_id)
+            {
+                $query->whereHas('items', function($q) use($item_id){
+                    $q->where('item_id', $item_id);
+                });
+            }
+
+            return $query;
+        }
+
+
+        /**
+         *
+         * Obtener notas de venta filtradas por el id de los items (SaleNoteItem)
+         *
+         * Usado en:
+         * DashboardUtility - Obtener totales
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param array $sale_note_ids
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereRecordsByItems($query, $sale_note_ids)
+        {
+            return$query->withOut(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'])
+                        ->whereIn('id', $sale_note_ids)
+                        ->select('id', 'total', 'currency_type_id', 'exchange_rate_sale');
+
+        }
+
+
+        /**
+         *
+         * Obtener total y realizar conversión al tipo de cambio si se requiere
+         *
+         * @return float
+         */
+        public function getTransformTotal()
+        {
+            return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
+        }
+
+
+        /**
+         *
+         * Filtro para no incluir relaciones en consulta
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterWithOutRelations($query)
+        {
+            return $query->withOut([
+                'user',
+                'soap_type',
+                'state_type',
+                'currency_type',
+                'items',
+                'payments'
+            ]);
+        }
+
+
+        /**
+         *
+         * Obtener vuelto para mostrar en pdf
+         *
+         * @return float
+         */
+        public function getChangePayment()
+        {
+            return ($this->total - $this->payments->sum('payment')) - $this->payments->sum('change');
+        }
+
+        /**
+         *
+         * Obtener porcentaje de cargos para mostrar en pdf
+         *
+         * @return float
+         */
+        public function getTotalFactor()
+        {
+            $total_factor = 0;
+
+            if($this->charges)
+            {
+                $total_factor = collect($this->charges)->sum('factor') * 100;
+            }
+
+            return $total_factor;
+        }
+
+
+        /**
+         *
+         * Filtrar por rango de fechas
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         *
+         */
+        public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
+        {
+            return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+
+        /**
+         *
+         * Obtener la fecha de vencimiento y aplicar formato
+         *
+         * @return string
+         */
+        public function getFormatDueDate()
+        {
+            return $this->due_date ? $this->generalFormatDate($this->due_date) : null;
+        }
+
+
+        /**
+         *
+         * Obtener descripción del tipo de documento
+         *
+         * @return string
+         */
+        public function getDocumentTypeDescription()
+        {
+            return 'NOTA DE VENTA';
+        }
+
+
+        /**
+         *
+         * Obtener pagos en efectivo
+         *
+         * @return Collection
+         */
+        public function getCashPayments()
+        {
+            return $this->payments()->whereFilterCashPayment()->get()->transform(function($row){{
+                return $row->getRowResourceCashPayment();
+            }});
+        }
+
+
+        /**
+         *
+         * Validar si el registro esta rechazado o anulado
+         *
+         * @return bool
+         */
+        public function isVoidedOrRejected()
+        {
+            return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
+        }
+
+
+        /**
+         *
+         * Retornar el total de pagos
+         *
+         * @return float
+         */
+        public function getTotalAllPayments()
+        {
+
+            $total_payments = 0;
+
+            if(!$this->isVoidedOrRejected())
+            {
+                $total_payments = $this->payments->sum('payment');
+
+                if($this->currency_type_id === 'USD')
+                {
+                    $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
+                }
+            }
+
+            return $total_payments;
+        }
+
+
+        /**
+         *
+         * Validar si la nota de venta fue generada a partir de un registro externo
+         *
+         * Usado en:
+         * SaleNoteController
+         *
+         * @return bool
+         */
+        public function isGeneratedFromExternalRecord()
+        {
+            $generated = false;
+
+            if(!is_null($this->order_note_id))
+            {
+                $generated = true;
+            }
+
+            // @todo agregar mas registros relacionados
+
+            return $generated;
+        }
+
         public function transporte_encomienda(){
             return $this->hasOne(TransporteEncomienda::class,'document_id','id');
         }
@@ -1139,5 +1400,6 @@
         public function pasaje(){
             return $this->hasOne(TransportePasaje::class,'note_id','id');
         }
+
 
     }

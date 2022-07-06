@@ -163,8 +163,9 @@
 <table class="full-width mt-3">
     @if ($document->description)
         <tr>
-            <td width="15%" class="align-top font-bold">OBSERVACIÓN: </td>
-            <td width="85%">{{ $document->description }}</td>
+            <td width="15%" class="align-top">Observación: </td>
+            <td width="85%">{!! str_replace("\n", "<br/>", $document->description) !!}</td>
+            {{-- <td width="85%">{{ $document->description }}</td> --}}
         </tr>
     @endif
 </table>
@@ -212,12 +213,8 @@
     <tbody class="items-aqp">
     @foreach($document->items as $row)
         @php
-            $brand = (!empty($row->item) &&
-                     !empty($row->item->brand) &&
-                     !empty($row->item->brand->name)
-                     ) ?
-                $row->item->brand->name :
-                    '';
+            $brand =  \App\CoreFacturalo\Helpers\Template\TemplateHelper::getBrandFormItem($row);;
+
         @endphp
         <tr>
             <td class="text-center align-top borde-gris">
@@ -253,7 +250,7 @@
                         {{$item}}<br>
                     @endforeach
                 @endif
-                @if($row->item->extra_attr_value != '')
+                  @if($row->item !== null && property_exists($row->item,'extra_attr_value') && $row->item->extra_attr_value != '')
                     <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
                 @endif
             </td>

@@ -111,6 +111,7 @@
                                 <el-input v-if="form.item.currency_type_id !== undefined"
                                           v-model="form.unit_price"
                                           class="input-with-select"
+                                          :filterable="false"
                                 >
                                     <el-select slot="prepend"
                                                v-model="form.item.currency_type_id"
@@ -575,7 +576,8 @@ export default {
     props: [
         'showDialog',
         'currencyTypeIdActive',
-        'exchangeRateSale'
+        'exchangeRateSale',
+        'localHasGlobalIgv'
     ],
     components: {itemForm, LotsForm, Keypress},
     computed: {
@@ -795,7 +797,8 @@ export default {
                 purchase_has_igv: null,
                 update_price: false,
                 update_date_of_due: false,
-                update_purchase_price: true,
+                update_purchase_price: this.config.checked_update_purchase_price,
+                // update_purchase_price: true,
             }
 
             this.item_unit_type = {};
@@ -880,12 +883,28 @@ export default {
             this.form.purchase_has_igv = this.form.item.purchase_has_igv;
             this.setExtraElements(this.form.item);
             this.setGlobalIgvToItem()
+            this.setGlobalPurchaseCurrencyToItem()
+
+            //asignar variables isc
+            this.form.has_isc = this.form.item.purchase_has_isc
+            this.form.percentage_isc = this.form.item.purchase_percentage_isc
+            this.form.system_isc_type_id = this.form.item.purchase_system_isc_type_id
+
+        },
+        setGlobalPurchaseCurrencyToItem(){
+
+            if(this.config.set_global_purchase_currency_items)
+            {
+                this.form.item.currency_type_id = this.currencyTypeIdActive
+            }
 
         },
         setGlobalIgvToItem() {
             if (this.config.enabled_global_igv_to_purchase === true) {
                 // Ajusta el igv, si es global, se lo añade o quita al precio del item directamente
-                this.form.purchase_has_igv = this.hasGlobalIgv
+                // this.form.purchase_has_igv = this.hasGlobalIgv
+                this.form.purchase_has_igv = this.localHasGlobalIgv
+
             }
         },
 

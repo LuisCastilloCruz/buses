@@ -75,6 +75,10 @@ if ($hostname) {
             Route::post('companies', 'Tenant\CompanyController@store');
             Route::post('companies/uploads', 'Tenant\CompanyController@uploadFile');
 
+            //configuracion envio documento a pse
+            Route::post('companies/store-send-pse', 'Tenant\CompanyController@storeSendPse');
+            Route::get('companies/record-send-pse', 'Tenant\CompanyController@recordSendPse');
+
             //Card Brands
             Route::get('card_brands/records', 'Tenant\CardBrandController@records');
             Route::get('card_brands/record/{card_brand}', 'Tenant\CardBrandController@record');
@@ -91,11 +95,16 @@ if ($hostname) {
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
+            Route::post('configurations/apiruc', 'Tenant\ConfigurationController@storeApiRuc');
             Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
             Route::post('configurations/changeFormat', 'Tenant\ConfigurationController@changeFormat');
             Route::get('configurations/tables', 'Tenant\ConfigurationController@tables');
             Route::get('configurations/visual_defaults', 'Tenant\ConfigurationController@visualDefaults')->name('visual_defaults');
+            Route::get('configurations/visual/get_menu', 'Tenant\ConfigurationController@visualGetMenu')->name('visual_get_menu');
+            Route::post('configurations/visual/set_menu', 'Tenant\ConfigurationController@visualSetMenu')->name('visual_set_menu');
             Route::post('configurations/visual_settings', 'Tenant\ConfigurationController@visualSettings')->name('visual-settings');
+            Route::post('configurations/visual/upload_skin', 'Tenant\ConfigurationController@visualUploadSkin')->name('visual_upload_skin');
+            Route::post('configurations/visual/delete_skin', 'Tenant\ConfigurationController@visualDeleteSkin')->name('visual_delete_skin');
             Route::get('configurations/pdf_templates', 'Tenant\ConfigurationController@pdfTemplates')->name('tenant.advanced.pdf_templates');
             Route::get('configurations/pdf_guide_templates', 'Tenant\ConfigurationController@pdfGuideTemplates')->name('tenant.advanced.pdf_guide_templates');
             Route::get('configurations/pdf_preprinted_templates', 'Tenant\ConfigurationController@pdfPreprintedTemplates')->name('tenant.advanced.pdf_preprinted_templates');
@@ -103,6 +112,12 @@ if ($hostname) {
             Route::post('configurations/preprinted/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
             Route::get('configurations/preprinted/{template}', 'Tenant\ConfigurationController@show');
             Route::get('configurations/change-mode', 'Tenant\ConfigurationController@changeMode')->name('settings.change_mode');
+
+            Route::get('configurations/templates/ticket/refresh', 'Tenant\ConfigurationController@refreshTickets');
+            Route::get('configurations/pdf_templates/ticket', 'Tenant\ConfigurationController@pdfTicketTemplates')->name('tenant.advanced.pdf_ticket_templates');
+            Route::get('configurations/templates/ticket/records', 'Tenant\ConfigurationController@getTicketFormats');
+            Route::post('configurations/templates/ticket/update', 'Tenant\ConfigurationController@changeTicketFormat');
+            Route::get('configurations/apiruc', 'Tenant\ConfigurationController@apiruc');
             Route::post('configurations/changeColor1', 'Tenant\ConfigurationController@changeColor1');
             Route::post('configurations/changeColor2', 'Tenant\ConfigurationController@changeColor2');
 
@@ -181,9 +196,15 @@ if ($hostname) {
             Route::get('items/export', 'Tenant\ItemController@export')->name('tenant.items.export');
             Route::get('items/export/wp', 'Tenant\ItemController@exportWp')->name('tenant.items.export.wp');
             Route::get('items/export/digemid', 'Tenant\ItemController@exportDigemid');
+            Route::get('items/search-items', 'Tenant\ItemController@searchItems');
+            Route::get('items/search/item/{item}', 'Tenant\ItemController@searchItemById');
+            Route::get('items/item/tables', 'Tenant\ItemController@item_tables');
             Route::get('items/export/barcode', 'Tenant\ItemController@exportBarCode')->name('tenant.items.export.barcode');
+            Route::get('items/export/extra_atrributes/PDF', 'Tenant\ItemController@downloadExtraDataPdf');
+            Route::get('items/export/extra_atrributes/XLSX', 'Tenant\ItemController@downloadExtraDataItemsExcel');
             Route::get('items/export/barcode_full', 'Tenant\ItemController@exportBarCodeFull');
             Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');
+            Route::get('items/export/barcode/print_x', 'Tenant\ItemController@printBarCodeX')->name('tenant.items.export.barcode.print.x');
             Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
             Route::post('get-items', 'Tenant\ItemController@getAllItems');
 
@@ -210,6 +231,9 @@ if ($hostname) {
                 Route::post('/import', 'Tenant\PersonController@import');
                 Route::get('/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
                 Route::get('/{type}/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
+                Route::get('/export/barcode/print', 'Tenant\PersonController@printBarCode')->name('tenant.persons.export.barcode.print');
+                Route::get('/barcode/{item}', 'Tenant\PersonController@generateBarcode');
+                Route::get('/search/{barcode}', 'Tenant\PersonController@getPersonByBarcode');
             });
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
@@ -221,6 +245,7 @@ if ($hostname) {
             Route::get('documents', 'Tenant\DocumentController@index')->name('tenant.documents.index')->middleware(['redirect.level', 'tenant.internal.mode']);
             Route::get('documents/columns', 'Tenant\DocumentController@columns');
             Route::get('documents/records', 'Tenant\DocumentController@records');
+            Route::get('documents/recordsTotal', 'Tenant\DocumentController@recordsTotal');
             Route::get('documents/create', 'Tenant\DocumentController@create')->name('tenant.documents.create')->middleware(['redirect.level', 'tenant.internal.mode']);
             Route::get('documents/create_tensu', 'Tenant\DocumentController@create_tensu')->name('tenant.documents.create_tensu');
             Route::get('documents/{id}/edit', 'Tenant\DocumentController@edit')->middleware(['redirect.level', 'tenant.internal.mode']);
@@ -284,6 +309,7 @@ if ($hostname) {
             Route::get('summaries/record/{summary}', 'Tenant\SummaryController@record');
             Route::get('summaries/regularize/{summary}', 'Tenant\SummaryController@regularize');
             Route::get('summaries/cancel-regularize/{summary}', 'Tenant\SummaryController@cancelRegularize');
+            Route::get('summaries/tables', 'Tenant\SummaryController@tables');
 
             //Voided
             Route::get('voided', 'Tenant\VoidedController@index')->name('tenant.voided.index')->middleware('redirect.level', 'tenant.internal.mode');
@@ -449,6 +475,7 @@ if ($hostname) {
             // Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
             Route::get('purchases/search-items', 'Tenant\PurchaseController@searchItems');
             Route::get('purchases/search/item/{item}', 'Tenant\PurchaseController@searchItemById');
+            Route::post('purchases/search/purchase_order','Tenant\PurchaseController@searchPurchaseOrder');
             // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
             Route::post('purchases/brands', 'Tenant\PurchaseController@storeBrands');
             Route::post('purchases/categories', 'Tenant\PurchaseController@storeCategories');
@@ -579,15 +606,21 @@ if ($hostname) {
             Route::get('cash/search/customers', 'Tenant\CashController@searchCustomers');
             Route::get('cash/search/customer/{id}', 'Tenant\CashController@searchCustomerById');
 
+            Route::get('cash/report/products/{cash}/{is_garage?}', 'Tenant\CashController@report_products');
             Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
             Route::get('cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
+            Route::get('cash/report/cash-excel/{cash}', 'Tenant\CashController@report_cash_excel');
 
+            //POS VENTA RAPIDA
+            Route::get('pos/fast', 'Tenant\PosController@fast')->name('tenant.pos.fast');
+            Route::get('pos/garage', 'Tenant\PosController@garage')->name('tenant.pos.garage');
             //caja modulo transporte
             Route::get('/transportes/cash', 'Tenant\CashController@index')->name('tenant.transportes.cash.index');
             Route::get('/transportes/cash/report/porpagar/{cash}', 'Tenant\CashController@enc_x_pagar');
             Route::get('/transportes/cash/modules', 'Tenant\CashController@modules');
             Route::get('transportes/cash/report/products/{cash}', 'Tenant\CashController@report_products');
             Route::get('transportes/cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
+
 
             //Tags
             Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
@@ -657,10 +690,22 @@ if ($hostname) {
             Route::get('purchase-settlements/columns', 'Tenant\PurchaseSettlementController@columns');
             Route::get('purchase-settlements/records', 'Tenant\PurchaseSettlementController@records');
 
+            //Almacen de columnas por usuario
+            Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');
+
+            // test theme
+            // Route::get('testtheme', function () {
+            //     return view('tenant.layouts.partials.testtheme');
+            // });
+
         });
     });
 } else {
-    Route::domain(env('APP_URL_BASE'))->group(function () {
+    $prefix = env('PREFIX_URL',null);
+    $prefix = !empty($prefix)?$prefix.".":'';
+    $app_url = $prefix. env('APP_URL_BASE');
+
+    Route::domain($app_url)->group(function () {
         Route::get('login', 'System\LoginController@showLoginForm')->name('login');
         Route::post('login', 'System\LoginController@login');
         Route::post('logout', 'System\LoginController@logout')->name('logout');
@@ -758,6 +803,8 @@ if ($hostname) {
             Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
             Route::get('configurations/apkurl', 'System\ConfigurationController@apkurl');
 
+            Route::get('configurations/update-tenant-discount-type-base', 'System\ConfigurationController@updateTenantDiscountTypeBase');
+
             // backup
             Route::get('backup', 'System\BackupController@index')->name('system.backup');
             Route::post('backup/db', 'System\BackupController@db')->name('system.backup.db');
@@ -794,5 +841,3 @@ if ($hostname) {
         });
     });
 }
-
-Route::get('/prueba-ficheros','TestController@test');

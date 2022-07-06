@@ -100,6 +100,8 @@ class SaleNoteController extends Controller
             /*foreach ($data['payments'] as $row) {
                 $this->sale_note->payments()->create($row);
             }*/
+            $payments = new \App\Http\Controllers\Tenant\SaleNoteController;
+            $payments->savePayments($this->sale_note, $data['payments']);
 
             $this->setFilename();
             $this->createPdf($this->sale_note, 'a4', $this->sale_note->filename);
@@ -248,6 +250,7 @@ class SaleNoteController extends Controller
     {
         $name = [$this->sale_note->prefix, $this->sale_note->id, date('Ymd')];
         $this->sale_note->filename = join('-', $name);
+        $this->sale_note->unique_filename = $this->sale_note->filename; //campo único para evitar duplicados
         $this->sale_note->save();
     }
 

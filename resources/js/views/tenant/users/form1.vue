@@ -57,6 +57,47 @@
                             ></small>
                         </div>
                     </div>
+                    <!-- Zona por usuario -->
+                    <!--
+                    <div class="col-md-4">
+                        <div :class="{'has-danger': errors.zone_id}"
+                             class="form-group">
+                            <label class="control-label">
+                                Zona
+                            </label>
+
+                            <a v-if="form_zone.add == false"
+                               class="control-label font-weight-bold text-info"
+                               href="#"
+                               @click="form_zone.add = true"> [ + Nuevo]</a>
+                            <a v-if="form_zone.add == true"
+                               class="control-label font-weight-bold text-info"
+                               href="#"
+                               @click="saveZone()"> [ + Guardar]</a>
+                            <a v-if="form_zone.add == true"
+                               class="control-label font-weight-bold text-danger"
+                               href="#"
+                               @click="form_zone.add = false"> [ Cancelar]</a>
+                            <el-input v-if="form_zone.add == true"
+                                      v-model="form_zone.name"
+                                      dusk="item_code"
+                                      style="margin-bottom:1.5%;"></el-input>
+
+                            <el-select v-if="form_zone.add == false"
+                                       v-model="form.zone_id"
+                                       clearable
+                                       filterable>
+                                <el-option v-for="option in zones"
+                                           :key="option.id"
+                                           :label="option.name"
+                                           :value="option.id"></el-option>
+                            </el-select>
+                            <small v-if="errors.zone_id"
+                                   class="form-control-feedback"
+                                   v-text="errors.zone_id[0]"></small>
+                        </div>
+                    </div>
+                    -->
                     <!-- Documento por defecto -->
                     <div class="col-md-4">
                         <div
@@ -218,6 +259,35 @@
                             </div>
                         </div>
 
+                        <div class="row" v-if="typeUser != 'integrator'">
+                            <div  class="col-md-12 mt-4">
+                                <div class="form-comtrol">
+                                    <label class="control-label">Pagos
+                                        <el-tooltip class="item"
+                                                    content="Disponible en: Listado de comprobantes - Pagos"
+                                                    effect="dark"
+                                                    placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                </div>
+                            </div>
+                            <div  class="col-md-4 mt-1">
+                                <div class="form-comtrol">
+                                    <el-checkbox v-model="form.create_payment">
+                                        Agregar
+                                    </el-checkbox>
+                                </div>
+                            </div>
+                            <div  class="col-md-4 mt-1">
+                                <div class="form-comtrol">
+                                    <el-checkbox v-model="form.delete_payment">
+                                        Eliminar
+                                    </el-checkbox>
+                                </div>
+                            </div>
+                        </div>
+
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -241,10 +311,12 @@ export default {
                 children: "childrens",
                 label: "description",
             },
+            form_zone: {add: false, name: null, id: null},
             loading_submit: false,
             titleDialog: null,
             resource: "users",
             errors: {},
+            zones:[],
             form: {
                 id: null,
                 name: null,
@@ -287,6 +359,7 @@ export default {
         await this.$http.get(`/${this.resource}/tables`).then((response) => {
             this.modules = response.data.modules;
             this.establishments = response.data.establishments;
+            this.zones = response.data.zones;
             this.types = response.data.types;
             this.documents = response.data.documents;
             this.config_permission_to_edit_cpe = response.data.config_permission_to_edit_cpe
@@ -386,6 +459,8 @@ export default {
                 levels: [],
                 permission_edit_cpe: false,
                 recreate_documents: false,
+                create_payment: true,
+                delete_payment: true,
             };
         },
         create() {
@@ -421,6 +496,7 @@ export default {
                     this.$refs.tree.setCheckedKeys([]);
                     this.modules = response.data.modules;
                     this.establishments = response.data.establishments;
+                    this.zones = response.data.zones;
                     this.types = response.data.types;
                     this.documents = response.data.documents;
                     this.series = response.data.series;
@@ -477,6 +553,27 @@ export default {
             this.$emit("update:showDialog", false);
             this.initForm();
         },
+        saveZone() {
+            this.form_zone.add = false
+
+            this.$http.post(`/zones`, this.form_zone)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.zones.push(response.data.data)
+                        this.form_zone.name = null
+
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+
+                })
+
+
+        },
+
     },
 };
 </script>

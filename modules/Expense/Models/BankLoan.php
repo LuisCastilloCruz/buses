@@ -694,14 +694,45 @@
          *
          * @return Builder|null
          */
-        public function scopeWhereTypeUser(Builder $query)
+        public function scopeWhereTypeUser(Builder $query, $params= [])
         {
-            $user = auth()->user();
-            if (null === $user) {
-                $user = new User();
+            if(isset($params['user_id'])) {
+                $user_id = (int)$params['user_id'];
+                $user = User::find($user_id);
+                if(!$user) {
+                    $user = new User();
+                }
+            }
+            else {
+                $user = auth()->user();
             }
             return ($user->type === 'seller') ? $query->where('user_id', $user->id) : $query;
         }
+        /**
+         * @param $query
+         *
+         * @return mixed
+         */
+        public function scopeWhereStateTypeAccepted($query)
+        {
+            return $query->whereIn('state_type_id', ['01', '03', '05', '07', '13']);
+        }
+        /**
+         * @return string
+         */
+        public function getNumberFullAttribute()
+        {
+            return  $this->number;
+        }
+
+        /**
+         * @return string
+         */
+        public function getNumberFull()
+        {
+            return  $this->getNumberFullAttribute();
+        }
+
     }
 
 

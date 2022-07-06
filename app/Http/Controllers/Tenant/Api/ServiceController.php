@@ -53,6 +53,12 @@
         }
 
 
+        /**
+         * @param int $number
+         *
+         * @return array
+         * @deprecated usar modules/ApiPeruDev/Data/ServiceData.php
+         */
         public function ruc($number)
         {
             $service = new Sunat();
@@ -82,6 +88,14 @@
             }
         }
 
+
+        /**
+         * @param int $number
+         *
+         * @return array
+         *
+         * @deprecated usar modules/ApiPeruDev/Data/ServiceData.php
+         */
         public function dni($number)
         {
             $res = Dni::search($number);
@@ -200,7 +214,7 @@
                 $date_of_issue,
                 $total
             );
-            
+
             $response = $validate_cpe->search();
 
             if ($response['success']) {

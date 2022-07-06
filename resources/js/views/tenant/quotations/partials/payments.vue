@@ -72,7 +72,7 @@
                                     </td>
                                     <td>
                                         <div class="form-group mb-0">
-                                            
+
                                             <el-upload
                                                     :data="{'index': index}"
                                                     :headers="headers"
@@ -188,19 +188,19 @@
                 }
 
                 // console.log(this.records)
-            
+
             },
             cleanFileList(){
                 this.fileList = []
             },
-            handleRemove(file, fileList) {       
-                
+            handleRemove(file, fileList) {
+
                 this.records[this.index_file].filename = null
                 this.records[this.index_file].temp_path = null
                 this.fileList = []
                 this.index_file = null
 
-            }, 
+            },
             initForm() {
                 this.records = [];
                 this.fileList = [];
@@ -211,7 +211,7 @@
                 await this.$http.get(`/${this.resource}/document/${this.recordId}`)
                     .then(response => {
                         this.document = response.data;
-                        this.title = 'Pagos del comprobante: '+this.document.number_full;
+                        this.title = 'Pagos a cuenta del comprobante: '+this.document.number_full;
                     });
                 await this.$http.get(`/${this.resource}/records/${this.recordId}`)
                     .then(response => {

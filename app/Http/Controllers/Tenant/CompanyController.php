@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\CompanyRequest;
 use App\Http\Resources\Tenant\CompanyResource;
 use Illuminate\Http\Request;
+use App\Http\Requests\Tenant\CompanyPseRequest;
+
 
 /**
  * Class CompanyController
@@ -107,4 +109,54 @@ class CompanyController extends Controller
             'message' =>  __('app.actions.upload.error'),
         ];
     }
+
+
+    /**
+     * Registrar datos de configuracion para enviar xml/cdr a PSE
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function storeSendPse(CompanyPseRequest $request)
+    {
+        $company = Company::firstOrFail();
+        $company->send_document_to_pse = $request->send_document_to_pse;
+        $company->url_signature_pse = $request->url_signature_pse;
+        $company->url_send_cdr_pse = $request->url_send_cdr_pse;
+        $company->client_id_pse = $request->client_id_pse;
+        $company->url_login_pse = $request->url_login_pse;
+        $company->user_pse = $request->user_pse;
+        $company->password_pse = $request->password_pse ?? $company->password_pse;
+        $company->save();
+
+        return [
+            'success' => true,
+            'message' => 'Datos guardados correctamente'
+        ];
+    }
+
+
+    /**
+     * Obtener datos de configuracion de PSE
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function recordSendPse()
+    {
+
+        $company = Company::firstOrFail();
+
+        return [
+            'send_document_to_pse' => $company->send_document_to_pse,
+            'url_signature_pse' => $company->url_signature_pse,
+            'url_send_cdr_pse' => $company->url_send_cdr_pse,
+            'client_id_pse' => $company->client_id_pse,
+            'url_login_pse' => $company->url_login_pse,
+            'user_pse' => $company->user_pse,
+            // 'password_pse' => $company->password_pse,
+        ];
+
+    }
+
 }

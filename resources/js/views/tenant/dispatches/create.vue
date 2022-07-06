@@ -114,7 +114,7 @@
                                  class="form-group">
                                 <label class="control-label">Motivo de
                                                              traslado<span class="text-danger"> *</span></label>
-                                <el-select v-model="form.transfer_reason_type_id">
+                                <el-select v-model="form.transfer_reason_type_id" @change="changeTransferReasonType">
                                     <el-option v-for="option in transferReasonTypes"
                                                :key="option.id"
                                                :label="option.description"
@@ -125,6 +125,43 @@
                                        v-text="errors.transfer_reason_type_id[0]"></small>
                             </div>
                         </div>
+
+                        <!-- numero de DAM -->
+                        <template v-if="form.transfer_reason_type_id === '09'">
+
+                            <div class="col-lg-3">
+                                <div :class="{'has-danger': errors['related.number']}"
+                                    class="form-group">
+                                    <label class="control-label">Número de documento (DAM)
+                                        <el-tooltip class="item"
+                                                    content="Formato del campo: XXXX-XX-XXX-XXXXXX, Ejemplo: 0001-01-002-001234"
+                                                    effect="dark"
+                                                    placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                        <span class="text-danger"> *</span>
+                                    </label>
+                                    <el-input v-model="form.related.number" placeholder="0001-01-002-001234"></el-input>
+                                    <small v-if="errors['related.number']" class="form-control-feedback" v-text="errors['related.number'][0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div :class="{'has-danger': errors['related.document_type_id']}"
+                                    class="form-group">
+                                    <label class="control-label">Tipo documento relacionado<span class="text-danger"> *</span></label>
+                                    <el-select v-model="form.related.document_type_id" disabled>
+                                        <el-option v-for="option in related_document_types"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors['related.document_type_id']" class="form-control-feedback" v-text="errors['related.document_type_id'][0]"></small>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- numero de DAM -->
+
                         <!-- <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.port_code}">
                                 <label class="control-label">Codigo del Puerto</label>
@@ -143,7 +180,7 @@
                             </div>
                         </div> -->
 
-                        <div class="col-lg-6">
+                        <div :class="form.transfer_reason_type_id === '09' ? 'col-lg-12' : 'col-lg-6'">
                             <div :class="{'has-danger': errors.transfer_reason_description}"
                                  class="form-group">
                                 <label class="control-label">Descripción de motivo de traslado</label>
@@ -226,6 +263,23 @@
                                        v-text="errors.observations[0]"></small>
                             </div>
                         </div>
+
+                        <div class="col-lg-2" v-if="!order_form_id">
+                            <div :class="{'has-danger': errors.order_form_external}"
+                                 class="form-group">
+                                <label class="control-label">Orden de pedido
+                                    <el-tooltip class="item"
+                                                content="Pedidos externos"
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-input v-model="form.order_form_external"></el-input>
+                                <small v-if="errors.order_form_external" class="form-control-feedback" v-text="errors.order_form_external[0]"></small>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="row">
                     </div>
@@ -576,20 +630,42 @@
                                         <div class="col-8">
                                             <!-- Selector para item -->
                                             <div :class="{'has-danger': errors.items}"
-                                                 class="form-group">
-                                                <el-select v-model="current_item"
-                                                           :loading="loading_search"
-                                                           :remote-method="searchRemoteItems"
-                                                           filterable
-                                                           remote
-                                                           ref="selectItem"
-                                                           @change="onChangeItem">
-                                                    <el-option
-                                                        v-for="option in items"
-                                                        :key="option.id"
-                                                        :label="option.full_description"
-                                                        :value="option.id"></el-option>
-                                                </el-select>
+                                                 class="form-group" id="custom-select">
+
+                                                <el-input id="custom-input">
+
+                                                    <el-select v-model="current_item"
+                                                            id="select-width"
+                                                            :loading="loading_search"
+                                                            :remote-method="searchRemoteItems"
+                                                            popper-class="el-select-items"
+                                                            filterable
+                                                            remote
+                                                            ref="selectItem"
+                                                            slot="prepend"
+                                                            @change="onChangeItem">
+
+                                                        <el-option
+                                                            v-for="option in items"
+                                                            :key="option.id"
+                                                            :label="option.full_description"
+                                                            :value="option.id"></el-option>
+                                                    </el-select>
+
+                                                    <el-tooltip
+                                                        slot="append"
+                                                        class="item"
+                                                        content="Ver Stock del Producto"
+                                                        effect="dark"
+                                                        placement="bottom">
+                                                        <el-button
+                                                            @click.prevent="clickWarehouseDetail()">
+                                                            <i class="fa fa-search"></i>
+                                                        </el-button>
+                                                    </el-tooltip>
+
+                                                </el-input>
+
                                                 <small v-if="errors.items"
                                                        class="form-control-feedback"
                                                        v-text="errors.items[0]"></small>
@@ -674,6 +750,7 @@
 
         <person-form :external="true"
                      :showDialog.sync="showDialogNewPerson"
+                     :input_person="input_person"
                      type="customers"></person-form>
 
         <items
@@ -693,6 +770,12 @@
             :showDialog.sync="showDialogLots"
             @addRowLotGroup="addRowLotGroup">
         </lots-group>
+
+        <warehouses-detail
+            :showDialog.sync="showWarehousesDetail"
+            :warehouses="warehousesDetail">
+        </warehouses-detail>
+
     </div>
 </template>
 
@@ -704,6 +787,7 @@ import LotsGroup from '../documents/partials/lots_group.vue';
 
 import DispatchOptions from './partials/options.vue'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import WarehousesDetail from '@components/WarehousesDetail.vue'
 
 export default {
     props: [
@@ -716,6 +800,7 @@ export default {
         PersonForm,
         Items,
         DispatchOptions,
+        WarehousesDetail,
     },
     computed: {
         ...mapState([
@@ -733,12 +818,14 @@ export default {
             IdLoteSelected: false,
             showDialogLots: false,
             min_qty: 0.0001,
+            input_person: {},
             // min_qty: 0.1,
             showDialogOptions: false,
             showDialogNewPerson: false,
             identityDocumentTypes: [],
             showDialogAddItems: false,
             transferReasonTypes: [],
+            related_document_types: [],
             transportModeTypes: [],
             resource: 'dispatches',
             loading_submit: false,
@@ -820,6 +907,8 @@ export default {
             recordId: null,
             company: {},
             customerAddresses: [],
+            showWarehousesDetail: false,
+            warehousesDetail: [],
         }
     },
     created() {
@@ -840,6 +929,8 @@ export default {
             this.company = response.data.company;
             this.identityDocumentTypes = response.data.identityDocumentTypes;
             this.transferReasonTypes = response.data.transferReasonTypes;
+            this.related_document_types = response.data.related_document_types
+
             this.transportModeTypes = response.data.transportModeTypes;
             this.establishments = response.data.establishments;
             this.departments = response.data.departments;
@@ -866,8 +957,38 @@ export default {
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
         })
+        this.$eventHub.$on('initInputPerson', () => {
+            this.initInputPerson()
+        });
     },
     methods: {
+        clickWarehouseDetail(){
+
+            if (!this.current_item) {
+                return this.$message.error('Seleccione un producto');
+            }
+
+            const item = _.find(this.items, {'id': this.current_item});
+
+            this.warehousesDetail = item.warehouses
+            this.showWarehousesDetail = true
+        },
+        changeTransferReasonType(){
+
+            // exportacion
+            if(this.form.transfer_reason_type_id === '09')
+            {
+                this.form.related = {
+                    number: null,
+                    document_type_id: '01'
+                }
+
+            }else
+            {
+                this.form.related = {}
+            }
+
+        },
         getFormatQuantity(quantity){
             return _.round(quantity, 4)
         },
@@ -1012,12 +1133,19 @@ export default {
             }
         },
         onLoadItemsFromSummary(items, itemsFromStorage) {
+
             items.map(it => {
-                const itemWithQuantity = itemsFromStorage.find(i => i.id == it.id);
-                if (itemWithQuantity) {
+                // const itemWithQuantity = itemsFromStorage.find(i => i.id == it.id);
+
+                const quantityByItems = _.sumBy(itemsFromStorage.filter(i => i.id == it.id), function(row){
+                    return parseFloat(row.quantity)
+                })
+
+                if (quantityByItems) {
                     this.addItem({
                         item: it,
-                        quantity: itemWithQuantity.quantity
+                        quantity: quantityByItems
+                        // quantity: itemWithQuantity.quantity
                     });
                 }
             });
@@ -1034,12 +1162,14 @@ export default {
                     .then(response => {
                         this.customers = response.data.customers
                         this.loading_search = false
-                        if (this.customers.length == 0) {
+                        /* if (this.customers.length == 0) {
                             this.filterCustomers()
-                        }
+                        } */
+                        this.input_person.number=(this.customers.length==0)? input : null
                     })
             } else {
                 this.filterCustomers()
+                this.input_person.number= null
             }
 
         },
@@ -1165,11 +1295,13 @@ export default {
             }
         },
         initForm() {
+
             this.errors = {}
             let customer_id = parseInt(this.config.establishment.customer_id);
             let establishment_id = parseInt(this.config.establishment.id);
             if (isNaN(customer_id)) customer_id = null;
             if (isNaN(establishment_id)) establishment_id = null;
+
             this.form = {
                 establishment_id: establishment_id,
                 document_type_id: '09',
@@ -1214,9 +1346,11 @@ export default {
                 license_plate: null,
                 secondary_license_plates: {
                     semitrailer: null
-                }
-
+                },
+                related: {},
+                order_form_external: null,
             }
+
             this.changeEstablishment();
 
 
@@ -1410,6 +1544,32 @@ export default {
             this.decrementValueAttr(this.form.items[index])
             this.form.items.splice(index, 1);
         },
+        validateRelatedNumber(){
+
+            // if(this.form.transfer_reason_type_id === "09")
+            // {
+            //     if(_.isEmpty(this.form.related.number)){
+            //         return {
+            //             success: false,
+            //             message: 'El campo Número de documento (DAM) es obligatorio'
+            //         }
+            //     }
+
+            //     const pattern = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{3}-[0-9]{6}$', 'i');
+
+            //     if (!pattern.test(this.form.related.number)) {
+            //         return {
+            //             success: false,
+            //             message: 'El campo Número de documento (DAM) no cumple con el formato establecido - XXXX-XX-XXX-XXXXXX'
+            //         }
+            //     }
+
+            // }
+
+            // return {
+            //     success: true
+            // }
+        },
         async submit() {
 
             const validateQuantity = await this.verifyQuantityItems()
@@ -1490,6 +1650,12 @@ export default {
         },
         focusDescription() {
                 this.$refs.selectItem.$el.getElementsByTagName('input')[0].focus()
+        },
+        initInputPerson() {
+            this.input_person = {
+                number: null,
+                identity_document_type_id: null
+            }
         },
     }
 }

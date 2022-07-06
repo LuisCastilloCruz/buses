@@ -53,6 +53,7 @@
             </div>
         </div>
         <div class="card mb-0">
+            <!--
             <div class="data-table-visible-columns">
 
                 <el-dropdown :hide-on-click="false">
@@ -67,11 +68,27 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
+            -->
             <div class="card-body ">
                 <data-table :resource="resource">
+
+                        <el-dropdown :hide-on-click="false" slot="showhide">
+                            <el-button type="primary">
+                                Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
+                            </el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item v-for="(column, index) in columns"
+                                                  :key="index">
+                                    <el-checkbox
+                                        @change="getColumnsToShow(1)"
+                                        v-model="column.visible">{{ column.title }}</el-checkbox>
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+
                     <tr slot="heading">
                         <th>#</th>
-                        <th>SOAP</th>
+                        <th v-if="columns.soap_type.visible">SOAP</th>
                         <th class="text-center" style="min-width: 95px;">Emisión</th>
                         <th class="text-center"
                             v-if="columns.date_of_due.visible">Fecha Vencimiento
@@ -85,10 +102,13 @@
                         <th v-if="columns.send_it.visible">Email Enviado</th>
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
-                        <th class="text-center">Moneda</th>
+                        <th class="text-center" v-if="columns.currency_type_id.visible"  >Moneda</th>
                         <th class="text-right"
                             v-if="columns.guides.visible">Guia
                         </th>
+
+                        <th class="text-center" v-if="columns.plate_numbers.visible">Placa</th>
+
                         <th class="text-right"
                             v-if="columns.total_exportation.visible">T.Exportación
                         </th>
@@ -101,15 +121,18 @@
                         <th class="text-right"
                             v-if="columns.total_exonerated.visible">T.Exonerado
                         </th>
+                        <th class="text-right"
+                            v-if="columns.total_charge.visible">{{columns.total_charge.title}}
+                        </th>
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
-                        <th class="text-right">Total</th>
-                        <th class="text-center">Saldo</th>
-                        <th class="text-center" style="min-width: 95px;">Orden de compra</th>
+                        <th class="text-right" v-if="columns.total.visible" >Total</th>
+                        <th class="text-center" v-if="columns.balance.visible">Saldo</th>
+                        <th class="text-center" style="min-width: 95px;" v-if="columns.purchase_order.visible"  >Orden de compra</th>
                         <th class="text-center"></th>
                         <th class="text-right" v-if="typeUser != 'integrator'">
                         </th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }"
                         :class="{'text-danger': (row.state_type_id === '11'),
                             'text-warning': (row.state_type_id === '13'),
@@ -121,7 +144,7 @@
                             'border-left border-danger': (row.state_type_id === '11'),
                             'border-left border-warning': (row.state_type_id === '13')}">
                         <td>{{ index }}</td>
-                        <td>{{ row.soap_type_description }}</td>
+                        <td v-if="columns.soap_type.visible"> {{ row.soap_type_description }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td class="text-center"
                             v-if="columns.date_of_due.visible">{{ row.date_of_due }}
@@ -217,7 +240,7 @@
                             {{ row.user_name }}
                             <br/><small v-text="row.user_email"></small>
                         </td>
-                        <td class="text-center">{{ row.currency_type_id }}</td>
+                        <td class="text-center" v-if="columns.currency_type_id.visible">{{ row.currency_type_id }}</td>
                         <td class="text-center"
                             v-if="columns.guides.visible">
                         <span v-for="(item, i) in row.guides"
@@ -225,6 +248,13 @@
                             {{ item.number }} <br>
                         </span>
                         </td>
+
+                        <td class="text-center" v-if="columns.plate_numbers.visible">
+                            <span v-for="(item, i) in row.plate_numbers" :key="i">
+                                {{ item.description }} <br>
+                            </span>
+                        </td>
+
                         <td class="text-right"
                             v-if="columns.total_exportation.visible">{{ row.total_exportation }}
                         </td>
@@ -239,11 +269,14 @@
                         <td class="text-right"
                             v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}
                         </td>
+                        <td class="text-right"
+                            v-if="columns.total_charge.visible">{{ row.total_charge }}
+                        </td>
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
-                        <td class="text-right">{{ row.total }}</td>
-                        <td class="text-right">{{ row.balance }}</td>
-                        <td>{{ row.purchase_order }}</td>
+                        <td class="text-right" v-if="columns.total.visible">{{ row.total }}</td>
+                        <td class="text-right" v-if="columns.balance.visible">{{ row.balance }}</td>
+                        <td v-if="columns.purchase_order.visible"  >{{ row.purchase_order }}</td>
                         <td class="text-center">
                             <button type="button"
                                     style="min-width: 41px"
@@ -472,11 +505,27 @@ import ReportPayment from './partials/report_payment.vue'
 import ReportPaymentComplete from './partials/report_payment_complete.vue'
 import DocumentValidate from './partials/validate.vue';
 import MassiveValidateCpe from '../../../../../modules/ApiPeruDev/Resources/assets/js/components/MassiveValidateCPE';
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 
 export default {
     mixins: [deletable],
-    props: ['isClient', 'typeUser', 'import_documents', 'import_documents_second', 'userId', 'configuration', 'userPermissionEditCpe','view_apiperudev_validator_cpe', 'view_validator_cpe'],
+    props: [
+        'isClient',
+        'typeUser',
+        'import_documents',
+        'import_documents_second',
+        'userId',
+        'configuration',
+        'userPermissionEditCpe',
+        'view_apiperudev_validator_cpe',
+        'view_validator_cpe'
+    ],
+    computed: {
+        ...mapState([
+            'config',
+        ]),
+    },
     components: {
         DocumentsVoided,
         ItemsImport,
@@ -511,6 +560,10 @@ export default {
                 },
                 dispatch: {
                     title: 'Guía de Remisión',
+                    visible: false
+                },
+                plate_numbers: {
+                    title: 'Placa',
                     visible: false
                 },
                 user_name: {
@@ -553,12 +606,62 @@ export default {
                     title: 'Correo enviado al destinatario',
                     visible: false
                 },
+                total: {
+                    title: 'Total',
+                    visible: false
+                },
+                currency_type_id: {
+                    title: 'Moneda',
+                    visible: false
+                },
+                purchase_order: {
+                    title: 'Orden de Compra',
+                    visible: false
+                },
+                soap_type: {
+                    title: 'Soap',
+                    visible: false
+                },
+                balance: {
+                    title: 'Saldo',
+                    visible: true
+                },
+                total_charge: {
+                    title: 'T.Cargos',
+                    visible: false
+                },
+
             }
         }
     },
     created() {
+        this.$store.commit('setConfiguration',this.configuration)
+        this.loadConfiguration();
+        this.getColumnsToShow();
+
     },
     methods: {
+        ...mapActions(['loadConfiguration']),
+
+        getColumnsToShow(updated){
+
+            this.$http.post('/validate_columns',{
+                columns : this.columns,
+                report : 'document_index', // Nombre del reporte.
+                updated : (updated !== undefined),
+            })
+                .then((response)=>{
+                    if(updated === undefined){
+                        let currentCols = response.data.columns;
+                        if(currentCols !== undefined) {
+                            this.columns = currentCols
+                        }
+                    }
+                })
+                .catch((error)=>{
+                    console.error(error)
+                })
+        },
         clickVoided(recordId = null) {
             this.recordId = recordId
             this.showDialogVoided = true

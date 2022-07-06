@@ -56,6 +56,12 @@
     <tr>
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
+
+        @if ($document->due_date)
+            <td class="align-top">Fecha Vencimiento:</td>
+            <td>{{ $document->getFormatDueDate() }}</td>
+        @endif
+
     </tr>
     @if ($customer->address !== '')
     <tr>
@@ -68,6 +74,12 @@
         </td>
     </tr>
     @endif
+    <tr>
+        <td>Teléfono:</td>
+        <td>{{ $customer->telephone }}</td>
+        <td>Vendedor:</td>
+        <td>@if($document->seller_id != 0){{$document->seller->name }} @else {{ $document->user->name }}@endif</td>
+    </tr>
     @if ($document->plate_number !== null)
     <tr>
         <td width="15%">N° Placa:</td>
@@ -95,6 +107,12 @@
         <tr>
             <td class="align-top">D. Referencia:</td>
             <td colspan="3">{{ $document->reference_data }}</td>
+        </tr>
+    @endif
+    @if ($document->purchase_order)
+        <tr>
+            <td class="align-top">Orden de compra:</td>
+            <td colspan="3">{{ $document->purchase_order }}</td>
         </tr>
     @endif
 </table>
@@ -141,7 +159,13 @@
             @inject('unitType', 'App\Services\UnitTypeService')
             <td class="text-center align-top borde-gris">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left">
-                {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+
+                @if($row->name_product_pdf)
+                    {!!$row->name_product_pdf!!}
+                @else
+                    {!!$row->item->description!!}
+                @endif
+                    @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -205,12 +229,12 @@
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
-        @if($document->total_taxed > 0)
+        {{-- @if($document->total_taxed > 0)
             <tr>
                 <td colspan="5" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
-        @endif
+        @endif --}}
       @if($document->total_discount > 0)
             <tr>
                 <td colspan="5" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
@@ -221,10 +245,30 @@
             <td colspan="5" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>--}}
+
+        @if($document->total_charge > 0 && $document->charges)
+            <tr>
+                <td colspan="5" class="text-right font-bold">CARGOS ({{$document->getTotalFactor()}}%): {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
+            </tr>
+        @endif
+
         <tr>
             <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
+
+        @php
+            $change_payment = $document->getChangePayment();
+        @endphp
+
+        @if($change_payment < 0)
+            <tr>
+                <td colspan="5" class="text-right font-bold">VUELTO: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format(abs($change_payment),2, ".", "") }}</td>
+            </tr>
+        @endif
+
     </tbody>
 </table>
 
@@ -264,7 +308,7 @@
             $payment = 0;
         @endphp
         @foreach($payments as $row)
-            <tr><td>- {{ $row->date_of_payment->format('d/m/Y') }} - {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+            <tr><td>- {{ $row->date_of_payment->format('d/m/Y') }} - {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td></tr>
             @php
                 $payment += (float) $row->payment;
             @endphp

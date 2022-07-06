@@ -11,10 +11,9 @@ class DocumentCollection extends ResourceCollection
     public function toArray($request) {
 
 
-        return $this->collection->transform(function($row, $key){
+        return $this->collection->transform(function(\App\Models\Tenant\Document $row, $key){
 
 
-            /** @var \App\Models\Tenant\Document $row */
             $affected_document = null;
             if(in_array($row->document_type_id,['07','08']) && $row->note){
 
@@ -46,14 +45,16 @@ class DocumentCollection extends ResourceCollection
                 'purchase_order' => $row->purchase_order,
                 'guides' => !empty($row->guides)?(array)$row->guides:null,
 
-                'total_exportation' => (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exportation,2, ".",""),
-                'total_exonerated' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exonerated,2, ".",""),
-                'total_unaffected' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_unaffected,2, ".",""),
-                'total_free' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_free,2, ".",""),
-                'total_taxed' => (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_taxed,2, ".",""),
-                'total_igv' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_igv,2, ".",""),
-                'total' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total,2, ".",""),
-                'total_isc' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_isc,2, ".",""),
+                'total_exportation' => (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exportation,2, ".",""),
+                'total_exonerated' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exonerated,2, ".",""),
+                'total_unaffected' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_unaffected,2, ".",""),
+                'total_free' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_free,2, ".",""),
+                'total_taxed' => (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_taxed,2, ".",""),
+                'total_igv' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_igv,2, ".",""),
+                'total' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total,2, ".",""),
+                // 'total' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total,2, ".",""),
+                'total_isc' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_isc,2, ".",""),
+                'total_charge' => $row->total_charge,
 
 
 
@@ -76,6 +77,15 @@ class DocumentCollection extends ResourceCollection
                 'quotation_number_full' => ($row->quotation) ? $row->quotation->number_full : '',
                 'sale_opportunity_number_full' => isset($row->quotation->sale_opportunity) ? $row->quotation->sale_opportunity->number_full : '',
                 'web_platforms' => $web_platforms,
+                'plate_number' => $row->plate_number,
+                'items' => $row->items->transform(function($row, $key) {
+                    return [
+                        'key' => $key + 1,
+                        'id' => $row->id,
+                        'description' => $row->item->description,
+                        'quantity' => round($row->quantity,2)
+                    ];
+                }),
 
             ];
         });

@@ -28,6 +28,7 @@
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
                         <th class="text-center" v-if="columns.delivery_date.visible">T. Entrega</th>
+                        <th>Registrado por</th>
                         <th>Vendedor</th>
                         <th>Cliente</th>
                         <th>Estado</th>
@@ -56,6 +57,7 @@
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td class="text-center" v-if="columns.delivery_date.visible">{{ row.delivery_date }}</td>
                         <td>{{ row.user_name }}</td>
+                        <td>{{ row.seller_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>
                             <template v-if="row.state_type_id == '11'">
@@ -227,6 +229,7 @@
         props:[
             'typeUser',
             'soapCompany',
+            'generateOrderNoteFromQuotation',
             'configuration'
         ],
         mixins: [
@@ -299,16 +302,23 @@
                 'loadConfiguration',
             ]),
             canMakeOrderNote(row){
-                let sal = true;
-                if(row.order_note.full_number ) {
-                    // Si ya tiene Pedidos, no se genera uno nuevo
-                    sal = false
+
+                let permission = true
+
+                // Si ya tiene Pedidos, no se genera uno nuevo
+                if(row.order_note.full_number)
+                {
+                    permission = false
                 }
-                if(this.typeUser !== 'admin') {
-                    // solo administradores pueden hacer pedidos desde cotizacion
-                    sal = false;
+                else
+                {
+                    if(this.typeUser !== 'admin')
+                    {
+                        permission = this.generateOrderNoteFromQuotation
+                    }
                 }
-                return sal;
+
+                return permission
             },
             clickPrintContract(external_id){
                 window.open(`/contracts/print/${external_id}/a4`, '_blank');

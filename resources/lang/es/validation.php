@@ -87,6 +87,10 @@ return [
 	'uploaded' => 'Subir :attribute ha fallado.',
 	'url'      => 'El formato :attribute es inválido.',
 
+    'gt' => [
+        'numeric' => 'El campo :attribute debe ser mayor que :value.',
+    ],
+
 	/*
 	|--------------------------------------------------------------------------
 	| Custom Validation Language Lines
@@ -288,7 +292,35 @@ return [
 		'system_isc_type_id'           => 'tipo de sistema ISC',
 		'has_isc'           => 'incluye ISC',
 		'percentage_isc'           => 'porcentaje ISC',
+
+		'purchase_system_isc_type_id'           => 'tipo de sistema ISC',
+		'purchase_has_isc'           => 'incluye ISC',
+		'purchase_percentage_isc'           => 'porcentaje ISC',
+
 		'movement_type'           => 'tipo movimiento',
+		'affectation_igv_type_id'           => 'tipo de afectación',
+		'summary_status_type_id' => 'tipo de estado',
+
+		'send_document_to_pse' => 'envío documento a pse',
+		'url_signature_pse' => 'url firma digital del documento',
+		'url_send_cdr_pse' => 'url envio CDR',
+
+		'related.number' => 'n° documento',
+		'related.document_type_id' => 'tipo documento',
+
+		'full_name' => 'Nombre completo',
+		'gitlab_user' => 'usuario de gitlab.com',
+		'domain' => 'dominio',
+		'occupation' => 'cargo',
+
+		'qrcode_yape' => 'código QR',
+		'name_yape' => 'nombres y apellidos',
+		'telephone_yape' => 'teléfono',
+		'payment' => 'monto',
+		'password_pse' => 'contraseña autenticación',
+		'url_login_pse' => 'url autenticación',
+		'user_pse' => 'usuario autenticación',
+
 
 	],
 ];

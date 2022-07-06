@@ -159,6 +159,38 @@
                                        v-text="errors.exchange_rate_sale[0]"></small>
                             </div>
                         </div>
+
+                        <div class="col-lg-2"
+                             v-if="purchase_order_id === null">
+                            <div class="form-group">
+                                <label>
+                                    Orden de compra
+                                </label>
+                                <el-select v-model="form.purchase_order_id"
+                                           :loading="loading_search"
+                                           clearable
+                                           filterable
+                                           placeholder="Número de documento"
+                                           >
+                                    <!--
+                                    :remote-method="searchPurchaseOrder"
+                                    remote-->
+                                    <el-option v-for="option in purchase_order_data"
+                                               :key="option.id"
+                                               :label="option.description"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-6 col-lg-4 "
+                            :class="{ 'has-danger': errors.created_at }"
+                            >
+                            <label>
+                                Observaciones
+                            </label>
+                            <el-input v-model="form.observation"
+                                      placeholder="Observaciones"></el-input>
+                        </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                 <label>Tipo Base Imp.
@@ -173,6 +205,23 @@
                                 </el-select>
                             </div>
                         </div>
+                        <div class="col-12">&nbsp;</div>
+
+                        <div class="col-md-8 mt-4">
+                            <div class="form-group">
+                                <el-checkbox v-model="form.has_client"
+                                             @change="changeHasClient">¿Desea agregar el cliente para esta compra?
+                                </el-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-md-8 mt-2 mb-2">
+                            <div class="form-group">
+                                <el-checkbox v-model="form.has_payment"
+                                             @change="changeHasPayment">¿Desea agregar pagos a esta compra?
+                                </el-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-12">&nbsp;</div>
                         <div class="col-lg-4 mt-4">
                             <template v-if="form.document_type_id === '08'">
                                 <div class="form-group" :class="{'has-danger': errors['note.note_debit_type_id']}">
@@ -223,14 +272,6 @@
                                 <label class="control-label">Descripción</label>
                                 <el-input v-model="form.note.note_description"></el-input>
                                 <small class="form-control-feedback" v-if="errors['note.note_description']" v-text="errors['note.note_description'][0]"></small>
-                            </div>
-                        </div>
-
-                        <div class="col-md-8 mt-2 mb-2">
-                            <div class="form-group">
-                                <el-checkbox v-model="form.has_payment"
-                                             @change="changeHasPayment">¿Desea agregar pagos a esta compra?
-                                </el-checkbox>
                             </div>
                         </div>
 
@@ -295,7 +336,6 @@
                                         v-text="errors.payment_condition_id[0]"></small>
                                 </div>
                             </div>
-
                             <div class="col-md-12 col-lg-12 mt-2">
                                 <!-- Contado -->
                                 <template v-if="form.payment_condition_id === '01'">
@@ -563,6 +603,10 @@
                                                            }}</p>
                             <p v-if="form.total_igv > 0"
                                class="text-right">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
+
+                            <p v-if="form.total_isc > 0"
+                               class="text-right">ISC: {{ currency_type.symbol }} {{ form.total_isc }}</p>
+
                             <h3 v-if="form.total > 0"
                                 class="text-right"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ form.total }}
                             </h3>
@@ -646,6 +690,7 @@
         <purchase-form-item :currency-type-id-active="form.currency_type_id"
                             :exchange-rate-sale="form.exchange_rate_sale"
                             :showDialog.sync="showDialogAddItem"
+                            :localHasGlobalIgv="localHasGlobalIgv"
                             @add="addRow"></purchase-form-item>
 
         <person-form :external="true"
@@ -713,6 +758,7 @@ export default {
             },
             aux_supplier_id: null,
             total_amount: 0,
+            purchase_order_data: [],
             document_types: [],
             currency_types: [],
             discount_types: [],
@@ -789,7 +835,9 @@ export default {
         this.loadConfiguration()
         this.loadHasGlobalIgv()
         this.loadEstablishment()
-        this.localHasGlobalIgv = this.hasGlobalIgv;
+        this.searchPurchaseOrder();
+        // this.localHasGlobalIgv = this.hasGlobalIgv;
+        this.initGlobalIgv()
     },
     methods: {
         ...mapActions([
@@ -798,11 +846,11 @@ export default {
             'loadHasGlobalIgv',
         ]),
         changeHasGlobalIgv() {
-            if(this.form.items.length < 1 && this.config.enabled_global_igv_to_purchase === true) {
-                this.$store.commit('sethasGlobalIgv', !this.hasGlobalIgv);
-             this.loadHasGlobalIgv()
-            }
-            this.localHasGlobalIgv = this.hasGlobalIgv;
+            // if(this.form.items.length < 1 && this.config.enabled_global_igv_to_purchase === true) {
+            //     this.$store.commit('sethasGlobalIgv', !this.hasGlobalIgv);
+            //  this.loadHasGlobalIgv()
+            // }
+            // this.localHasGlobalIgv = this.hasGlobalIgv;
 
         },
         changeHasPayment() {
@@ -1109,7 +1157,7 @@ export default {
                 number: null,
                 date_of_issue: moment().format('YYYY-MM-DD'),
                 time_of_issue: moment().format('HH:mm:ss'),
-                date_periodo:  moment().format('YYYY-MM-DD'),
+                date_periodo: moment().format('YYYY-MM-DD'),
                 supplier_id: null,
                 payment_method_type_id: '01',
                 currency_type_id: null,
@@ -1148,23 +1196,30 @@ export default {
                 fee: [],
                 type_basimp: '01',
                 note: {
-                    series:null,
-                    number:null,
-                    purchase_id:null,
+                    series: null,
+                    number: null,
+                    purchase_id: null,
                     note_type: null,
-                    note_credit_type_id :null,
-                    note_debit_type_id : null,
-                    note_description : null,
-                    affected_purchase_id :null
-                }
-
+                    note_credit_type_id: null,
+                    note_debit_type_id: null,
+                    note_description: null,
+                    affected_purchase_id: null
+                },
             }
-            this.clickAddPayment()
+
+            // this.clickAddPayment()
 
             this.initInputPerson()
 
             this.readonly_date_of_due = false
 
+            this.initGlobalIgv()
+
+
+        },
+        initGlobalIgv(){
+            this.localHasGlobalIgv = this.config.checked_global_igv_to_purchase
+            // this.changeHasGlobalIgv()
         },
         resetForm() {
             this.initForm()
@@ -1234,6 +1289,8 @@ export default {
             let total_igv = 0
             let total_value = 0
             let total = 0
+            let total_base_isc = 0
+            let total_isc = 0
 
             this.form.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
@@ -1258,7 +1315,16 @@ export default {
                 total_value += parseFloat(row.total_value)
                 total_igv += parseFloat(row.total_igv)
                 total += parseFloat(row.total)
+
+                // isc
+                total_isc += parseFloat(row.total_isc)
+                total_base_isc += parseFloat(row.total_base_isc)
+
             });
+
+            // isc
+            this.form.total_base_isc = _.round(total_base_isc, 2)
+            this.form.total_isc = _.round(total_isc, 2)
 
             this.form.total_exportation = _.round(total_exportation, 2)
             this.form.total_taxed = _.round(total_taxed, 2)
@@ -1267,7 +1333,11 @@ export default {
             this.form.total_free = _.round(total_free, 2)
             this.form.total_igv = _.round(total_igv, 2)
             this.form.total_value = _.round(total_value, 2)
-            this.form.total_taxes = _.round(total_igv, 2)
+            // this.form.total_taxes = _.round(total_igv, 2)
+
+            //impuestos (isc + igv)
+            this.form.total_taxes = _.round(total_igv + total_isc, 2)
+
             this.form.total = _.round(total, 2)
 
             this.calculatePerception()
@@ -1427,7 +1497,26 @@ export default {
                 return {success: false, message: 'Las series y la cantidad en los productos deben ser iguales.'}
 
 
-            return {success:true, message: ''}
+            return {success: true, message: ''}
+        },
+
+        async searchPurchaseOrder(input){
+            if(this.purchase_order_id !== null) return false;
+            this.loading = true
+            await this.$http
+                .post(`/${this.resource}/search/purchase_order`,{input})
+                .then((response) => {
+                    this.purchase_order_data = response.data
+                })
+                .catch(error => {
+                    console.error(error)
+
+                })
+                .finally(() => {
+                    this.loading = false
+                })
+
+
         },
         getHasDocument(){
 
@@ -1455,7 +1544,16 @@ export default {
                             type: "warning",
                             duration: 6000
                         })
+                    }else{
+                        this.$notify({
+                            title: "",
+                            dangerouslyUseHTMLString: true,
+                            message: "No existe ésta factura o boleta",
+                            type: "info",
+                            duration: 6000
+                        })
                     }
+
 
                 })
 

@@ -8,7 +8,7 @@
             <div class="right-wrapper pull-right">
                 <a href="#" @click.prevent="clickCreate()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
                 <a href="#" @click.prevent="onOpenModalGenerateCPE" class="btn btn-custom btn-sm  mt-2 mr-2">Generar comprobante desde múltiples Notas</a>
-                <a href="#" v-if="config.send_data_to_other_server === true"@click.prevent="onOpenModalMigrateNv" class="btn btn-custom btn-sm  mt-2 mr-2">Migrar Datos</a>
+                <a href="#" v-if="config.send_data_to_other_server === true" @click.prevent="onOpenModalMigrateNv" class="btn btn-custom btn-sm  mt-2 mr-2">Migrar Datos</a>
             </div>
         </div>
         <div class="card mb-0">
@@ -19,7 +19,7 @@
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-for="(column, index) in columns" :key="index">
-                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                            <el-checkbox @change="getColumnsToShow(1)" v-model="column.visible">{{ column.title }}</el-checkbox>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -28,6 +28,8 @@
                 <data-table :resource="resource">
                     <tr slot="heading">
                         <th>#</th>
+                        <th class="text-right"  v-if="columns.seller_name.visible" >Vendedor</th>
+
                         <th class="text-center">Fecha Emisión</th>
                         <th>Cliente</th>
                         <th>Nota de Venta</th>
@@ -51,7 +53,7 @@
 
                         <th class="text-center">Pagos</th>
                         <th class="text-center">Descarga</th>
-                        <th class="text-center">
+                        <th class="text-center" v-if="columns.recurrence.visible">
                             Recurrencia
                         </th>
                          <th class="text-center" v-if="columns.type_period.visible" >
@@ -67,9 +69,12 @@
                             Placa
                         </th>
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
+                    <td class="text-right"  v-if="columns.seller_name.visible" >{{ row.seller_name }}</td>
+
+
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.full_number }}
@@ -99,7 +104,14 @@
                             </template>
                         </td>
                         <td class="text-center">
-                            <span class="badge text-white" :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}">{{row.total_canceled ? 'Pagado':'Pendiente'}}</span>
+
+                            <template v-if="row.state_type_id === '11'">
+                                <span class="badge text-white bg-danger">{{row.state_type_description}}</span>
+                            </template>
+                            <template v-else>
+                                <span class="badge text-white" :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}">{{row.total_canceled ? 'Pagado':'Pendiente'}}</span>
+                            </template>
+
                         </td>
 
                         <td>{{ row.purchase_order }}</td>
@@ -113,7 +125,7 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.external_id)"><i class="fas fa-file-pdf"></i></button>
                         </td>
-                        <td class="text-right">
+                        <td class="text-right" v-if="columns.recurrence.visible">
                             <template v-if="row.type_period && row.quantity_period>0">
                                 <el-switch :disabled="row.apply_concurrency" v-model="row.enabled_concurrency" active-text="Si" inactive-text="No" @change="changeConcurrency(row)"></el-switch>
                             </template>
@@ -135,47 +147,90 @@
                         </td>
 
                         <td class="text-right">
-                            <button data-toggle="tooltip" data-placement="top" title="Anular" v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                             @click.prevent="clickVoided(row.id)"><i class="fas fa-trash"></i></button>
+
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+
+                            <button
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Anular"
+                                v-if="row.state_type_id != '11'"
+                                type="button"
+                                class="dropdown-item"
+                             @click.prevent="clickVoided(row.id)">
+<!--                                <i class="fas fa-trash"></i>-->
+                                Anular
+                            </button>
 
                             <button data-toggle="tooltip"
                                     data-placement="top"
                                     title="Editar"
                                     type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    class="dropdown-item"
                                     @click.prevent="clickCreate(row.id)"
                                     v-if="row.btn_generate && row.state_type_id != '11' && typeUser != 'seller'">
-                                        <i class="fas fa-file-signature"></i>
+<!--                                        <i class="dropdown-item fas fa-file-signature"></i>-->
+                                Editar
                             </button>
 
                             <button data-toggle="tooltip"
                                     data-placement="top"
                                     title="Generar comprobante"
                                     type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-success"
+                                    class="dropdown-item"
                                     @click.prevent="clickGenerate(row.id)"
                                     v-if="!row.changed && row.state_type_id != '11' && soapCompany != '03'">
-                                <i class="fas fa-file-excel"></i>
+<!--                                <i class="dropdown-item fas fa-file-excel"></i>-->
+                                Generar comprobante
                             </button>
 
                             <el-tooltip class="item" effect="dark" content="Generar guía desde CPE" placement="top-start">
                                 <template v-for="(document,i) in row.documents" >
-                                    <a :href="`/dispatches/create/${document.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
-                                        v-if="row.changed" :key="i"><i class="fas fa-file-alt"></i></a>
+                                    <a :href="`/dispatches/create/${document.id}`"
+                                       class="dropdown-item"
+                                        v-if="row.changed" :key="i">
+<!--                                        <i class="dropdown-item fas fa-file-alt"></i>-->
+                                        Generar guía desde
+
+                                    </a>
                                 </template>
                             </el-tooltip>
 
-                            <el-tooltip class="item" effect="dark" content="Generar guía desde Nota Venta" placement="top-start">
-                                <a :href="`/dispatches/generate/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2"><i class="fas fa-file-alt"></i></a>
+                            <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="Generar guía desde Nota Venta"
+                                placement="left">
+                                <a :href="`/dispatches/generate/${row.id}`"
+                                   class="dropdown-item"
+                                >
+                                    Generar guía
+                                </a>
                             </el-tooltip>
 
-                            <button  data-toggle="tooltip" data-placement="top" title="Imprimir" v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickOptions(row.id)"><i class="fas fa-print"></i></button>
+                            <button
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Imprimir"
+                                v-if="row.state_type_id != '11'"
+                                type="button"
+                                class="dropdown-item"
+                                    @click.prevent="clickOptions(row.id)">
+                                    <!--                                <i class="dropdown-item fas fa-print"></i>-->
+                                    Imprimir
+                            </button>
                             <button @click="duplicate(row.id)"
                                     title="Duplica la nota de venta"
                                     type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-info">
-                                <i class="fas fa-copy"></i>
+                                    class="dropdown-item"
+                                    >
+<!--                                <i class="dropdown-item fas fa-copy"></i>-->
+                                Duplica la nota de venta
                             </button>
                             <button
                                 data-toggle="tooltip"
@@ -183,9 +238,15 @@
                                 title="Enviar a otro servidor"
                                 v-if="row.state_type_id != '11' && row.send_other_server=== true"
                                 type="button"
-                                class="btn waves-effect waves-light btn-xs btn-inverse"
-                                @click.prevent="sendToServer(row.id)"><i class="fas fa-wifi"></i>
+                                class="dropdown-item"
+                                @click.prevent="sendToServer(row.id)">
+<!--                                <i class="dropdown-item fas fa-wifi"></i>-->
+                                Enviar a otro servidor
                             </button>
+
+                                </div>
+                            </div>
+
                         </td>
 
 
@@ -307,6 +368,14 @@
                     total_pending_paid:{
                         title: 'Por pagar',
                         visible: false
+                    },
+                    seller_name:{
+                        title: 'Vendedor',
+                        visible: false
+                    },
+                    recurrence: {
+                        title: 'Recurrencia',
+                        visible: false
                     }
 
                 }
@@ -315,6 +384,7 @@
         created() {
             this.loadConfiguration()
             this.$store.commit('setConfiguration', this.configuration)
+            this.getColumnsToShow();
         },
         filters:{
             period(name)
@@ -340,6 +410,25 @@
             ...mapActions([
                 'loadConfiguration',
             ]),
+            getColumnsToShow(updated){
+
+                this.$http.post('/validate_columns',{
+                    columns : this.columns,
+                    report : 'sale_notes_index', // Nombre del reporte.
+                    updated : (updated !== undefined),
+                })
+                    .then((response)=>{
+                        if(updated === undefined){
+                            let currentCols = response.data.columns;
+                            if(currentCols !== undefined) {
+                                this.columns = currentCols
+                            }
+                        }
+                    })
+                    .catch((error)=>{
+                        console.error(error)
+                    })
+            },
             duplicate(id){
                 this.$http.post(`${this.resource}/duplicate`, {id})
                     .then(response => {

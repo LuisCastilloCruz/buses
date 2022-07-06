@@ -49,6 +49,15 @@
                                 @click.prevent="clickExportBarcode()"
                             >Etiquetas</a
                             >
+                            <template v-if="config.show_extra_info_to_item">
+                            <a
+                                class="dropdown-item text-1"
+                                href="#"
+                                @click.prevent="clickExportExtra()"
+                            >
+                                Atributos Extra
+                            </a>
+                            </template>
                         </div>
                     </div>
                     <div class="btn-group flex-wrap">
@@ -93,6 +102,9 @@
                                 >L. Atributos</a
                                 >
                             </template>
+
+                            <a class="dropdown-item text-1" href="#" @click.prevent="clickImportUpdatePrice()">Actualizar precios</a>
+
                         </div>
                     </div>
                 </template>
@@ -133,6 +145,7 @@
                     <tr slot="heading"
                         width="100%">
                         <th>#</th>
+                        <th>ID</th>
                         <th>Cód. Interno</th>
                         <th>Unidad</th>
                         <th>Nombre</th>
@@ -171,6 +184,7 @@
                         :class="{ disable_color: !row.active }"
                     >
                         <td>{{ index }}</td>
+                        <td>{{ row.id }}</td>
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
                         <td>{{ row.description }}</td>
@@ -309,7 +323,6 @@
                                         >
                                             Duplicar
                                         </button>
-
                                         <button
                                             v-if="row.active"
                                             class="dropdown-item"
@@ -324,19 +337,36 @@
                                         >
                                             Habilitar
                                         </button>
-
                                         <button
                                             class="dropdown-item"
                                             @click.prevent="clickBarcode(row)"
                                         >
                                             Cod. Barras
                                         </button>
-
                                         <button
                                             class="dropdown-item"
                                             @click.prevent="clickPrintBarcode(row)"
                                         >
                                             Etiquetas
+                                        </button>
+                                        <div class="dropdown-divider"></div>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickPrintBarcodeX(row, 1)"
+                                        >
+                                            Etiquetas 1x1
+                                        </button>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickPrintBarcodeX(row, 2)"
+                                        >
+                                            Etiquetas 1x2
+                                        </button>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickPrintBarcodeX(row, 3)"
+                                        >
+                                            Etiquetas 1x3
                                         </button>
                                     </template>
                                 </div>
@@ -357,10 +387,14 @@
             <items-export-wp
                 :showDialog.sync="showExportWpDialog"
             ></items-export-wp>
+
             <items-export-barcode
                 :showDialog.sync="showExportBarcodeDialog"
             ></items-export-barcode>
 
+            <items-export-extra
+                :showDialog.sync="showExportExtraDialog"
+            ></items-export-extra>
             <warehouses-detail
                 :item_unit_types="item_unit_types"
                 :showDialog.sync="showWarehousesDetail"
@@ -376,6 +410,10 @@
                 :showDialog.sync="showImportExtraWithExtraInfo"
             ></items-import-extra-info>
 
+
+            <items-import-update-price
+                :showDialog.sync="showImporUpdatePrice"
+            ></items-import-update-price>
 
             <!--
             : false,
@@ -404,10 +442,12 @@ import ItemsImportExtraInfo from "./partials/import_list_extra_info.vue";
 import ItemsExport from "./partials/export.vue";
 import ItemsExportWp from "./partials/export_wp.vue";
 import ItemsExportBarcode from "./partials/export_barcode.vue";
+import ItemsExportExtra from "./partials/export_extra.vue";
 import DataTable from "../../../components/DataTable.vue";
 import {deletable} from "../../../mixins/deletable";
 import ItemsHistory from "@viewsModuleItem/items/history.vue";
 import {mapActions, mapState} from "vuex";
+import ItemsImportUpdatePrice from "./partials/update_prices.vue";
 
 export default {
     props: [
@@ -421,11 +461,13 @@ export default {
         ItemsExport,
         ItemsExportWp,
         ItemsExportBarcode,
+        ItemsExportExtra,
         DataTable,
         WarehousesDetail,
         ItemsImportListPrice,
         ItemsImportExtraInfo,
         ItemsHistory,
+        ItemsImportUpdatePrice
     },
     data() {
         return {
@@ -435,8 +477,10 @@ export default {
             showExportDialog: false,
             showExportWpDialog: false,
             showExportBarcodeDialog: false,
+            showExportExtraDialog: false,
             showImportListPriceDialog: false,
             showImportExtraWithExtraInfo: false,
+            showImporUpdatePrice: false,
             showWarehousesDetail: false,
             resource: "items",
             recordId: null,
@@ -515,10 +559,20 @@ export default {
             //this.config = response.data.data;
         });
         this.canCreateProduct();
+        this.getItems()
     },
     computed: {
         ...mapState([
             'config',
+            'colors',
+            'CatItemSize',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage'
         ]),
         columnsComputed: function () {
             return this.columns;
@@ -585,11 +639,17 @@ export default {
         clickExportBarcode() {
             this.showExportBarcodeDialog = true;
         },
+        clickExportExtra() {
+            this.showExportExtraDialog = true;
+        },
         clickImportListPrice() {
             this.showImportListPriceDialog = true;
         },
         clickImportExtraWithExtraInfo() {
             this.showImportExtraWithExtraInfo = true;
+        },
+        clickImportUpdatePrice(){
+            this.showImporUpdatePrice = true;
         },
         clickDelete(id) {
             this.destroy(`/${this.resource}/${id}`).then(() =>
@@ -623,6 +683,31 @@ export default {
             }
 
             window.open(`/${this.resource}/export/barcode/print?id=${row.id}`);
+        },
+        clickPrintBarcodeX(row, x) {
+            if (!row.barcode) {
+                return this.$message.error(
+                    "Para generar el código de barras debe registrar el código de barras."
+                );
+            }
+
+            window.open(`/${this.resource}/export/barcode/print_x?format=${x}&id=${row.id}`);
+        },
+        getItems() {
+            this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                let data = response.data
+                    if(this.config.show_extra_info_to_item) {
+                        this.$store.commit('setColors', data.colors)
+                        this.$store.commit('setCatItemSize', data.CatItemSize)
+                        this.$store.commit('setCatItemMoldCavity', data.CatItemMoldCavity);
+                        this.$store.commit('setCatItemMoldProperty', data.CatItemMoldProperty);
+                        this.$store.commit('setCatItemUnitBusiness', data.CatItemUnitBusiness);
+                        this.$store.commit('setCatItemStatus', data.CatItemStatus);
+                        this.$store.commit('setCatItemPackageMeasurement', data.CatItemPackageMeasurement);
+                        this.$store.commit('setCatItemProductFamily', data.CatItemProductFamily);
+                        this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
+                    }
+            })
         },
     },
 };

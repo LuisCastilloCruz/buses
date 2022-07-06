@@ -52,6 +52,20 @@ if ($hostname) {
             Route::post('purchase-settlements', 'Tenant\Api\PurchaseSettlementController@store');
             Route::get('persons/suppliers', 'Tenant\Api\MobileController@suppliers');
 
+            //Pedidos
+            Route::get('orders', 'Tenant\Api\OrderController@records');
+            Route::post('orders', 'Tenant\Api\OrderController@store');
+
+            //Company
+            Route::get('company', 'Tenant\Api\CompanyController@record');
+
+            // Cotizaciones
+            Route::get('quotations/list', 'Tenant\Api\QuotationController@list');
+            Route::post('quotations', 'Tenant\Api\QuotationController@store');
+
+            //Caja
+            Route::post('cash/restaurant', 'Tenant\Api\CashController@storeRestaurant');
+
             Route::get('document/record/{id}', 'Tenant\Api\DocumentController@record');
 
             Route::get('cash/records', 'Tenant\Api\CashController@recordsMovil');
@@ -69,6 +83,7 @@ if ($hostname) {
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 
+        // Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
         Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
         Route::get('services/validate_cpe/{company_number}/{document_type_code}/{series}/{number}/{date_of_issue}/{total}', 'Tenant\Api\ServiceController@validateCpe2');
         Route::get('services/validate_cpe_sunat/{company_number}/{document_type_code}/{series}/{number}/{date_of_issue}/{total}', 'Tenant\Api\ServiceController@validateCpeSunat');
@@ -83,10 +98,19 @@ if ($hostname) {
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
 
-        //reseller
-        Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
-        Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
-        Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
+
+        Route::middleware(['auth:system_api'])->group(function () {
+
+            //reseller
+            Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
+            // Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
+            // Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
+
+            Route::get('restaurant/partner/list', 'System\Api\RestaurantPartnerController@list');
+            Route::post('restaurant/partner/store', 'System\Api\RestaurantPartnerController@store');
+            Route::post('restaurant/partner/search', 'System\Api\RestaurantPartnerController@search');
+
+        });
 
     });
 

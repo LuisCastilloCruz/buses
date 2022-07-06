@@ -115,11 +115,13 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th class="">Usuario/Vendedor</th>
                                 <th>Tipo Doc</th>
                                 <th>Número</th>
                                 <th>Fecha emisión</th>
                                 <th>Fecha Vencimiento</th>
                                 <th>Doc. Afectado</th>
+
                                 <th># Guía</th>
 
                                 <th>DIST</th>
@@ -146,13 +148,21 @@
                                 <?php
                     /** @var \App\Models\Tenant\Document|App\Models\Tenant\SaleNote  $value */
                                     $iteration = $loop->iteration;
-
-                                    $user = $value->user->name;
+                                    // $user = $value->user->name;
                     $document_type = $value->getDocumentType();
+                                $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
+                                try{
+                                    $user = $seller->name;
+                                }catch (ErrorException $e){
+                                    $user = '';
+                                }
+
 
                                 ?>
+
                                 <tr>
-                                    <td class="celda">{{$loop->iteration}}</td>
+                        <td class="celda">{{$iteration}}</td>
+                        <td class="celda">{{$user}}</td>
                                     <td class="celda">{{$document_type->id}}</td>
                                     <td class="celda">{{$value->series}}-{{$value->number}}</td>
                                     <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
@@ -208,9 +218,15 @@
 
                                     @if($signal == '07')
 
-                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
-                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
-                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
+                                        @if(in_array($value->state_type_id,['09','11']))
+                                            <td class="celda">0</td>
+                                            <td class="celda">0</td>
+                                            <td class="celda">0</td>
+                                        @else
+                                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
+                                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
+                                        @endif
 
                                     @else
                                         <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed}}</td>
@@ -222,9 +238,9 @@
 
 
                                     @php
-                                        $value->total_taxed = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed;
-                                        $value->total_igv = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv;
-                                        $value->total = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total;
+                                        $value->total_taxed = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed;
+                                        $value->total_igv = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv;
+                                        $value->total = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total;
                                     @endphp
                                 </tr>
                                 @php
@@ -299,14 +315,14 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="15"></td>
+                                <td class="celda" colspan="16"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="15"></td>
+                                <td class="celda" colspan="16"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>

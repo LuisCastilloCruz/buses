@@ -30,7 +30,7 @@
              */
 
             $data = $this->collection->transform(function ($row, $key) use ($request) {
-
+               
                 return UserCommissionHelper::getDataForReportCommission($row, $request);
 
                 // return $data_commission;

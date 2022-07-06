@@ -17,14 +17,12 @@
                 <data-table :resource="resource">
                     <tr slot="heading">
                         <th>#</th>
-                        <th>Id</th>
                         <th>Descripción</th>
                         <th>Establecimiento</th>
                         <th class="text-right">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
-                        <td>{{ row.id }}</td>
                         <td>{{ row.description }}</td>
                         <td>{{ row.establishment_description }}</td>
                         <td class="text-right">

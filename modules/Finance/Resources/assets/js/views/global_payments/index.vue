@@ -13,6 +13,7 @@
                             <th class="">Moneda</th>
                             <th class="">Tipo</th>
                             <th class="">Destino</th>
+                            <th class="">Cuenta/Caja</th>
                             <th class="">F. Pago</th>
                             <th class="">Método</th>
                             <th class="">Referencia</th>
@@ -30,6 +31,7 @@
                             <td>{{row.currency_type_id}}</td>
                             <td>{{row.instance_type_description}}</td>
                             <td>{{row.destination_description}}</td>
+                            <td>{{row.cci}}</td>
                             <td>{{row.date_of_payment}}</td>
                             <td>{{row.payment_method_type_description}}</td>
                             <td>{{row.reference}}</td>

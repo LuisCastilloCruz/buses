@@ -65,7 +65,7 @@
                                         placement="top">
 
                                 <el-button type="success" @click.prevent="clickDownloadFormatSunat(row.id)" size="small"><i
-                                    class="fa fa-file-excel"></i>
+                                    class="fa fa-file-excel"></i> 
                                 </el-button>
                             </el-tooltip>
                         </td>
@@ -97,7 +97,7 @@ export default {
         this.title = 'Kardex valorizado'
     },
     methods: {
-        clickDownloadFormatSunat(item_id) {
+        clickDownloadFormatSunat(item_id) {        
             this.$eventHub.$emit('exportFormatSunat', item_id)
         },
     }

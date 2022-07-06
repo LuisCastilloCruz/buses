@@ -22,6 +22,8 @@ use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Support\Collection;
     use Illuminate\Support\Facades\DB;
+    use Modules\Document\Helpers\DocumentHelper;
+
 
     class ClientController extends Controller
     {
@@ -57,13 +59,79 @@ use Carbon\Carbon;
                     return $this->prepareModules($module);
                 });
 
+            // luego se podria crear grupos mediante algun modulo, de momento se pasan los id de manera directa
+            $group_basic = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_hotel = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_pharmacy = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_restaurant = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_hotel_apps = Module::with('levels')
+                ->whereIn('id', [15])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_pharmacy_apps = Module::with('levels')
+                ->whereIn('id', [19])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_restaurant_apps = Module::with('levels')
+                ->whereIn('id', [23])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+
             $config = Configuration::first();
 
             $certificate_admin = $config->certificate;
             $soap_username = $config->soap_username;
             $soap_password = $config->soap_password;
 
-            return compact('url_base', 'plans', 'types', 'modules', 'apps', 'certificate_admin', 'soap_username', 'soap_password');
+            return compact(
+                'url_base',
+                'plans',
+                'types',
+                'modules',
+                'apps',
+                'certificate_admin',
+                'soap_username',
+                'soap_password',
+                'group_basic',
+                'group_hotel',
+                'group_pharmacy',
+                'group_restaurant',
+                'group_hotel_apps',
+                'group_pharmacy_apps',
+                'group_restaurant_apps');
         }
 
         private function prepareModules(Module $module): Module
@@ -106,26 +174,23 @@ use Carbon\Carbon;
                 $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
                 $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
                 $row->document_to_be_canceled = $quantity_pending_documents['document_to_be_canceled'];
+
                 if ($row->start_billing_cycle) {
-                    $day_start_billing = date_format($row->start_billing_cycle, 'j');
-                    $day_now = (int)date('j');
-                    if ($day_now <= $day_start_billing) {
-                        $init = Carbon::parse(date('Y') . '-' . ((int)date('n') - 1) . '-' . $day_start_billing);
-                        $end = Carbon::parse(date('Y-m-d'));
-                        $row->count_doc_month = DB::connection('tenant')
-                            ->table('documents')
-                            ->whereBetween('date_of_issue', [$init, $end])
-                            ->count();
-                    } else {
-                        $init = Carbon::parse(date('Y') . '-' . ((int)date('n')) . '-' . $day_start_billing);
-                        $end = Carbon::parse(date('Y-m-d'));
-                        $row->count_doc_month = DB::connection('tenant')
-                            ->table('documents')
-                            ->whereBetween('date_of_issue', [$init, $end])
-                            ->count();
-                    }
+
+                    $start_end_date = DocumentHelper::getStartEndDateForFilterDocument($row->start_billing_cycle);
+                    $init = $start_end_date['start_date'];
+                    $end = $start_end_date['end_date'];
+
+                    // $row->init_cycle = $init;
+                    // $row->end_cycle = $end;
+                    // dd($start_end_date);
+
+                    $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [$init, $end])->count();
+
                 }
+
             }
+
             return new ClientCollection($records);
         }
 
@@ -286,7 +351,7 @@ use Carbon\Carbon;
             $smtp_user = ($request->has('smtp_user')) ? $request->smtp_user : null;
             $smtp_encryption = ($request->has('smtp_encryption')) ? $request->smtp_encryption : null;
             $activeSocket = $request->input('socket');
-            
+
             try {
 
                 $temp_path = $request->input('temp_path');
@@ -367,10 +432,10 @@ use Carbon\Carbon;
                     ];
 
                 }
-                
 
-                
-                
+
+
+
 
                 extract($confSocket);
 
@@ -575,8 +640,6 @@ use Carbon\Carbon;
             $hostname = new Hostname();
             $this->validateWebsite($uuid, $website);
 
-
-
             DB::connection('system')->beginTransaction();
             try {
                 $website->uuid = $uuid;
@@ -600,11 +663,11 @@ use Carbon\Carbon;
                 $client->socket = $activeSocket;
                 $client->save();
 
-                
+
 
                 if( $activeSocket ){
                     $cliente = $client;
-                    
+
                     $confSocket = [
                         'active' => $activeSocket,
                         'production' => $request->input('production'),
@@ -625,7 +688,7 @@ use Carbon\Carbon;
                     $service = new ServerSocketService($client, $production, $port);
                     $service->run();
 
-                   
+
 
                 }
 
@@ -655,8 +718,44 @@ use Carbon\Carbon;
                 'certificate' => $name_certificate,
             ]);
 
-        
-            DB::connection('tenant')->table('configurations')->insert($attributes);
+            $plan = Plan::findOrFail($request->input('plan_id'));
+            $http = config('tenant.force_https') == true ? 'https://' : 'http://';
+
+            DB::connection('tenant')->table('configurations')->insert([
+                'send_auto' => true,
+                'locked_emission' => $request->input('locked_emission'),
+                'locked_tenant' => false,
+                'locked_users' => false,
+                'limit_documents' => $plan->limit_documents,
+                'limit_users' => $plan->limit_users,
+                'plan' => json_encode($plan),
+                'date_time_start' => date('Y-m-d H:i:s'),
+                'quantity_documents' => 0,
+                'config_system_env' => $request->config_system_env,
+                'login' => json_encode([
+                    'type' => 'image',
+                    'image' => $http.$fqdn.'/images/fondo-5.svg',
+                    'position_form' => 'right',
+                    'show_logo_in_form' => false,
+                    'position_logo' => 'top-left',
+                    'show_socials' => false,
+                    'facebook' => null,
+                    'twitter' => null,
+                    'instagram' => null,
+                    'linkedin' => null,
+                ]),
+                'visual' => json_encode([
+                    'bg' => 'white',
+                    'header' => 'light',
+                    'navbar' => 'fixed',
+                    'sidebars' => 'light',
+                    'sidebar_theme' => 'white'
+                ]),
+                'skin_id' => 2,
+                'top_menu_a_id' => 1,
+                'top_menu_b_id' => 15,
+                'top_menu_c_id' => 76
+            ]);
 
 
             $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([

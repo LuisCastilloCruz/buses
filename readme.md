@@ -50,7 +50,7 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ## API
 
-[Descargar colección para Postman](https://drive.google.com/file/d/1DsNIjG6sFA_ZYCjacI1Ckl7qhvh4Or-U/view?usp=sharing "Clic")<br>
+[Descargar colección para Postman](https://drive.google.com/file/d/1MhFHT0UF4CayjZfHkCqi5VMpqN34PGkV/view?usp=sharing "Clic")<br>
 [Documentación - Ver json con respuestas](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 [Documentación - Ver ejemplos para Lenguajes](https://documenter.getpostman.com/view/1431398/U16onhgw "Clic")<br>
 
@@ -65,7 +65,7 @@ Contraseña: 123456
 
 ### Panel de cliente
 
-[URL](https://demo.demo.aqpfact.pe "Clic")
+[URL](https://demo.pse.aqpfact.pe "Clic")
 <br>
 Usuario: demo@gmail.com<br>
 Contraseña: 123456

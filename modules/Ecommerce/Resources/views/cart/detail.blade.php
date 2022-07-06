@@ -1,11 +1,24 @@
 @extends('ecommerce::layouts.layout_ecommerce_cart.index')
 @section('content')
-
+<style>
+    .table td, .table th {
+        padding: 0;
+    }
+    .table tbody tr >td, .table tbody tr td >div{
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+   .table tbody tr td div >input{
+        padding: 0 !important;
+        max-width: 100% !important;
+       width: 100%;
+    }
+</style>
 <div class="row" id="app">
     <div class="col-lg-8">
         <div class="cart-table-container">
 
-            <table class="table table-cart">
+            <table class="table table-cart table-condensed">
                 <thead>
                     <tr>
                         <th class="product-col">Producto</th>

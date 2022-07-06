@@ -47,73 +47,83 @@
                         <td>{{ row.expense }}</td> -->
                         <td>{{ row.state_description }}</td>
                         <td class="text-center">
-                        <div v-if="pathname=='/transportes/cash'">
-                            <div  class="btn-group flex-wrap">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte <span class="caret"></span></button>
-                                <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporte(row.id, 'a4')">PDF A4</a>
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporte(row.id, 'ticket')">PDF Ticket</a>
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket', '58')">PDF Ticket 58</a>
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporte(row.id, 'excel')">Excel</a>
-                                    <a  class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporteDestino(row.id, 'ticket')">Encomiendas pago en destino</a>
+                            <div v-if="pathname=='/transportes/cash'">
+                                <div  class="btn-group flex-wrap">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte <span class="caret"></span></button>
+                                    <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporte(row.id, 'a4')">PDF A4</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporte(row.id, 'ticket')">PDF Ticket</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket', '58')">PDF Ticket 58</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporte(row.id, 'excel')">Excel</a>
+                                        <a  class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporteDestino(row.id, 'ticket')">Encomiendas pago en destino</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="btn-group flex-wrap">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte Productos <span class="caret"></span></button>
-                                <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProductsTransporte(row.id, 'pdf')">PDF</a>
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProductsTransporte(row.id, 'excel')">Excel</a>
+                                <div class="btn-group flex-wrap">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte Productos <span class="caret"></span></button>
+                                    <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProductsTransporte(row.id, 'pdf')">PDF</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProductsTransporte(row.id, 'excel')">Excel</a>
+                                    </div>
                                 </div>
+
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="clickDownloadIncomeSummaryTransporte(row.id)">R. Ingreso</button>
+
+                                <template v-if="row.state">
+
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickCloseCash(row.id)">Cerrar caja</button>
+                                    <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+                                    <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+
+                                </template>
+
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">C. Electrónico</button>
+
                             </div>
-
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="clickDownloadIncomeSummaryTransporte(row.id)">R. Ingreso</button>
-
-                            <template v-if="row.state">
-
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickCloseCash(row.id)">Cerrar caja</button>
-                                <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                                <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
-
-                            </template>
-
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">C. Electrónico</button>
-
-                        </div>
-                        <div v-else>
-                            <div class="btn-group flex-wrap">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte <span class="caret"></span></button>
-                                <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'a4')">PDF A4</a>
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket')">PDF Ticket</a>
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket', '58')">PDF Ticket 58</a>
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'excel')">Excel</a>
-                                    <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a> -->
+                            <div v-else>
+                                <div class="btn-group flex-wrap">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte <span class="caret"></span></button>
+                                    <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'a4')">PDF A4</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket')">PDF Ticket</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket', '58')">PDF Ticket 58</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'excel')">Excel</a>
+                                        <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a> -->
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadProducts(row.id)">Reporte Productos</button> -->
+                                <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadProducts(row.id)">Reporte Productos</button> -->
 
-                            <div class="btn-group flex-wrap">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte Productos <span class="caret"></span></button>
-                                <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'pdf')">PDF</a>
-                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a>
+                                <div class="btn-group flex-wrap">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte Efectivo <span class="caret"></span></button>
+                                    <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                                        <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'pdf')">PDF</a> -->
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportCash(row.id, 'excel')">Excel</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportIncomeEgress(row.id)">Ingresos y egresos</a>
+                                    </div>
                                 </div>
+
+                                <div class="btn-group flex-wrap">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte Productos <span class="caret"></span></button>
+                                    <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'pdf')">Punto de venta - PDF</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Punto de venta - Excel</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'pdf', true)">Venta rápida - PDF</a>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="clickDownloadIncomeSummary(row.id)">R. Ingreso</button>
+
+                                <template v-if="row.state">
+
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickCloseCash(row.id)">Cerrar caja</button>
+                                    <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+                                    <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+
+                                </template>
+
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">C. Electrónico</button>
+
                             </div>
-
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="clickDownloadIncomeSummary(row.id)">R. Ingreso</button>
-
-                            <template v-if="row.state">
-
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickCloseCash(row.id)">Cerrar caja</button>
-                                <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                                <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
-
-                            </template>
-
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">C. Electrónico</button>
-
-                        </div>
                         </td>
                     </tr>
                 </data-table>
@@ -265,11 +275,23 @@
             {
                   window.open(`/${this.resource}/report`, '_blank');
             },
-            clickDownloadProducts(id, type)
+            clickDownloadProducts(id, type, is_garage = false)
             {
 
                 if(type == 'excel'){
                     window.open(`/${this.resource}/report/products-excel/${id}`, '_blank');
+                    return
+                }
+
+                window.open(`/${this.resource}/report/products/${id}/${is_garage}`, '_blank');
+                // window.open(`/${this.resource}/report/products/${id}`, '_blank');
+
+            },
+            clickDownloadReportCash(id, type)
+            {
+
+                if(type == 'excel'){
+                    window.open(`/${this.resource}/report/cash-excel/${id}`, '_blank');
                     return
                 }
 
@@ -286,7 +308,10 @@
 
                 window.open(`/${this.resource_transporte}/report/products/${id}`, '_blank');
 
-            }
+            },
+            clickDownloadReportIncomeEgress(id){
+                window.open(`/${this.resource}/report-cash-income-egress/${id}`, '_blank');
+            },
         }
     }
 </script>

@@ -2,14 +2,17 @@
 
     namespace App\Http\Controllers;
 
+    use App\Models\Tenant\Catalogs\CatColorsItem;
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Item;
+    use App\Models\Tenant\ItemSupply;
     use App\Models\Tenant\ItemUnitType;
     use App\Models\Tenant\ItemWarehouse;
     use App\Models\Tenant\Warehouse;
     use Illuminate\Database\Query\Builder;
     use Illuminate\Http\Request;
     use Illuminate\Support\Collection;
+    use Modules\Inventory\Traits\InventoryTrait;
 
     /**
      * Tener en cuenta como base modules/Document/Traits/SearchTrait.php
@@ -21,6 +24,7 @@
     class SearchItemController extends Controller
     {
 
+        // use InventoryTrait;
 
         /**
          * Devuelve una lista de items unido entre service y no service.
@@ -69,10 +73,33 @@
             $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request, false, $id);
 
-            if ($search_by_barcode === false && $input != null) {
-                self::SetWarehouseToUser($item);
-            }
+            // el filtro por almacén no debe depender de la búsqueda por código de barras o coincidencias
+            // if ($search_by_barcode === false && $input != null) {
+            //     self::SetWarehouseToUser($item);
+            // }
 
+            self::SetWarehouseToUser($item);
+
+            return $item->orderBy('description')->get();
+        }
+
+
+        /**
+         *
+         * No aplica filtro por almacén
+         *
+         * @param Request|null $request
+         * @param int          $id
+         *
+         * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+         */
+        public static function getNotServiceItemWithOutWarehouse(Request $request = null, $id = 0)
+        {
+
+            self::validateRequest($request);
+            // $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            // $input = self::setInputByRequest($request);
+            $item = self::getAllItemBase($request, false, $id);
 
             return $item->orderBy('description')->get();
         }
@@ -105,11 +132,13 @@
 
             self::validateRequest($request);
             $search_item_by_series = Configuration::first()->isSearchItemBySeries();
+            $production = (bool)($request->production ??false);
 
             $items_id = ($request->has('items_id')) ? $request->items_id : null;
             $id = (int)$id;
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
+            $search_item_by_barcode_presentation = $request->has('search_item_by_barcode_presentation') && (bool)$request->search_item_by_barcode_presentation;
 
             // $item = Item:: whereIsActive();
             $item = Item::query();
@@ -126,8 +155,13 @@
             }
 
 
-            $item->with('warehousePrices');
-            $ItemToSearchBySeries->with('warehousePrices');
+            if($production !== false) {
+                // busqueda de insumos, no se lista por codigo de barra o por series
+                $search_item_by_series = false;
+            } else {
+                $item->with('warehousePrices');
+                $ItemToSearchBySeries->with('warehousePrices');
+            }
 
             $alt_item = $item;
 
@@ -161,6 +195,8 @@
                     }
                 }
             }
+
+
             if ($bySerie === null) {
                 if ($items_id != null) {
                     $item->whereIn('id', $items_id);
@@ -168,9 +204,18 @@
                     $item->where('id', $id);
                 } else {
                     if ($search_by_barcode === true) {
-                        $item
-                            ->where('barcode', $input)
-                            ->limit(1);
+
+                        if($search_item_by_barcode_presentation)
+                        {
+                            $item->filterItemUnitTypeBarcode($input)->limit(1);
+                        }
+                        else
+                        {
+                            $item
+                                ->where('barcode', $input)
+                                ->limit(1);
+                        }
+
                     } else {
                         self::setFilter($item, $request);
                     }
@@ -433,6 +478,37 @@
          *
          * @return \Illuminate\Database\Eloquent\Collection|Collection
          */
+        public static function getItemsToSupply(Request $request = null, $id = 0)
+        {
+
+            self::validateRequest($request);
+            $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            $input = self::setInputByRequest($request);
+            $item = self::getAllItemBase($request, false, $id);
+
+            /*
+            if ($search_by_barcode === false && $input != null) {
+                self::SetWarehouseToUser($item);
+            }
+            */
+             $item->ForProductionSupply();
+             // $item->wherein('id',ItemSupply::select('individual_item_id')->pluck('individual_item_id'));
+            return self::TransformToModalAndSupply($item->orderBy('description')->get());
+
+        }
+
+
+        /**
+         * Retorna la coleccion de items par Documento y Boleta.
+         *  Usado en app/Http/Controllers/Tenant/DocumentController.php::250
+         *  Usado en app/Http/Controllers/Tenant/DocumentController.php::370
+         *  Usado en modules/Document/Http/Controllers/DocumentController.php::297
+         *
+         * @param Request| null $request
+         * @param int           $id
+         *
+         * @return \Illuminate\Database\Eloquent\Collection|Collection
+         */
         public static function getItemsToDocuments(Request $request = null, $id = 0)
         {
             $items_not_services = self::getNotServiceItem($request, $id);
@@ -475,6 +551,26 @@
                 ->transform(function ($row) use ($warehouse) {
                     /** @var Item $row */
                     return $row->getDataToItemModal($warehouse);
+                });
+
+        }
+        /**
+         * @param Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed $items
+         * @param Warehouse|null                                                                                                     $warehouse
+         *
+         * @return \Illuminate\Database\Eloquent\Collection|Collection
+         */
+        public static function TransformToModalAndSupply($items, Warehouse $warehouse = null)
+        {
+            /** @var Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed $items */
+            return $items
+                ->transform(function (Item $row) use ($warehouse) {
+                    $data= $row->getDataToItemModal($warehouse);
+                    $suppl = $row->supplies;
+
+
+                    $data['supplies'] = $row->supplies;
+                    return  $data;
                 });
 
         }
@@ -553,7 +649,9 @@
                             'code' => $row->code,
                             'quantity' => $row->quantity,
                             'date_of_due' => $row->date_of_due,
-                            'checked' => false
+                            'checked' => false,
+                            'compromise_quantity' => 0
+
                         ];
                     }),
                     'lot_code' => $row->lot_code,
@@ -662,7 +760,8 @@
                             'code' => $row->code,
                             'quantity' => $row->quantity,
                             'date_of_due' => $row->date_of_due,
-                            'checked' => false
+                            'checked' => false,
+                            'compromise_quantity' => 0
                         ];
                     }),
                     'lot_code' => $row->lot_code,
@@ -882,7 +981,8 @@
          */
         public static function getItemToPurchase(Request $request = null, $id = 0)
         {
-            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_not_services = self::getNotServiceItemWithOutWarehouse($request, $id);
+            // $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
@@ -936,6 +1036,11 @@
                         return $row;
                     }),
                     'series_enabled' => (bool)$row->series_enabled,
+
+                    'purchase_has_isc' => $row->purchase_has_isc,
+                    'purchase_system_isc_type_id' => $row->purchase_system_isc_type_id,
+                    'purchase_percentage_isc' => $row->purchase_percentage_isc,
+
                 ];
                 foreach ($temp as $k => $v) {
                     if (!isset($data[$k])) {
@@ -1092,6 +1197,7 @@
 
             }
 
+            $data->whereIsActive();
 
             return self::getItemToTrasferModal($data,$warehouse_id);
         }
@@ -1103,7 +1209,8 @@
          */
         public static function getItemToTrasferWithoutSearch( $warehouse_id = 0): \Illuminate\Database\Eloquent\Collection
         {
-            $data = self::getItemToTrasferCollection($warehouse_id);
+            $data = self::getItemToTrasferCollection($warehouse_id)->whereIsActive();
+
             // Inicia con 20 productos, puede añadirse en el env la variable NUMBER_ITEMS
             $data->take(\Config('extra.number_items_at_start'));
             return  self::getItemToTrasferModal($data,$warehouse_id);
@@ -1170,5 +1277,19 @@
                 })
                 ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
                 ->whereNotIsSet();
+        }
+
+        public static function getItemsToPackageZone(Request $request = null, $id = 0)
+        {
+            $items_not_services = self::getNotServiceItem($request, $id);
+            // $items_services = self::getServiceItem($request, $id);
+            // $data = self::TransformToModal($items_not_services->merge($items_services));
+            $data = self::TransformToModal($items_not_services);
+            return $data->transform(function ($row) {
+                $data = $row;
+                $data['color'] = CatColorsItem::wherein('id', $row['colors'])->get();
+                return $data;
+            });
+
         }
     }

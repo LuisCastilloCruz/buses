@@ -58,7 +58,7 @@ export default {
     setExchangeRate(state, exchange_rate) {
         state.exchange_rate = exchange_rate
     },
-    setExchangeRateSale(state, exchange_rate) {
+    setExchangeRateSale(state, exchange_rate_sale) {
         state.exchange_rate_sale = exchange_rate_sale
     },
     setCurrencys(state, currencys) {
@@ -150,6 +150,10 @@ export default {
         if (periods === undefined) periods = [];
         state.periods = periods
     },
+    setFilter(state, filter) {
+        if (filter === undefined) filter = [];
+        state.filter = filter
+    },
     setFromPos(state, form_pos) {
         if (form_pos === undefined) form_pos = {};
         writeLocal('form_pos', JSON.stringify(form_pos))
@@ -213,6 +217,14 @@ export default {
     setItem(state, item) {
         state.item = (item === undefined)?{}:item;
     },
+    setMiTiendaPe(state, mi_tienda_pe) {
+        state.mi_tienda_pe = (mi_tienda_pe === undefined)?{ establishment_id:null,
+            series_order_note_id:null,
+            series_document_id:null,
+            user_id:null,
+            payment_destination_id:null,
+            currency_type_id:null,}:mi_tienda_pe;
+    },
     setTableData(state, table_data) {
         state.table_data = (table_data === undefined) ? [] : table_data;
     },
@@ -275,8 +287,8 @@ export default {
     setSeries(state,series){ state.series = (series === undefined) ?[]: series },
     setAllSeries(state,all_series){ state.all_series = (all_series === undefined) ?[]: all_series },
 
-
-
+    setSellers(state,sellers){ state.sellers = (sellers === undefined) ?[]: sellers },
+    setStatusDocumentary(state,statusDocumentary){ state.statusDocumentary = (statusDocumentary === undefined) ?[]: statusDocumentary },
 
 
 

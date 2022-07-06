@@ -3,7 +3,6 @@
 namespace Modules\Dashboard\Http\Controllers;
 
 use App\Exports\AccountsReceivable;
-use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Maatwebsite\Excel\Facades\Excel;
@@ -29,18 +28,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $configuration = Configuration::first();
-
         if(auth()->user()->type != 'admin' || !auth()->user()->searchModule('dashboard'))
             return redirect()->route('tenant.documents.index');
 
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
-
-        $pendientes = Document::where('state_type_id','01')
-            ->get();
-
-        $whatsapp= $configuration->phone_whatsapp;
 
         return view('dashboard::index', compact('soap_company'));
     }
@@ -133,6 +125,15 @@ class DashboardController extends Controller
         return $array;
 
 
+    }
+
+    /**
+     * Extensión de ventas por producto
+     *
+     */
+    public function salesByProduct()
+    {
+        return view('dashboard::sales_by_product');
     }
 
 }

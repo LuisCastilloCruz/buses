@@ -69,7 +69,7 @@
         <td>{{ $customer->number }}</td>
         @if($document->date_of_due)
             <td width="25%">Fecha de vencimiento:</td>
-            <td width="15%">{{ $document->date_of_due->format('Y-m-d') }}</td>
+            <td width="15%">{{ $document->date_of_due }}</td>
         @endif
     </tr>
     @if ($customer->address !== '')
@@ -183,7 +183,7 @@
                     {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
                 @endif
 
-                @if($row->item->extra_attr_value != '')
+                  @if($row->item !== null && property_exists($row->item,'extra_attr_value') && $row->item->extra_attr_value != '')
                     <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
                 @endif
             </td>

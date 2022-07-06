@@ -234,13 +234,10 @@
 
                 case 'documentary-procedure':
                 case 'hotels':
-                    return redirect()->url('/');
+                return redirect()->route('tenant.hotels.index');
 
                 case 'transportes':
-                    return redirect()->url('/');
-
-                case 'transporte':
-                    return redirect()->url('/');
+                    return redirect()->url('tenant.transportes.index');
 
                 case 'documentary-procedure':
                     return redirect()->url('/');

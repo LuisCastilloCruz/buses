@@ -33,7 +33,20 @@ class Company extends ModelTenant
         'cod_digemid',
         'integrated_query_client_id',
         'integrated_query_client_secret',
+
+        'send_document_to_pse',
+        'url_send_cdr_pse',
+        'url_signature_pse',
+        'client_id_pse',
+        'password_pse',
+        'url_login_pse',
+        'user_pse',
         'num_aut_manifiesto_pasajero'
+
+    ];
+
+    protected $casts = [
+        'send_document_to_pse' => 'bool'
     ];
 
     /**
@@ -82,5 +95,16 @@ class Company extends ModelTenant
         return $this;
     }
 
+
+    /**
+     *
+     * Obtener soap_type_id para registro de entorno en tablas relacionadas
+     *
+     * @return string
+     */
+    public static function getCompanySoapTypeId()
+    {
+        return Company::select('soap_type_id')->withOut(['identity_document_type'])->firstOrFail()->soap_type_id;
+    }
 
 }

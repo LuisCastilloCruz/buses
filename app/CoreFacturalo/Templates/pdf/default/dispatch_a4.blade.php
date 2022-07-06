@@ -4,7 +4,7 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    // //$document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+    // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
     $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
 @endphp
@@ -91,6 +91,14 @@
         <td>Motivo Traslado: {{ $document->transfer_reason_type->description }}</td>
         <td>Modalidad de Transporte: {{ $document->transport_mode_type->description }}</td>
     </tr>
+
+    @if($document->related)
+    <tr>
+        <td>Número de documento (DAM): {{ $document->related->number }}</td>
+        <td>Tipo documento relacionado: {{ $document->getRelatedDocumentTypeDescription() }}</td>
+    </tr>
+    @endif
+
     <tr>
         <td>Peso Bruto Total({{ $document->unit_type_id }}): {{ $document->total_weight }}</td>
         @if($document->packages_number)
@@ -147,6 +155,9 @@
     </thead>
     <tbody>
     @foreach($document->items as $row)
+        @php
+            $total_weight_line = 0;
+        @endphp
         <tr>
             <td class="text-center">{{ $loop->iteration }}</td>
             <td class="text-center">{{ $row->item->internal_id }}</td>
@@ -255,7 +266,19 @@
     </tr>
     @endif
 </table>
+
+@elseif ($document->order_form_external)
+<table class="full-width border-box">
+    <tr>
+        <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
+    </tr>
+    <tr>
+        <td>{{ $document->order_form_external }}</td>
+    </tr>
+</table>
+
 @endif
+
 
 @if ($document->reference_sale_note_id)
 <table class="full-width border-box">

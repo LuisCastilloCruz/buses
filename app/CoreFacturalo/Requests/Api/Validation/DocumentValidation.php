@@ -36,6 +36,8 @@ class DocumentValidation
 
         Functions::validateDetraction($inputs);
 
+        Functions::validateDateOfIssue($inputs);
+
         return $inputs;
     }
 

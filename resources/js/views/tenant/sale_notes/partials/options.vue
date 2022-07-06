@@ -12,19 +12,20 @@
                         <i class="fa fa-receipt"></i> IMPRIMIR
                     </button>
                     <el-tabs v-model="activeName">
-                        <el-tab-pane label="Imprimir Ticket" name="fourth">
-                            <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
-                        </el-tab-pane>
                         <el-tab-pane label="Imprimir A4" name="first">
-                            <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/>
+                            <iframe :src="form.print_a4" type="application/pdf" width="100%" height="400px"/>
+                        </el-tab-pane>
+                        <el-tab-pane label="Imprimir Ticket" name="fourth" v-if="ShowTicket80">
+                            <iframe :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
+                        </el-tab-pane>
+                        <el-tab-pane label="Imprimir Ticket 58MM" name="third" v-if="ShowTicket58">
+                            <iframe :src="form.print_ticket_58" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A5" name="second">
-                            <embed :src="form.print_a5" type="application/pdf" width="100%" height="400px"/>
-                        </el-tab-pane>
-                        <el-tab-pane label="Imprimir Ticket 58MM" name="third" v-if="Ticket58">
-                            <embed :src="form.print_ticket_58" type="application/pdf" width="100%" height="400px"/>
+                            <iframe :src="form.print_a5" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                     </el-tabs>
+
                 </div>
                 <div class="col-12 container-btns text-center">
                     <br><br>
@@ -51,18 +52,49 @@
                 </div>
             </div>
             <span slot="footer" class="dialog-footer row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <el-input v-model="form.customer_email">
                         <el-button slot="append" icon="el-icon-message"   @click="clickSendEmail" :loading="loading">Enviar</el-button>
                     </el-input>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-12 mt-3">
+                    <el-input v-model="form.customer_telephone">
+                        <template slot="prepend">+51</template>
+                        <el-button slot="append"
+                                   @click="clickSendWhatsapp">Enviar
+                            <el-tooltip class="item"
+                                        content="Se recomienta tener abierta la sesión de Whatsapp web"
+                                        effect="dark"
+                                        placement="top-start">
+                                <i class="fab fa-whatsapp"></i>
+                            </el-tooltip>
+                        </el-button>
+                    </el-input>
+                    <small v-if="errors.customer_telephone"
+                           class="form-control-feedback"
+                           v-text="errors.customer_telephone[0]"></small>
+                </div>
+            <div class="col-md-6 mt-3">&nbsp;</div>
+                <div class="col-md-6 mt-3">
                 <template v-if="showClose">
                     <el-button @click="clickClose">Cerrar</el-button>
                 </template>
                 <template v-else>
                     <el-button @click="clickFinalize">Ir al listado</el-button>
-                    <el-button type="primary" @click="clickNewSaleNote">Nueva nota de venta</el-button>
+                     <el-popover
+                        :open-delay="1000"
+                         placement="top-start"
+                         width="145"
+                         trigger="hover"
+                         content="Presiona ALT + N">
+                            <el-button slot="reference"
+                                       type="primary"
+                                       ref="new_note"
+                                       @click="clickNewSaleNote"
+                            >
+                                Nueva nota de venta
+                            </el-button>
+                        </el-popover>
                 </template>
                 </div>
             </span>
@@ -91,20 +123,53 @@ export default {
             showDialogOptions: false,
             documentNewId: null,
             activeName: 'fourth',
+            isSafari: false
         }
     },
     created() {
         this.initForm()
     },
+    mounted() {
+        if(navigator.userAgent.indexOf("Safari") != -1) {
+            this.isSafari = true
+        }
+    },
     computed: {
-      Ticket58: function(){
-          if(
-              this.configuration !== undefined &&
-              this.configuration.ticket_58 !== undefined &&
-              this.configuration.ticket_58){
-              return this.configuration.ticket_58;
-          }
-          return false;
+        ShowTicket58: function () {
+            if (this.configuration === undefined) return false;
+            if (this.configuration == null) return false;
+            if (this.configuration.show_ticket_58 === undefined) return false;
+            if (this.configuration.show_ticket_58 == null) return false;
+            if (
+                this.configuration.show_ticket_58 !== undefined &&
+                this.configuration.show_ticket_58 !== null) {
+                return this.configuration.show_ticket_58;
+            }
+            return false;
+        },
+        ShowTicket80: function () {
+            if (this.configuration === undefined) return false;
+            if (this.configuration == null) return false;
+            if (this.configuration.show_ticket_80 === undefined) return false;
+            if (this.configuration.show_ticket_80 == null) return false;
+            if (
+                this.configuration.show_ticket_80 !== undefined &&
+                this.configuration.show_ticket_80 !== null) {
+                return this.configuration.show_ticket_80;
+            }
+            return false;
+        },
+        ShowTicket50: function () {
+            if (this.configuration === undefined) return false;
+            if (this.configuration == null) return false;
+            if (this.configuration.show_ticket_50 === undefined) return false;
+            if (this.configuration.show_ticket_50 == null) return false;
+            if (
+                this.configuration.show_ticket_50 !== undefined &&
+                this.configuration.show_ticket_50 !== null) {
+                return this.configuration.show_ticket_50;
+            }
+            return false;
         }
     },
     methods: {
@@ -170,6 +235,15 @@ export default {
                     this.loading=false
 
                 })
+        },
+        clickSendWhatsapp() {
+
+            if (!this.form.customer_telephone) {
+                return this.$message.error('El número es obligatorio')
+            }
+
+            window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
+
         },
         clickPrintSilent(format){
             const urlPdf = `${this.resource}/print/${this.form.external_id}/${format}`;

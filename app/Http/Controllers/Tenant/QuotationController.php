@@ -60,8 +60,9 @@ class QuotationController extends Controller
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
         $configuration = Configuration::first();
+        $generate_order_note_from_quotation = Configuration::getRecordIndividualColumn('generate_order_note_from_quotation');
 
-        return view('tenant.quotations.index', compact('soap_company','configuration'));
+        return view('tenant.quotations.index', compact('soap_company', 'generate_order_note_from_quotation','configuration'));
     }
 
 
@@ -82,7 +83,8 @@ class QuotationController extends Controller
             'customer' => 'Cliente',
             'date_of_issue' => 'Fecha de emisión',
             'delivery_date' => 'Fecha de entrega',
-            'user_name' => 'Vendedor',
+            'user_name' => 'Registrado por',
+            'seller_name' => 'Vendedor',
             'referential_information' => 'Inf.Referencial'
         ];
     }
@@ -119,6 +121,13 @@ class QuotationController extends Controller
                                 ->orWhere('number', 'like', "%{$request->value}%");
                         })
                         ->whereTypeUser()
+                        ->latest();
+
+        }else if($request->column == 'seller_name'){
+
+            $records = Quotation::whereHas('seller', function($query) use($request){
+                            $query->where('name', 'like', "%{$request->value}%");
+                        })
                         ->latest();
 
         }else{
@@ -328,7 +337,7 @@ class QuotationController extends Controller
 
     }
 
-    private function getTermsCondition(){
+    public function getTermsCondition(){
 
         $configuration = Configuration::select('terms_condition')->first();
 
@@ -828,7 +837,7 @@ class QuotationController extends Controller
     }
 
 
-    private function savePayments($quotation, $payments){
+    public function savePayments($quotation, $payments){
 
         foreach ($payments as $payment) {
 

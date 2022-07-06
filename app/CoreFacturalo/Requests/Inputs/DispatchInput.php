@@ -72,12 +72,36 @@ class DispatchInput
             'reference_order_form_id' => Functions::valueKeyInArray($inputs, 'reference_order_form_id'),
             'reference_sale_note_id' => Functions::valueKeyInArray($inputs, 'reference_sale_note_id'),
             'secondary_license_plates' => self::secondary_license_plates($inputs),
+            'related' => self::related($inputs),
+            'order_form_external' => Functions::valueKeyInArray($inputs, 'order_form_external'),
         ];
+
         if(isset($inputs['data_affected_document'])){
             $data['data_affected_document'] =$inputs['data_affected_document'];
         }
         return $data;
     }
+
+
+    /**
+     *
+     * Documento relacionado (DAM), usado para exportación
+     *
+     * @param  $inputs
+     * @return array|null
+     */
+    private static function related($inputs)
+    {
+        if(array_key_exists('related', $inputs))
+        {
+            $related = $inputs['related'];
+
+            if(!empty($related)) return $related;
+        }
+
+        return null;
+    }
+
 
     private static function origin($inputs)
     {
@@ -149,7 +173,10 @@ class DispatchInput
             $items = [];
             foreach ($inputs['items'] as $row) {
                 $item = Item::find($row['item_id']);
-                $items[] = [
+                $itemDispatch = $row['item']??[];
+                $row['IdLoteSelected'] =  $row['IdLoteSelected']??$itemDispatch['IdLoteSelected']??null;
+
+                $temp = [
                     'item_id' => $item->id,
                     'item' => [
                         'description' => $item->description,
@@ -163,7 +190,15 @@ class DispatchInput
                         'lot_group' => $row['lot_group'] ?? null,
                     ],
                     'quantity' => $row['quantity'],
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
                 ];
+
+                if(isset($temp['item']['lot_group']['date_of_due'])){
+                    $temp['item']['date_of_due']=$temp['item']['lot_group']['date_of_due'];
+                }else{
+                    $temp['item']['date_of_due']= $itemDispatch['date_of_due'] ??null;
+                }
+                $items[] = $temp;
             }
 
             return $items;

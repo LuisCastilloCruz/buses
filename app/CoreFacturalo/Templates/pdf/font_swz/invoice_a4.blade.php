@@ -160,6 +160,30 @@
     @endif
 </table>
 
+@if ($document->retention)
+    <table class="full-width mt-3">
+        <tr>
+            <td colspan="3">
+                INFORMACIÓN DE LA RETENCIÓN
+            </td>
+        </tr>
+        <tr>
+            <td width="120px">Base imponible</td>
+            <td width="8px">:</td>
+            <td>{{ $document->currency_type->symbol}} {{ $document->retention->base }}</td>
+
+            <td width="80px">Porcentaje</td>
+            <td width="8px">:</td>
+            <td>{{ $document->retention->percentage * 100 }}%</td>
+        </tr>
+        <tr>
+            <td width="120px">Monto</td>
+            <td width="8px">:</td>
+            <td>{{ $document->currency_type->symbol}} {{ $document->retention->amount }}</td>
+        </tr>
+    </table>
+@endif
+
 <table class="mt-10 mb-10"
        style="border-collapse: collapse;border-top: 1px solid #333;">
     <tr class="bg-grey">
@@ -300,14 +324,17 @@
             class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
         <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
     </tr>
+    @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
+        <tr>
+            <td colspan="6"
+                class="text-right font-bold">M. PENDIENTE: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold">{{ number_format($document->total_pending_payment, 2) }}</td>
+        </tr>
+    @endif
     </tbody>
 </table>
 @php
-    if($document->payment_condition_id === '01') {
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
-    }else{
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-    }
+    $paymentCondition = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getDocumentPaymentCondition($document);
 @endphp
 <table class="full-width">
     <tr>
@@ -315,7 +342,7 @@
             <p style="text-transform: uppercase;">
                 CONDICIÓN DE PAGO:
                 <strong>
-                    {{ $paymentCondition->description  }}
+                    {{ $paymentCondition  }}
                 </strong>
             </p>
         </td>

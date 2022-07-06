@@ -7,6 +7,9 @@
     if ($hostname) {
         Route::domain($hostname->fqdn)->group(function () {
             Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
+
+                Route::get('advanced-items-search', 'ItemController@advancedItemsSearch'); 
+
                 // Config inventory
 
                 Route::prefix('warehouses')->group(function () {
@@ -102,10 +105,10 @@
                     });
 
                     Route::prefix('item-prodcut-family')->group(function () {
-                        Route::get('/', 'ItemMoldPropertyController@index');
-                        Route::get('records', 'ItemMoldPropertyController@records');
-                        Route::post('record/{id}', 'ItemMoldPropertyController@record');
-                        Route::post('save/{id}', 'ItemMoldPropertyController@store');
+                        Route::get('/', 'ItemProductFamilyController@index');
+                        Route::get('records', 'ItemProductFamilyController@records');
+                        Route::post('record/{id}', 'ItemProductFamilyController@record');
+                        Route::post('save/{id}', 'ItemProductFamilyController@store');
                     });
                     Route::prefix('item-size')->group(function () {
                         Route::get('/', 'ItemSizeController@index');
@@ -160,12 +163,10 @@
                      */
                     Route::prefix('report')->group(function () {
                         Route::get('tables', 'ReportInventoryController@tables');
-                        Route::post('records', 'ReportInventoryController@records');
+                        Route::get('records', 'ReportInventoryController@records');
                         Route::post('export', 'ReportInventoryController@export');
                     });
 
-                    Route::post('import', 'InventoryController@import');
-                    Route::post('import_stock', 'InventoryController@importStock');
                 });
 
                 Route::prefix('reports')->group(function () {

@@ -6,6 +6,10 @@
     $accounts = \App\Models\Tenant\BankAccount::all();
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
 
+    $logo = "storage/uploads/logos/{$company->logo}";
+    if($establishment->logo) {
+        $logo = "{$establishment->logo}";
+    }
 
 @endphp
 <html>
@@ -17,7 +21,7 @@
 
 @if($company->logo)
     <div class="text-center company_logo_box pt-5">
-        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo_ticket contain">
+        <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo_ticket contain">
     </div>
 {{--@else--}}
     {{--<div class="text-center company_logo_box pt-5">--}}
@@ -164,15 +168,19 @@
         <td class="align-top"><p class="desc font-bold">VENDEDOR:</p></td>
         <td>
             <p class="desc">
-                {{ $document->user->name }}
-
+                @if ($document->seller->name)
+                    {{ $document->seller->name }}
+                @else
+                    {{ $document->user->name }}
+                @endif
             </p>
         </td>
     </tr>
     @if ($document->description)
         <tr>
-            <td class="align-top"><p class="desc font-bold">OBSERVACIÓN:</p></td>
-            <td><p class="desc">{{ $document->description }}</p></td>
+            <td class="align-top"><p class="desc">Observación:</p></td>
+            <td><p class="desc">{!! str_replace("\n", "<br/>", $document->description) !!}</p></td>
+            {{-- <td><p class="desc">{{ $document->description }}</p></td> --}}
         </tr>
     @endif
 
@@ -241,7 +249,14 @@
                         <br/><small>{{ $dtos->factor * 100 }}% {{$dtos->description }}</small>
                     @endforeach
                 @endif
-                @if($row->item->extra_attr_value != '')
+                @if($row->item->is_set == 1)
+                 <br>
+                    @inject('itemSet', 'App\Services\ItemSetService')
+                    @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                        {{$item}}<br>
+                    @endforeach
+                @endif
+                  @if($row->item !== null && property_exists($row->item,'extra_attr_value') && $row->item->extra_attr_value != '')
                     <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
                 @endif
             </td>

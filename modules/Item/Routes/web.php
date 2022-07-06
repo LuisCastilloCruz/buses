@@ -21,6 +21,19 @@ if($hostname) {
             Route::get('brands/columns', 'BrandController@columns');
             Route::delete('brands/{brand}', 'BrandController@destroy');
 
+
+
+            Route::prefix('zones')->group(function () {
+
+                Route::get('', 'ZoneController@index')->name('tenant.zone.index');
+                Route::post('', 'ZoneController@store');
+                Route::get('/records', 'ZoneController@records');
+                Route::get('/record/{brand}', 'ZoneController@record');
+                Route::get('/columns', 'ZoneController@columns');
+                Route::delete('/{brand}', 'ZoneController@destroy');
+            });
+
+
             Route::get('incentives', 'IncentiveController@index')->name('tenant.incentives.index')->middleware('redirect.level');
             Route::get('incentives/records', 'IncentiveController@records');
             Route::get('incentives/record/{incentive}', 'IncentiveController@record');
@@ -38,6 +51,8 @@ if($hostname) {
             Route::get('items/available-series/records', 'ItemController@availableSeriesRecords');
             Route::get('items/history-sales/records', 'ItemController@itemHistorySales');
             Route::get('items/history-purchases/records', 'ItemController@itemHistoryPurchases');
+            Route::get('items/last-sale', 'ItemController@itemtLastSale');
+
             //history
 
             Route::prefix('item-lots')->group(function () {
@@ -65,6 +80,14 @@ if($hostname) {
 
             });
 
+            Route::post('items/import/items-update-prices', 'ItemController@importItemUpdatePrices');
+
+
+            Route::prefix('item-lots-group')->group(function () {
+
+                Route::get('available-data/{item_id}', 'ItemLotsGroupController@getAvailableItemLotsGroup');
+
+            });
 
         });
     });

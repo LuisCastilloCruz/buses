@@ -77,7 +77,7 @@
                                        Carbon::SUNDAY,
                                    ]);
             $today = Carbon::now();
-            $holyday = [];
+            // $holyday = [];
             $data = [
                 'id'            => $this->id,
                 'description'   => $this->getDescription(),
@@ -107,13 +107,17 @@
             $data['end_date'] = $today->format('Y-m-d H:i');
             //$data['name_price'].=" (Fecha de entrega estimada) ".$today->format('d-m-Y H:i');
 
-            /** @var \Illuminate\Database\Eloquent\Collection $total_dias */
             $req = TramiteRelRequisito::where('doc_processes_id', $this->id)->get();
-            $data['requirements'] = $req
-                ->transform(function ($row) {
+            $data['requirements'] = $req->transform(function (TramiteRelRequisito $row) {
                     return $row->getCollectionData();
                 });
             $data['requirements_id'] = $req->pluck('requirement_id');
+
+            $data['documentary_terms']=[];
+            $data['documentary_terms'][]=['term_name'=>'Capital hasta S/5,000.00'];
+            $data['documentary_terms'][]=['term_name'=>'2 Socios'];
+            $data['documentary_terms'][]=['term_name'=>'Hasta 4 rubros o actividades'];
+            $data['documentary_terms'][]=['term_name'=>'1 Gerente'];
             return $data;
         }
 

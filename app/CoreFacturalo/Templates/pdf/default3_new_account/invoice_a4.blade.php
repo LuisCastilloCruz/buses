@@ -1,5 +1,5 @@
 @php
-    $establishment = $document->establishment;
+    use App\CoreFacturalo\Helpers\Template\TemplateHelper;$establishment = $document->establishment;
     $customer = $document->customer;
     $invoice = $document->invoice;
     $document_base = ($document->note) ? $document->note : null;
@@ -25,10 +25,16 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
     //calculate items
-    $allowed_items = 94 - (\App\Models\Tenant\BankAccount::all()->count())*2;
+    $allowed_items = 94 - (\App\Models\Tenant\BankAccount::all()->count())*2 - $document->fee()->count();
     $quantity_items = $document->items()->count();
     $cycle_items = $allowed_items - ($quantity_items * 3);
     $total_weight = 0;
+
+    $logo = "storage/uploads/logos/{$company->logo}";
+    if($establishment->logo) {
+        $logo = "{$establishment->logo}";
+    }
+
 
 @endphp
 <html>
@@ -50,7 +56,7 @@
             <td width="20%">
                 <div class="company_logo_box">
                     <img
-                        src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}"
+                        src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}"
                         alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
                 </div>
             </td>
@@ -219,17 +225,22 @@
                 </tr>
 
                 <tr>
-                    @if($document->guides)
-                        <td class="font-sm" width="100px">
-                            <strong>Guía de Remisión</strong>
-                        </td>
-                        <td class="font-sm" width="8px">:</td>
-                        <td class="font-sm" colspan="4">
-                            @foreach ($document->guides as $item)
-                                {{ $item->document_type_description }}:  {{ $item->number }}<br>
-                            @endforeach
-                        </td>
-                    @endif
+                        @php
+                            $guias = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getGuides($document);
+                        @endphp
+                        @if(!empty($guias))
+                            <td class="font-sm" width="100px">
+                                <strong>Guía de Remisión</strong>
+                            </td>
+                            <td class="font-sm" width="8px">:</td>
+                            <td class="font-sm" colspan="4">
+                                @foreach ($guias as $guides)
+                                    @foreach($guides as $index => $item)
+                                     {{ $item }}<br>
+                                    @endforeach
+                                @endforeach
+                            </td>
+                        @endif
                 </tr>
 
 
@@ -451,6 +462,74 @@
                 <td class="text-center">{{$account->number}}</td>
             </tr>
         @endforeach
+    </table>
+@endif
+
+
+{{-- pago crédito --}}
+@if($document->payment_condition_id === '02' && $document->fee()->count() > 0)
+
+    <table class="full-width border-box my-2">
+        <body>
+            <tr>
+                @foreach ($document->fee as $key => $quote)
+                <td>
+                    @php
+                        $payment_method_type_description = $quote->getStringPaymentMethodType();
+                    @endphp
+
+                    @if (empty($payment_method_type_description))
+                    <span>
+                        <p>
+                            <strong>N° Cuota</strong>
+                        </p>
+                        <center>
+                            <p>
+                                {{ $key + 1 }}
+                            </p>
+                        </center>
+                    </span>
+                    @else
+                    <span>
+                        <p>
+                            <strong>Método de pago</strong>
+                        </p>
+                        <center>
+                            <p>
+                                {{ $payment_method_type_description }}
+                            </p>
+                        </center>
+                    </span>
+                    @endif
+
+                </td>
+                <td>
+                    <span>
+                        <p>
+                            <strong>Fec. Venc.</strong>
+                        </p>
+                        <p>
+                            {{ $quote->date->format('d-m-Y') }}
+                        </p>
+                    </span>
+                </td>
+                <td>
+                    <span>
+                        <p>
+                            <strong>Monto</strong>
+                        </p>
+                        <p>
+                            {{ $quote->amount }}
+                        </p>
+                    </span>
+                </td>
+                {{-- espacio --}}
+                @if ($document->fee()->count() > 1)
+                    <td width="30px"></td>
+                @endif
+                @endforeach
+            </tr>
+        </body>
     </table>
 @endif
 </body>

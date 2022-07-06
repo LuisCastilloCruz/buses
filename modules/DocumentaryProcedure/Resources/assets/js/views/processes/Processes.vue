@@ -5,7 +5,7 @@
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>REGISTRO DE TRÁMITES</span></li>
+                <li class="active"><span>TIPOS DE TRÁMITES</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <div class="btn-group flex-wrap">
@@ -21,12 +21,13 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de trámites</h3>
+                <h3 class="my-0">Listado de tipos de trámites</h3>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-12 col-md-2 mb-3">
-                        <form class="form-group" @submit.prevent="onFilter">
+                        <form class="form-group"
+                              @submit.prevent="onFilter">
                             <div class="input-group mb-3">
                                 <input
                                     v-model="filter.name"
@@ -37,7 +38,7 @@
                                 <div class="input-group-append">
                                     <button
                                         class="btn btn-outline-secondary"
-                                        style="border-color: #ced4da"
+                                        style="border-color: #CED4DA"
                                         type="submit"
                                     >
                                         <i class="fa fa-search"></i>
@@ -54,7 +55,8 @@
                             <th>#</th>
                             <th>Trámite</th>
                             <th>Descripción</th>
-                            <th>Visible</th>
+                            <th>Terminos y condiciones</th>
+                            <th>Activo</th>
                             <th>Precio</th>
                             <th></th>
                         </tr>
@@ -65,9 +67,52 @@
                             :key="item.id"
                             :class="{ 'table-danger': !item.active }"
                         >
-                            <td class="text-right">{{ index +1 }}</td>
-                            <td>{{ item.name }}</td>
+                            <td class="text-right">{{ index + 1 }}</td>
+                            <td>
+                                <el-tooltip v-if="item.requirements && item.requirements.length > 0"
+                                            placement="right-start">
+                                    <div slot="content">
+                                        Requisitos:
+                                        <ul v-for="(requirement) in item.requirements">
+                                            <li>
+                                                {{ requirement.requirement_name }}
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                                {{ item.name }}
+                            </td>
                             <td>{{ item.description }}</td>
+                            <td>
+
+                                <!--
+                                <el-tooltip v-if="item.documentary_terms && item.documentary_terms.length > 0"
+                                            placement="right-start">
+                                    <div slot="content">
+                                        Requisitos:
+                                        <ul v-for="(requirement) in item.documentary_terms">
+                                            <li>
+                                                {{ requirement.term_name }}
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                                {{ item.name }}
+                                -->
+
+                                <ul v-for="(requirement) in item.documentary_terms">
+                                    <li>
+                                        {{ requirement.term_name }}
+                                    </li>
+                                </ul>
+
+
+                            </td>
+
                             <td class="text-center">
                                 <span v-if="item.active">Si</span>
                                 <span v-else>No</span>
@@ -97,8 +142,8 @@
         </div>
         <ModalAddEdit
             :process="process"
-            :stages="stages"
             :requirements="requirements"
+            :stages="stages"
             :visible.sync="openModalAddEdit"
             @onAddItem="onAddItem"
             @onUpdateItem="onUpdateItem"
@@ -192,6 +237,7 @@ export default {
                 }
                 return i;
             });
+            this.onFilter()
         },
         onAddItem(data) {
             this.items.unshift(data);

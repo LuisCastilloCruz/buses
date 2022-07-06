@@ -8,11 +8,15 @@
     use App\Models\Tenant\Catalogs\District;
     use App\Models\Tenant\Catalogs\IdentityDocumentType;
     use App\Models\Tenant\Catalogs\Province;
+    use Eloquent;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Collection;
+    use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Modules\DocumentaryProcedure\Models\DocumentaryFile;
     use Modules\Expense\Models\Expense;
+    use Modules\FullSuscription\Models\Tenant\FullSuscriptionServerDatum;
+    use Modules\FullSuscription\Models\Tenant\FullSuscriptionUserDatum;
     use Modules\Order\Models\OrderForm;
     use Modules\Order\Models\OrderNote;
     use Modules\Purchase\Models\FixedAssetPurchase;
@@ -20,11 +24,15 @@
     use Modules\Sale\Models\Contract;
     use Modules\Sale\Models\SaleOpportunity;
     use Modules\Sale\Models\TechnicalService;
-
+    use App\Models\Tenant\Configuration;
 
     /**
      * App\Models\Tenant\Person
      *
+     * @property int|null                             $seller_id
+     * @property User                                 $seller
+     * @property int|null                             $zone_id
+     * @property Zone                                 $zone
      * @property-read AddressType                     $address_type
      * @property-read Collection|PersonAddress[]      $addresses
      * @property-read int|null                        $addresses_count
@@ -110,7 +118,9 @@
             'enabled' => 'bool',
             'status' => 'int',
             'credit_days' => 'int',
-            'parent_id' => 'int'
+            'seller_id' => 'int',
+            'zone_id' => 'int',
+            'parent_id' => 'int',
         ];
         protected $fillable = [
             'type',
@@ -136,10 +146,13 @@
             'percentage_perception',
             'enabled',
             'website',
-            'zone',
+            'barcode',
+            // 'zone',
             'observation',
             'credit_days',
             'optional_email',
+            'seller_id',
+            'zone_id',
             'status',
             'parent_id',
             'edad'
@@ -163,6 +176,7 @@
         {
             return $this->hasMany(Person::class, 'parent_id');
         }
+
         /**
          * Devuelve el padre basado en parent_id
          *
@@ -464,7 +478,7 @@
          *
          * @return array
          */
-        public function getCollectionData($withFullAddress = false, $childrens = false)
+        public function getCollectionData($withFullAddress = false, $childrens = false, $servers=false)
         {
 
             $addresses = $this->addresses;
@@ -479,16 +493,59 @@
             }
             $optional_mail = $this->getOptionalEmailArray();
             $optional_mail_send = [];
-            if ( !empty($this->email)) {
+            if (!empty($this->email)) {
                 $optional_mail_send[] = $this->email;
             }
             $total_optional_mail = count($optional_mail);
             for ($i = 0; $i < $total_optional_mail; $i++) {
                 $temp = trim($optional_mail[$i]['email']);
-                if ( !empty($temp) && $temp != $this->email) {
+                if (!empty($temp) && $temp != $this->email) {
                     $optional_mail_send[] = $temp;
                 }
             }
+            /** @var \App\Models\Tenant\Catalogs\Department  $department */
+            $department = \App\Models\Tenant\Catalogs\Department::find($this->department_id);
+            if(!empty($department)){
+                $department = [
+                "id" => $department->id,
+                "description" => $department->description,
+                "active" => $department->active,
+                ];
+            }
+
+            /** @var \App\Models\Tenant\Catalogs\Department  $department */
+            $department = \App\Models\Tenant\Catalogs\Department::find($this->department_id);
+            if(!empty($department)){
+                $department = [
+                "id" => $department->id,
+                "description" => $department->description,
+                "active" => $department->active,
+                ];
+            }
+            $province = \App\Models\Tenant\Catalogs\Province::find($this->province_id);
+
+            if(!empty($province)){
+                $province = [
+                    "id" => $province->id,
+                    "description" => $province->description,
+                    "active" => $province->active,
+                ];
+            }
+            $district = \App\Models\Tenant\Catalogs\District::find($this->district_id);
+
+            if(!empty($district)){
+                $district = [
+                    "id" => $district->id,
+                    "description" => $district->description,
+                    "active" => $district->active,
+                ];
+            }
+            $seller = User::find($this->seller_id);
+            if(!empty($seller)){
+                $seller = $seller->getCollectionData();
+            }
+
+
             $data = [
                 'id' => $this->id,
                 'description' => $this->number . ' - ' . $this->name,
@@ -498,8 +555,12 @@
                 'identity_document_type_code' => $this->identity_document_type->code,
                 'address' => $this->address,
                 'internal_code' => $this->internal_code,
+                'barcode' => $this->barcode,
                 'observation' => $this->observation,
-                'zone' => $this->zone,
+                'seller' => $seller,
+                'zone' => $this->getZone(),
+                'zone_id' => $this->zone_id,
+                'seller_id' => $this->seller_id,
                 'website' => $this->website,
                 'document_type' => $this->identity_document_type->description,
                 'enabled' => (bool)$this->enabled,
@@ -508,9 +569,14 @@
                 'type' => $this->type,
                 'trade_name' => $this->trade_name,
                 'country_id' => $this->country_id,
-                'department_id' => $this->department_id,
-                'province_id' => $this->province_id,
-                'district_id' => $this->district_id,
+                'department_id' => $department['id']??null,
+                'department' => $department,
+
+                'province_id' => $province['id']??null,
+                'province' => $province,
+                'district_id' => $district['id']??null,
+                'district' => $district,
+
                 'telephone' => $this->telephone,
                 'email' => $this->email,
                 'perception_agent' => (bool)$this->perception_agent,
@@ -529,17 +595,30 @@
                 'childrens' => [],
                 'edad'=>$this->edad
             ];
-            if($childrens == true){
-                $child = $this->children_person->transform(function($row){
+            if ($childrens == true) {
+                $child = $this->children_person->transform(function ($row) {
                     return $row->getCollectionData();
                 });
                 $data['childrens'] = $child;
                 $parent = null;
-                if($this->parent_person) {
+                if ($this->parent_person) {
                     $parent = $this->parent_person->getCollectionData();
                 }
 
                 $data['parent'] = $parent;
+
+            }
+
+            if($servers == true){
+                $serv = FullSuscriptionServerDatum::where('person_id',$this->id)->get();
+                $extra_data = FullSuscriptionUserDatum::where('person_id',$this->id)->first();
+                if(empty($extra_data)){ $extra_data = new FullSuscriptionUserDatum();}
+                 $data['servers'] = $serv;
+                $data['person_id']=$extra_data->getPersonId();
+                $data['discord_user']=$extra_data->getDiscordUser();
+                $data['slack_channel']=$extra_data->getSlackChannel();
+                $data['discord_channel']=$extra_data->getDiscordChannel();
+                $data['gitlab_user']=$extra_data->getGitlabUser();
 
             }
 
@@ -578,24 +657,6 @@
             return $this;
         }
 
-        /**
-         * @return string
-         */
-        public function getZone(): string
-        {
-            return $this->zone;
-        }
-
-        /**
-         * @param string $zone
-         *
-         * @return Person
-         */
-        public function setZone(string $zone): Person
-        {
-            $this->zone = $zone;
-            return $this;
-        }
 
         /**
          * @return string
@@ -664,4 +725,66 @@
             $this->parent_id = (int)$parent_id;
             return $this;
         }
+
+        /**
+         * @return BelongsTo
+         */
+        public function zone()
+        {
+            return $this->belongsTo(Zone::class, 'zone_id');
+        }
+        public function getZone()
+            {
+                return Zone::find($this->zone_id);
+            }
+        /**
+         * @return BelongsTo
+         */
+        public function seller()
+        {
+            return $this->belongsTo(User::class, 'seller_id');
+        }
+
+        public function scopeSearchCustomer(Builder $query,$dni_ruc,$name=null,$email=null){
+            $query->where('type','customers');
+            $query->where('number',$dni_ruc);
+            if(!empty($name)) {
+                $query->where('name', 'like', "%$name%");
+            }
+            if(!empty($email)) {
+                $query->where('email', 'like', "%$email%");
+            }
+
+            return $query;
+
+        }
+
+
+        /**
+         *
+         * Aplicar filtro por vendedor asignado al cliente
+         *
+         * Usado en:
+         * PersonController - records
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param string $type
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterCustomerBySeller($query, $type)
+        {
+            if($type === 'customers')
+            {
+                $user = auth()->user();
+
+                if($user->applyCustomerFilterBySeller())
+                {
+                    return $query->where('seller_id', $user->id);
+                }
+            }
+
+            return $query;
+        }
+
+
     }

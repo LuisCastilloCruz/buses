@@ -11,38 +11,38 @@
                 font-family: sans-serif;
                 font-size: 12px;
             }
-
+            
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-
+            
             .celda {
                 text-align: center;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-
+            
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-
+            
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-
+            
             p>strong {
                 margin-left: 5px;
                 font-size: 13px;
             }
-
+            
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -62,14 +62,14 @@
                         <p><strong>Empresa: </strong>{{$company->name}}</p>
                     </td>
                     <td>
-                        <p><strong>Fecha impresión: </strong>{{date('Y-m-d')}}</p>
+                        <p><strong>Fecha: </strong>{{date('Y-m-d')}}</p>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         <p><strong>Ruc: </strong>{{$company->number}}</p>
                     </td>
-
+                
                 </tr>
             </table>
         </div>
@@ -95,8 +95,8 @@
                                     <td class="celda" >{{$loop->iteration}}</td>
                                     <td class="celda">{{$row->name}}</td>
                                     <td class="celda">{{$data['total_transactions']}}</td>
-                                    <td class="celda">{{$data['acum_sales']}}</td>
-                                    <td class="celda">{{$data['total_commision']}}</td>
+                                    <td class="celda">{{$data['acum_sales']}}</td> 
+                                    <td class="celda">{{$data['total_commision']}}</td> 
                                 </tr>
                             @endforeach
                         </tbody>

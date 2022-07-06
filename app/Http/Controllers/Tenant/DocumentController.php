@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\CoreFacturalo\Facturalo;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Helpers\Template\ReportHelper;
 use App\Exports\PaymentExport;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SearchItemController;
@@ -55,7 +56,6 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
 use Modules\Finance\Traits\FinanceTrait;
@@ -64,6 +64,7 @@ use Modules\Item\Http\Requests\BrandRequest;
 use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
+use Modules\Document\Helpers\DocumentHelper;
 use Html2Text\Html2Text;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\CapabilityProfile;
@@ -121,6 +122,47 @@ class DocumentController extends Controller
         return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
     }
 
+    /**
+     * Devuelve los totales de la busqueda,
+     *
+     * Implementado en resources/js/views/tenant/documents/index.vue
+     * @param Request $request
+     *
+     * @return array[]
+     */
+    public function recordsTotal(Request $request)
+    {
+
+        $FT_t = DocumentType::find('01');
+        $BV_t = DocumentType::find('03');
+        $NC_t = DocumentType::find('07');
+        $ND_t = DocumentType::find('08');
+
+        $BV = $this->getRecords($request)->where('document_type_id', $BV_t->id)->where('currency_type_id','PEN')->sum('total');
+        $FT = $this->getRecords($request)->where('document_type_id', $FT_t->id)->where('currency_type_id','PEN')->sum('total');
+        $NC = $this->getRecords($request)->where('document_type_id', $NC_t->id)->where('currency_type_id','PEN')->sum('total');
+        $ND = $this->getRecords($request)->where('document_type_id', $ND_t->id)->where('currency_type_id','PEN')->sum('total');
+        return [
+            [
+                'name' => $FT_t->description,
+                'total' =>"S/. ". ReportHelper::setNumber($FT),
+            ],
+            [
+                'name' => $BV_t->description,
+                'total' => "S/. ".ReportHelper::setNumber($BV),
+
+            ],
+            [
+                'name' => $NC_t->description,
+                'total' => "S/. ".ReportHelper::setNumber($NC),
+            ],
+            [
+                'name' => $ND_t->description,
+                'total' => "S/. ".ReportHelper::setNumber($ND),
+            ],
+        ];
+    }
+
     public function searchCustomers(Request $request)
     {
 
@@ -133,6 +175,7 @@ class DocumentController extends Controller
                             ->whereType('customers')->orderBy('name')
                             ->whereIn('identity_document_type_id',$identity_document_type_id)
                             ->whereIsEnabled()
+                            ->whereFilterCustomerBySeller('customers')
                             ->get()->transform(function($row) {
                 /** @var  Person $row */
                 return $row->getCollectionData();
@@ -207,7 +250,11 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
-        $sellers = User::where('establishment_id',$establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)->get();
+        // $sellers = User::where('establishment_id',$establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)->get();
+        $sellers = User::getSellersToNvCpe($establishment_id,$userId)
+            ->transform(function(User $row){
+                return $row->getCollectionData();
+            });
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
@@ -240,6 +287,8 @@ class DocumentController extends Controller
         $series_id =  auth()->user()->series_id;
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $user = $userType;
+        $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
+
         return compact(
             'document_id',
             'series_id',
@@ -266,6 +315,7 @@ class DocumentController extends Controller
             'select_first_document_type_03',
             'payment_destinations',
             'payment_conditions',
+            'global_discount_types',
             'affectation_igv_types'
         );
 
@@ -341,6 +391,7 @@ class DocumentController extends Controller
             $customers = Person::with('addresses')
                                ->whereType('customers')
                                ->whereIsEnabled()
+                               ->whereFilterCustomerBySeller('customers')
                                ->orderBy('name')
                                ->take(20)
                                ->get()->transform(function ($row) {
@@ -639,19 +690,25 @@ class DocumentController extends Controller
             SaleNote::where('id', $request->sale_note_id)
                 ->update(['document_id' => $documentId]);
         }
+
+        //notas de venta relacionadas cuando se genera cpe desde multiples nv
         $notes = $request->sale_notes_relateds;
+
         if ($notes) {
+
             foreach ($notes as $note) {
-                $noteArray = explode('-', $note);
-                if (count($noteArray) === 2) {
-                    $sale_note = SaleNote::where([
-                                                     'series'=> $noteArray[0],
-                                                     'number'=> $noteArray[1],
-                                                 ])->first();
+
+                $sale_note_id = $note['id'] ?? null;
+
+                if ($sale_note_id) {
+
+                    $sale_note = SaleNote::find($sale_note_id);
+
                     if(!empty($sale_note)) {
                         $sale_note->document_id = $documentId;
                         $sale_note->push();
                     }
+
                 }
             }
         }
@@ -949,6 +1006,7 @@ class DocumentController extends Controller
 
         $customers = Person::with('addresses')->whereType('customers')
                     ->where('id',$id)
+                    ->whereFilterCustomerBySeller('customers')
                     ->get()->transform(function($row) {
                         /** @var  Person $row */
                         return $row->getCollectionData();
@@ -1056,15 +1114,25 @@ class DocumentController extends Controller
 
     public function messageLockedEmission(){
 
-        $configuration = Configuration::first();
-        // $quantity_documents = Document::count();
-        $quantity_documents = $configuration->quantity_documents;
+        $exceed_limit = DocumentHelper::exceedLimitDocuments();
 
-        if($configuration->limit_documents !== 0 && ($quantity_documents > $configuration->limit_documents))
+        if($exceed_limit['success'])
+        {
             return [
                 'success' => false,
-                'message' => 'Alcanzó el límite permitido para la emisión de comprobantes',
+                'message' => $exceed_limit['message'],
             ];
+        }
+
+        // $configuration = Configuration::first();
+        // $quantity_documents = Document::count();
+        // $quantity_documents = $configuration->quantity_documents;
+
+        // if($configuration->limit_documents !== 0 && ($quantity_documents > $configuration->limit_documents))
+        //     return [
+        //         'success' => false,
+        //         'message' => 'Alcanzó el límite permitido para la emisión de comprobantes',
+        //     ];
 
 
         return [
@@ -1089,6 +1157,7 @@ class DocumentController extends Controller
         $category_id = $request->category_id;
         $purchase_order = $request->purchase_order;
         $guides = $request->guides;
+        $plate_numbers = $request->plate_numbers;
 
         $records = Document::query();
 		if ($d_start && $d_end) {
@@ -1138,6 +1207,9 @@ class DocumentController extends Controller
         }
         if (!empty($guides)) {
             $records->where('guides', 'like', DB::raw("%\"number\":\"%") . $guides . DB::raw("%\"%"));
+        }
+        if ($plate_numbers) {
+            $records->where('plate_number', 'like', '%' . $plate_numbers . '%');
         }
         return $records;
     }

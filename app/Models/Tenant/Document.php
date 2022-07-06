@@ -26,6 +26,8 @@
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
     use phpDocumentor\Reflection\Utils;
+    use Modules\Pos\Models\Tip;
+    use Illuminate\Support\Facades\DB;
     use Modules\Transporte\Models\TransporteEncomienda;
     use Modules\Transporte\Models\TransportePasaje;
 
@@ -245,13 +247,22 @@
             'quantity_period',
             'enabled_concurrency',
             'apply_concurrency',
+
+            'send_to_pse',
+            'response_signature_pse',
+            'response_send_cdr_pse',
+
+            'sale_notes_relateds', //generar cpe desde multiples notas de venta
+            'unique_filename', //registra nombre de archivo unico (campo validador para evitar duplicidad)
         ];
+
         protected $casts = [
             'date_of_issue' => 'date',
             'user_rel_suscription_plan_id' => 'int',
             'quantity_period' => 'int',
             'enabled_concurrency' => 'bool',
             'apply_concurrency' => 'bool',
+            'send_to_pse' => 'bool',
         ];
 
         public static function boot()
@@ -423,6 +434,14 @@
         {
             $arr = explode('|', $value);
             return $arr;
+        }
+
+        /**
+         * @return BelongsTo
+         */
+        public function relation_establishment()
+        {
+            return $this->belongsTo(Establishment::class, 'establishment_id');
         }
 
         /**
@@ -641,10 +660,22 @@
          *
          * @return null
          */
-        public function scopeWhereTypeUser($query)
+        public function scopeWhereTypeUser($query, $params = [])
         {
             /** @var User $user */
-            $user = auth()->user();
+            //$user_id = null;
+
+            if(isset($params['user_id'])) {
+                $user_id = (int)$params['user_id'];
+                $user = User::find($user_id);
+                if(!$user) {
+                    $user = new User();
+                }
+            }
+            else {
+                $user = auth()->user();
+            }
+
             return ($user->type === 'admin') ? null : $query->where('user_id', $user->id)->orWhere('seller_id', $user->id)->latest();
             // return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }
@@ -912,6 +943,11 @@
             return $this->hasMany(GuideFile::class);
         }
 
+        public function tip()
+        {
+            return $this->morphOne(Tip::class, 'origin');
+        }
+
         /**
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @param int                                   $establishment_id
@@ -1032,6 +1068,299 @@
             return $this->document_type;
         }
 
+        /**
+         * @return bool
+         */
+        public function  isHasCdr(){
+            return (bool)$this->has_cdr;
+        }
+
+        /**
+         * Retornar placas registradas
+         *
+         * @return array
+         */
+        public function getPlateNumbers()
+        {
+            $plate_numbers = collect();
+
+            if(in_array($this->document_type_id, ['01', '03']))
+            {
+
+                if($this->plate_number) return $plate_numbers->push(['description' => $this->plate_number]);
+
+                //obtener las placas registradas por cada item
+                $this->items->each(function($item) use($plate_numbers){
+
+                    $item->getPlateNumberByItems()->each(function($row) use($plate_numbers){
+                        $plate_numbers->push(['description' => $row->value]);
+                    });
+
+                });
+
+            }
+
+            return $plate_numbers;
+
+        }
+
+
+        /**
+         * Obtener tipo de documento válido para enviar el xml a firmar al pse
+         *
+         * Usado en:
+         * App\CoreFacturalo\Services\Helpers\SendDocumentPse
+         *
+         * @return string
+         */
+        public function getDocumentTypeForPse()
+        {
+
+            $allowed_document_types = [
+                '01' => 'FACT',
+                '03' => 'BOLE',
+                // '07' => 'NOCR',
+                // '08' => 'NODB',
+                // '09' => 'GUIA',
+                // 'RC' => 'RESU',
+                // 'RA' => 'ANUL',
+                // 'RR' => 'REAN', //por validar
+            ];
+
+            return $allowed_document_types[$this->document_type_id];
+
+        }
+
+        public function getResponseSendCdrPseAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setResponseSendCdrPseAttribute($value)
+        {
+            $this->attributes['response_send_cdr_pse'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        public function getResponseSignaturePseAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setResponseSignaturePseAttribute($value)
+        {
+            $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        /**
+         * registros asociados cuando se genera cpe desde multiples notas de venta
+         *
+         * @param $value
+         */
+        public function getSaleNotesRelatedsAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        /**
+         * registros asociados cuando se genera cpe desde multiples notas de venta
+         *
+         * @param $value
+         */
+        public function setSaleNotesRelatedsAttribute($value)
+        {
+            $this->attributes['sale_notes_relateds'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        /**
+         *
+         * Filtro para no incluir relaciones en consulta
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterWithOutRelations($query)
+        {
+            return $query->withOut([
+                'user',
+                'soap_type',
+                'state_type',
+                'document_type',
+                'currency_type',
+                'group',
+                'items',
+                'invoice',
+                'note',
+                'payments',
+                'fee'
+            ]);
+        }
+
+
+        /**
+         * Obtener diferencia de días en base a la fecha de emisión
+         *
+         * Usado en:
+         * VoidedController - Validación de plazo de envío
+         *
+         * @param  Carbon $value
+         * @return int
+         */
+        public function getDiffInDaysDateOfIssue($value = null)
+        {
+            $date = $value ?? Carbon::now();
+
+            return $this->date_of_issue->diffInDays($date);
+        }
+
+
+        /**
+         * Validar si el documento fue generado a partir de un registro externo
+         *
+         * Usado en:
+         * InventoryKardexServiceProvider
+         *
+         * @return bool
+         */
+        public function isGeneratedFromExternalRecord()
+        {
+            $generated = false;
+
+            if(!is_null($this->order_note_id))
+            {
+                $generated = true;
+            }
+
+            // @todo agregar mas registros relacionados
+
+            return $generated;
+        }
+
+
+        /**
+         *
+         * Filtrar por rango de fechas
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         *
+         */
+        public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
+        {
+            return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+        /**
+         *
+         * Filtrar facturas y boletas
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         *
+         */
+        public function scopeFilterDocumentTypeInvoice($query)
+        {
+            return $query->whereIn('document_type_id', ['01', '03']);
+        }
+
+        /**
+         *
+         * @return string
+         *
+         */
+        public function getVoidedDescription()
+        {
+            return $this->state_type_id === '11' ? 'SI' : 'NO';
+        }
+
+
+        /**
+         *
+         * Obtener pagos en efectivo
+         *
+         * @return Collection
+         */
+        public function getCashPayments()
+        {
+            return $this->payments()->whereFilterCashPayment()->get()->transform(function($row){{
+                return $row->getRowResourceCashPayment();
+            }});
+        }
+
+
+        /**
+         *
+         * Validar si el registro esta rechazado o anulado
+         *
+         * @return bool
+         */
+        public function isVoidedOrRejected()
+        {
+            return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
+        }
+
+
+        /**
+         *
+         * Obtener el total de notas de credito de cada cpe
+         *
+         * @return float
+         */
+        public function getCreditNotesTotal()
+        {
+            return $this->affected_documents()
+                        ->join('documents', 'documents.id', '=', 'notes.document_id')
+                        ->whereHas('document', function($query){
+                            return $query->whereStateTypeAccepted()->where('document_type_id', '07');
+                        })
+                        ->sum('documents.total');
+        }
+
+
+        /**
+         *
+         * Obtener query de nc para subconsulta de cuentas por cobrar
+         *
+         * Usado en:
+         * DashboardView
+         * AccountsReceivable
+         *
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public static function getQueryCreditNotes()
+        {
+            return DB::table('notes')
+                        ->join('documents', 'documents.id', '=', 'notes.document_id')
+                        ->whereIn('documents.state_type_id', ['01', '03', '05', '07', '13'])
+                        ->where('documents.document_type_id', '07')
+                        ->select('affected_document_id', DB::raw('SUM(documents.total) as total_credit_notes'))
+                        ->groupBy('affected_document_id');
+        }
+
+
+        /**
+         *
+         * Retornar el total de pagos
+         *
+         * @return float
+         */
+        public function getTotalAllPayments()
+        {
+
+            $total_payments = 0;
+
+            if(!$this->isVoidedOrRejected())
+            {
+                $total_payments = $this->payments->sum('payment');
+
+                if($this->currency_type_id === 'USD')
+                {
+                    $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
+                }
+            }
+
+            return $total_payments;
+        }
+
         public function encomienda(){
             return $this->hasOne(TransporteEncomienda::class,'document_id','id');
         }
@@ -1040,6 +1369,5 @@
         {
             return $this->hasOne(TransportePasaje::class, 'document_id', 'id');
         }
-
 
     }

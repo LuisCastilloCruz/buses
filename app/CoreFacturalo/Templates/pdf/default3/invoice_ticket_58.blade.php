@@ -117,7 +117,7 @@
             </td>
         </tr>
     @endif
-
+    
     @if ($document->detraction)
     {{--<strong>Operación sujeta a detracción</strong>--}}
         <tr>
@@ -148,7 +148,7 @@
         </tr>
         @endif
     @endif
-
+    
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>

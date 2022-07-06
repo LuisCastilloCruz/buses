@@ -30,7 +30,7 @@ composer.lock
 /.project
 app/CoreFacturalo/Templates/pdf/personalizada*
 public/templates/pdf/personalizada*
-
+supervisor.conf
 app/Http/Controllers/TestController.php
 
 /socket/client_*

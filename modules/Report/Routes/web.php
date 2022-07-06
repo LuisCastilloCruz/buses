@@ -8,6 +8,12 @@
         Route::domain($current_hostname->fqdn)->group(function () {
             Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
 
+               Route::prefix('report_configurations')->group(function () {
+
+                    Route::get('records', 'ReportConfigurationController@records');
+                    Route::post('', 'ReportConfigurationController@store');
+                });
+
 
                Route::prefix('reports')->group(function () {
 
@@ -74,6 +80,8 @@
                             ->name('tenant.reports.sales.filter');
                        Route::get('/records', 'ReportDocumentController@records')
                             ->name('tenant.reports.sales.records');
+                       Route::get('/pdf-simple', 'ReportDocumentController@pdfSimple')
+                            ->name('tenant.reports.sales.pdfSimple');
                    });
                    /**
                     * /reports/sale-notes
@@ -124,6 +132,21 @@
                        Route::get('/excel', 'ReportDocumentHotelController@excel')->name('tenant.reports.document_hotels.excel');
                        Route::get('/filter', 'ReportDocumentHotelController@filter')->name('tenant.reports.document_hotels.filter');
                        Route::get('/records', 'ReportDocumentHotelController@records')->name('tenant.reports.document_hotels.records');
+                   });
+                   /**
+                    * reports/report_hotels
+                    * reports/report_hotels/pdf
+                    * reports/report_hotels/excel
+                    * reports/report_hotels/filter
+                    * reports/report_hotels/records
+                    */
+                   Route::prefix('report_hotels')->group(function () {
+
+                       Route::get('', 'ReportHotelController@index')->name('tenant.reports.report_hotel.index');
+                       Route::get('/pdf', 'ReportHotelController@pdf')->name('tenant.reports.report_hotel.pdf');
+                       Route::get('/excel', 'ReportHotelController@excel')->name('tenant.reports.report_hotel.excel');
+                       Route::get('/filter', 'ReportHotelController@filter')->name('tenant.reports.report_hotel.filter');
+                       Route::get('/records', 'ReportHotelController@records')->name('tenant.reports.report_hotel.records');
                    });
 
 
@@ -179,6 +202,12 @@
                     Route::get('customers/records', 'ReportCustomerController@records')
                          ->name('tenant.reports.customers.records');
 
+                    /**
+                     * reports/items
+                     * reports/items/excel
+                     * reports/items/filter
+                     * reports/items/records
+                     * */
                     Route::get('items', 'ReportItemController@index')->name('tenant.reports.items.index');
                     Route::get('items/excel', 'ReportItemController@excel')->name('tenant.reports.items.excel');
                     Route::get('items/filter', 'ReportItemController@filter')->name('tenant.reports.items.filter');
@@ -239,6 +268,7 @@
 
                    Route::get('order-notes-general', 'ReportOrderNoteGeneralController@index')
                          ->name('tenant.reports.order_notes_general.index');
+                    Route::get('order-notes-general/excel', 'ReportOrderNoteGeneralController@excel');
                     Route::get('order-notes-general/pdf', 'ReportOrderNoteGeneralController@pdf');
                     Route::get('order-notes-general/filter', 'ReportOrderNoteGeneralController@filter');
                     Route::get('order-notes-general/records', 'ReportOrderNoteGeneralController@records');
@@ -246,6 +276,8 @@
                     Route::get('sales-consolidated', 'ReportSaleConsolidatedController@index')
                          ->name('tenant.reports.sales_consolidated.index');
                     Route::get('sales-consolidated/pdf', 'ReportSaleConsolidatedController@pdf');
+                    Route::get('sales-consolidated/ticket-totals', 'ReportSaleConsolidatedController@pdfTicketsTotal');
+                    Route::get('sales-consolidated/ticket80-totals', 'ReportSaleConsolidatedController@pdfTicketsTotal80');
                     Route::get('sales-consolidated/excel', 'ReportSaleConsolidatedController@excel');
                     Route::get('sales-consolidated/filter', 'ReportSaleConsolidatedController@filter');
                     Route::get('sales-consolidated/records', 'ReportSaleConsolidatedController@records');
@@ -268,6 +300,21 @@
                              ->name('tenant.reports.user_commissions.records');
 
                     });
+
+                    Route::prefix('commissions-detail')->group(function () {
+
+                         Route::get('', 'ReportCommissionDetailController@index')
+                              ->name('tenant.reports.commissions_detail.index');
+                         Route::get('/pdf', 'ReportCommissionDetailController@pdf')
+                              ->name('tenant.reports.commissions_detail.pdf');
+                         Route::get('/excel', 'ReportCommissionDetailController@excel')
+                              ->name('tenant.reports.commissions_detail.excel');
+                         Route::get('/filter', 'ReportCommissionDetailController@filter')
+                              ->name('tenant.reports.commissions_detail.filter');
+                         Route::get('/records', 'ReportCommissionDetailController@records')
+                              ->name('tenant.reports.commissions_detail.records');
+ 
+                     });
 
 
                     Route::prefix('fixed-asset-purchases')->group(function () {
@@ -296,6 +343,27 @@
                         Route::get('records', 'ReportMassiveDownloadController@records');
 
                     });
+
+
+                    Route::prefix('download-tray')->group(function () {
+
+                         Route::get('', 'DownloadTrayController@index')->name('tenant.reports.download-tray.index');
+                         Route::get('records', 'DownloadTrayController@records');
+                         Route::get('download/{id}', 'DownloadTrayController@download');
+                         
+
+                     });
+
+
+                    Route::prefix('tips')->group(function () {
+
+                         Route::get('', 'ReportTipController@index')->name('tenant.reports.tips.index');
+                         Route::get('pdf', 'ReportTipController@pdf');
+                         Route::get('excel', 'ReportTipController@excel');
+                         Route::get('records', 'ReportTipController@records');
+
+                    });
+  
 
                 });
 

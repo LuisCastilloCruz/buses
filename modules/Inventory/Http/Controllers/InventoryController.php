@@ -18,10 +18,6 @@ use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Http\Requests\InventoryRequest;
 use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Http\Resources\InventoryCollection;
-use Maatwebsite\Excel\Excel;
-use App\Imports\InventoryImport;
-use App\Imports\InventoryImportStock;
-
 
 class InventoryController extends Controller
 {
@@ -55,17 +51,44 @@ class InventoryController extends Controller
 								$query->where('description', 'like', '%' . $request->value . '%');
 							})
 							->orderBy('item_id');
-		} else {
-			$records = ItemWarehouse::with(['item', 'warehouse'])
-							->whereHas('item', function ($query) use ($request) {
-								$query->where('unit_type_id', '!=', 'ZZ');
-								$query->whereNotIsSet();
-								$query->where($request->column, 'like', '%' . $request->value . '%');
-							})->orderBy('item_id');
+		}
+		else 
+		{
+			$records = $this->getCommonRecords($request);
 		}
 
 		return new InventoryCollection($records->paginate(config('tenant.items_per_page')));
 	}
+
+
+		
+	/**
+	 * 
+	 * Obtener registros
+	 *
+	 * @param  Request $request
+	 * @return ItemWarehouse
+	 */
+	public function getCommonRecords($request)
+	{
+		return ItemWarehouse::with(['item', 'warehouse'])
+							->whereHas('item', function ($query) use ($request) {
+								$query->where('unit_type_id', '!=', 'ZZ');
+								$query->whereNotIsSet();
+
+								if($this->applyAdvancedRecordsSearch() && $request->column === 'description')
+								{
+									if($request->value) $query->whereAdvancedRecordsSearch($request->column, $request->value);
+								}
+								else
+								{
+									$query->where($request->column, 'like', '%' . $request->value . '%');
+								}
+							})
+							->orderBy('item_id');
+	}
+
+
 
 	public function tables()
 	{
@@ -162,6 +185,10 @@ class InventoryController extends Controller
 			$inventory_transaction_id = $request->input('inventory_transaction_id');
 			$quantity = $request->input('quantity');
 			$lot_code = $request->input('lot_code');
+			$comments = $request->input('comments');
+			$created_at = $request->input('created_at');
+
+
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
 
 			$item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id,
@@ -184,6 +211,12 @@ class InventoryController extends Controller
 			$inventory->quantity = $quantity;
 			$inventory->inventory_transaction_id = $inventory_transaction_id;
 			$inventory->lot_code = $lot_code;
+			$inventory->comments = $comments;
+
+			if($created_at) {
+			  $inventory->created_at = $created_at;
+			}
+			
 			$inventory->save();
 
 			$lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled : false;
@@ -429,59 +462,9 @@ class InventoryController extends Controller
 			}
 		});
 
-        return [
-            'success' => true,
-            'message' => 'Stock regularizado'
-        ];
-    }
-
-    public function import(Request $request)
-    {
-        if ($request->hasFile('file')) {
-            try {
-                $import = new InventoryImport();
-                $import->import($request->file('file'), null, Excel::XLSX);
-                $data = $import->getData();
-                return [
-                    'success' => true,
-                    'message' =>  __('app.actions.upload.success'),
-                    'data' => $data
-                ];
-            } catch (Exception $e) {
-                return [
-                    'success' => false,
-                    'message' =>  $e->getMessage()
-                ];
-            }
-        }
-        return [
-            'success' => false,
-            'message' =>  __('app.actions.upload.error'),
-        ];
-    }
-    public function importStock(Request $request)
-    {
-        if ($request->hasFile('file')) {
-            try {
-                $import = new InventoryImportStock();
-                $import->import($request->file('file'), null, Excel::XLSX);
-                $data = $import->getData();
-                return [
-                    'success' => true,
-                    'message' =>  __('app.actions.upload.success'),
-                    'data' => $data
-                ];
-            } catch (Exception $e) {
-                return [
-                    'success' => false,
-                    'message' =>  $e->getMessage()
-                ];
-            }
-        }
-        return [
-            'success' => false,
-            'message' =>  __('app.actions.upload.error'),
-        ];
-    }
-
+		return [
+			'success' => true,
+			'message' => 'Stock regularizado'
+		];
+	}
 }

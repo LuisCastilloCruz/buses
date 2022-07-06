@@ -33,7 +33,7 @@
                         <p><strong>Ruc: </strong></p>
                     </td>
                     <td align="center">{{$company->number}}</td>
-
+                  
                 </tr>
             </table>
         </div>
@@ -56,13 +56,13 @@
                                 @php
                                     $data = \Modules\Report\Helpers\UserCommissionHelper::getDataForReportCommission($row, $request);
                                 @endphp
-
+                                
                                 <tr>
                                     <td class="celda" >{{$loop->iteration}}</td>
                                     <td class="celda">{{$row->name}}</td>
                                     <td class="celda">{{$data['total_transactions']}}</td>
-                                    <td class="celda">{{$data['acum_sales']}}</td>
-                                    <td class="celda">{{$data['total_commision']}}</td>
+                                    <td class="celda">{{$data['acum_sales']}}</td> 
+                                    <td class="celda">{{$data['total_commision']}}</td> 
                                 </tr>
                             @endforeach
                         </tbody>

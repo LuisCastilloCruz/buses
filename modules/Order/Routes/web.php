@@ -76,6 +76,7 @@ if($current_hostname) {
                 Route::post('Quotation/get/{id}', 'OrderNoteController@getQuotationToOrderNote');
                 Route::get('document_tables', 'OrderNoteController@document_tables');
                 Route::get('esc-print/{id}', 'OrderNoteController@esc');
+                Route::post('import/MiTiendaPe', 'MiTiendaPeController@import');
 
             });
 
@@ -132,6 +133,13 @@ if($current_hostname) {
                 Route::delete('/{id}', 'DispatcherController@destroy');
 
             });
+            Route::prefix('mi_tienda_pe')->group(function () {
+                Route::get('/', 'MiTiendaPeController@index')->name('tenant.mi_tienda_pe.configuration.index');
+                Route::post('/', 'MiTiendaPeController@tables');
+                Route::post('/save', 'MiTiendaPeController@store');
+                Route::post('/getdata', 'MiTiendaPeController@getData');
+            });
+
 
         });
     });

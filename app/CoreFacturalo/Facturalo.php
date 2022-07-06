@@ -38,6 +38,8 @@ use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
 use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
 use App\Models\Tenant\PurchaseSettlement;
+use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
+
 
 /**
  * Class Facturalo
@@ -73,6 +75,7 @@ class Facturalo
     protected $endpoint;
     protected $response;
     protected $apply_change;
+    protected $sendDocumentPse;
 
     public function __construct()
     {
@@ -82,6 +85,7 @@ class Facturalo
         $this->isOse = ($this->company->soap_send_id === '02')?true:false;
         $this->signer = new XmlSigned();
         $this->wsClient = new WsClient();
+        $this->sendDocumentPse = new SendDocumentPse($this->company);
         $this->setDataSoapType();
     }
 
@@ -222,12 +226,27 @@ class Facturalo
         return $this;
     }
 
+
+    /**
+     * Firma digital xml
+     */
     public function signXmlUnsigned()
     {
-        $this->setPathCertificate();
-        $this->signer->setCertificateFromFile($this->pathCertificate);
-        $this->xmlSigned = $this->signer->signXml($this->xmlUnsigned);
+
+        //validar si es que el documento se enviara al pse para la agregar la firma
+        if($this->sendToPse()){
+
+            $this->xmlSigned = $this->sendDocumentPse->signXml($this->xmlUnsigned, $this->document);
+
+        }else{
+
+            $this->setPathCertificate();
+            $this->signer->setCertificateFromFile($this->pathCertificate);
+            $this->xmlSigned = $this->signer->signXml($this->xmlUnsigned);
+        }
+
         $this->uploadFile($this->xmlSigned, 'signed');
+
         return $this;
     }
 
@@ -317,6 +336,12 @@ class Facturalo
 
         // dd($this->document);
         $base_pdf_template = Establishment::find($this->document->establishment_id)->template_pdf;
+        if (($format_pdf === 'ticket') OR
+            ($format_pdf === 'ticket_58') OR
+            ($format_pdf === 'ticket_50'))
+        {
+            $base_pdf_template = Establishment::find($this->document->establishment_id)->template_ticket_pdf;
+        }
 
         $pdf_margin_top = 15;
         $pdf_margin_right = 15;
@@ -342,6 +367,7 @@ class Facturalo
             ($format_pdf === 'ticket_58') OR
             ($format_pdf === 'ticket_50'))
         {
+            $base_pdf_template = Establishment::find($this->document->establishment_id)->template_ticket_pdf;
 
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
@@ -371,7 +397,7 @@ class Facturalo
 
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
-            $document_payments     = count($this->document->payments);
+            $document_payments     = count($this->document->payments ?? []);
             $document_transport     = ($this->document->transport) ? 30 : 0;
             $document_retention     = ($this->document->retention) ? 10 : 0;
 
@@ -572,7 +598,7 @@ class Facturalo
                 // se quiere visuzalizar ahora la legenda amazona en todos los formatos
                 $html_footer_legend = '';
                 if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
-                    $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
+                    //$html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
                 }
 
                 $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
@@ -668,12 +694,67 @@ class Facturalo
 
     }
 
+
+    /**
+     *
+     * Evaluar si se debe firmar el xml y enviar cdr al PSE
+     * Disponible para facturas, boletas, anulaciones de facturas
+     *
+     * @return bool
+     */
+    public function sendToPse()
+    {
+        $send_to_pse = false;
+
+        if($this->company->send_document_to_pse)
+        {
+            if(in_array($this->type, ['invoice', 'dispatch']))
+            {
+                $send_to_pse = true;
+            }
+            elseif($this->type === 'voided')
+            {
+                // validar si los documentos informados en la RA son facturas y fueron enviados a pse
+                $filter_quantity_documents = $this->document->documents->where('document.document_type_id', '01')
+                                                                        ->where('document.send_to_pse', true)
+                                                                        ->count();
+
+                if($this->document->documents->count() === $filter_quantity_documents)
+                {
+                    $send_to_pse = true;
+                }
+                else
+                {
+                    $this->sendDocumentPse->throwException('Documento a anular no es factura o no fue enviado al PSE.');
+                }
+            }
+
+        }
+
+        return $send_to_pse;
+    }
+
+
+    public function sendCdrToPse($cdr_zip, $document)
+    {
+        if($this->sendToPse())
+        {
+            $this->sendDocumentPse->sendCdr($cdr_zip, $document);
+        }
+    }
+
     public function onlySenderXmlSignedBill()
     {
         $res = $this->senderXmlSigned();
+
         if($res->isSuccess()) {
+
             $cdrResponse = $res->getCdrResponse();
             $this->uploadFile($res->getCdrZip(), 'cdr');
+
+            //enviar cdr a pse
+            $this->sendCdrToPse($res->getCdrZip(), $this->document);
+            //enviar cdr a pse
 
             $code = $cdrResponse->getCode();
             $description = $cdrResponse->getDescription();
@@ -779,7 +860,8 @@ class Facturalo
             $this->updateTicket($ticket);
             $this->updateState(self::SENT);
             if($this->type === 'summary') {
-                if($this->document->summary_status_type_id === '1') {
+                // if($this->document->summary_status_type_id === '1') {
+                if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
                     $this->updateStateDocuments(self::SENT);
                 } else {
                     $this->updateStateDocuments(self::CANCELING);
@@ -791,13 +873,7 @@ class Facturalo
                 'sent' => true
             ];
         } else {
-            $this->response = [
-                'sent' => false,
-                'code' => $res->getError()->getCode(),
-                'description' => $res->getError()->getMessage(),
-            ];
-
-            //throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
+            throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
         }
     }
 
@@ -815,12 +891,7 @@ class Facturalo
         $extService->setCodeProvider(new XmlErrorCodeProvider());
         $res = $extService->getStatus($ticket);
         if(!$res->isSuccess()) {
-            $this->response = [
-                'sent' => false,
-                'code' => $res->getError()->getCode(),
-                'description' => $res->getError()->getMessage(),
-            ];
-            //throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
+            throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}", 511); //custom exception code
         } else {
             $cdrResponse = $res->getCdrResponse();
             $this->uploadFile($res->getCdrZip(), 'cdr');
@@ -841,7 +912,8 @@ class Facturalo
 
                 if($extService->getCustomStatusCode() === 0){
 
-                    if($this->document->summary_status_type_id === '1') {
+                    // if($this->document->summary_status_type_id === '1') {
+                    if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
                         $this->updateStateDocuments(self::ACCEPTED);
                     } else {
                         $this->updateStateDocuments(self::VOIDED);
@@ -854,6 +926,11 @@ class Facturalo
                 }
 
             } else {
+
+                //enviar cdr a pse
+                $this->sendCdrToPse($res->getCdrZip(), $this->document);
+                //enviar cdr a pse
+
                 $this->updateStateDocuments(self::VOIDED);
             }
 

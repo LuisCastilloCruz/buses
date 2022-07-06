@@ -52,16 +52,16 @@ class UserCommissionHelper
                 $total_item_purchase = self::getPurchaseUnitPrice($item) * $item->quantity;
                 $total_item_sale = self::calculateTotalCurrencyType($record, $item->total);
                 $total_item = $total_item_sale - $total_item_purchase;
-
+                
                 return ($record->document_type_id === '07') ? $total_item * -1 : $total_item;
-
+    
             });
-
+             
         });
 
     }
 
-
+    
     public static function getPurchaseUnitPrice($record){
 
         $purchase_unit_price = 0;
@@ -83,15 +83,15 @@ class UserCommissionHelper
 
         return $purchase_unit_price;
     }
-
+    
     public static function calculateTotalCurrencyType($record, $total)
     {
         return ($record->currency_type_id === 'USD') ? $total * $record->exchange_rate_sale : $total;
     }
 
-
+        
     /**
-     *
+     * 
      * Obtener totales para reporte de comisiones
      * Usado en:
      * Modules\Report\Http\Resources\ReportCommissionCollection
@@ -117,7 +117,7 @@ class UserCommissionHelper
         //si user_seller_id es null, en la consulta se usara el id del usuario de la fila
         $documents = Document::whereFilterCommission($date_start, $date_end, $establishment_id, $user_type, $user_seller_id, $row_user_id)->get();
         $sale_notes = SaleNote::whereFilterCommission($date_start, $date_end, $establishment_id, $user_type, $user_seller_id, $row_user_id)->get();
-
+        
         $total_commision = 0;
 
         $total_transactions_document = $documents->count();
@@ -148,10 +148,10 @@ class UserCommissionHelper
 
     }
 
-
+        
     /**
      * Obtener total de comisiones
-     *
+     * 
      * Usado para:
      * Documents
      * SaleNotes
@@ -167,7 +167,7 @@ class UserCommissionHelper
 
                 $total_commision = 0;
 
-                if ($item->relation_item->commission_amount)
+                if ($item->relation_item->commission_amount) 
                 {
                     if (!$item->relation_item->commission_type || $item->relation_item->commission_type == 'amount') {
                         $total_commision = $item->quantity * $item->relation_item->commission_amount;

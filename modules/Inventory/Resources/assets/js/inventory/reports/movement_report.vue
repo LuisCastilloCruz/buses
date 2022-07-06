@@ -4,10 +4,11 @@
             <div class="form-body">
                 <div class="row">
 
-                    <!-- <div class="col-md-6">
+                    <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">Producto</label>
                             <el-select v-model="form.item_id"
+                                      :clearable="true"
                                        filterable
                                        remote
                                        :remote-method="searchRemoteItems"
@@ -20,7 +21,7 @@
                             <small class="form-control-feedback" v-if="errors.item_id"
                                    v-text="errors.item_id[0]"></small>
                         </div>
-                    </div>  -->
+                    </div>
 
 
                     <div class="col-md-3">
@@ -56,7 +57,7 @@
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.inventory_transaction_id}">
                             <label class="control-label">Motivo traslado</label>
-                            <el-select v-model="form.inventory_transaction_id" filterable>
+                            <el-select v-model="form.inventory_transaction_id" filterable clearable>
                                 <el-option v-for="option in inventory_transactions" :key="option.id" :value="option.id"
                                            :label="option.name"></el-option>
                             </el-select>
@@ -65,6 +66,11 @@
                         </div>
                     </div>
 
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <el-checkbox class="mt-4" v-model="form.order_inventory_transaction_id">Ordenar por motivo de traslado</el-checkbox>
+                        </div>
+                    </div>
                     
                     <div class="col-md-3">
                         <label class="control-label">Fecha inicio</label>
@@ -197,6 +203,7 @@ export default {
                 inventory_transaction_id: null,
                 date_start:null,
                 date_end:null,
+                order_inventory_transaction_id: true,
             }
 
             this.changeMovementType()

@@ -45,6 +45,11 @@
                                     Giro negocio hoteles
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{route('tenant.reports.report_hotel.index')}}">
+                                    Reporte de Habitaciones
+                                </a>
+                            </li>
                         @endif
                         <li>
                             <a href="{{route('tenant.reports.commercial_analysis.index')}}">
@@ -54,6 +59,11 @@
                         <li>
                             <a href="{{route('tenant.reports.massive-downloads.index')}}">
                                 Descarga masiva - documentos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.download-tray.index')}}">
+                                Bandeja descarga de reportes
                             </a>
                         </li>
                     </ul>
@@ -139,6 +149,11 @@
                         <li>
                             <a href="{{route('tenant.reports.sales_consolidated.index')}}">Consolidado de items</a>
                         </li>
+
+                        <li>
+                            <a href="{{route('tenant.reports.tips.index')}}">Propinas</a>
+                        </li>
+
                     </ul>
                 </div>
             </div>
@@ -154,6 +169,9 @@
                         </li>
                         <li>
                             <a href="{{route('tenant.reports.commissions.index')}}">Ventas</a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.commissions_detail.index')}}">Utilidad detallado</a>
                         </li>
                     </ul>
                 </div>

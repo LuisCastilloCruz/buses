@@ -3,12 +3,14 @@
     namespace App\CoreFacturalo\Helpers\Template;
 
 
+    use App\Models\Tenant\Configuration;
     use App\Models\Tenant\SaleNote;
     use App\Models\Tenant\Dispatch;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\DocumentFee;
     use App\Models\Tenant\DocumentPayment;
     use App\Models\Tenant\PaymentCondition;
+    use App\Models\Tenant\Zone;
 
     class TemplateHelper
     {
@@ -197,4 +199,85 @@
         {
             return number_format($number, $decimal, $mil, $dec);
         }
+
+        /**
+         * Devuelve la marca desde lo sitems del documento.
+         *
+         * @param $row
+         *
+         * @return mixed|string
+         */
+        public static function  getBrandFormItem($row){
+            $brand = '';
+            if(!empty($row->item) && !empty($row->item->brand) ){
+                if(is_string($row->item->brand)){
+                    $brand = $row->item->brand;
+                }elseif($row->item->brand->name){
+                    $brand = $row->item->brand->name;
+                }
+
+            }
+            return $brand;
+        }
+
+        /**
+         * @param int $zone_id
+         *
+         * @return string|null
+         */
+        public static function getZoneById($zone_id =0){
+            $zone = Zone::find($zone_id);
+            if(!empty($zone)){
+
+                return  $zone->getName();
+            }
+            return '';
+        }
+
+        /**
+         * Devuelve un string con solo etiquetas <br>
+         * @param string $str
+         *
+         * @return array|string|string[]
+         */
+        public static function SetHtmlTag($str = ''){
+            $str = str_replace("\n","<br>",$str);
+            $str = preg_replace('~\$\$[0-9]+~', '', $str);
+            $placeholders = [];
+            $i = 0;
+            $str = preg_replace_callback('~(<br[^>]*>)~', function ($matches) use (&$placeholders, &$i) {
+                $key = '$$'.$i++;
+                $placeholders[$key] = $matches[0];
+                return $key;
+            }, $str);
+            $str = htmlentities($str);
+            foreach ($placeholders as $key => $placeholder) {
+                $str = str_replace($key, $placeholder, $str);
+            }
+            return $str;
+        }
+
+        /**
+         * @return bool
+         */
+        public static function canShowNewLineOnObservation(){
+            $config = Configuration::first();
+            if(empty($config)) $config = new Configuration();
+            return (bool)$config->print_new_line_to_observation;
+
+
+        }
+
+
+        /**
+         *
+         * Obtener configuracion de decimales para el precio unitario en pdf
+         *
+         * @return Configuration
+         */
+        public static function getConfigurationDecimalQuantity()
+        {
+            return Configuration::getDataDecimalQuantity();
+        }
+
     }

@@ -30,12 +30,15 @@
      * @property Carbon|null                          $created_at
      * @property Carbon|null                          $updated_at
      * @property Collection|Item[]                    $items
+     * @property Collection|Item[]                    $products
      * @method static Builder|HotelRent newModelQuery()
      * @method static Builder|HotelRent newQuery()
      * @method static Builder|HotelRent query()
+     * @method static Builder|HotelRent SearchByDate()
      * @mixin ModelTenant
      * @mixin \Eloquent
      * @property-read int|null                        $items_count
+     * @property-read int|null                        $products_count
      * @property-read \Modules\Hotel\Models\HotelRoom $room
      */
     class HotelRent extends ModelTenant
@@ -95,5 +98,30 @@
             return $this->hasMany(HotelRentItem::class, 'hotel_rent_id');
         }
 
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function products()
+        {
+            return $this->hasMany(HotelRentItem::class, 'hotel_rent_id')->where('type','PRO');
+        }
+
+
+        /**
+         * @param Builder $query
+         * @param null    $date_start
+         * @param null    $date_end
+         *
+         * @return Builder
+         */
+        public function scopeSearchByDate(Builder $query, $date_start = null, $date_end = null)
+        {
+
+            if ($date_end !== null && $date_start !== null) {
+                $query->where([['input_date', '>=', $date_start], ['output_date', '<=', $date_end]]);
+            }
+
+            return $query;
+        }
 
     }

@@ -12,6 +12,10 @@
     use Illuminate\Support\Collection;
     use Log;
     use function Config;
+    use Illuminate\Support\Facades\Route;
+    use Modules\Report\Models\ReportConfiguration;
+    use App\Models\Tenant\Configuration;
+
 
     /**
      * Class Controller
@@ -214,5 +218,64 @@ $string = var_export($header,true);
 
             return $header;
         }
+
+
+        /**
+         *
+         * Determinar si aplica conversión a soles en reportes registrados en ReportConfiguration
+         *
+         * Usado en:
+         * ReportGeneralItemController
+         *
+         * @param  $request
+         * @return bool
+         */
+        public function applyConversiontoPen($request)
+        {
+            $report_configuration = ReportConfiguration::whereApplyConversion(Route::current()->getName())->first();
+
+            if($report_configuration) return $report_configuration->convert_pen;
+
+            return false;
+        }
+
+
+        /**
+         *
+         * Determinar si aplica busqueda avanzada
+         *
+         * Usado en:
+         * ItemController
+         *
+         * @return bool
+         */
+        public function applyAdvancedRecordsSearch()
+        {
+            return Configuration::isEnabledAdvancedRecordsSearch();
+        }
+
+
+        /**
+         *
+         * Asignar lote a item (regularizar propiedad en json item)
+         *
+         * Usado en:
+         * OrderNoteController
+         *
+         * @param  array $row
+         * @return void
+         */
+        public function generalSetIdLoteSelectedToItem(&$row)
+        {
+            if(isset($row['IdLoteSelected']))
+            {
+                $row['item']['IdLoteSelected'] = $row['IdLoteSelected'];
+            }
+            else
+            {
+                $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
+            }
+        }
+
 
     }

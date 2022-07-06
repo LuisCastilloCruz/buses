@@ -1,5 +1,5 @@
 @php
-    $establishment = $document->establishment;
+    use App\CoreFacturalo\Helpers\Template\TemplateHelper;$establishment = $document->establishment;
     $customer = $document->customer;
     $invoice = $document->invoice;
     $document_base = ($document->note) ? $document->note : null;
@@ -25,6 +25,10 @@
     $total_payment = $document->payments->sum('payment');
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
+// Condicion de pago
+    $condition = TemplateHelper::getDocumentPaymentCondition($document);
+	// Pago/Coutas detalladas
+    $paymentDetailed = TemplateHelper::getDetailedPayment($document,'d-m-Y')
 @endphp
 <html>
 <head>
@@ -118,13 +122,13 @@
 <table class="full-width mt-5">
 
     <tr>
-        <td width="120px">Cliente:</td>
-        <td width="8px">:</td>
+        <td width="120px" style="text-align: top; vertical-align: top;">Cliente:</td>
+        <td width="8px" style="text-align: top; vertical-align: top;">:</td>
         <td>{{ $customer->name }}</td>
 
-        <td width="120px">Fecha de emisión</td>
-        <td width="8px">:</td>
-        <td>{{$document->date_of_issue->format('Y-m-d')}}</td>
+        <td width="120px" style="text-align: top; vertical-align: top;">Fecha de emisión</td>
+        <td width="8px" style="text-align: top; vertical-align: top;">:</td>
+        <td style="text-align: top; vertical-align: top;">{{$document->date_of_issue->format('Y-m-d')}}</td>
 
 
     </tr>
@@ -134,16 +138,16 @@
         <td>{{$customer->number}}</td>
 
         @if($invoice)
-            <td width="150px">Fecha de vencimiento</td>
-            <td width="8px">:</td>
-            <td>{{$invoice->date_of_due->format('Y-m-d')}}</td>
+            <td width="150px" style="text-align: top; vertical-align: top;">Fecha de vencimiento</td>
+            <td width="8px" style="text-align: top; vertical-align: top;">:</td>
+            <td style="text-align: top; vertical-align: top;">{{$invoice->date_of_due->format('Y-m-d')}}</td>
         @endif
 
     </tr>
     @if ($customer->address !== '')
     <tr>
         <td class="align-top">Dirección:</td>
-        <td>:</td>
+        <td style="text-align: top; vertical-align: top;">:</td>
         <td>
             {{ $customer->address }}
             {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
@@ -233,21 +237,53 @@
 @endif
 
 
-
-@if ($document->reference_guides)
-<br/>
-<strong>Guias de remisión</strong>
-<table>
-    @foreach($document->reference_guides as $guide)
-        <tr>
-            <td>{{ $guide->series }}</td>
-            <td>-</td>
-            <td>{{ $guide->number }}</td>
-        </tr>
-    @endforeach
+<table class="full-width">
+    <tr>
+    <td width="50%">
+        @if ($document->reference_guides)
+            @if (count($document->reference_guides) > 0)
+            <br/>
+            Guias de remisión
+            <table>
+                @foreach($document->reference_guides as $guide)
+                    <tr>
+                        <td>{{ $guide->series }}</td>
+                        <td>-</td>
+                        <td>{{ $guide->number }}</td>
+                    </tr>
+                @endforeach
+            </table>
+            @else
+                <br>
+            @endif
+        @endif
+    </td>
+    <td width="50%">
+        <table>
+            <tr>
+                <td width="120px" style="text-align: right">Número de Placa</td>
+                <td width="8px">:</td>
+                <td>
+                    @foreach($document->items as $row)
+                        @if($row->attributes)
+                            @foreach($row->attributes as $attr)
+                                @php $actual = $attr @endphp
+                                @if($attr->description == "Numero de Placa")
+                                    @if (!$loop->first && $attr->value != $actual->value)
+                                        {{ $attr->value }} {{ !$loop->first ?'-':''}}
+                                    @else
+                                        {{ $attr->value }}
+                                    @endif
+                                @endif
+                            @endforeach
+                        @endif
+                    @endforeach
+                </td>
+            </tr>
+        </table>
+    </td>
+    </tr>
 </table>
-@endif
-
 
 <table class="full-width mt-3">
     @if ($document->prepayments)
@@ -275,7 +311,7 @@
             @isset($document->quotation->delivery_date)
                     <td width="120px">F. ENTREGA</td>
                     <td width="8px">:</td>
-                    <td>{{ $document->quotation->delivery_date->format('Y-m-d')}}</td>
+                    <td>{{ $document->quotation->getStringDeliveryDate()}}</td>
             @endisset
         </tr>
 
@@ -358,7 +394,9 @@
 
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
-                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                        @if ($attr->description != "Numero de Placa")
+                            <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                        @endif
                     @endforeach
                 @endif
                 @if($row->discounts)
@@ -579,28 +617,50 @@
         </td>
     </tr>
 </table>
-@if($payments->count())
+{{-- Condicion de pago  Crédito / Contado --}}
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>CONDICIÓN DE PAGO: {{ $condition }} </strong>
+        </td>
+    </tr>
+</table>
 
-
-    <table class="full-width mt-5">
+@if($document->payment_method_type_id)
+    <table class="full-width">
         <tr>
             <td>
-                <strong>PAGOS:</strong>
+                <strong>MÉTODO DE PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
         </tr>
-            @php
-                $payment = 0;
-            @endphp
-            @foreach($payments as $row)
-                <tr>
-                    <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
-                </tr>
-            @endforeach
-        </tr>
-
     </table>
 @endif
 
+@if(!empty($paymentDetailed))
+    @foreach($paymentDetailed as $detailed)
+        <table class="full-width">
+            <tr>
+                <td>
+                    <strong>
+                        {{ isset($paymentDetailed['CUOTA'])?'Cuotas:':'Pagos:' }}
+                    </strong>
+                </td>
+            </tr>
+            @foreach($detailed as $row)
+                <tr>
+                    <td>&#8226;
+                        {{ $row['description']  }}
+                        {{ isset($paymentDetailed['CUOTA'])?' / FECHA: ':' - ' }}
+                        {{ $row['reference']  }}
+                        {{ isset($paymentDetailed['CUOTA'])?' / Monto: ':'' }}
+                        {{ $row['symbol']  }}
+                        {{ number_format( $row['amount'], 2) }}
+                    </td>
+                    @endforeach
+                </tr>
+        </table>
+    @endforeach
+@endif
 @if($document->user)
      <br>
     <table class="full-width">

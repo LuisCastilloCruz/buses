@@ -25,8 +25,9 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-12 col-md-2 mb-3">
-                        <form class="form-group" @submit.prevent="onFilter">
+                    <div class="col-12 col-md-4 mb-3">
+                        <form class="form-group"
+                              @submit.prevent="onFilter">
                             <div class="input-group mb-3">
                                 <input
                                     v-model="filter.name"
@@ -37,7 +38,7 @@
                                 <div class="input-group-append">
                                     <button
                                         class="btn btn-outline-secondary"
-                                        style="border-color: #ced4da"
+                                        style="border-color: #CED4DA"
                                         type="submit"
                                     >
                                         <i class="fa fa-search"></i>
@@ -54,9 +55,11 @@
                             <th>#</th>
                             <th>Etapa</th>
                             <th>Descripción</th>
-                            <th>Visible</th>
+                            <th>Activo</th>
+                            <!--
                             <th>Responsable</th>
                             <th>Dias</th>
+                            -->
                             <th></th>
                         </tr>
                         </thead>
@@ -64,7 +67,7 @@
                         <tr
                             v-for="(item,index) in items"
                             :key="item.id"
-                            :class="{ 'table-danger': !item.active }"
+                            :style="'background-color:'+ item.color"
                         >
                             <td class="text-right">{{ index + 1 }}</td>
                             <td>{{ item.name }}</td>
@@ -73,17 +76,18 @@
                                 <span v-if="item.active">Si</span>
                                 <span v-else>No</span>
                             </td>
+                            <!--
                             <td>
                                 <span
                                     v-for="users in item.users_name" :key="users.id"
 
                                 >
-                                    <!--v-if=" (item.user !== undefined &&  item.user !== null) "-->
                                 {{ users.name }} <br>
                                 </span>
                             </td>
                             <td> {{ item.string_days }}
                             </td>
+                            -->
                             <td class="text-center">
                                 <el-button
                                     :disabled="loading"
@@ -92,6 +96,7 @@
                                 >
                                     <i class="fa fa-edit"></i>
                                 </el-button>
+                                <!--
                                 <el-button
                                     :disabled="loading"
                                     type="danger"
@@ -99,6 +104,7 @@
                                 >
                                     <i class="fa fa-trash"></i>
                                 </el-button>
+                                -->
                             </td>
                         </tr>
                         </tbody>
@@ -215,9 +221,13 @@ export default {
                 })
                 .catch();
         },
+
+        onCreate() {
+            this.$store.commit('setOffice', {})
+            this.openModalAddEdit = true;
+        },
         onEdit(item) {
             this.$store.commit('setOffice', item)
-            // this.office = {...item};
             this.openModalAddEdit = true;
         },
         onUpdateItem(data) {
@@ -226,10 +236,6 @@ export default {
         },
         onAddItem(data) {
             this.onFilter()
-        },
-        onCreate() {
-            this.$store.commit('setOffice', {})
-            this.openModalAddEdit = true;
         },
     },
 };

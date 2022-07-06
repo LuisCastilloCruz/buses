@@ -17,6 +17,7 @@
         || $visual->sidebar_theme == 'ligth-blue') ? 'sidebar-light' : '' }}
         {{$vc_compact_sidebar->compact_sidebar == true
         || $path[0] === 'pos'
+        || $path[0] === 'pos' && $path[1] === 'fast'
         || $path[0] === 'documents' && $path[1] === 'create' ? 'sidebar-left-collapsed' : ''}}
         {{-- header-{{$visual->navbar ?? 'fixed'}} --}}
         {{-- {{$visual->header == 'dark' ? 'header-dark' : ''}} --}}
@@ -44,9 +45,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css?id=10') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css?id=12') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/5.11/css/all.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/vendor/meteocons/css/meteocons.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2/css/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2-bootstrap-theme/select2-bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/datatables/media/css/dataTables.bootstrap4.css') }}" />
@@ -67,17 +69,19 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('porto-light/master/style-switcher/style-switcher.css')}}">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=10') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=10') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=10') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=12') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=12') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=12') }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=10') }}" />
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=12') }}" />
     @endif
 
-    {{-- @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
-    @endif --}}
+    @if($vc_compact_sidebar->skin)
+        @if (file_exists(storage_path('app/public/skins/'.$vc_compact_sidebar->skin->filename)))
+            <link rel="stylesheet" href="{{ asset('storage/skins/'.$vc_compact_sidebar->skin->filename) }}" />
+        @endif
+    @endif
 
 
     @stack('styles')
@@ -129,13 +133,14 @@
 
     <section class="body">
         <!-- start: header -->
-        @include('tenant.layouts.partials.header')
+        {{-- @include('tenant.layouts.partials.header') --}}
         <!-- end: header -->
         <div class="inner-wrapper">
             <!-- start: sidebar -->
             @include('tenant.layouts.partials.sidebar')
             <!-- end: sidebar -->
             <section role="main" class="content-body" id="main-wrapper">
+                @include('tenant.layouts.partials.header')
               @yield('content')
               @include('tenant.layouts.partials.sidebar_styles')
             </section>
@@ -203,6 +208,7 @@
     <!-- Theme Initialization Files -->
     <script src="{{asset('porto-light/js/theme.init.js')}}"></script>
     <script src="{{asset('porto-light/js/jquery.xml2json.js')}}"></script>
+
     <script>
 
         function parseXMLToJSON(source)
@@ -210,6 +216,18 @@
             let transform = $.xml2json(source);
             return transform
         }
+
+        $('#dropdown-notifications').click(function(e) {
+            $('#dropdown-notifications').toggleClass('showed');
+            $('#dn-toggle').toggleClass('show');
+            $('#dn-menu').toggleClass('show');
+            e.stopPropagation();
+        });
+        $(document).click(function(){
+            $('#dropdown-notifications').removeClass('showed');
+            $('#dn-toggle').removeClass('show');
+            $('#dn-menu').removeClass('show');
+        });
 
     </script>
     <script defer src="{{ asset(mix('js/app.js')) }}"></script>

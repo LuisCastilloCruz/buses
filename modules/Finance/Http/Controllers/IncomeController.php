@@ -22,7 +22,7 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\Establishment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Company;
-use Modules\Finance\Traits\FinanceTrait;
+use Modules\Finance\Traits\FinanceTrait; 
 
 class IncomeController extends Controller
 {
@@ -172,7 +172,7 @@ class IncomeController extends Controller
         $income->save();
 
         return [
-            'success' => true,
+            'success' => true, 
             'message' => 'Ingreso anulado exitosamente',
         ];
     }

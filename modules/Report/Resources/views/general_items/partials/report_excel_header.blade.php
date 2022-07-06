@@ -1,8 +1,12 @@
 <?php
-$document_type_id = isset($document_type_id) ? $document_type_id : null;
-$type = $type ?? 'sale';
+    $document_type_id = isset($document_type_id) ? $document_type_id : null;
+    $type = $type ?? 'sale';
 ?>
+<th>#</th>
 <th>FECHA DE EMISIÓN</th>
+@if($type == 'sale')
+    <th class="">USUARIO/VENDEDOR</th>
+@endif
 @if($document_type_id != '80' && $type == 'sale')
     <th>DIST</th>
     <th>DPTO</th>
@@ -22,6 +26,7 @@ $type = $type ?? 'sale';
 <th> DENOMINACIÓN ENTIDAD</th>
 @if($type == 'sale')
     <th> VENDEDOR</th>
+    <th> OBSERVACIÓN </th>
 @endif
 <th> MONEDA</th>
 <th> TIPO DE CAMBIO</th>
@@ -57,3 +62,7 @@ $type = $type ?? 'sale';
     <th> MARCA</th>
     <th> CATEGORÍA</th>
 @endif
+
+<th> TIPO CAMBIO</th>
+<th> ALMACÉN</th>
+

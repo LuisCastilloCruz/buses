@@ -26,6 +26,7 @@
 
     $total_payment = $document->payments->sum('payment');
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
+    $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
 
 @endphp
 <html>
@@ -115,14 +116,6 @@
         @endif
     </tr>
 
-    @if($invoice)
-        <tr>
-            <td width="120px"><b>FECHA DE VENCIMIENTO</b></td>
-            <td width="8px" class="align-top"> :</td>
-            <td class="align-top">{{$invoice->date_of_due->format('Y-m-d')}}</td>
-        </tr>
-    @endif
-
     @if ($document->detraction)
         <td width="120px"><b>B/S SUJETO A DETRACCIÓN</b></td>
         <td width="8px">:</td>
@@ -133,7 +126,13 @@
     <tr>
         <td width="100px"><b>CLIENTE:</b></td>
         <td>:</td>
-        <td>{{ $customer->name }}</td>
+        <td style="vertical-align: top;">
+            {{ $customer->name }}
+            @if ($customer->internal_code ?? false)
+            <br>
+            <small>{{ $customer->internal_code ?? '' }}</small>
+            @endif
+        </td>
 
         @if ($document->detraction)
             <td width="100px"><b>MÉTODO DE PAGO</b></td>
@@ -322,11 +321,23 @@
                     {!!$row->item->description!!}
                 @endif
 
+                @if($row->total_isc > 0)
+                    <br/><span style="font-size: 9px">ISC : {{ $row->total_isc }} ({{ $row->percentage_isc }}%)</span>
+                @endif
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+
+                @if($row->total_plastic_bag_taxes > 0)
+                    <br/><span style="font-size: 9px">ICBPER : {{ $row->total_plastic_bag_taxes }}</span>
+                @endif
 
                 @foreach($row->additional_information as $information)
                     @if ($information)
-                        <br/><span style="font-size: 9px">{{ $information }}</span>
+                        <br/><span style="font-size: 9px">@if(\App\CoreFacturalo\Helpers\Template\TemplateHelper::canShowNewLineOnObservation())
+                            {!! \App\CoreFacturalo\Helpers\Template\TemplateHelper::SetHtmlTag($information) !!}
+                        @else
+                            {{$information}}
+                        @endif</span>
                     @endif
                 @endforeach
 
@@ -340,6 +351,13 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
+
+                @if($row->charges)
+                    @foreach($row->charges as $charge)
+                        <br/><span style="font-size: 9px">{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</span>
+                    @endforeach
+                @endif
+
                 @if($row->item->is_set == 1)
                  <br>
                  @inject('itemSet', 'App\Services\ItemSetService')
@@ -354,7 +372,13 @@
                 @endif
             </td>
             <td class="text-left align-top borde-gris">{{ $row->item->model ?? '' }}</td>
-            <td class="text-right align-top borde-gris">{{ number_format($row->unit_price, 2) }}</td>
+
+            @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
+                <td class="text-right align-top borde-gris">{{ $row->generalApplyNumberFormat($row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
+            @else
+                <td class="text-right align-top borde-gris">{{ number_format($row->unit_price, 2) }}</td>
+            @endif
+
             <td class="text-right align-top borde-gris">
                 @if($row->discounts)
                     @php
@@ -380,17 +404,14 @@
     @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
-            <td class="text-center align-top">
-                1
-            </td>
+            <td class="text-center align-top">1</td>
             <td class="text-center align-top">NIU</td>
             <td class="text-left align-top">
                 ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
             </td>
+            <td class="text-right align-top"></td>
             <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
-            <td class="text-right align-top">
-                0
-            </td>
+            <td class="text-right align-top">0</td>
             <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
         </tr>
         <tr>
@@ -423,18 +444,21 @@
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
-        @if($document->total_taxed > 0)
+
+        @if ($document->document_type_id === '07')
+            @if($document->total_taxed >= 0)
+            <tr>
+                <td colspan="6" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
+            </tr>
+            @endif
+        @elseif($document->total_taxed > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif
-         @if($document->total_discount > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
-            </tr>
-        @endif
+
         @if($document->total_plastic_bag_taxes > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">ICBPER: {{ $document->currency_type->symbol }}</td>
@@ -445,10 +469,60 @@
             <td colspan="6" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
+
+        @if($document->total_isc > 0)
+        <tr>
+            <td colspan="6" class="text-right font-bold">ISC: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold">{{ number_format($document->total_isc, 2) }}</td>
+        </tr>
+        @endif
+
+        @if($document->total_discount > 0 && $document->subtotal > 0)
+        <tr>
+            <td colspan="6" class="text-right font-bold">SUBTOTAL: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold">{{ number_format($document->subtotal, 2) }}</td>
+        </tr>
+        @endif
+
+        @if($document->total_discount > 0)
+            <tr>
+                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
+            </tr>
+        @endif
+
+        @if($document->total_charge > 0)
+            @if($document->charges)
+                @php
+                    $total_factor = 0;
+                    foreach($document->charges as $charge) {
+                        $total_factor = ($total_factor + $charge->factor) * 100;
+                    }
+                @endphp
+                <tr>
+                    <td colspan="6" class="text-right font-bold">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
+                    <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
+                </tr>
+            @else
+                <tr>
+                    <td colspan="6" class="text-right font-bold">CARGOS: {{ $document->currency_type->symbol }}</td>
+                    <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
+                </tr>
+            @endif
+        @endif
+
         <tr>
             <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
+
+        @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
+            <tr>
+                <td colspan="6" class="text-right font-bold">M. PENDIENTE: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_pending_payment, 2) }}</td>
+            </tr>
+        @endif
+
         @if($balance < 0)
            <tr>
                <td colspan="6" class="text-right font-bold">VUELTO: {{ $document->currency_type->symbol }}</td>
@@ -500,7 +574,11 @@
                     @if ($loop->first)
                         <strong>Información adicional</strong>
                     @endif
-                    <p>{{ $information }}</p>
+                    <p>@if(\App\CoreFacturalo\Helpers\Template\TemplateHelper::canShowNewLineOnObservation())
+                            {!! \App\CoreFacturalo\Helpers\Template\TemplateHelper::SetHtmlTag($information) !!}
+                        @else
+                            {{$information}}
+                        @endif</p>
                 @endif
             @endforeach
             <br>
@@ -515,6 +593,16 @@
                     </p>
                 @endforeach
             @endif
+
+            @if ($document->retention)
+                <p><strong>Información de la retención</strong></p>
+                <p>
+                    Base imponible: {{ $document->currency_type->symbol}} {{ $document->retention->base }} /
+                    Porcentaje: {{ $document->retention->percentage * 100 }}% /
+                    Monto: {{ $document->currency_type->symbol}} {{ $document->retention->amount }}
+                </p>
+            @endif
+
         </td>
         <td width="35%" class="text-right">
             <img width="100" src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;" width="16%"/>

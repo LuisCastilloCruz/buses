@@ -1,5 +1,14 @@
 <template>
-    <div class="card mb-0 pt-2 pt-md-0 negrita">
+    <div class="card mb-0 pt-2 pt-md-0 negrita"
+    >
+        <Keypress
+            key-event="keyup"
+
+            @success="checkKey"
+        />
+        <Keypress key-event="keyup" :multiple-keys="multiple" @success="checkKeyWithAlt" />
+
+
         <div class="tab-content"  v-if="company && establishment">
             <div class="invoice">
                 <header class="clearfix">
@@ -33,7 +42,11 @@
                                         dusk="customer_id"
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
-                                        :loading="loading_search">
+                                               @change="changeCustomer"
+                                               @focus="focus_on_client = true"
+                                               @blur="focus_on_client = false"
+                                               :loading="loading_search"
+                                               @keyup.enter.native="keyupCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
 
@@ -134,6 +147,21 @@
                                            v-text="sms_periodo"></small>
                                 </div>
                             </div>
+
+
+                            <div v-if="config.active_allowance_charge && form.total > 0" class="col-lg-2 col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Porcentaje otros cargos</label>
+
+                                    <el-input-number v-model="config.percentage_allowance_charge"
+                                                        :min="0"
+                                                        controls-position="right"
+                                                        size="mini"
+                                                        @change="calculateTotal">
+                                                        </el-input-number>
+                                </div>
+                            </div>
+
                             <div class="col-lg-2 col-md-2" >
                                 <div class="form-group">
                                     <label class="control-label">Placa</label>
@@ -176,7 +204,10 @@
                                                 </th>
                                                 <th v-if="form.payments.length>0">Referencia</th>
                                                 <th v-if="form.payments.length>0">Monto</th>
-                                                <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                                <th width="15%">
+                                                    <a href="#"
+                                                       @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a>
+                                                </th>
                                             </template>
                                         </tr>
                                     </thead>
@@ -240,8 +271,9 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
+                                                <th width="5%">#</th>
+                                                <th class="font-weight-bold"
+                                                    width="30%">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
                                                 <th class="text-right font-weight-bold">Valor Unitario</th>
@@ -249,7 +281,7 @@
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
                                                 <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -286,7 +318,20 @@
                             </div>
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
-                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
+                                    <el-popover
+                                        placement="top-start"
+                                        :open-delay="1000"
+
+                                        width="145"
+                                        trigger="hover"
+                                        content="Presiona F2">
+                                        <el-button slot="reference"
+                                                   type="button" class="btn waves-effect waves-light btn-primary"
+                                                   @click.prevent="showDialogAddItem = true"
+                                        >
+                                            + Agregar Producto
+                                            </el-button>
+                                    </el-popover>
                                 </div>
                             </div>
 
@@ -303,6 +348,35 @@
                                 <p class="text-right claro" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
                                 <p class="text-right claro" v-if="form.total_discount > 0">DESCUENTO: {{ currency_type.symbol }} {{ form.total_discount }}</p>
                                 <p class="text-right claro" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</p>
+
+
+                                <div class="row mt-1" v-if="form.total > 0">
+                                    <div class="col-lg-10 float-right mt-1">
+                                        <label class="float-right control-label">OTROS CARGOS: </label>
+                                    </div>
+                                    <div class="col-lg-2 float-right">
+                                        <div class="form-group">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        {{ currency_type.symbol }}
+                                                    </td>
+                                                    <td>
+                                                        <el-input-number v-model="total_global_charge"
+                                                            :disabled="config.active_allowance_charge == true ? true:false"
+                                                            :min="0"
+                                                            class="input-custom ml-2"
+                                                            controls-position="right"
+                                                            @change="calculateTotal">
+                                                        </el-input-number>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
                             </div>
 
                         </div>
@@ -312,7 +386,22 @@
 
                     <div class="form-actions text-right mt-4">
                         <el-button @click.prevent="close()">Cancelar</el-button>
-                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
+
+                        <el-popover
+                            placement="top-start"
+                            width="145"
+                            trigger="hover"
+                            content="Presiona ALT + G">
+                            <el-button slot="reference"
+                                       class="submit"
+                                       type="primary"
+                                       native-type="submit"
+                                       :loading="loading_submit"
+                                       v-if="form.items.length > 0"
+                            >
+                                Generar
+                            </el-button>
+                        </el-popover>
                     </div>
                 </form>
             </div>
@@ -321,11 +410,13 @@
         <sale-notes-form-item  :typeUser="typeUser" :showDialog.sync="showDialogAddItem"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
+                           :configuration="config"
                            @add="addRow"></sale-notes-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="customers"
                        :external="true"
+                       :input_person="input_person"
                        :document_type_id = form.document_type_id></person-form>
 
         <sale-notes-options :showDialog.sync="showDialogOptions"
@@ -344,6 +435,7 @@
     import {calculateRowItem, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+    import Keypress from "vue-keypress";
 
     export default {
         props: [
@@ -351,7 +443,13 @@
             'typeUser',
             'configuration',
         ],
-        components: {SaleNotesFormItem, PersonForm, SaleNotesOptions, Logo},
+        components: {
+            SaleNotesFormItem,
+            PersonForm,
+            SaleNotesOptions,
+            Logo,
+            Keypress
+        },
         mixins: [functions, exchangeRate],
         computed:{
             ...mapState([
@@ -378,12 +476,26 @@
         },
         data() {
             return {
+                input_person: {},
                 pickerOptions :{
                     disabledDate: date => {
                         let now = new Date();
                         return date.getTime() < (now.getTime());
                     },
                 },
+                multiple: [
+                    {
+                        keyCode: 78, // N
+                        modifiers: ['altKey'],
+                        preventDefault: true,
+                    },
+                    {
+                        keyCode: 71, // g
+                        modifiers: ['altKey'],
+                        preventDefault: true,
+                    },
+                ],
+                focus_on_client :false,
                 sellers: [],
                 resource: 'sale-notes',
                 showDialogAddItem: false,
@@ -414,6 +526,8 @@
                 enabled_payments: true,
                 payment_destinations:  [],
                 total_discount_no_base: 0,
+                total_global_charge: 0,
+                global_charge_types: [],
             }
         },
         async created() {
@@ -427,6 +541,8 @@
                     this.all_customers = response.data.customers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
+                    this.global_charge_types = response.data.global_charge_types
+
                     this.payment_method_types = response.data.payment_method_types
                     this.company = response.data.company
                     if(this.config.currency_type_id === undefined) {
@@ -448,6 +564,9 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+            this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            });
             this.isUpdate()
             this.changeCurrencyType()
         },
@@ -564,12 +683,18 @@
                     // console.log(this.id);
                     await this.$http.get(`/${this.resource}/record2/${this.id}`)
                         .then(response => {
-                            this.form = response.data.data;
-    //                        this.filterProvinces();
-    //                        this.filterDistricts();
+                            this.form = response.data.data
+                            this.setDataUpdate()
                             this.changeCurrencyType()
                         })
                 }
+
+            },
+            setDataUpdate(){
+
+                if(this.form.total_charge > 0) this.total_global_charge = this.form.total_charge
+
+                this.form.charges = (this.form.charges) ? Object.values(this.form.charges) : []
 
             },
             clickAddPayment() {
@@ -589,6 +714,15 @@
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
             },
+            changeCustomer() {
+                let customer = _.find(this.customers, {'id': this.form.customer_id});
+                let seller = this.sellers.find(element => element.id == customer.seller_id)
+                if(seller !== undefined){
+                    this.form.seller_id = seller.id
+
+                }
+
+            },
             searchRemoteCustomers(input) {
 
                 if (input.length > 0) {
@@ -599,10 +733,12 @@
                             .then(response => {
                                 this.customers = response.data.customers
                                 this.loading_search = false
-                                if(this.customers.length == 0){this.allCustomers()}
+                                /* if(this.customers.length == 0){this.allCustomers()} */
+                                this.input_person.number=(this.customers.length==0)? input : null
                             })
                 } else {
                     this.allCustomers()
+                    this.input_person.number= null
                 }
 
             },
@@ -636,6 +772,7 @@
                     total_taxes: 0,
                     total_value: 0,
                     subtotal: 0,
+                    total_igv_free: 0,
                     total: 0,
                     operation_type_id: null,
                     items: [],
@@ -663,6 +800,8 @@
 
                 this.clickAddPayment()
                 this.enabled_payments = true
+                this.total_global_charge = 0
+                this.initInputPerson()
 
             },
             resetForm() {
@@ -681,6 +820,8 @@
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
                 this.filterSeries()
+                this.selectDefaultCustomer()
+
             },
             cleanCustomer(){
                 this.form.customer_id = null
@@ -731,6 +872,8 @@
                 let total = 0
                 this.total_discount_no_base = 0
 
+                let total_igv_free = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -772,11 +915,27 @@
                         total += parseFloat(row.total)
                     }
 
+
+                    if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+
+                        let unit_value = row.total_value / row.quantity
+                        let total_value_partial = unit_value * row.quantity
+                        row.total_taxes = row.total_value - total_value_partial
+
+                        row.total_igv = total_value_partial * (row.percentage_igv / 100)
+                        row.total_base_igv = total_value_partial
+                        total_value -= row.total_value
+
+                        total_igv_free += row.total_igv
+                    }
+
                     total_value += parseFloat(row.total_value)
 
                     this.total_discount_no_base += sumAmountDiscountsNoBaseByItem(row)
 
                 });
+
+                this.form.total_igv_free = _.round(total_igv_free, 2)
 
                 this.form.total_discount = _.round(total_discount, 2)
                 this.form.total_exportation = _.round(total_exportation, 2)
@@ -793,7 +952,75 @@
                 this.form.subtotal = _.round(total, 2)
                 this.form.total = _.round(total - this.total_discount_no_base, 2)
 
+                this.chargeGlobal()
+
                 this.setTotalDefaultPayment()
+
+            },
+            getGlobalCharge(id){
+                return _.find(this.global_charge_types, { id : id })
+            },
+            chargeGlobal(){
+
+                let base = parseFloat(this.form.total)
+
+                if (this.config.active_allowance_charge) {
+                    let percentage_allowance_charge = parseFloat(this.config.percentage_allowance_charge)
+                    this.total_global_charge = _.round(base * (percentage_allowance_charge / 100), 2)
+                }
+
+                if (this.total_global_charge == 0) {
+                    this.deleteChargeGlobal()
+                    return
+                }
+
+                let amount = parseFloat(this.total_global_charge)
+                let factor = _.round(amount / base, 5)
+                let charge = _.find(this.form.charges, {charge_type_id: '50'})
+
+                if (amount > 0 && !charge)
+                {
+                    this.form.total_charge = _.round(amount, 2)
+                    this.form.total = _.round(this.form.total + this.form.total_charge, 2)
+                    const global_charge = this.getGlobalCharge('50')
+
+                    this.form.charges.push({
+                        charge_type_id: global_charge.id,
+                        description: global_charge.description,
+                        factor: factor,
+                        amount: amount,
+                        base: base
+                    })
+
+                }
+                else
+                {
+
+                    let pos = this.form.charges.indexOf(charge);
+
+                    if (pos > -1) {
+
+                        this.form.total_charge = _.round(amount, 2)
+                        this.form.total = _.round(this.form.total + this.form.total_charge, 2)
+
+                        this.form.charges[pos].base = base
+                        this.form.charges[pos].amount = amount
+                        this.form.charges[pos].factor = factor
+
+                    }
+                }
+
+            },
+            deleteChargeGlobal() {
+
+                let charge = _.find(this.form.charges, {charge_type_id: '50'})
+                let index = this.form.charges.indexOf(charge)
+
+                if (index > -1) {
+                    this.form.charges.splice(index, 1)
+                    this.form.total_charge = 0
+                }
+
             },
             async saveCashDocument(sale_note_id){
 
@@ -801,7 +1028,7 @@
 
                     await this.$http.post(`/cash/cash_document`, {
                             document_id: null,
-                            sale_note_id: sale_note_id
+                            sale_note_id: sale_note_id,
                         })
                         .then(response => {
                             if (response.data.success) {
@@ -862,7 +1089,6 @@
                 if(!this.enabled_payments){
                     this.form.payments = []
                 }
-
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
@@ -924,6 +1150,106 @@
                     this.form.customer_id = customer_id
                 })
             },
+            async selectDefaultCustomer() {
+
+                if (this.config.establishment.customer_id) {
+
+                    let temp_all_customers = this.all_customers;
+                    let temp_customers = this.customers;
+                    await this.$http.get(`/${this.resource}/search/customer/${this.config.establishment.customer_id}`)
+                        .then((response) => {
+                        let data_customer = response.data.customers
+                        temp_all_customers = temp_all_customers.push(...data_customer)
+                        temp_customers = temp_customers.push(...data_customer)
+                    })
+                    temp_all_customers = this.all_customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                            t.id === item.id
+                        ))
+                    )
+                    temp_customers = this.customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                            t.id === item.id
+                        ))
+                    )
+                    this.all_customers = temp_all_customers;
+                    this.customers = temp_customers;
+                    let alt = _.find(this.customers, {'id': this.config.establishment.customer_id});
+
+                    if (alt !== undefined) {
+                        this.form.customer_id = this.config.establishment.customer_id
+                        let seller = this.sellers.find(element => element.id == alt.seller_id)
+                        if(seller !== undefined){
+                            this.form.seller_id = seller.id
+                        }
+                    }
+                }
+            },
+            checkKeyWithAlt(e){
+                let code = e.event.code;
+                if(
+                    this.showDialogOptions === true &&
+                    code === 'KeyN'
+                ){
+                    this.showDialogOptions = false
+                }
+
+                if(
+                    code === 'KeyG'  // key G
+                    && !this.showDialogAddItem   // Modal hidden
+                    && this.form.items.length > 0  // with items
+                    && this.focus_on_client  === false // not client search
+                )
+                {
+                     this.submit()
+                }
+            },
+            checkKey(e){
+                let code = e.event.code;
+                if(code === 'F2'){
+                    //abrir el modal de agergar producto
+                    if(!this.showDialogAddItem ) this.showDialogAddItem = true
+                }
+                if(code === 'Escape'){
+                    if(this.showDialogAddItem ) {
+                        this.showDialogAddItem = false;
+                    }
+
+                }
+
+
+            },
+            keyupCustomer() {
+
+                if (this.input_person.number) {
+
+                    if (!isNaN(parseInt(this.input_person.number))) {
+
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            },
+            initInputPerson() {
+                this.input_person = {
+                    number: null,
+                    identity_document_type_id: null
+                }
+            },
+
         }
     }
 </script>

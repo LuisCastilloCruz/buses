@@ -16,7 +16,7 @@
                 <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo) }}"
                      alt="Logo"/>
             @else
-                <img src="{{asset('logo/700x300.jpg')}}"
+                <img src="{{asset('logo/tulogo.png')}}"
                      alt="Logo"/>
             @endif
         </a>
@@ -290,8 +290,8 @@
                     @if(auth()->user()->type != 'integrator')
                         @if(in_array('pos', $vc_modules))
                             <li class="nav-parent
-                        {{ ($firstLevel === 'pos')?'nav-active nav-expanded':'' }}
-                            {{ ($firstLevel === 'cash')?'nav-active nav-expanded':'' }}
+                                {{ ($firstLevel === 'pos')?'nav-active nav-expanded':'' }}
+                                {{ ($firstLevel === 'cash')?'nav-active nav-expanded':'' }}
                                 ">
                                 <a class="nav-link"
                                    href="#">
@@ -317,9 +317,15 @@
                                 </a>
                                 <ul class="nav nav-children">
                                     @if(in_array('pos', $vc_module_levels))
-                                        <li class="{{ ($firstLevel === 'pos'  )?'nav-active':'' }}">
+                                        <li class="{{ ($firstLevel === 'pos' && !$secondLevel )?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.pos.index')}}">Punto de venta</a>
+                                        </li>
+                                    @endif
+                                    @if(in_array('pos_garage', $vc_module_levels))
+                                        <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'garage')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                                href="{{route('tenant.pos.garage')}}">Venta rápida <span style="font-size:.65rem;">(Grifos y Markets)</span></a>
                                         </li>
                                     @endif
                                     @if(in_array('cash', $vc_module_levels))
@@ -359,8 +365,7 @@
                                 @if(in_array('ecommerce', $vc_module_levels))
                                     <li class="">
                                         <a class="nav-link"
-                                           onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">Ir a
-                                                                                                            Tienda</a>
+                                           onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">Ir a Tienda</a>
                                     </li>
                                 @endif
                                 @if(in_array('ecommerce_orders', $vc_module_levels))
@@ -375,6 +380,12 @@
                                            href="{{route('tenant.items_ecommerce.index')}}">Productos Tienda Virtual</a>
                                     </li>
                                 @endif
+
+                                <li class="{{ ( $secondLevel === 'item-sets')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.ecommerce.item_sets.index')}}">Conjuntos/Packs/Promociones</a>
+                                </li>
+
                                 @if(in_array('ecommerce_tags', $vc_module_levels))
                                     <li class="{{ ($firstLevel === 'tags')?'nav-active':'' }}">
                                         <a class="nav-link"
@@ -475,6 +486,12 @@
                                            href="{{route('tenant.item-lots.index')}}">Series</a>
                                     </li>
                                 @endif
+
+                                    <li class="{{ ($firstLevel === 'zones')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.zone.index')}}">Zonas</a>
+                                    </li>
+
                             </ul>
                         </li>
                     @endif
@@ -574,12 +591,12 @@
                                                href="{{route('tenant.purchase-orders.index')}}">Ordenes de compra</a>
                                         </li>
                                     @endif
-                                        @if(in_array('purchases_expenses', $vc_module_levels))
-                                            <li class="{{ ($firstLevel === 'bank_loan' )?'nav-active':'' }}">
-                                                <a class="nav-link"
-                                                   href="{{route('tenant.bank_loan.index')}}">Credito Bancario</a>
-                                            </li>
-                                        @endif
+                                    @if(in_array('purchases_expenses', $vc_module_levels))
+                                        <li class="{{ ($firstLevel === 'bank_loan' )?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.bank_loan.index')}}">Credito Bancario</a>
+                                        </li>
+                                    @endif
                                     @if(in_array('purchases_expenses', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'expenses' )?'nav-active':'' }}">
                                             <a class="nav-link"
@@ -605,8 +622,7 @@
                                                 @if(in_array('purchases_quotations', $vc_module_levels))
                                                     <li class="{{ ($firstLevel === 'purchase-quotations')?'nav-active':'' }}">
                                                         <a class="nav-link"
-                                                           href="{{route('tenant.purchase-quotations.index')}}">Solicitar
-                                                                                                                cotización</a>
+                                                           href="{{route('tenant.purchase-quotations.index')}}">Solicitar cotización</a>
                                                     </li>
                                                 @endif
                                             </ul>
@@ -681,7 +697,7 @@
                                     @if(in_array('inventory_devolutions', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'devolutions')?'nav-active':'' }}">
                                             <a class="nav-link"
-                                               href="{{route('devolutions.index')}}">Devoluciones</a>
+                                               href="{{route('devolutions.index')}}">Devolucion a proveedor</a>
                                         </li>
                                     @endif
                                     @if(in_array('inventory_report_kardex', $vc_module_levels))
@@ -705,7 +721,7 @@
                                                href="{{route('reports.valued_kardex.index')}}">Kardex valorizado</a>
                                         </li>
                                     @endif
-                                    @if(in_array('inventory_item_extra_data', $vc_module_levels) && $configuration->isShowExtraInfoToItem())
+                                        @if(in_array('production_app', $vc_modules) && $configuration->isShowExtraInfoToItem())
                                         <li class="{{($firstLevel === 'extra_info_items') ? 'nav-active' : ''}}">
                                             <a class="nav-link"
                                                href="{{route('extra_info_items.index')}}">Datos extra de items</a>
@@ -839,7 +855,7 @@
                         </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                        <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads'])) ? 'nav-active' : ''}} {{ $firstLevel === 'list-reports' ? 'nav-active' : '' }}">
+                        <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads', 'tips'])) ? 'nav-active' : ''}} {{ $firstLevel === 'list-reports' ? 'nav-active' : '' }}">
                             <a class="nav-link"
                                href="{{ url('list-reports') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1012,9 +1028,7 @@
                                 @if(in_array('finances_payment_method_types', $vc_module_levels))
                                     <li class="{{(($firstLevel === 'finances') && ($secondLevel == 'payment-method-types')) ? 'nav-active' : ''}}">
                                         <a class="nav-link"
-                                           href="{{route('tenant.finances.payment_method_types.index')}}">Ingresos y
-                                                                                                          Egresos - M.
-                                                                                                          Pago</a>
+                                           href="{{route('tenant.finances.payment_method_types.index')}}">Ingresos y Egresos - M. Pago</a>
                                     </li>
                                 @endif
                             </ul>
@@ -1135,19 +1149,22 @@
                                         <a class="nav-link"
                                            href="{{ route('documentary.offices') }}">Listado de Etapas</a>
                                     </li>
+                                    <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'status')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('documentary.status') }}">Listado de Estados</a>
+                                    </li>
                                 @endif
-                                @if(in_array('documentary_requirements', $vc_module_levels))
+                                    @if(in_array('documentary_process', $vc_module_levels))
+
 
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'requirements')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
-                                           href="{{ route('documentary.requirements') }}">Listado de requerimientos</a>
+                                           href="{{ route('documentary.requirements') }}">Listado de requisitos</a>
                                     </li>
 
-                                @endif
-                                @if(in_array('documentary_process', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'processes')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
-                                           href="{{ route('documentary.processes') }}">Tipos de tramites</a>
+                                           href="{{ route('documentary.processes') }}">Tipos de Trámites</a>
                                     </li>
                                 @endif
                                 {{--
@@ -1163,9 +1180,19 @@
                             @endif
                                 --}}
                                 @if(in_array('documentary_files', $vc_module_levels))
+                                    {{--
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'files')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
-                                           href="{{ route('documentary.files') }}">Listado de tramites</a>
+                                           href="{{ route('documentary.files') }}">Listado de Trámites</a>
+                                    </li>
+                                    --}}
+                                    <li class="{{ (($firstLevel === 'documentary-procedure') &&( ($secondLevel === 'files_simplify')||($secondLevel === 'files'))) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('documentary.files_simplify') }}">Listado de Trámites</a>
+                                    </li>
+                                    <li class="{{ (($firstLevel === 'documentary-procedure') &&( ($secondLevel === 'stadistic'))) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('documentary.stadistic') }}">Estadisticas de Trámites</a>
                                     </li>
                                 @endif
                             </ul>
@@ -1195,6 +1222,45 @@
                         </li>
                     @endif
                     {{-- Suscription --}}
+                    @if(in_array('full_suscription_app', $vc_modules) )
+                        <li class=" nav-parent {{ ($firstLevel === 'full_suscription') ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link"
+                               href="#">
+                                <i class="fa fas fa-calendar-check"
+                                   aria-hidden="true"></i>
+                                <span>
+                                    Suscripción Servicios SAAS
+                                </span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="{{ ($firstLevel === 'full_suscription' && $secondLevel === 'client')?'nav-active':'' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.fullsuscription.client.index') }}">
+                                    Clientes
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.fullsuscription.plans.index') }}">
+                                        Planes
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'payments')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.fullsuscription.payments.index') }}">
+                                        Suscripciones
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'payment_receipt')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.fullsuscription.payment_receipt.index') }}">
+                                        Recibos de pago
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
+                    {{-- Suscription Escolar--}}
                     @if(in_array('suscription_app', $vc_modules) )
                         <li class=" nav-parent {{ ($firstLevel === 'suscription') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
@@ -1205,10 +1271,7 @@
                             </a>
                             <ul class="nav nav-children">
                                 {{--                                @if(in_array('suscription_app_client', $vc_module_levels))--}}
-
-
-                                <li class="nav-parent
-{{ ( ($firstLevel === 'suscription') && ($secondLevel === 'client') ) ? ' nav-active nav-expanded ' : '' }}
+                                <li class="nav-parent {{ ( ($firstLevel === 'suscription') && ($secondLevel === 'client') ) ? ' nav-active nav-expanded ' : '' }}
                                     ">
 
                                     <a class="nav-link"
@@ -1268,11 +1331,199 @@
                                     </a>
                                 </li>
                                 {{--                                @endif--}}
+
+                                <li class="{{ (($firstLevel === 'suscription') && ($secondLevel === 'grade_section')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.suscription.grade_section.index') }}">
+                                        Grados y Secciones
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     @endif
 
-                    {{-- DIGEMID --}}
+
+
+                    {{-- Produccion --}}
+                    @if(in_array('production_app', $vc_modules) )
+
+                        <li class=" nav-parent {{ (
+                                                    ($firstLevel === 'production') ||
+                                                    ($firstLevel === 'machine-production') ||
+                                                    ($firstLevel === 'packaging') ||
+                                                    ($firstLevel === 'machine-type-production') ||
+                                                    ($firstLevel === 'workers') ||
+                                                    ($firstLevel === 'mill-production')
+                                                ) ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link"
+                                href="#">
+                                <i class="fa fas fa-calendar-check"
+                                    aria-hidden="true"></i>
+                                <span>Producción</span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.production.index') }}">
+                                        Productos Fabricados
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'mill-production')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.mill_production.index') }}">
+                                        Ingreso de Insumos
+                                    </a>
+                                </li>
+
+                                <li class="{{ (($firstLevel === 'machine-type-production')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.machine_type_production.index') }}">
+                                        Tipos de maquinaria
+                                    </a>
+                                </li>
+
+
+                                <li class="{{ (($firstLevel === 'machine-production')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.machine_production.index') }}">
+                                        Maquinaria
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'packaging')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.packaging.index') }}">
+                                        Zona de embalaje
+                                    </a>
+                                </li>
+
+                                <li class="{{ (($firstLevel === 'workers')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.workers.index') }}">
+                                        Empleados
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
+
+                    {{-- Restaurante --}}
+                    @if(in_array('restaurant_app', $vc_modules))
+                        <li class=" nav-parent {{ ($firstLevel === 'restaurant') ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link"
+                               href="#">
+                                <i class="fas fa-utensils"
+                                   aria-hidden="true"></i>
+                                <span>Restaurante</span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="nav-parent
+                                {{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active nav-expanded':'' }}">
+                                    <a class="nav-link"
+                                        href="#">
+                                        POS
+                                    </a>
+                                    <ul class="nav nav-children">
+                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                                href="{{route('tenant.restaurant.cash.filter-pos')}}">
+                                                Caja Chica
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-parent {{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == '')?'nav-active nav-expanded':'' }}">
+                                    <a class="nav-link"
+                                        href="#">
+                                        Mesas
+                                    </a>
+                                    <ul class="nav nav-children">
+                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == '')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                                href="{{route('tenant.restaurant.cash.index')}}">
+                                                Caja Chica
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-parent
+                                {{ ( $secondLevel != null && $secondLevel == 'promotions') || ( $secondLevel != null && $secondLevel == 'orders') ?'nav-active nav-expanded':'' }}">
+                                    <a class="nav-link"
+                                        href="#">
+                                        Pedidos
+                                    </a>
+                                    <ul class="nav nav-children">
+                                        <li class="">
+                                            <a class="nav-link"
+                                                href="{{ route('tenant.restaurant.menu') }}"
+                                                target="blank">
+                                                Ver Menu
+                                            </a>
+                                        </li>
+                                        <li class="{{ ( $secondLevel != null && $secondLevel == 'promotions')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                                href="{{route('tenant.restaurant.promotion.index')}}">
+                                                Promociones(Banners)
+                                            </a>
+                                        </li>
+                                        <li class="{{ ( $secondLevel != null && $secondLevel == 'orders')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                                href="{{route('tenant.restaurant.order.index')}}">
+                                                Pedidos
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="{{ ( $secondLevel != null && $secondLevel == 'list' && $firstLevel === 'restaurant' ) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.restaurant.list_items') }}">
+                                        Productos
+                                    </a>
+                                </li>
+                                <li class="{{ ( $secondLevel != null && $secondLevel == 'configuration' && $firstLevel === 'restaurant' ) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.restaurant.configuration') }}">
+                                        Configuración
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
+
+                    @if(in_array('generate_link_app', $vc_modules))
+                        <li class="{{ ($firstLevel === 'payment-links')?'nav-active':'' }}">
+                            <a class="nav-link"
+                               href="{{ route('tenant.payment.generate.index') }}">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="feather feather-share-2">
+                                    <circle cx="18"
+                                        cy="5"
+                                        r="3"></circle>
+                                    <circle cx="6"
+                                        cy="12"
+                                        r="3"></circle>
+                                    <circle cx="18"
+                                        cy="19"
+                                        r="3"></circle>
+                                    <line x1="8.59"
+                                        y1="13.51"
+                                        x2="15.42"
+                                        y2="17.49"></line>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                </svg>
+                                <span>Generador de link de pago</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    {{-- APP --}}
                     @if(in_array('apps', $vc_modules))
                         <li class="">
                             <a class="nav-link"
@@ -1288,7 +1539,7 @@
                         <li class=" nav-parent
                     {{ ($firstLevel === 'transportes') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
-                                <i class="fas fa-building" aria-hidden="true"></i>
+                                <i class="fas fa-bus" aria-hidden="true"></i>
                                 <span>Transportes</span>
                         </a>
                             <ul class="nav nav-children">

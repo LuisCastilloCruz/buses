@@ -40,6 +40,7 @@
     use Modules\Finance\Traits\FinanceTrait;
     use Modules\Inventory\Models\Warehouse;
     use Modules\Item\Models\ItemLotsGroup;
+    use Modules\Purchase\Models\PurchaseOrder;
     use Mpdf\Config\ConfigVariables;
     use Mpdf\Config\FontVariables;
     use Mpdf\HTMLParserMode;
@@ -147,6 +148,7 @@
             $customers = $this->getPersons('customers');
             $configuration = Configuration::first();
             $payment_conditions = GeneralPaymentCondition::get();
+            $warehouses = Warehouse::get();
             $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
             $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
             $note_debit_types = NoteDebitType::whereActive()->orderByDescription()->get();
@@ -401,9 +403,13 @@
                         if (array_key_exists('item', $row)) {
                             if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
 
+                                // factor de lista de precios
+                                $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
+
                                 ItemLotsGroup::create([
                                     'code' => $row['lot_code'],
-                                    'quantity' => $row['quantity'],
+                                    'quantity' => $row['quantity'] * $presentation_quantity,
+                                    // 'quantity' => $row['quantity'],
                                     'date_of_due' => $row['date_of_due'],
                                     'item_id' => $row['item_id']
                                 ]);
@@ -632,9 +638,13 @@
                     if (array_key_exists('item', $row)) {
                         if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
 
+                            // factor de lista de precios
+                            $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
+
                             ItemLotsGroup::create([
                                 'code' => $row['lot_code'],
-                                'quantity' => $row['quantity'],
+                                'quantity' => $row['quantity'] * $presentation_quantity,
+                                // 'quantity' => $row['quantity'],
                                 'date_of_due' => $row['date_of_due'],
                                 'item_id' => $row['item_id']
                             ]);
@@ -1145,6 +1155,25 @@
             if (!$purchase) throw new Exception("El código {$external_id} es inválido, no se encontro el archivo relacionado");
 
             return $this->downloadStorage($purchase->filename, 'purchase');
+        }
+
+
+        public function searchPurchaseOrder(Request $request){
+            // $input = (string)$request->input;
+            $purchases = Purchase::select('purchase_order_id')->wherenotnull('purchase_order_id')
+                ->get()
+                ->pluck('purchase_order_id');
+            $purchaseOrder = PurchaseOrder::whereNotIn('id',$purchases)
+                // ->where('prefix','like','%'.$input.'%')
+                ->get()
+            ->transform(function(PurchaseOrder $row){
+                $data =[
+                    'id'=>$row->id,
+                    'description'=>$row->getNumberFullAttribute(),
+                ];
+                return $data;
+            });
+            return $purchaseOrder;
         }
 
 

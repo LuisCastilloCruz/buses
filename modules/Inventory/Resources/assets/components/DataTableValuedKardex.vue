@@ -173,7 +173,7 @@ export default {
     },
     methods: {
         exportFormatSunat(item_id){
-
+            
             let data = this.form
             data.item_id = item_id
 
@@ -185,7 +185,7 @@ export default {
 
         },
         events(){
-
+            
             this.$eventHub.$on('exportFormatSunat', (item_id) => {
                 this.exportFormatSunat(item_id)
             })

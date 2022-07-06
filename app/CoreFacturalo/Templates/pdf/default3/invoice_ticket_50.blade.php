@@ -117,7 +117,7 @@
             </td>
         </tr>
     @endif
-
+    
     @if ($document->detraction)
     {{--<strong>Operación sujeta a detracción</strong>--}}
         <tr>
@@ -149,7 +149,7 @@
         @endif
     @endif
 
-
+    
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc-9">Orden de Compra:</p></td>
@@ -394,7 +394,7 @@
         </td>
     </tr>
     @endif
-
+    
     @if($document->payment_method_type_id)
         <tr>
             <td class="desc pt-5">

@@ -8,6 +8,7 @@ use App\Models\Tenant\Catalogs\DocumentType;
 use Carbon\Carbon;
 use Modules\Purchase\Models\PurchaseOrder;
 use stdClass;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class Purchase
@@ -29,6 +30,7 @@ use stdClass;
  * @property mixed $perception
  * @property mixed $prepayments
  * @property mixed $related
+ * @property string|null $observation
  * @property \App\Models\Tenant\Person $supplier
  * @property \App\Models\Tenant\Group $group
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
@@ -115,6 +117,7 @@ class Purchase extends ModelTenant
         'customer_id',
         'total_canceled',
         'payment_condition_id',
+        'observation',
     ];
 
     protected $casts = [
@@ -354,6 +357,14 @@ class Purchase extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function relation_establishment()
+    {
+        return $this->belongsTo(Establishment::class, 'establishment_id');
+    }
+
+    /**
      * @return mixed
      */
     public function getNumberToLetterAttribute()
@@ -368,10 +379,19 @@ class Purchase extends ModelTenant
      *
      * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder|null
      */
-    public function scopeWhereTypeUser( $query)
+    public function scopeWhereTypeUser( $query, $params= [])
     {
         /** @var \App\Models\Tenant\User $user */
-        $user = auth()->user();
+        if(isset($params['user_id'])) {
+            $user_id = (int)$params['user_id'];
+            $user = User::find($user_id);
+            if(!$user) {
+                $user = new User();
+            }
+        }
+        else {
+            $user = auth()->user();
+        }
         return ($user->type === 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
@@ -516,6 +536,7 @@ class Purchase extends ModelTenant
             'soap_type_id'                   => $this->soap_type_id,
             'date_of_issue'                  => $this->date_of_issue->format('Y-m-d'),
             'date_of_due'                    => ($this->date_of_due) ? $this->date_of_due->format('Y-m-d') : '-',
+            'purchase_order'                         => $this->purchase_order,
             'number'                         => $this->number_full,
             'supplier_name'                  => $this->supplier->name,
             'supplier_number'                => $this->supplier->number,
@@ -526,6 +547,7 @@ class Purchase extends ModelTenant
             'total_exonerated'               => self::NumberFormat($this->total_exonerated),
             'total_taxed'                    => self::NumberFormat($this->total_taxed),
             'total_igv'                      => self::NumberFormat($this->total_igv),
+            'total_isc'                      => self::NumberFormat($this->total_isc),
             'total_perception'               => self::NumberFormat($this->total_perception),
             'total'                          => self::NumberFormat($total),
             'state_type_id'                  => $this->state_type_id,
@@ -607,8 +629,138 @@ class Purchase extends ModelTenant
         return $this->hasMany(GuideFile::class);
     }
 
+    /**
+     * Validar si es compra en dolares
+     *
+     * @return bool
+     */
+    public function isCurrencyTypeUsd()
+    {
+        return $this->currency_type_id === 'USD';
+    }
+
+    public function convertValueToPen($value)
+    {
+        return self::NumberFormat($this->generalConvertValueToPen($value, $this->exchange_rate_sale));
+    }
+
+    /**
+     *
+     * Obtener total y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalToPen()
+    {
+        return $this->convertValueToPen($this->total);
+    }
+
+    /**
+     *
+     * Obtener total isc y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalIscToPen()
+    {
+        return $this->convertValueToPen($this->total_isc);
+    }
+
+    /**
+     *
+     * Obtener total igv y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalIgvToPen()
+    {
+        return $this->convertValueToPen($this->total_igv);
+    }
+    /**
+     *
+     * Obtener total base y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalTaxedToPen()
+    {
+        return $this->convertValueToPen($this->total_taxed);
+    }
+
+    /**
+     *
+     * Obtener total exonerado y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalExoneratedToPen()
+    {
+        return $this->convertValueToPen($this->total_exonerated);
+    }
+
+    /**
+     *
+     * Obtener total inafecto y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalUnaffectedToPen()
+    {
+        return $this->convertValueToPen($this->total_unaffected);
+    }
+
+    /**
+     *
+     * Obtener total gratuito y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalFreeToPen()
+    {
+        return $this->convertValueToPen($this->total_free);
+    }
+
+    /**
+     *
+     * Obtener total exportacion y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalExportationToPen()
+    {
+        return $this->convertValueToPen($this->total_exportation);
+    }
+
+
+    /**
+     *
+     * Obtener pagos en efectivo
+     *
+     * @return Collection
+     */
+    public function getCashPayments()
+    {
+        return $this->payments()->whereFilterCashPayment()->get()->transform(function($row){{
+            return $row->getRowResourceCashPayment();
+        }});
+    }
+
+
+    /**
+     *
+     * Validar si el registro esta rechazado o anulado
+     *
+     * @return bool
+     */
+    public function isVoidedOrRejected()
+    {
+        return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
+    }
+
     public function affected_purchases()
     {
         return $this->hasMany(NotePurchase::class, 'affected_purchase_id');
     }
+
+
 }

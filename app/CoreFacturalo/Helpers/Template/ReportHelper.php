@@ -3,6 +3,7 @@
     namespace App\CoreFacturalo\Helpers\Template;
 
 
+    use App\Models\Tenant\DocumentItem;
     use App\Models\Tenant\Person;
     use App\Models\Tenant\User;
     use Illuminate\Http\Request;
@@ -174,4 +175,81 @@
         {
             return number_format($number, $decimal, $mil, $dec);
         }
+
+        /**
+         * @param $title
+         *
+         * @return false|string
+         */
+        public static  function getTitleToExcel(&$title)
+        {
+            if(empty($title)){
+                $title = 'Reporte';
+            }
+            $title = substr(str_replace(['*', ':', '/', '\\', '?', '[', ']'], '', $title), 0, 31);
+            return $title;
+        }
+
+        /**
+         * @param $model
+         *
+         * @return \App\Models\Tenant\User
+         */
+        public static function getSellerData($model){
+            if(get_class($model)== DocumentItem::class){
+                $model = $model->document;
+            }
+            try{
+                    if ( !empty($model->seller_id)) {
+                        return $model->seller;
+                    }
+            }catch (\ErrorException $e){
+
+                return $model->user;
+
+            }
+            return $model->user;
+
+        }
+
+
+        /**
+         *
+         * Obtener la descripción del almacén que se realizó la venta/compra
+         * Usado en:
+         * Reporte general de productos
+         *
+         * @param $value
+         * @param $document
+         * @return string
+         */
+        public static function getWarehouseDescription($value, $document){
+
+            $warehouse_description = null;
+
+            if(!is_null($value->warehouse_id))
+            {
+                $warehouse_description = $value->warehouse->description;
+
+            }else{
+                $warehouse_description = $document->relation_establishment->warehouse->description;
+            }
+
+            return $warehouse_description;
+        }
+
+
+        /**
+         * @param $is_garage
+         *
+         * @return bool
+         */
+        public static  function setBoolIsGarage(&$is_garage)
+        {
+            if(is_string($is_garage))
+            {
+                $is_garage = $is_garage == 'true';
+            }
+        }
+
     }

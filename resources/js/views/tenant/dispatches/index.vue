@@ -62,9 +62,9 @@
         <FormGenerateDocument
             :showDialog.sync="showDialogGenerateDocument"
             :recordId="recordId"
-            :configuration="configuration"
             :showClose="true"
             :showGenerate="true"
+            :configuration="configuration"
         ></FormGenerateDocument>
         <ModalGenerateCPE :show.sync="showModalGenerateCPE"></ModalGenerateCPE>
     </div>

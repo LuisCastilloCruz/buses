@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Builder;
 class Promotion extends ModelTenant
 {
    // protected $table = 'pr';
-  
+
     protected $fillable = [
         'type',
         'description',
         'name',
         'status',
         'image',
-        'item_id'
+        'item_id',
+        'apply_restaurant'
     ];
 
     protected static function boot()
@@ -25,5 +26,5 @@ class Promotion extends ModelTenant
         });
     }
 
-   
+
 }

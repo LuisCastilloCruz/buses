@@ -172,7 +172,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-8">
+                        <div class="col-md-8 mt-4">
                             <div class="form-group" >
                                 <el-checkbox v-model="form.has_client" @change="changeHasClient">¿Desea agregar el cliente para esta compra?</el-checkbox>
                             </div>
@@ -181,6 +181,22 @@
                         <div class="col-md-8 mt-2 mb-2">
                             <div class="form-group" >
                                 <el-checkbox v-model="form.has_payment" @change="changeHasPayment">¿Desea agregar pagos a esta compra?</el-checkbox>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-8 mt-2 mb-2" v-if="configuration.enabled_global_igv_to_purchase">
+                            <div class="form-group">
+                                <el-checkbox v-model="localHasGlobalIgv"
+                                             :disabled="(form.items.length != 0 && configuration.enabled_global_igv_to_purchase)"
+                                             @change="changeHasGlobalIgv">¿La compra tiene igv?
+                                    <el-tooltip class="item"
+                                                content="Al estar la configuracion activa, sobreescribe el igv del item. Si no esta checado, el producto no tendra igv."
+                                                effect="dark"
+                                                placement="top-end">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </el-checkbox>
                             </div>
                         </div>
 
@@ -433,7 +449,8 @@
                                     <tr v-for="(row, index) in form.items" :key="index">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
-                                        <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td>
+                                        <td class="text-left">{{ getWarehouseDescription(row)  }}</td>
+                                        <!-- <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td> -->
                                         <td class="text-left">{{ row.lot_code }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
@@ -458,6 +475,9 @@
                             <p class="text-right" v-if="form.total_exonerated > 0">OP.EXONERADAS: {{ currency_type.symbol }} {{ form.total_exonerated }}</p>
                             <p class="text-right" v-if="form.total_taxed > 0">OP.GRAVADA: {{ currency_type.symbol }} {{ form.total_taxed }}</p>
                             <p class="text-right" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
+
+                            <p v-if="form.total_isc > 0" class="text-right">ISC: {{ currency_type.symbol }} {{ form.total_isc }}</p>
+
                             <h3 class="text-right" v-if="form.total > 0"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
 
                             <template v-if="is_perception_agent">
@@ -516,6 +536,7 @@
         <purchase-form-item :showDialog.sync="showDialogAddItem"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
+                           :localHasGlobalIgv="localHasGlobalIgv"
                            @add="addRow"></purchase-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -582,6 +603,8 @@
                 readonly_date_of_due: false,
                 configuration: {},
                 purchaseNewId: null,
+                localHasGlobalIgv: false,
+                warehouses: [],
                 note_credit_types: [],
                 note_debit_types: [],
                 affected_documents: [],
@@ -607,6 +630,7 @@
                     this.charges_types = response.data.charges_types
                     this.configuration = response.data.configuration
                     this.payment_conditions = response.data.payment_conditions
+                    this.warehouses = response.data.warehouses
 
                     this.charges_types = response.data.charges_types
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
@@ -631,6 +655,7 @@
             await this.filterCustomers()
             await this.changeHasPayment()
             await this.changeHasClient()
+            this.initGlobalIgv()
         },
         computed: {
             creditPaymentMethod: function () {
@@ -644,7 +669,32 @@
             },
         },
         methods: {
+            getWarehouse(id){
+                return _.find(this.warehouses, { id : id })
+            },
+            getWarehouseDescription(row){
 
+                let description = null
+
+                if(row.warehouse_description)
+                {
+                    description = row.warehouse_description
+                }
+                else if(row.warehouse)
+                {
+                    description = row.warehouse.description
+                }
+                else
+                {
+                    const warehouse = this.getWarehouse(row.warehouse_id)
+                    if(warehouse) description = warehouse.description
+                }
+
+                return description
+            },
+            changeHasGlobalIgv() {
+
+            },
             changeHasPayment(){
 
                 if(!this.form.has_payment){
@@ -843,6 +893,9 @@
                 }
 
             },
+            setCurrencyType(){
+                this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+            },
             initRecord()
             {
                 this.$http.get(`/${this.resource}/record/${this.resourceId}` )
@@ -864,6 +917,8 @@
                     this.form.purchase_payments_id = dato.purchase_payments.id
                     this.form.purchase_order_id = dato.purchase_order_id
                     this.form.customer_id = dato.customer_id
+
+                    this.setCurrencyType()
 
                     if(this.form.customer_id){
                         this.searchRemotePersons(dato.customer_number)
@@ -1033,6 +1088,12 @@
                 // this.clickAddPayment()
                 this.initInputPerson()
                 this.readonly_date_of_due = false
+
+                this.initGlobalIgv()
+
+            },
+            initGlobalIgv(){
+                this.localHasGlobalIgv = this.configuration.checked_global_igv_to_purchase
             },
             resetForm() {
                 this.initForm()
@@ -1103,6 +1164,9 @@
                 let total_value = 0
                 let total = 0
 
+                let total_base_isc = 0
+                let total_isc = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -1126,7 +1190,16 @@
                     total_value += parseFloat(row.total_value)
                     total_igv += parseFloat(row.total_igv)
                     total += parseFloat(row.total)
+
+                    // isc
+                    total_isc += parseFloat(row.total_isc)
+                    total_base_isc += parseFloat(row.total_base_isc)
+
                 });
+
+                // isc
+                this.form.total_base_isc = _.round(total_base_isc, 2)
+                this.form.total_isc = _.round(total_isc, 2)
 
                 this.form.total_exportation = _.round(total_exportation, 2)
                 this.form.total_taxed = _.round(total_taxed, 2)
@@ -1135,7 +1208,11 @@
                 this.form.total_free = _.round(total_free, 2)
                 this.form.total_igv = _.round(total_igv, 2)
                 this.form.total_value = _.round(total_value, 2)
-                this.form.total_taxes = _.round(total_igv, 2)
+                // this.form.total_taxes = _.round(total_igv, 2)
+
+                //impuestos (isc + igv)
+                this.form.total_taxes = _.round(total_igv + total_isc, 2)
+
                 this.form.total = _.round(total, 2)
 
                 this.calculatePerception()

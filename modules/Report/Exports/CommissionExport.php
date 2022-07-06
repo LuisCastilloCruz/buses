@@ -11,28 +11,28 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 class CommissionExport implements  FromView, ShouldAutoSize
 {
     use Exportable;
-
+    
     public function records($records) {
         $this->records = $records;
-
+        
         return $this;
     }
-
+    
     public function company($company) {
         $this->company = $company;
-
+        
         return $this;
     }
-
+    
     public function establishment($establishment) {
         $this->establishment = $establishment;
-
+        
         return $this;
     }
-
+    
     public function request($request) {
         $this->request = $request;
-
+        
         return $this;
     }
 

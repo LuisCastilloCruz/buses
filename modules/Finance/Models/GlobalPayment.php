@@ -19,7 +19,9 @@
     use Illuminate\Database\Eloquent\Model;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\MorphTo;
+    use Illuminate\Database\QueryException;
     use Illuminate\Support\HigherOrderCollectionProxy;
+    use Modules\Expense\Models\BankLoan;
     use Modules\Expense\Models\BankLoanPayment;
     use Modules\Expense\Models\ExpensePayment;
     use Modules\Pos\Models\CashTransaction;
@@ -185,6 +187,22 @@
             return $this->belongsTo(BankLoanPayment::class, 'payment_id')
                 ->wherePaymentType(BankLoanPayment::class);
         }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+         */
+        public function bank_loan(){
+            return $this->hasManyThrough(
+                BankLoan::class,
+                BankLoanPayment::class,
+                'id',
+                'id',
+                'payment_id',
+                'bank_loan_id'
+
+            )
+                ->whereIn('bank_loans.state_type_id', ['01', '03', '05', '07', '13']);
+        }
         /**
          * @return mixed
          */
@@ -212,19 +230,52 @@
                 ->wherePaymentType(TechnicalServicePayment::class);
         }
 
+        public function getCciAcoount(){
+            if ($this->destination_type === Cash::class) {
+                /** @var \App\Models\Tenant\Cash $destination */
+                $destination = $this->destination;
+                if($destination !== null) {
+                    return $destination->reference_number;
+                }
+                return '';
+            }
+            $destination = $this->destination;
+            try {
+                $bank_id = $destination->bank_id;
+                $bank = Bank::find($bank_id);
+                if ($bank !== null) {
+
+                    try {
+                        if(!empty($destination->cci)){
+                            return  $destination->cci;
+
+                        }
+                        return  $destination->number;
+                    } catch (Exception $e) {
+                        // do nothing
+                        return '-';
+                    }
+                }
+            } catch (Exception $e) {
+                // do nothing
+                return '-';
+            }
+            return '-';
+        }
         /**
          * @return HigherOrderCollectionProxy|mixed|string
          */
         public function getDestinationDescriptionAttribute()
         {
             if ($this->destination_type === Cash::class) return 'CAJA GENERAL';
+            /** @var mixed|\App\Models\Tenant\BankAccount  $destination */
             $destination = $this->destination;
             try {
                 $bank_id = $destination->bank_id;
                 $bank = Bank::find($bank_id);
                 if ($bank !== null) {
                     try {
-                        return $bank->description." ". $bank->cci;
+                        return $bank->description." ". $destination->cci;
                     } catch (Exception $e) {
                         // do nothing
                         return '';
@@ -293,7 +344,8 @@
                 ExpensePayment::class => 'expense',
                 QuotationPayment::class => 'quotation',
                 ContractPayment::class => 'contract',
-                BankLoanPayment::class => 'bank_loan',
+                BankLoanPayment::class => 'bank_loan_payment',
+                BankLoan::class => 'bank_loan',
                 IncomePayment::class => 'income',
                 CashTransaction::class => 'cash_transaction',
                 TechnicalServicePayment::class => 'technical_service',
@@ -327,8 +379,11 @@
                 case 'contract':
                     $description = 'CONTRATO';
                     break;
+                case 'bank_loan_payment':
+                    $description = 'PAGO PRESTAMO BANCARIO';
+                    break;
                 case 'bank_loan':
-                    $description = 'PRESTAMO BANCARIO';
+                    $description = 'INGRESO PRESTAMO BANCARIO';
                     break;
                 case 'income':
                     $description = 'INGRESO';
@@ -355,13 +410,14 @@
                 case 'sale_note':
                 case 'quotation':
                 case 'contract':
-                case 'bank_loan':
                 case 'income':
+                case 'bank_loan':
                 case 'cash_transaction':
                 case 'technical_service':
                     $type = 'input';
                     break;
                 case 'purchase':
+                case 'bank_loan_payment':
                 case 'expense':
                     $type = 'output';
                     break;
@@ -376,7 +432,7 @@
         public function getDataPersonAttribute()
         {
 
-            $record = $this->payment->associated_record_payment;
+                $record = $this->payment->associated_record_payment;
 
             switch ($this->instance_type) {
 
@@ -393,19 +449,31 @@
                     $person['name'] = $record->supplier->name;
                     $person['number'] = $record->supplier->number;
                     break;
-                case 'income':
-                    $person['name'] = $record->customer;
-                    $person['number'] = '';
                 case 'bank_loan':
+                case 'bank_loan_payment':
                     // @todo Ajustar los datos de banco
                     $bank = $record->bank ?? '';
                     $person['name'] = $bank;//." ".__FILE__;
                     $person['number'] = "";// __LINE__;
+                    break;
+                case 'income':
+                    $person['name'] = $record->customer;
+                    $person['number'] = '';
+
                 case 'cash_transaction':
                     $person['name'] = '-';
                     $person['number'] = '';
             }
 
+            if(!isset($person) || !is_array($person)){
+                $person =[];
+            }
+            if(!isset($person['name'])) {
+                $person['name'] = '-';
+            }
+            if(!isset($person['number'])) {
+                $person['number'] = '';
+            }
             return (object)$person;
         }
 
@@ -428,8 +496,8 @@
                     $q->where('date_of_payment', '<=', $params->date_end);
                 }
                 // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                $q->whereHas('associated_record_payment', function ($p) {
-                    $p->whereStateTypeAccepted()->whereTypeUser();
+                $q->whereHas('associated_record_payment', function ($p) use ( $params ) {
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
                 });
             });
             $query->OrWhereHas('exp_payment', function ($q) use ($params) {
@@ -440,8 +508,8 @@
                     $q->where('date_of_payment', '<=', $params->date_end);
                 }
                 // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                $q->whereHas('associated_record_payment', function ($p) {
-                    $p->whereStateTypeAccepted()->whereTypeUser();
+                $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
                 });
             });
             /*SaleNotePayment*/
@@ -453,8 +521,8 @@
                     $q->where('date_of_payment', '<=', $params->date_end);
                 }
                 // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                $q->whereHas('associated_record_payment', function ($p) {
-                    $p->whereStateTypeAccepted()->whereTypeUser()
+                $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params)
                         ->whereNotChanged();
                 });
             });
@@ -467,8 +535,8 @@
                     $q->where('date_of_payment', '<=', $params->date_end);
                 }
                 // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                $q->whereHas('associated_record_payment', function ($p) {
-                    $p->whereStateTypeAccepted()->whereTypeUser();
+                $q->whereHas('associated_record_payment', function ($p) use ($params){
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
                 });
 
             });
@@ -482,8 +550,8 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
-                        $p->whereStateTypeAccepted()->whereTypeUser()
+                    $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                        $p->whereStateTypeAccepted()->whereTypeUser((array)$params)
                             ->whereNotChanged();
                     });
 
@@ -498,8 +566,8 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
-                        $p->whereStateTypeAccepted()->whereTypeUser()
+                    $q->whereHas('associated_record_payment', function ($p) use ($params){
+                        $p->whereStateTypeAccepted()->whereTypeUser((array)$params)
                             ->whereNotChanged();
                     });
 
@@ -514,11 +582,43 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
-                        $p->whereStateTypeAccepted()->whereTypeUser();
+                    $q->whereHas('associated_record_payment', function ($p) use ($params){
+                        $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
                     });
 
                 });
+            /* BankLoanPayment */
+            $query
+                ->OrWhereHas('bank_loan_payment', function ($q) use ($params) {
+                    if ($params->date_start) {
+                        $q->where('date_of_payment', '>=', $params->date_start);
+                    }
+                    if ($params->date_end) {
+                        $q->where('date_of_payment', '<=', $params->date_end);
+                    }
+                    // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                    $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                          $p->whereStateTypeAccepted()
+                            ->whereTypeUser((array)$params)
+                        ;
+                    });
+
+                });
+            /* BankLoan @todo no muestra el total de credito abonado*/
+            /*
+            $query
+                ->OrWhereHas('bank_loan', function ($q) use ($params) {
+                    if ($params->date_start) {
+                        $q->where('date_of_issue', '>=', $params->date_start);
+                    }
+                    if ($params->date_end) {
+                        $q->where('date_of_issue', '<=', $params->date_end);
+                    }
+                    $q->whereStateTypeAccepted()
+                        ->whereTypeUser();
+
+                });
+            */
             /*CashTransaction*/
             $query
                 ->OrWhereHas('cas_transaction', function ($q) use ($params) {
@@ -541,16 +641,26 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
-                        $p->whereTypeUser();
+                    $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                        $p->whereTypeUser((array)$params);
                     });
 
                 });
             /** Transferencias entre cuentas/caja */
-            $query->OrWhereHas('transfers_accounts');
+            $query->OrWhereHas('transfers_accounts', function (Builder $q) use ($params) {
+                if ($params->date_start) {
+                    $date_start = Carbon::createFromFormat('Y-m-d',$params->date_start );
+                    $q->where('created_at', '>=', $date_start->setTime(0,0,0));
+                }
+                if ($params->date_end) {
+                    $date_end = Carbon::createFromFormat('Y-m-d',$params->date_end );
+                    $q->where('created_at', '<=', $date_end->setTime(23,59,59));
+                }
+            });
 
             return $query;
         }
+
 
         /**
          * @return BelongsTo

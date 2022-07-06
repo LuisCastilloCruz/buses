@@ -5,16 +5,16 @@ function(e) {
 		initialised: !1,
 		mobile: !1,
 		init: function() {
-			this.initialised || (this.initialised = !0, this.initShop(), this.addToCart(), this.checkMobile(), this.stickyHeader(), this.headerSearchToggle(), this.mMenuIcons(), this.mMenuToggle(), this.mobileMenu(), this.scrollToTop(), 
-			this.quantityInputs(), this.countTo(), this.tooltip(), this.popover(), this.changePassToggle(), this.changeBillToggle(), this.catAccordion(), this.ajaxLoadProduct(), this.toggleFilter(), 
-			this.toggleSidebar(), this.productTabSroll(), this.scrollToElement(), this.loginPopup(), this.windowClick(), e.fn.superfish && this.menuInit(), e.fn.owlCarousel 
+			this.initialised || (this.initialised = !0, this.initShop(), this.addToCart(), this.checkMobile(), this.stickyHeader(), this.headerSearchToggle(), this.mMenuIcons(), this.mMenuToggle(), this.mobileMenu(), this.scrollToTop(),
+			this.quantityInputs(), this.countTo(), this.tooltip(), this.popover(), this.changePassToggle(), this.changeBillToggle(), this.catAccordion(), this.ajaxLoadProduct(), this.toggleFilter(),
+			this.toggleSidebar(), this.productTabSroll(), this.scrollToElement(), this.loginPopup(), this.windowClick(), e.fn.superfish && this.menuInit(), e.fn.owlCarousel
 			&& this.owlCarousels(), "object" == typeof noUiSlider && this.filterSlider(), e.fn.themeSticky && this.stickySidebar(), e.fn.magnificPopup && this.lightBox())
 		},
-		
+
 		checkMobile: function() {
 			/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? this.mobile = !0 : this.mobile = !1
 		},
-		
+
 		menuInit: function() {
 			e(".menu").superfish({
 				popUpSelector: "ul, .megamenu",
@@ -25,7 +25,7 @@ function(e) {
 				autoArrows: !0
 			})
 		},
-		
+
 		stickyHeader: function() {
 			if (e(".sticky-header").length) {
 				new Waypoint.Sticky({
@@ -33,7 +33,7 @@ function(e) {
 					stuckClass: "fixed",
 					offset: -10
 				});
-				
+
 				if (!e(".header-bottom").find(".logo, .cart-dropdown").length) {
 					var o = e(".header-bottom").find(".container");
 					e(".header").find(".logo, .cart-dropdown").clone(!0).prependTo(o)
@@ -46,7 +46,7 @@ function(e) {
 				})
 			})
 		},
-		
+
 		headerSearchToggle: function() {
 			e(".search-toggle").on("click", function(o) {
 				e(".header-search-wrapper").toggleClass("show"), o.preventDefault()
@@ -56,7 +56,7 @@ function(e) {
 				e.stopPropagation()
 			})
 		},
-		
+
 		mMenuToggle: function() {
 			e(".mobile-menu-toggler").on("click", function(o) {
 				e("body").toggleClass("mmenu-active"), e(this).toggleClass("active"), o.preventDefault()
@@ -64,7 +64,7 @@ function(e) {
 				e("body").removeClass("mmenu-active"), e(".menu-toggler").removeClass("active"), o.preventDefault()
 			})
 		},
-		
+
 		mMenuIcons: function() {
 			e(".mobile-menu").find("li").each(function() {
 				var o = e(this);
@@ -73,7 +73,7 @@ function(e) {
 				}).appendTo(o.children("a"))
 			})
 		},
-		
+
 		mobileMenu: function() {
 			e(".mmenu-btn").on("click", function(o) {
 				var t = e(this).closest("li"),
@@ -85,7 +85,7 @@ function(e) {
 				}), o.stopPropagation(), o.preventDefault()
 			})
 		},
-		
+
 		owlCarousels: function() {
 			var o = {
 				loop: !0,
@@ -113,11 +113,11 @@ function(e) {
 					0: {
 						items: 2
 					},
-					
+
 					480: {
 						items: 2
 					},
-					
+
 					768: {
 						items: 3
 					}
@@ -130,12 +130,12 @@ function(e) {
 					0: {
 						items: 2
 					},
-					
+
 					700: {
 						items: 3,
 						margin: 15
 					},
-					
+
 					1200: {
 						items: 4,
 						margin: 15
@@ -167,7 +167,7 @@ function(e) {
 					0: {
 						items: 1
 					},
-					
+
 					992: {
 						items: 2
 					}
@@ -187,11 +187,11 @@ function(e) {
 					0: {
 						items: 1
 					},
-					
+
 					480: {
 						items: 2
 					},
-					
+
 					1200: {
 						items: 3
 					}
@@ -220,7 +220,7 @@ function(e) {
 								zoomType: "inner",
 								cursor: "grab"
 							};
-						
+
 						o.elevateZoom(t)
 					})
 				}
@@ -231,11 +231,11 @@ function(e) {
 					0: {
 						items: 1
 					},
-					
+
 					480: {
 						items: 2
 					},
-					
+
 					1200: {
 						items: 3
 					}
@@ -244,7 +244,7 @@ function(e) {
 				e(".product-single-carousel").trigger("to.owl.carousel", [e(this).index(), 300])
 			})
 		},
-		
+
 		filterSlider: function() {
 			var o = document.getElementById("price-slider");
 			null != o && (noUiSlider.create(o, {
@@ -260,11 +260,11 @@ function(e) {
 				o = o.map(function(e) {
 					return "$" + e
 				});
-				
+
 				e("#filter-price-range").text(o.join(" - "))
 			}))
 		},
-		
+
 		stickySidebar: function() {
 			e(".sidebar-wrapper, .sticky-slider").themeSticky({
 				autoInit: !0,
@@ -275,7 +275,7 @@ function(e) {
 				paddingOffsetTop: 60
 			})
 		},
-		
+
 		countTo: function() {
 			e.fn.countTo ? e.fn.waypoint ? e(".count").waypoint(function() {
 				e(this.element).countTo()
@@ -287,31 +287,31 @@ function(e) {
 				o.text(t)
 			})
 		},
-		
+
 		tooltip: function() {
 			e.fn.tooltip && e('[data-toggle="tooltip"]').tooltip({
 				trigger: "hover focus"
 			})
 		},
-		
+
 		popover: function() {
 			e.fn.popover && e('[data-toggle="popover"]').popover({
 				trigger: "focus"
 			})
 		},
-		
+
 		changePassToggle: function() {
 			e("#change-pass-checkbox").on("change", function() {
 				e("#account-chage-pass").toggleClass("show")
 			})
 		},
-		
+
 		changeBillToggle: function() {
 			e("#change-bill-address").on("change", function() {
 				e("#checkout-shipping-address").toggleClass("show"), e("#new-checkout-address").toggleClass("show")
 			})
 		},
-		
+
 		catAccordion: function() {
 			e(".catAccordion").on("shown.bs.collapse", function(o) {
 				var t = e(o.target).closest("li");
@@ -321,11 +321,11 @@ function(e) {
 				t.hasClass("open") && t.removeClass("open")
 			})
 		},
-		
+
 		scrollBtnAppear: function() {
 			e(window).scrollTop() >= 400 ? e("#scroll-top").addClass("fixed") : e("#scroll-top").removeClass("fixed")
 		},
-		
+
 		scrollToTop: function() {
 			e("#scroll-top").on("click", function(o) {
 				e("html, body").animate({
@@ -333,7 +333,7 @@ function(e) {
 				}, 1200), o.preventDefault()
 			})
 		},
-		
+
 		lightBox: function() {
 			var t = [],
 				n = e(0 === e(".product-single-carousel .owl-item:not(.cloned) img").length ? ".product-single-gallery img" : ".product-single-carousel .owl-item:not(.cloned) img");
@@ -353,7 +353,7 @@ function(e) {
 				}, i)
 			}), e("a.btn-quickview").on("click", function(t) {
 				t.preventDefault(), o.ajaxLoading();
-				
+
 				var n = e(this).attr("href");
 				setTimeout(function() {
 					e.magnificPopup.open({
@@ -365,17 +365,17 @@ function(e) {
 						items: {
 							src: n
 						},
-						
+
 						callbacks: {
 							ajaxContentAdded: function() {
 								o.owlCarousels(), o.quantityInputs(), "undefined" != typeof addthis ? addthis.layers.refresh() : e.getScript("http://s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b927288a03dbde6")
 							},
-							
+
 							beforeClose: function() {
 								e(".ajaxOverlay").remove()
 							}
 						},
-						
+
 						ajax: {
 							tError: ""
 						}
@@ -383,7 +383,7 @@ function(e) {
 				}, 1000)
 			})
 		},
-		
+
 		productTabSroll: function() {
 			e(".rating-link").on("click", function(o) {
 				if (e(".product-single-tabs").length) e("#product-tab-reviews").tab("show");
@@ -399,7 +399,7 @@ function(e) {
 				}, 250), o.preventDefault()
 			})
 		},
-		
+
 		quantityInputs: function() {
 			e.fn.TouchSpin && (e(".vertical-quantity").TouchSpin({
 				verticalbuttons: !0,
@@ -410,7 +410,11 @@ function(e) {
 				buttondown_class: "btn btn-outline",
 				buttonup_class: "btn btn-outline",
 				initval: 1,
-				min: 1
+				min: 1,
+                decimals: 2,
+                boostat: 5,
+                step: 0.01,
+                maxboostedstep: 10,
 			}), e(".horizontal-quantity").TouchSpin({
 				verticalbuttons: !1,
 				buttonup_txt: "",
@@ -421,11 +425,11 @@ function(e) {
 				min: 1
 			}))
 		},
-		
+
 		ajaxLoading: function() {
 			e("body").append("<div class='ajaxOverlay'><i class='porto-loading-icon'></i></div>")
 		},
-		
+
 		ajaxLoadProduct: function() {
 			var o = 0;
 			t.click(function(n) {
@@ -437,14 +441,14 @@ function(e) {
 							i.appendTo(".product-ajax-grid"), t.text("Load More"), ++o >= 2 && t.hide()
 						}, 350)
 					},
-					
+
 					failure: function() {
 						t.text("Sorry something went wrong.")
 					}
 				})
 			})
 		},
-		
+
 		toggleFilter: function() {
 			e(".filter-toggle a").click(function(o) {
 				o.preventDefault(), e(".filter-toggle").toggleClass("opened"), e("main").toggleClass("sidebar-opened")
@@ -454,13 +458,13 @@ function(e) {
 				o.preventDefault(), e(".select-custom").removeClass("opened"), e(o.target).closest(".select-custom").toggleClass("opened")
 			})
 		},
-		
+
 		toggleSidebar: function() {
 			e(".sidebar-toggle").click(function() {
 				e("main").toggleClass("sidebar-opened")
 			})
 		},
-		
+
 		scrollToElement: function() {
 			e('.scrolling-box a[href^="#"]').on("click", function(o) {
 				var t = e(this.getAttribute("href"));
@@ -469,17 +473,17 @@ function(e) {
 				}, 700))
 			})
 		},
-		
+
 		loginPopup: function() {
 
-			
+
 			e(".login-link").click(function(t) {
 
 				$('#login_register_modal').modal('show');
 				 t.preventDefault()
 			})
 		},
-		
+
 		windowClick: function() {
 			e(document).click(function(o) {
 				e(o.target).closest(".toolbox-item.select-custom").length || e(".select-custom").removeClass("opened")
@@ -496,9 +500,9 @@ function(e) {
 			let array = localStorage.getItem('products_cart');
 			array = JSON.parse(array)
 			count = array.length;
-				
+
 			array.forEach(element => {
-				
+
 				jQuery(".dropdown-cart-products").append( `
 						<div class="product">
 							<div class="product-details">
@@ -517,10 +521,10 @@ function(e) {
 									<i class="icon-cancel"></i>
 								</a>
 							</figure>
-						</div>` 
+						</div>`
 					);
 			});
-			
+
 			jQuery(".cart-count").append(count);
 
 		},
@@ -556,7 +560,7 @@ function(e) {
 				else{
 					contex.alreadyProductCart();
 				}
-				
+
 			})
 		},
 		successAddProduct: function()
@@ -582,12 +586,12 @@ function(e) {
 			array.forEach(element => {
 				total += parseFloat(element.sale_unit_price)
 			});
-	
+
 			$(".cart-total-price").empty();
 			$(".cart-total-price").append(total.toFixed(2));
 		}
 	};
-	
+
 	e("body").prepend('<div class="loading-overlay"><div class="bounce-loader"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>');
 	var t = e(".loadmore .btn");
 	jQuery(document).ready(function() {

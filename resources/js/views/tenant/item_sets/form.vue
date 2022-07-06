@@ -122,7 +122,7 @@
                                     <td class="text-right">
                                         <el-input-number
                                             v-model="row.quantity"
-                                            @change="calculateTotal"
+                                            @change="changeQuantity"
                                             :min="0"/>
                                     </td>
                                     <td class="text-center">{{row.sale_unit_price * row.quantity | toDecimals }}</td>
@@ -146,155 +146,6 @@
                             </table>
                         </div>
                     </div>
-                    <!-- <div class="col-md-3" v-show="recordId==null && form.unit_type_id !='ZZ'">
-                        <div class="form-group" :class="{'has-danger': errors.stock}">
-                            <label class="control-label">Stock Inicial</label>
-                            <el-input v-model="form.stock" ></el-input>
-                            <small class="form-control-feedback" v-if="errors.stock" v-text="errors.stock[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ'">
-                        <div class="form-group" :class="{'has-danger': errors.stock_min}">
-                            <label class="control-label">Stock Mínimo</label>
-                            <el-input v-model="form.stock_min"></el-input>
-                            <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
-                        </div>
-                    </div> -->
-
-
-                    <!-- <div class="col-md-3 center-el-checkbox" >
-                        <div class="form-group"  >
-                            <el-checkbox v-model="form.has_perception" @change="changeHasPerception">Incluye percepción</el-checkbox><br>
-                        </div>
-                    </div>
-                    <div class="col-md-3 center-el-checkbox" v-show="form.has_perception">
-                        <div class="form-group"  >
-                            <label class="control-label">Porcentaje de percepción</label>
-
-                            <el-input v-model="form.percentage_perception"></el-input>
-                        </div>
-                    </div> -->
-                    <!-- <div class="col-md-3" v-show="recordId==null">
-                        <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
-                            <label class="control-label">
-                                Almacén
-                                <el-tooltip class="item" effect="dark" content="Si no selecciona almacén, se asignará por defecto el relacionado al establecimiento" placement="top">
-                                    <i class="fa fa-info-circle"></i>
-                                </el-tooltip>
-                            </label>
-                            <el-select v-model="form.warehouse_id" filterable >
-                                <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3 " >
-                        <div class="form-group" :class="{'has-danger': errors.date_of_due}">
-                            <label class="control-label">Fec. Vencimiento</label>
-                            <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
-                            <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <h5 class="separator-title ">
-                            Listado de precios
-                            <el-tooltip class="item" effect="dark" content="Diferentes presentaciones para la venta del producto" placement="top">
-                                <i class="fa fa-info-circle"></i>
-                            </el-tooltip>
-                             <a href="#" class="control-label font-weight-bold text-info" @click="clickAddRow"> [ + Nuevo]</a>
-                        </h5>
-                    </div>
-                    <div class="col-md-12" v-if="form.item_unit_types.length > 0">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th class="text-center">Unidad</th>
-                                <th class="text-center">Descripción</th>
-                                <th class="text-center">
-                                    Factor
-                                    <el-tooltip class="item" effect="dark" content="Cantidad de unidades" placement="top">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
-                                </th>
-                                <th class="text-center">Precio 1</th>
-                                <th class="text-center">Precio 2</th>
-                                <th class="text-center">Precio 3</th>
-                                <th class="text-center">P. Defecto</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="(row, index) in form.item_unit_types">
-                                <template v-if="row.id">
-                                    <td class="text-center">{{row.unit_type_id}}</td>
-                                    <td class="text-center">{{row.description}}</td>
-                                    <td class="text-center">{{row.quantity_unit}}</td>
-                                    <td class="text-center">{{row.price1}}</td>
-                                    <td class="text-center">{{row.price2}}</td>
-                                    <td class="text-center">{{row.price3}}</td>
-                                    <td class="text-center">Precio {{row.price_default}}</td>
-                                    <td class="series-table-actions text-right">
-                                       <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </template>
-                                <template v-else>
-                                    <td>
-                                        <div class="form-group"  >
-                                            <el-select v-model="row.unit_type_id" dusk="item_unit_type.unit_type_id">
-                                                <el-option v-for="option in unit_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                            </el-select>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group" >
-                                           <el-input v-model="row.description"></el-input>
-                                       </div>
-                                    </td>
-                                    <td>
-                                         <div class="form-group" >
-                                            <el-input v-model="row.quantity_unit"></el-input>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group" >
-                                            <el-input v-model="row.price1"></el-input>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-input v-model="row.price2"></el-input>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-input v-model="row.price3"></el-input>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <el-radio-group v-model="row.price_default">
-                                                <el-radio :label="1" class="d-block">Precio 1</el-radio>
-                                                <el-radio :label="2" class="d-block">Precio 2</el-radio>
-                                                <el-radio :label="3" class="d-block">Precio 3</el-radio>
-                                            </el-radio-group>
-                                        </div>
-                                    </td>
-                                    <td class="series-table-actions text-right">
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </template>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                    </div> -->
-                <!-- </div>    -->
 
 
                     <div class="col-md-12">
@@ -318,6 +169,7 @@
 
                         <div class="col-md-9">
                             <div class="row">
+
 
                                 <div class="short-div col-md-8">
                                     <div class="form-group" :class="{'has-danger': errors.purchase_affectation_igv_type_id}">
@@ -354,6 +206,107 @@
                                     </div>
                                 </div>
 
+                                <div class="short-div col-md-4">
+
+                                    <div class="form-group">
+                                        <label class="control-label">Total P. Compra (Referencia)
+                                            <el-tooltip class="item" effect="dark" content="Suma de los precios unitarios (compra) de cada producto agregado" placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <el-input v-model="total_purchase" disabled></el-input>
+                                    </div>
+                                </div>
+
+                                <div class="short-div col-md-4">
+
+                                    <div class="form-group" :class="{'has-danger': errors.purchase_unit_price}">
+                                        <label class="control-label">Precio Unitario (Compra) *
+                                        </label>
+                                        <el-input v-model="form.purchase_unit_price" dusk="purchase_unit_price"></el-input>
+                                        <small class="form-control-feedback" v-if="errors.purchase_unit_price" v-text="errors.purchase_unit_price[0]"></small>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div :class="{'has-danger': errors.category_id}"
+                                         class="form-group">
+                                        <label class="control-label">
+                                            Categoría
+                                        </label>
+
+                                        <a v-if="form_category.add == false"
+                                           class="control-label font-weight-bold text-info"
+                                           href="#"
+                                           @click="form_category.add = true"> [ + Nuevo]</a>
+                                        <a v-if="form_category.add == true"
+                                           class="control-label font-weight-bold text-info"
+                                           href="#"
+                                           @click="saveCategory()"> [ + Guardar]</a>
+                                        <a v-if="form_category.add == true"
+                                           class="control-label font-weight-bold text-danger"
+                                           href="#"
+                                           @click="form_category.add = false"> [ Cancelar]</a>
+                                        <el-input v-if="form_category.add == true"
+                                                  v-model="form_category.name"
+                                                  dusk="item_code"
+                                                  style="margin-bottom:1.5%;"></el-input>
+
+                                        <el-select v-if="form_category.add == false"
+                                                   v-model="form.category_id"
+                                                   clearable
+                                                   filterable>
+                                            <el-option v-for="option in categories"
+                                                       :key="option.id"
+                                                       :label="option.name"
+                                                       :value="option.id"></el-option>
+                                        </el-select>
+                                        <small v-if="errors.category_id"
+                                               class="form-control-feedback"
+                                               v-text="errors.category_id[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div :class="{'has-danger': errors.brand_id}"
+                                         class="form-group">
+                                        <label class="control-label">
+                                            Marca
+                                        </label>
+
+                                        <a v-if="form_brand.add == false"
+                                           class="control-label font-weight-bold text-info"
+                                           href="#"
+                                           @click="form_brand.add = true"> [ + Nuevo]</a>
+                                        <a v-if="form_brand.add == true"
+                                           class="control-label font-weight-bold text-info"
+                                           href="#"
+                                           @click="saveBrand()"> [ + Guardar]</a>
+                                        <a v-if="form_brand.add == true"
+                                           class="control-label font-weight-bold text-danger"
+                                           href="#"
+                                           @click="form_brand.add = false"> [ Cancelar]</a>
+                                        <el-input v-if="form_brand.add == true"
+                                                  v-model="form_brand.name"
+                                                  dusk="item_code"
+                                                  style="margin-bottom:1.5%;"></el-input>
+
+                                        <el-select v-if="form_brand.add == false"
+                                                   v-model="form.brand_id"
+                                                   clearable
+                                                   filterable>
+                                            <el-option v-for="option in brands"
+                                                       :key="option.id"
+                                                       :label="option.name"
+                                                       :value="option.id"></el-option>
+                                        </el-select>
+                                        <small v-if="errors.brand_id"
+                                               class="form-control-feedback"
+                                               v-text="errors.brand_id[0]"></small>
+                                    </div>
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -381,6 +334,10 @@ import ItemSetFormItem from './partials/item.vue'
 
         data() {
             return {
+                form_category: {add: false, name: null, id: null},
+                form_brand: {add: false, name: null, id: null},
+                brands: [],
+                categories: [],
                 showDialogAddItem: false,
                 warehouses: [],
                 loading_submit: false,
@@ -412,7 +369,8 @@ import ItemSetFormItem from './partials/item.vue'
                     price3:0,
                     price_default:2,
 
-                }
+                },
+                total_purchase: 0,
             }
         },
         created() {
@@ -428,7 +386,8 @@ import ItemSetFormItem from './partials/item.vue'
                     // this.individual_items = response.data.individual_items
                     this.warehouses = response.data.warehouses
                     this.web_platforms = response.data.web_platforms
-
+                    this.categories = response.data.categories
+                    this.brands = response.data.brands
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                 })
@@ -440,12 +399,28 @@ import ItemSetFormItem from './partials/item.vue'
 
         },
         methods: {
+            changeQuantity(){
+
+                this.calculateTotal()
+                this.setTotalPurchase()
+
+            },
             calculateTotal(){
+
                 this.total = 0;
+                this.total_purchase = 0
+
                 this.form.individual_items.forEach(row => {
+
                     this.total += row.sale_unit_price * row.quantity;
+
+                    this.total_purchase += parseFloat(row.purchase_unit_price) * row.quantity;
+
                 });
 
+            },
+            setTotalPurchase(){
+                this.form.purchase_unit_price = this.total_purchase
             },
             clickRemoveItem(index) {
                 this.form.individual_items.splice(index, 1)
@@ -466,6 +441,9 @@ import ItemSetFormItem from './partials/item.vue'
             },
             changeIndividualItems(){
                 this.calculateTotal();
+
+                this.setTotalPurchase()
+
                 // let acum_sale_unit_price = 0
 
                 // this.form.individual_items.forEach(row => {
@@ -519,6 +497,8 @@ import ItemSetFormItem from './partials/item.vue'
                 }
                 this.show_has_igv = true
                 this.enabled_percentage_of_profit = false
+
+                this.total_purchase = 0
             },
             onSuccess(response, file, fileList) {
                 if (response.success) {
@@ -685,7 +665,44 @@ import ItemSetFormItem from './partials/item.vue'
                 if (this.form.system_isc_type_id !== '03') {
                     this.form.suggested_price = 0
                 }
-            }
+            },
+            saveCategory() {
+                this.form_category.add = false
+
+                this.$http.post(`/categories`, this.form_category)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.categories.push(response.data.data)
+                            this.form_category.name = null
+                        } else {
+                            this.$message.error('No se guardaron los cambios')
+                        }
+                    })
+                    .catch(error => {
+
+                    })
+            },
+            saveBrand() {
+                this.form_brand.add = false
+
+                this.$http.post(`/brands`, this.form_brand)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.brands.push(response.data.data)
+                            this.form_brand.name = null
+
+                        } else {
+                            this.$message.error('No se guardaron los cambios')
+                        }
+                    })
+                    .catch(error => {
+
+                    })
+
+
+            },
         }
     }
 // Se puede usar datos de la siguiente direccion.

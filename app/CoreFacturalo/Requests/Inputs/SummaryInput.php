@@ -13,15 +13,15 @@ class SummaryInput
     public static function set($inputs) {
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
-        
+
         $date_of_reference = $inputs['date_of_reference'];
         $date_of_issue = date('Y-m-d');
         $summary_status_type_id = $inputs['summary_status_type_id'];
-        
+
         $identifier = Functions::identifier($soap_type_id, $date_of_issue, Summary::class);
         $filename = $company->number.'-'.$identifier;
         $inputs['type'] = 'summary';
-        
+
         return [
             'type' => $inputs['type'],
             'user_id' => auth()->id(),
@@ -34,6 +34,7 @@ class SummaryInput
             'date_of_reference' => $date_of_reference,
             'identifier' => $identifier,
             'filename' => $filename,
+            'unique_filename' => $filename,
             'documents' => $inputs['documents']
         ];
     }

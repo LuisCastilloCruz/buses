@@ -455,6 +455,12 @@ class SaleNoteController extends Controller
         if($request != null && $request->has('onlySuscription') && (bool)$request->onlySuscription == true){
             $records->whereNotNull('grade')->whereNotNull('section') ;
         }
+        // Solo devuelve Suscripciones que tengan relacion en user_rel_suscription_plans.
+        if($request != null && $request->has('onlyFullSuscription') && (bool)$request->onlyFullSuscription == true){
+            $records->whereNotNull('user_rel_suscription_plan_id')
+                ->whereNull('grade')->whereNull('section')
+            ;
+        }
         if($request->column == 'customer'){
             $records->whereHas('person', function($query) use($request){
                                     $query
@@ -469,6 +475,9 @@ class SaleNoteController extends Controller
         }
         if($request->series) {
             $records->where('series', 'like', '%' . $request->series . '%');
+        }
+        if($request->number) {
+            $records->where('number', 'like', '%' . $request->number . '%');
         }
         if($request->total_canceled != null) {
             $records->where('total_canceled', $request->total_canceled);
@@ -488,10 +497,12 @@ class SaleNoteController extends Controller
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('customers')->orderBy('name')
                             ->whereIsEnabled()
-                            ->get()->transform(function($row) {
+                            ->get()->transform(function(Person $row) {
                                 return [
                                     'id' => $row->id,
                                     'description' => $row->number.' - '.$row->name,
+                                    'seller_id' => $row->seller_id,
+                                    'seller' => $row->seller,
                                     'name' => $row->name,
                                     'number' => $row->number,
                                     'identity_document_type_id' => $row->identity_document_type_id,
@@ -504,11 +515,18 @@ class SaleNoteController extends Controller
 
     public function tables()
     {
+        $user = new User();
+        if(\Auth::user()){
+            $user = \Auth::user();
+        }
+        $establishment_id =  $user->establishment_id;
+        $userId =  $user->id;
         $customers = $this->table('customers');
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
         $currency_types = CurrencyType::whereActive()->get();
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
+        $global_charge_types = ChargeDiscountType::whereIn('id', ['50'])->get();
         $company = Company::active();
         $payment_method_types = PaymentMethodType::all();
         $series = collect(Series::all())->transform(function($row) {
@@ -522,10 +540,12 @@ class SaleNoteController extends Controller
         });
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::select('destination_sale','ticket_58')->first();
-        $sellers = User::GetSellers(false)->get();
+        // $sellers = User::GetSellers(false)->get();
+        $sellers = User::getSellersToNvCpe($establishment_id,$userId);
+
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types');
     }
 
     public function changed($id)
@@ -605,6 +625,7 @@ class SaleNoteController extends Controller
                     $row['item']['lots'] = isset($row['lots']) ? $row['lots']:$row['item']['lots'];
                 }
 
+                $this->setIdLoteSelectedToItem($row);
                 $sale_note_item->fill($row);
                 $sale_note_item->sale_note_id = $this->sale_note->id;
                 $sale_note_item->save();
@@ -618,15 +639,35 @@ class SaleNoteController extends Controller
                     }
                 }
 
-                if(isset($row['IdLoteSelected']))
+
+                // si tiene lotes y no fue generado a partir de otro documento (pedido...)
+                if(isset($row['IdLoteSelected']) && !$this->sale_note->isGeneratedFromExternalRecord())
                 {
-                    $quantity_unit = 1;
-                    if(isset($row['item']) && isset($row['item']['presentation'])&&isset($row['item']['presentation']['quantity_unit'])){
-                        $quantity_unit = $row['item']['presentation']['quantity_unit'];
+                    if(is_array($row['IdLoteSelected']))
+                    {
+                        // presentacion - factor de lista de precios
+                        $quantity_unit = isset($sale_note_item->item->presentation->quantity_unit) ? $sale_note_item->item->presentation->quantity_unit : 1;
+
+                        foreach ($row['IdLoteSelected'] as $item)
+                        {
+                            $lot = ItemLotsGroup::query()->find($item['id']);
+                            $lot->quantity = $lot->quantity - ($quantity_unit * $item['compromise_quantity']);
+                            $this->validateStockLotGroup($lot, $sale_note_item);
+                            $lot->save();
+                        }
+
                     }
-                    $lot = ItemLotsGroup::find($row['IdLoteSelected']);
-                    $lot->quantity = ($lot->quantity - ($row['quantity'] * $quantity_unit));
-                    $lot->save();
+                    else {
+
+                        $quantity_unit = 1;
+                        if(isset($row['item']) && isset($row['item']['presentation'])&&isset($row['item']['presentation']['quantity_unit'])){
+                            $quantity_unit = $row['item']['presentation']['quantity_unit'];
+                        }
+                        $lot = ItemLotsGroup::find($row['IdLoteSelected']);
+                        $lot->quantity = ($lot->quantity - ($row['quantity'] * $quantity_unit));
+                        $lot->save();
+                    }
+
                 }
 
             }
@@ -656,6 +697,27 @@ class SaleNoteController extends Controller
             ];
         }
     }
+
+
+    /**
+     *
+     * Asignar lote a item (regularizar propiedad en json item)
+     *
+     * @param  array $row
+     * @return void
+     */
+    private function setIdLoteSelectedToItem(&$row)
+    {
+        if(isset($row['IdLoteSelected']))
+        {
+            $row['item']['IdLoteSelected'] = $row['IdLoteSelected'];
+        }
+        else
+        {
+            $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
+        }
+    }
+
 
     private function regularizePayments($payments){
 
@@ -783,12 +845,14 @@ class SaleNoteController extends Controller
 //        $this->createPdf();
 //    }
 
-    private function setFilename(){
-
+    private function setFilename()
+    {
         $name = [$this->sale_note->series,$this->sale_note->number,date('Ymd')];
         $this->sale_note->filename = join('-', $name);
-        $this->sale_note->save();
 
+        $this->sale_note->unique_filename = $this->sale_note->filename; //campo único para evitar duplicados
+
+        $this->sale_note->save();
     }
 
     public function toPrint($external_id, $format) {
@@ -829,7 +893,7 @@ class SaleNoteController extends Controller
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
 
-            $company_logo      = ($this->company->logo) ? 20 : 0;
+            $company_logo      = ($this->company->logo) ? 40 : 0;
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
@@ -844,9 +908,8 @@ class SaleNoteController extends Controller
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items);
             $payments     = $this->document->payments()->count() * 2;
-
-            $extra_by_item_description = 0;
             $discount_global = 0;
+            $extra_by_item_description = 0;
             foreach ($this->document->items as $it) {
                 if(strlen($it->item->description)>100){
                     $extra_by_item_description +=24;
@@ -862,8 +925,8 @@ class SaleNoteController extends Controller
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    60 +
-                    (($quantity_rows * 8) + $extra_by_item_description) +
+                    120 +
+                    ($quantity_rows * 8)+
                     ($discount_global * 3) +
                     $company_logo +
                     $payments +
@@ -879,11 +942,12 @@ class SaleNoteController extends Controller
                     $total_free +
                     $total_unaffected +
                     $total_exonerated +
+                    $extra_by_item_description +
                     $total_taxed],
-                'margin_top' => 0,
-                'margin_right' => 2,
+                'margin_top' => 2,
+                'margin_right' => 5,
                 'margin_bottom' => 0,
-                'margin_left' => 2
+                'margin_left' => 5
             ]);
         } else if($format_pdf === 'a5'){
 
@@ -981,7 +1045,7 @@ class SaleNoteController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if(config('tenant.pdf_template_footer')) {
-            // if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+            /* if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) */
                 if ($base_template != 'full_height') {
                     $html_footer = $template->pdfFooter($base_template,$this->document);
                 } else {
@@ -993,8 +1057,12 @@ class SaleNoteController extends Controller
                         $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
                     }
                 }
-                //$pdf->SetHTMLFooter($html_footer.$html_footer_legend);
-            // }
+
+                if (($format_pdf === 'ticket') || ($format_pdf === 'ticket_58') || ($format_pdf === 'ticket_50')) {
+                    $pdf->WriteHTML($html_footer.$html_footer_legend, HTMLParserMode::HTML_BODY);
+                }else{
+                    $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+                }
         }
 
         if ($base_template === 'brand') {
@@ -1020,10 +1088,13 @@ class SaleNoteController extends Controller
         switch ($table) {
             case 'customers':
 
-                $customers = Person::whereType('customers')->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function($row) {
+                $customers = Person::whereType('customers')
+                    ->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function(Person$row) {
                     return [
                         'id' => $row->id,
                         'description' => $row->number.' - '.$row->name,
+                        'seller' => $row->seller,
+                        'seller_id' => $row->seller_id,
                         'name' => $row->name,
                         'number' => $row->number,
                         'identity_document_type_id' => $row->identity_document_type_id,
@@ -1460,7 +1531,7 @@ class SaleNoteController extends Controller
     }
 
 
-    private function savePayments($sale_note, $payments){
+    public function savePayments($sale_note, $payments){
 
         $total = $sale_note->total;
         $balance = $total - collect($payments)->sum('payment');
@@ -1529,20 +1600,16 @@ class SaleNoteController extends Controller
     private function voidedLots($item){
 
         $i_lots_group = isset($item->item->lots_group) ? $item->item->lots_group:[];
+        $lot_group_selecteds_filter = collect($i_lots_group)->where('compromise_quantity', '>', 0);
+        $lot_group_selecteds =  $lot_group_selecteds_filter->all();
 
-        $lot_group_selected = collect($i_lots_group)->first(function($row){
-            return $row->checked;
-        });
+        if(count($lot_group_selecteds) > 0){
 
-        if($lot_group_selected){
-            // @todo Posiblemente validar que exista quantity_unit.
-            $quantity_unit = $item->item->presentation->quantity_unit;
-            //$lot = ItemLotsGroup::find($row['IdLoteSelected']);
-//            $lot->quantity = ($lot->quantity - ($row['quantity'] * $quantity_unit));
-
-            $lot = ItemLotsGroup::find($lot_group_selected->id);
-            $lot->quantity =  $lot->quantity + ($item->quantity * $quantity_unit);
-            $lot->save();
+            foreach ($lot_group_selecteds as $lt) {
+                $lot = ItemLotsGroup::find($lt->id);
+                $lot->quantity = $lot->quantity + $lt->compromise_quantity;
+                $lot->save();
+            }
 
         }
 
@@ -1563,24 +1630,30 @@ class SaleNoteController extends Controller
             'client_id' => 'required|numeric|min:1',
         ]);
         $clientId = $request->client_id;
-        $records = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'])
-            ->select('series', 'number', 'id', 'date_of_issue')
-            ->where('customer_id', $clientId)
-            ->whereNull('document_id')
-            ->whereIn('state_type_id', ['01', '03', '05'])
-			->orderBy('number', 'desc');
+        $records = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'payments'])
+                            ->select('series', 'number', 'id', 'date_of_issue', 'total')
+                            ->where('customer_id', $clientId)
+                            ->whereNull('document_id')
+                            ->whereIn('state_type_id', ['01', '03', '05'])
+                            ->orderBy('number', 'desc');
 
         $dateOfIssue = $request->date_of_issue;
-        if ($dateOfIssue) {
+        $dateOfDue = $request->date_of_due;
+        if ($dateOfIssue&&!$dateOfDue) {
             $records = $records->where('date_of_issue', $dateOfIssue);
         }
 
+        if ($dateOfIssue&&$dateOfDue) {
+            $records = $records->whereBetween('date_of_issue', [$dateOfIssue,$dateOfDue]);
+        }
+        $sum_total=0;
         $records = $records->take(20)
             ->get();
-
+        $sum_total=number_format($records->sum('total'),2);
         return response()->json([
             'success' => true,
             'data' => $records,
+            'sum_total' => $sum_total,
         ], 200);
     }
 
@@ -1632,6 +1705,11 @@ class SaleNoteController extends Controller
         $this->sale_note->external_id = Str::uuid()->toString();
         $this->sale_note->state_type_id = '01' ;
         $this->sale_note->number = SaleNote::getLastNumberByModel($obj) ;
+        $this->sale_note->unique_filename = null;
+
+        $this->sale_note->changed = false;
+        $this->sale_note->document_id = null;
+
         $this->sale_note->save();
 
         foreach($obj->items as $row)

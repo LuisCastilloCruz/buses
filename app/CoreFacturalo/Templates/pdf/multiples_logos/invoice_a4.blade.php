@@ -613,7 +613,7 @@
         </td>
     </tr>
 </table>
-
+ 
 @if($document->payment_condition_id)
 <table class="full-width">
     <tr>

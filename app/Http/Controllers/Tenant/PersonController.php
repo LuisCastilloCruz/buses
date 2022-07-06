@@ -13,12 +13,17 @@ use App\Models\Tenant\Catalogs\Province;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\PersonType;
+use App\Models\Tenant\Zone;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
 use Carbon\Carbon;
 use App\Exports\ClientExport;
 use App\Models\System\Configuration;
+use Barryvdh\DomPDF\Facade as PDF;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class PersonController extends Controller
 {
@@ -35,6 +40,7 @@ class PersonController extends Controller
     {
         return [
             'name' => 'Nombre',
+            'barcode' => 'Código de barras',
             'number' => 'Número',
             'document_type' => 'Tipo de documento'
         ];
@@ -42,9 +48,10 @@ class PersonController extends Controller
 
     public function records($type, Request $request)
     {
-      //  return 'sd';
+
         $records = Person::where($request->column, 'like', "%{$request->value}%")
                             ->where('type', $type)
+                            ->whereFilterCustomerBySeller($type)
                             ->orderBy('name');
 
         return new PersonCollection($records->paginate(config('tenant.items_per_page')));
@@ -64,12 +71,16 @@ class PersonController extends Controller
         $identity_document_types = IdentityDocumentType::whereActive()->get();
         $person_types = PersonType::get();
         $locations = $this->getLocationCascade();
+        $zones = Zone::all();
+        $sellers = $this->getSellers();
+
         // $configuration = Configuration::first();
         // $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
         $api_service_token = \App\Models\Tenant\Configuration::getApiServiceToken();
 
 
-        return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations','person_types','api_service_token');
+        return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations','person_types','api_service_token'
+        ,'zones','sellers');
     }
 
     public function record($id)
@@ -81,8 +92,13 @@ class PersonController extends Controller
 
     public function store(PersonRequest $request)
     {
+        /* dd($request->all()); */
 
-
+        if (!$request->barcode) {
+            if ($request->internal_id) {
+                $request->merge(['barcode' => $request->internal_id]);
+            }
+        }
 
         if($request->state){
             if($request->state != "ACTIVO"){
@@ -119,9 +135,16 @@ class PersonController extends Controller
         if(!empty($optional_email)){
             $person->setOptionalEmailArray($optional_email)->push();
         }
+
+        $msg = '';
+        if($request->type === 'suppliers'){
+            $msg = ($id)?'Proveedor editado con éxito':'Proveedor registrado con éxito';
+        }else{
+            $msg = ($id)?'Cliente editado con éxito':'Cliente registrado con éxito';
+        }
         return [
             'success' => true,
-            'message' => ($id)?'Cliente editado con éxito':'Cliente registrado con éxito',
+            'message' => $msg,
             'id' => $person->id
         ];
     }
@@ -224,6 +247,7 @@ class PersonController extends Controller
 
     public function export($type, Request $request)
     {
+
         $d_start = null;
         $d_end = null;
         $period = $request->period;
@@ -239,7 +263,13 @@ class PersonController extends Controller
                 break;
         }
 
-        $records = ($period == 'all') ? Person::where('type', $type)->get() : Person::where('type', $type)->whereBetween('created_at', [$d_start, $d_end])->get();
+        if($period == 'all'){
+            $records = Person::where('type', $type)->get();
+        }elseif($period == 'seller'){
+            $records = Person::where([ 'type'=> $type, 'seller_id'=> $request->seller_id, ])->get();
+        }else{
+            $records = Person::where('type', $type)->whereBetween('created_at', [$d_start, $d_end])->get();
+        }
 
         $filename = ($type == 'customers') ? 'Reporte_Clientes_':'Reporte_Proveedores_';
 
@@ -272,5 +302,78 @@ class PersonController extends Controller
             'success' => true,
             'data' => $persons,
         ], 200);
+    }
+
+    public function printBarCode(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+        $id = $request->id;
+
+        $record = Person::find($id);
+
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    104.1,
+                    24
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        $html = view('tenant.persons.exports.persons-barcode-id', compact('record'))->render();
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_clientes_'.now()->format('Y_m_d').'.pdf', 'I');
+
+    }
+
+    public function generateBarcode($id)
+    {
+
+        $person = Person::findOrFail($id);
+
+        $colour = [150, 150, 150];
+
+        $generator = new BarcodeGeneratorPNG();
+
+        $temp = tempnam(sys_get_temp_dir(), 'person_barcode');
+
+        file_put_contents($temp, $generator->getBarcode($person->barcode, $generator::TYPE_CODE_128, 5, 70, $colour));
+
+        $headers = [
+            'Content-Type' => 'application/png',
+        ];
+
+        return response()->download($temp, "{$person->barcode}.png", $headers);
+
+    }
+
+    public function getPersonByBarcode($request)
+    {
+        /* dd($request); */
+        $value = $request;
+
+        $customers = Person::with('addresses')->whereType('customers')
+        ->where('id',$value)->get()->transform(function($row) {
+                        /** @var  Person $row */
+                        return $row->getCollectionData();
+                        /* Movido al modelo */
+                        return [
+                            'id' => $row->id,
+                            'description' => $row->number.' - '.$row->name,
+                            'name' => $row->name,
+                            'number' => $row->number,
+                            'identity_document_type_id' => $row->identity_document_type_id,
+                            'identity_document_type_code' => $row->identity_document_type->code,
+                            'addresses' => $row->addresses,
+                            'address' =>  $row->address
+                        ];
+                    });
+
+        return compact('customers');
     }
 }

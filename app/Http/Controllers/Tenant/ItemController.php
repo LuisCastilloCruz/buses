@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Tenant;
 use App\Exports\DigemidItemExport;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
+use App\Exports\ItemExtraDataExport;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PdfUnionController;
+use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\ItemRequest;
 use App\Http\Resources\Tenant\ItemCollection;
 use App\Http\Resources\Tenant\ItemResource;
@@ -21,7 +23,10 @@ use App\Models\Tenant\Catalogs\CatItemProductFamily;
 use App\Models\Tenant\Catalogs\CatItemStatus;
 use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
 use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Catalogs\OperationType;
+use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
 use App\Models\Tenant\Catalogs\UnitType;
@@ -31,10 +36,14 @@ use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemImage;
+use App\Models\Tenant\ItemMovement;
+use App\Models\Tenant\ItemSupply;
 use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\ItemUnitType;
 use App\Models\Tenant\ItemWarehousePrice;
 use App\Models\Tenant\Warehouse;
+use App\Traits\OfflineTrait;
+use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -53,10 +62,13 @@ use Modules\Item\Models\ItemLotsGroup;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use setasign\Fpdi\Fpdi;
+use Modules\Inventory\Models\InventoryConfiguration;
 
 
 class ItemController extends Controller
 {
+    use OfflineTrait;
+
     public function index()
     {
         $type = 'PRODUCTS';
@@ -86,6 +98,7 @@ class ItemController extends Controller
             'lot_code' => 'Código lote',
             'active' => 'Habilitados',
             'inactive' => 'Inhabilitados',
+            'category' => 'Categoria'
         ];
     }
 
@@ -104,13 +117,22 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getRecords(Request $request){
+    public function getRecords(Request $request)
+    {
 
-        $records = Item::whereTypeUser()->whereNotIsSet();
-        switch ($request->column) {
+        // $records = Item::whereTypeUser()->whereNotIsSet();
+        $records = $this->getInitialQueryRecords();
+
+        switch ($request->column)
+        {
 
             case 'brand':
                 $records->whereHas('brand',function($q) use($request){
+                                    $q->where('name', 'like', "%{$request->value}%");
+                                });
+                break;
+            case 'category':
+                $records->whereHas('category',function($q) use($request){
                                     $q->where('name', 'like', "%{$request->value}%");
                                 });
                 break;
@@ -125,9 +147,19 @@ class ItemController extends Controller
 
             default:
                 if($request->has('column'))
-                $records->where($request->column, 'like', "%{$request->value}%");
+                {
+                    if($this->applyAdvancedRecordsSearch() && $request->column === 'description')
+                    {
+                        if($request->value) $records->whereAdvancedRecordsSearch($request->column, $request->value);
+                    }
+                    else
+                    {
+                        $records->where($request->column, 'like', "%{$request->value}%");
+                    }
+                }
                 break;
         }
+
         if ($request->type) {
             if($request->type ==='PRODUCTS') {
                 // listar solo productos en la lista de productos
@@ -147,6 +179,29 @@ class ItemController extends Controller
         return $records->orderBy('description');
 
     }
+
+
+    /**
+     *
+     * Aplicar filtros iniciales a la consulta
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getInitialQueryRecords()
+    {
+
+        if(Configuration::getRecordIndividualColumn('list_items_by_warehouse'))
+        {
+            $records = Item::whereWarehouse()->whereNotIsSet();
+        }
+        else
+        {
+            $records = Item::whereTypeUser()->whereNotIsSet();
+        }
+
+        return $records;
+    }
+
 
     public function create()
     {
@@ -189,6 +244,7 @@ class ItemController extends Controller
         }
         /** Informacion adicional */
         $configuration = $configuration->getCollectionData();
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
         /*
         $configuration = Configuration::select(
             'affectation_igv_type_id',
@@ -216,7 +272,8 @@ class ItemController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
-            'CatItemUnitsPerPackage'
+            'CatItemUnitsPerPackage',
+            'inventory_configuration'
         );
     }
 
@@ -228,6 +285,7 @@ class ItemController extends Controller
     }
 
     public function store(ItemRequest $request) {
+
 
         $id = $request->input('id');
         if (!$request->barcode) {
@@ -312,7 +370,26 @@ class ItemController extends Controller
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
 
+            // migracion desarrollo sin terminar #1401
+            if(!$value['barcode']) {
+                $item_unit_type->barcode = $item_unit_type->id.$item_unit_type->unit_type_id.$item_unit_type->quantity_unit;
+                $item_unit_type->save();
+            }
+            else {
+                $item_unit_type->barcode = $value['barcode'];
+                $item_unit_type->save();
+            }
         }
+        if (isset($request->supplies)) {
+            foreach($request->supplies as $value){
+
+                if(!isset($value['item_id'])) $value['item_id'] = $item->id;
+                $itemSupply = ItemSupply::firstOrCreate(['id' => $value['id']],$value);
+                $itemSupply->fill($value);
+                $itemSupply->save();
+            }
+        }
+
         $configuration = Configuration::first();
         if($configuration->isShowExtraInfoToItem()){
             // Extra data
@@ -379,7 +456,9 @@ class ItemController extends Controller
                 ]);
             }
             $lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled:false;
-            if ($lots_enabled) {
+            $stock = (int)$request->stock;
+
+            if ($lots_enabled && $stock > 0) {
                 ItemLotsGroup::create([
                     'code'  => $request->lot_code,
                     'quantity'  => $request->stock,
@@ -510,6 +589,17 @@ class ItemController extends Controller
         }
 
         $item->update();
+
+        // migracion desarrollo sin terminar #1401
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
+
+        if($inventory_configuration->generate_internal_id == 1) {
+            if(!$item->internal_id) {
+                $items = Item::count();
+                $item->internal_id = (string)($items + 1);
+                $item->save();
+            }
+        }
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
@@ -890,7 +980,7 @@ class ItemController extends Controller
         }
 
         if($period !== 'all'){
-            $items->whereBetween('created_at', [$d_start, $d_end]);
+            $items->whereBetween('items.created_at', [$d_start, $d_end]);
         }
 
         $records =  $items->get();
@@ -927,6 +1017,86 @@ class ItemController extends Controller
 
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadExtraDataPdf(Request $request){
+        $field ='';
+        $records = $this->exportExtraItem($request,$field);
+
+
+        $pdf = PDF::loadView('tenant.items.exports.items_extra_data',
+            compact("records", "field"))
+            ->setPaper('a4', 'landscape');
+
+        $filename = 'Reporte_Items_Extra_Data_'.Carbon::now().'.xlsx';
+
+        return $pdf->download($filename.'.pdf');
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\Response|mixed|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function downloadExtraDataItemsExcel(Request $request){
+        $field ='';
+        $items = $this->exportExtraItem($request,$field);
+        $excel = new ItemExtraDataExport();
+        $excel->setRecords($items)->setField($field);
+        $filename = 'Reporte_Items_Extra_Data_'.Carbon::now().'.xlsx';
+
+        return $excel->download($filename);
+        return $excel->view();
+
+    }
+
+    /**
+     * Obtiene lo smovimientos de inventario para la categoria correspondiente,
+     * se implementa en pdf y excel por igual
+     *
+     * @param Request $request
+     * @param         $field
+     *
+     * @return Item[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     */
+    public function exportExtraItem(Request $request, &$field){
+
+        $stockByAttribute = ItemMovement::getQueryToStockWithOutItemId(auth()->user()->establishment_id)->distinct();
+        $field = $request->fields ?? '';
+        if($field == 'colors'){
+            $stockByAttribute->where('item_movement_rel_extra.item_color_id','!=',0);
+        }elseif($field == 'CatItemMoldProperty'){
+            $stockByAttribute->where('item_movement_rel_extra.item_mold_properties_id','!=',0);
+        }elseif($field == 'CatItemUnitBusiness'){
+            $stockByAttribute->where('item_movement_rel_extra.item_unit_business_id','!=',0);
+        }elseif($field == 'CatItemStatus'){
+            $stockByAttribute->where('item_movement_rel_extra.item_status_id','!=',0);
+        }
+        elseif($field == 'CatItemPackageMeasurement'){
+            $stockByAttribute->where('item_movement_rel_extra.item_package_measurements_id','!=',0);
+        }
+        elseif($field == 'CatItemProductFamily'){
+            $stockByAttribute->where('item_movement_rel_extra.item_product_family_id','!=',0);
+        }
+        elseif($field == 'CatItemSize'){
+            $stockByAttribute->where('item_movement_rel_extra.item_size_id','!=',0);
+        }
+        elseif($field == 'CatItemUnitsPerPackage'){
+            $stockByAttribute->where('item_movement_rel_extra.item_units_per_package_id','!=',0);
+        }
+        elseif($field == 'CatItemMoldCavity'){
+            $stockByAttribute->where('item_movement_rel_extra.item_mold_cavities_id','!=',0);
+        }
+        $itemsIds =$stockByAttribute->get()->pluck('item_id')->unique();
+        $items = Item::wherein('id',$itemsIds)->get()->transform(function (Item $row){
+           return $row->getCollectionData();
+        });
+        return $items;
+
+    }
     public function exportBarCode(Request $request){
 
         ini_set("pcre.backtrack_limit", "50000000");
@@ -1093,6 +1263,56 @@ class ItemController extends Controller
 
     }
 
+    public function printBarCodeX(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+        $id = $request->id;
+        $format = $request->format;
+
+        $record = Item::find($id);
+        $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()
+            ->establishment->warehouse->id]])->first();
+
+        if(!$item_warehouse){
+            return [
+                'success' => false,
+                'message' => "El producto seleccionado no esta disponible en su almacen!"
+            ];
+        }
+
+        if($item_warehouse->stock < 1){
+            return [
+                'success' => false,
+                'message' => "El producto seleccionado no tiene stock disponible en su almacen, no puede generar etiquetas!"
+            ];
+        }
+
+        $stock = $item_warehouse->stock;
+
+        $width = ($format == 1) ? 80 : 104.1;
+        $height = ($format == 1) ? 26 : 24;
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    $width,
+                    $height
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        $html = view('tenant.items.exports.items-barcode-x', compact('record', 'stock', 'format'))->render();
+
+        // return $html;
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_1x'.$format.'_'.now()->format('Y_m_d').'.pdf', 'I');
+
+    }
+
     public function itemLast()
     {
         $record = Item::latest()->first();
@@ -1124,4 +1344,89 @@ class ItemController extends Controller
         return new ItemCollection($records->paginate(5000));
 
     }
+
+
+    public function searchItemById($id)
+    {
+        // $items = SearchItemController::searchByIdToModal($id);
+        $items = SearchItemController::getItemsToSupply(null, $id);
+        return compact('items');
+    }
+
+
+    public function searchItems(Request $request)
+    {
+
+        $items = SearchItemController::getItemsToSupply($request);
+
+        return compact('items');
+
+    }
+
+    public function item_tables()
+    {
+        // $items = $this->table('items');
+        $items = SearchItemController::getItemsToDocuments();
+        $categories = [];
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
+        $system_isc_types = SystemIscType::whereActive()->get();
+        $price_types = PriceType::whereActive()->get();
+        $operation_types = OperationType::whereActive()->get();
+        $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
+        $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
+        $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+        $is_client = $this->getIsClient();
+
+        $configuration= Configuration::first();
+
+        /** Informacion adicional */
+        $colors = collect([]);
+        $CatItemSize=$colors;
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+
+            $colors = CatColorsItem::all();
+            $CatItemSize= CatItemSize::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
+
+
+        /** Informacion adicional */
+
+        return compact(
+            'items',
+            'categories',
+            'affectation_igv_types',
+            'system_isc_types',
+            'price_types',
+            'operation_types',
+            'discount_types',
+            'charge_types',
+            'attribute_types',
+            'is_client',
+            'colors',
+            'CatItemSize',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage');
+    }
+
+
+
 }

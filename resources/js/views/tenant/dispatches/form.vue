@@ -71,8 +71,7 @@
                                 <el-select v-model="form.transport_mode_type_id">
                                     <el-option v-for="option in transportModeTypes" :key="option.id"
                                                :label="option.description"
-                                               :value="option.id"
-                                    ></el-option>
+                                               :value="option.id"></el-option>
                                 </el-select>
                                 <small v-if="errors.transport_mode_type_id" class="form-control-feedback"
                                        v-text="errors.transport_mode_type_id[0]"></small>
@@ -82,7 +81,7 @@
                             <div :class="{'has-danger': errors.transfer_reason_type_id}" class="form-group">
                                 <label class="control-label">Motivo de traslado<span
                                     class="text-danger"> *</span></label>
-                                <el-select v-model="form.transfer_reason_type_id">
+                                <el-select v-model="form.transfer_reason_type_id" @change="changeTransferReasonType">
                                     <el-option v-for="option in transferReasonTypes" :key="option.id"
                                                :label="option.description"
                                                :value="option.id"></el-option>
@@ -91,7 +90,47 @@
                                        v-text="errors.transfer_reason_type_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+
+
+
+                        <!-- numero de DAM -->
+                        <template v-if="form.transfer_reason_type_id === '09'">
+
+                            <div class="col-lg-3">
+                                <div :class="{'has-danger': errors['related.number']}"
+                                    class="form-group">
+                                    <label class="control-label">Número de documento (DAM)
+                                        <el-tooltip class="item"
+                                                    content="Formato del campo: XXXX-XX-XXX-XXXXXX, Ejemplo: 0001-01-002-001234"
+                                                    effect="dark"
+                                                    placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                        <span class="text-danger"> *</span>
+                                    </label>
+                                    <el-input v-model="form.related.number" placeholder="0001-01-002-001234"></el-input>
+                                    <small v-if="errors['related.number']" class="form-control-feedback" v-text="errors['related.number'][0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div :class="{'has-danger': errors['related.document_type_id']}"
+                                    class="form-group">
+                                    <label class="control-label">Tipo documento relacionado<span class="text-danger"> *</span></label>
+                                    <el-select v-model="form.related.document_type_id" disabled>
+                                        <el-option v-for="option in related_document_types"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors['related.document_type_id']" class="form-control-feedback" v-text="errors['related.document_type_id'][0]"></small>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- numero de DAM -->
+
+
+                        <div :class="form.transfer_reason_type_id === '09' ? 'col-lg-12' : 'col-lg-6'">
                             <div :class="{'has-danger': errors.transfer_reason_description}" class="form-group">
                                 <label class="control-label">Descripción de motivo de traslado</label>
                                 <el-input v-model="form.transfer_reason_description" :rows="3"
@@ -131,7 +170,8 @@
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.total_weight}" class="form-group">
                                 <label class="control-label">Peso total<span class="text-danger"> *</span></label>
-                                <el-input v-model="form.total_weight"></el-input>
+                                <el-input-number v-model="form.total_weight" :max="9999999999" :min="0" :precision="2"
+                                                 :step="1"></el-input-number>
                                 <small v-if="errors.total_weight" class="form-control-feedback"
                                        v-text="errors.total_weight[0]"></small>
                             </div>
@@ -163,6 +203,23 @@
                                        v-text="errors.observations[0]"></small>
                             </div>
                         </div>
+
+                        <div class="col-lg-2" v-if="showOrderFormExternal">
+                            <div :class="{'has-danger': errors.order_form_external}"
+                                 class="form-group">
+                                <label class="control-label">Orden de pedido
+                                    <el-tooltip class="item"
+                                                content="Pedidos externos"
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-input v-model="form.order_form_external"></el-input>
+                                <small v-if="errors.order_form_external" class="form-control-feedback" v-text="errors.order_form_external[0]"></small>
+                            </div>
+                        </div>
+
                     </div>
                     <hr  class="mt-4" style="background: #0088cc">
                     <h4><b>DATOS DE ENVÍO</b></h4>
@@ -428,9 +485,10 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(row, index) in form.items">
+                            <tr v-for="(row, index) in form.items" :key="index">
                                 <td>{{ index + 1 }}</td>
-                                <td>{{ row.item.description }}</td>
+                                <td>{{ setDescriptionOfItem(row.item) }}</td>
+                                <!-- <td>{{ row.item.description }}</td> -->
                                 <td class="text-right">{{ row.quantity }}</td>
                                 <td class="text-right">
                                     <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
@@ -472,13 +530,16 @@ import PersonForm from '../persons/form.vue';
 import Items from './items.vue';
 import DispatchOptions from './partials/options.vue'
 import {mapActions, mapState} from "vuex";
+import {showNamePdfOfDescription} from '@helpers/functions'
 
 export default {
     props: [
         'document',
+        'documentItems',
         'typeDocument',
         'dispatch',
         'configuration',
+        'sale_note',
     ],
     components: {
         PersonForm,
@@ -500,6 +561,7 @@ export default {
             districtsDelivery: [],
             provincesOrigin: [],
             districtsOrigin: [],
+            related_document_types: [],
             establishments: [],
             districtsAll: [],
             provincesAll: [],
@@ -557,6 +619,7 @@ export default {
             this.all_series = response.data.series;
             this.drivers = response.data.drivers;
             this.dispachers = response.data.dispachers;
+            this.related_document_types = response.data.related_document_types
 
         }).then(() => {
             this.form.establishment_id = this.document.establishment_id
@@ -566,6 +629,9 @@ export default {
             this.form.transfer_reason_type_id = '01'
             this.form.transport_mode_type_id = '01'  //01=publico  02=privado
             this.form.items = this.document.items
+            if(this.documentItems !== undefined){
+                this.form.items = this.documentItems
+            }
             this.form.origin.country_id = this.document.establishment.country_id
 
             if(this.configuration.set_address_by_establishment)
@@ -607,7 +673,7 @@ export default {
                 }
             })
 
-            this.form.total_weight = (total_weight>0) ? total_weight : ''
+            this.form.total_weight = total_weight
 
 
             if (this.dispatch) {
@@ -639,6 +705,25 @@ export default {
 
     },
     methods: {
+        setDescriptionOfItem(item) {
+            return showNamePdfOfDescription(item, this.configuration.show_pdf_name)
+        },
+        changeTransferReasonType(){
+
+            // exportacion
+            if(this.form.transfer_reason_type_id === '09')
+            {
+                this.form.related = {
+                    number: null,
+                    document_type_id: '01'
+                }
+
+            }else
+            {
+                this.form.related = {}
+            }
+
+        },
         setOriginAddressByEstablishment(){
 
             if(this.configuration.set_address_by_establishment){
@@ -698,7 +783,7 @@ export default {
                 transshipment_indicator: false,
                 port_code: null,
                 unit_type_id: null,
-                total_weight: null,
+                total_weight: 0,
                 packages_number: null,
                 container_number: null,
                 license_plate: null,
@@ -725,8 +810,9 @@ export default {
                 items: [],
                 secondary_license_plates: {
                     semitrailer: null
-                }
-
+                },
+                related: {},
+                order_form_external: null,
             }
         },
         changeEstablishment() {
@@ -847,6 +933,9 @@ export default {
         ...mapState([
             'config',
         ]),
+        showOrderFormExternal(){
+            return ['i', 'on'].includes(this.typeDocument)
+        },
     },
 }
 </script>
