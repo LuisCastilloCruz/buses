@@ -8,14 +8,16 @@ try {
     require('bootstrap');
 } catch (e) {}
 
-import axios from 'axios';
+window.axios = require('axios');
+//import axios from 'axios';
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 let token = document.head.querySelector('meta[name="csrf-token"]');
 
 if (token) {
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+    //axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
     window.headers_token = {
         'X-CSRF-TOKEN': token.content,
     }
