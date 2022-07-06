@@ -2741,7 +2741,7 @@ html.sidebar-right-opened .page-header .sidebar-right-toggle i:before {
     }
     .page-header {
         padding-right: 80px;
-        position: absolute;
+        position: relative;
         top: 0;
         display: flex;
         z-index: 2;
