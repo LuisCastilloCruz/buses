@@ -1159,7 +1159,8 @@ class DocumentController extends Controller
         $guides = $request->guides;
         $plate_numbers = $request->plate_numbers;
 
-        $records = Document::query();
+        $records = Document::query()
+        ->with('dispatch','user','seller','person','affected_documents');
 		if ($d_start && $d_end) {
 			 $records->whereBetween('date_of_issue', [$d_start, $d_end]);
 		}
