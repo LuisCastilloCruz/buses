@@ -304,22 +304,24 @@
                                 <!-- Ocultar en cel -->
                                 <tr>
 
-                                    <td class="text-center pt-3"
-                                        colspan="2">
-                                        <el-popover
-                                            placement="top-start"
-                                            :open-delay="1000"
-                                            width="145"
-                                            trigger="hover"
-                                            content="Presiona F2">
-                                            <el-button slot="reference"
-                                                       class="btn waves-effect waves-light btn-primary btn-sm hidden-sm-down"
-                                                       style="width: 180px;"
-                                                       type="button"
-                                                       @click.prevent="clickAddItemInvoice">
-                                                + Agregar Producto
-                                            </el-button>
-                                        </el-popover>
+                                    <td class="text-center pt-3" colspan="2">
+                                        <div v-if="isEnabled">
+                                            <el-popover
+                                                placement="top-start"
+                                                :open-delay="1000"
+                                                width="145"
+                                                trigger="hover"
+                                                content="Presiona F2">
+                                                <el-button
+                                                           slot="reference"
+                                                           class="btn waves-effect waves-light btn-primary btn-sm hidden-sm-down"
+                                                           style="width: 180px;"
+                                                           type="button"
+                                                           @click.prevent="clickAddItemInvoice">
+                                                    + Agregar Producto
+                                                </el-button>
+                                            </el-popover>
+                                        </div>
                                     </td>
                                     <td colspan="2"></td>
                                     <td class="p-0"
@@ -1561,7 +1563,8 @@ export default {
             payment_conditions: [],
             affectation_igv_types: [],
             total_discount_no_base: 0,
-            show_has_retention: true
+            show_has_retention: true,
+            isEnabled: false
         }
     },
     computed: {
@@ -1590,6 +1593,9 @@ export default {
         },
     },
     async created() {
+        this.$eventHub.$on('habilita_boton_productos', (estado) => {
+            this.isEnabled=estado
+        })
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         await this.initForm()
@@ -1719,7 +1725,6 @@ export default {
             this.form.sale_notes_relateds = JSON.parse(notesNumbersFromNotes);
             localStorage.removeItem('notes')
         }
-
     },
     methods: {
         ...mapActions([

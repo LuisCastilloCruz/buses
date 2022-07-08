@@ -832,6 +832,7 @@ export default {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                 let data = response.data
                 this.all_items = data.items
+                this.$eventHub.$emit('habilita_boton_productos', true)
                 this.operation_types = data.operation_types
                 this.all_affectation_igv_types = data.affectation_igv_types
                 this.system_isc_types = data.system_isc_types
