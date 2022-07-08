@@ -1104,6 +1104,155 @@ class CashController extends Controller
         return $pdf->stream($filename.'.pdf');
 
     }
+    public function getIncomeTotal($cash){
+        $methods_payment = collect(PaymentMethodType::all())->transform(function($row){
+            return (object)[
+                'id' => $row->id,
+                'name' => $row->description,
+                'sum' => 0
+            ];
+        });
 
+        //$establishment = $cash->user->establishment;
+
+        $final_balance = 0;
+        $cash_income = 0;
+        $cash_egress = 0;
+        $cash_final_balance = 0;
+
+
+        $cash_documents = $cash->cash_documents;
+
+        foreach ($cash_documents as $cash_document) {
+
+            //$final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
+
+            if($cash_document->sale_note){
+
+                if($cash_document->sale_note->currency_type_id == 'PEN'){
+
+                    if(in_array($cash_document->sale_note->state_type_id, ['01','03','05','07','13'])){
+
+                        $cash_income += $cash_document->sale_note->total;
+                        $final_balance += $cash_document->sale_note->total;
+
+                    }
+
+
+                }else{
+
+                    if(in_array($cash_document->sale_note->state_type_id, ['01','03','05','07','13'])){
+
+                        $cash_income += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
+                        $final_balance += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
+
+                    }
+
+                }
+
+                if(in_array($cash_document->sale_note->state_type_id, ['01','03','05','07','13'])){
+
+                    if( count($cash_document->sale_note->payments) > 0)
+                    {
+                        $pays = $cash_document->sale_note->payments;
+
+                        foreach ($methods_payment as $record) {
+
+                            $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment') );
+                        }
+
+                    }
+                }
+
+
+            }
+            else if($cash_document->document){
+
+                if($cash_document->document->currency_type_id == 'PEN'){
+
+                    if(in_array($cash_document->document->state_type_id, ['01','03','05','07','13'])){
+
+                        $cash_income += $cash_document->document->total;
+                        $final_balance += $cash_document->document->total;
+
+                    }
+
+                }else{
+
+                    if(in_array($cash_document->document->state_type_id, ['01','03','05','07','13'])){
+
+                        $cash_income += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
+                        $final_balance += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
+
+                    }
+
+                }
+
+                if(in_array($cash_document->document->state_type_id, ['01','03','05','07','13'])){
+
+                    if( count($cash_document->document->payments) > 0)
+                    {
+                        $pays = $cash_document->document->payments;
+
+                        foreach ($methods_payment as $record) {
+                            // dd($pays, $record);
+
+                            $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->whereIn('document.state_type_id', ['01','03','05','07','13'])->sum('payment'));
+
+                        }
+
+                    }
+                }
+
+
+
+
+            }
+            else if($cash_document->expense_payment){
+
+                if($cash_document->expense_payment->expense->state_type_id == '05'){
+
+                    if($cash_document->expense_payment->expense->currency_type_id == 'PEN'){
+
+                        $cash_egress += $cash_document->expense_payment->payment;
+                        $final_balance -= $cash_document->expense_payment->payment;
+
+                    }else{
+
+                        $cash_egress += $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
+                        $final_balance -= $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
+                    }
+
+                }
+            }
+            else if($cash_document->income_payment){
+
+                //dd($cash_document->income_payment);
+                if($cash_document->income_payment->income->state_type_id == '05'){
+
+                    if($cash_document->income_payment->income->currency_type_id == 'PEN'){
+
+                        $cash_income += $cash_document->income_payment->payment;
+                        $final_balance += $cash_document->income_payment->payment;
+
+                    }else{
+
+                        $cash_income += $cash_document->income_payment->payment  * $cash_document->income_payment->income->exchange_rate_sale;
+                        $final_balance += $cash_document->income_payment->payment  * $cash_document->income_payment->income->exchange_rate_sale;
+                    }
+
+                }
+            }
+
+        }
+
+        $cash_final_balance = $final_balance + $cash->beginning_balance;
+
+        return [
+            'total_ingresos'=>$cash_income,
+            'total_egresos'=>$cash_egress,
+            'saldo_final'=>$cash_final_balance
+        ];
+    }
 
 }

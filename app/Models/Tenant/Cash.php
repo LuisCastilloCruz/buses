@@ -26,7 +26,7 @@ use Modules\Pos\Models\CashTransaction;
  */
 class Cash extends ModelTenant
 {
-    protected $with = ['cash_documents:cash_id'];
+    //protected $with = ['cash_documents:cash_id'];
 
     protected $table = 'cash';
 
