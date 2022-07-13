@@ -164,3 +164,18 @@ ul.nav-main li .nav-children {
     /*border-radius: 0px 0px 10px 10px;*/
 }
 
+@media only screen and (max-width: 767px) {
+    #main-wrapper {
+        padding-top: 0;
+    }
+    .youtube{
+        display: none;
+    }
+    .header .header-right {
+        float: none !important;
+    }
+    #main-wrapper {
+        padding-top: 0px !important;
+    }
+}
+
