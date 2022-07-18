@@ -464,12 +464,12 @@
             </td>
 
             @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
-                <td class="text-right align-top">{{ $row->generalApplyNumberFormat($row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
+                <td class="text-right align-top borde-gris">{{ $row->generalApplyNumberFormat($row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
             @else
-                <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
+                <td class="text-right align-top borde-gris">{{ number_format($row->unit_price, 2) }}</td>
             @endif
 
-            <td class="text-right align-top">
+            <td class="text-right align-top borde-gris">
                 @if($row->discounts)
                     @php
                         $total_discount_line = 0;

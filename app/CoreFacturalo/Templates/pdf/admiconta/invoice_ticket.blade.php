@@ -59,13 +59,13 @@
 @endif
 <table class="full-width">
     <tr>
-        <td class="text-center"><h5><b>{{ $company->name }}</b></h5></td>
+        <td class="text-center"><h4><b>{{ $company->name }}</b></h4></td>
     </tr>
     {{--<tr>
         <td class="text-center"><h5>{{ $company->trade_name }}</h5></td>
     </tr>--}}
     <tr>
-        <td class="text-center"><h5>RUC: {{ $company->number }}</h5></td>
+        <td class="text-center"><h4>RUC: {{ $company->number }}</h4></td>
     </tr>
     <tr>
         <td class="text-center" style="text-transform: uppercase;">
@@ -114,23 +114,23 @@
 <table class="full-width">
     <tr>
         <td><p class="desc"><b>F. Emisión:</b> </p>{{ $document->date_of_issue->format('Y-m-d') }}</td>
-        <td class="text-right"><p class="desc"><b>H. Emisión:</b> </p>{{ $document->time_of_issue }}</td>
+        <td class="text-center"><p class="desc"><b>H. Emisión:</b> </p>{{ $document->time_of_issue }}</td>
         <td class="text-right"><p class="desc"><b>F. Vencimiento:</b> </p>{{ $invoice->date_of_due->format('Y-m-d') }}</td>
     </tr>
 
 
     <tr>
         <td><p class="desc"><b>Cliente:</b></p></td>
-        <td colspan="3">{{ $customer->name }}</td>
+        <td colspan="2">{{ $customer->name }}</td>
     </tr>
     <tr>
         <td><p class="desc"><b>{{ $customer->identity_document_type->description }}:</b></p></td>
-        <td colspan="3">{{ $customer->number }}</td>
+        <td colspan="2">{{ $customer->number }}</td>
     </tr>
     @if ($customer->address !== '')
         <tr>
             <td class="align-top"><p class="desc"><b>Dirección:</b></p></td>
-            <td colspan="3">
+            <td colspan="2">
                 <p class="desc">
                     {{ $customer->address }}
                     {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
@@ -155,31 +155,31 @@
     @if ($document->detraction)
         {{--<strong>Operación sujeta a detracción</strong>--}}
         <tr>
-            <td  class="align-top"><p class="desc">N. Cta Detracciones:</p></td>
+            <td  class="align-top"><p class="desc"><b>N. Cta Detracciones:</b></p></td>
             <td><p class="desc">{{ $document->detraction->bank_account}}</p></td>
         </tr>
         <tr>
-            <td  class="align-top"><p class="desc">B/S Sujeto a detracción:</p></td>
+            <td  class="align-top"><p class="desc"><b>B/S Sujeto a detracción:</b></p></td>
             @inject('detractionType', 'App\Services\DetractionTypeService')
             <td><p class="desc">{{$document->detraction->detraction_type_id}} - {{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</p></td>
         </tr>
         <tr>
-            <td  class="align-top"><p class="desc">Método de pago:</p></td>
+            <td  class="align-top"><p class="desc"><b>Método de pago:</b></p></td>
             <td><p class="desc">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</p></td>
         </tr>
         <tr>
-            <td  class="align-top"><p class="desc">Porcentaje detracción:</p></td>
+            <td  class="align-top"><p class="desc"><b>Porcentaje detracción:</b></p></td>
             <td><p class="desc">{{ $document->detraction->percentage}}%</p></td>
         </tr>
         <tr>
-            <td  class="align-top"><p class="desc">Monto detracción:</p></td>
+            <td  class="align-top"><p class="desc"><b>Monto detracción:</b></p></td>
             <td><p class="desc">S/ {{ $document->detraction->amount}}</p></td>
         </tr>
         @if($document->detraction->pay_constancy)
-            <tr>
-                <td  class="align-top"><p class="desc">Constancia de pago:</p></td>
-                <td><p class="desc">{{ $document->detraction->pay_constancy}}</p></td>
-            </tr>
+        <tr>
+            <td  class="align-top"><p class="desc"><b>Constancia de pago:</b></p></td>
+            <td><p class="desc">{{ $document->detraction->pay_constancy}}</p></td>
+        </tr>
         @endif
 
 
@@ -657,7 +657,7 @@
                     <tr><td class="desc pt-2"><span class="font-bold">Leyendas</span></td></tr>
                     @endif
                 @else
-                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>
+{{--                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>--}}
                 @endif
             </tr>
         @endforeach
