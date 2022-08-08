@@ -292,10 +292,16 @@
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif --}}
+    @php
+        $total = $document->total;
+        $descuento = $document->total_discount;
+
+        $por_des= number_format($descuento/($total+$descuento) * 100)
+    @endphp
         @if($document->total_discount > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
+                <td colspan="8" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL ('.$por_des.'%)' )}}: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold"> {{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         {{--<tr>
