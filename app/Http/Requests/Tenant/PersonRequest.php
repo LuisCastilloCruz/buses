@@ -24,13 +24,14 @@ class PersonRequest extends FormRequest
                                  ->where('id', '<>' ,$id);
                 })
             ],
-            'name' => [
-                'required',
-                Rule::unique('tenant.persons')->where(function ($query) use($id, $type) {
-                    return $query->where('type', $type)
-                                 ->where('id', '<>' ,$id);
-                })
-            ],
+            // esto es una burrada
+//            'name' => [
+//                'required',
+//                Rule::unique('tenant.persons')->where(function ($query) use($id, $type) {
+//                    return $query->where('type', $type)
+//                                 ->where('id', '<>' ,$id);
+//                })
+//            ],
             'identity_document_type_id' => [
                 'required',
             ],
