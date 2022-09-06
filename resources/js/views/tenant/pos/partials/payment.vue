@@ -521,7 +521,8 @@ export default {
         'businessTurns',
         'isPrint',
         'globalDiscountTypeId',
-        'enabledTipsPos'
+        'enabledTipsPos',
+        'hidePdfViewDocuments',
     ],
     data() {
         return {
@@ -709,8 +710,7 @@ export default {
 
             if (input_global_discount > 0 && !discount)
             {
-
-                const percentage_igv = 18
+                const percentage_igv = this.percentageIgv * 100
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
@@ -1167,7 +1167,9 @@ export default {
                     }
 
                     this.documentNewId = response.data.data.id;
-                    this.showDialogOptions = true;
+
+                    // this.showDialogOptions = true;
+                    this.showOptionsDialog(response)
 
                     // this.savePaymentMethod();
                     this.saveCashDocument();
@@ -1194,6 +1196,38 @@ export default {
                 this.locked_submit = false
             });
         },
+
+        showOptionsDialog(response){
+
+            if(this.hidePdfViewDocuments)
+            {
+                const response_data = response.data.data
+
+                if(this.form.document_type_id === '80')
+                {
+                    this.$message.success(`Nota de venta registrada: ${response_data.number_full}`)
+                }
+                else
+                {
+                    if(response_data.response.sent)
+                    {
+                        this.$message.success(response_data.response.description)
+                    }
+                    else
+                    {
+                        this.$message.success(`Comprobante registrado: ${response_data.number_full}`)
+                    }
+                }
+
+                this.clickCancel()
+            }
+            else
+            {
+                this.showDialogOptions = true
+            }
+
+        },
+
         gethtml(){
             this.form.datahtml="";
             var doc='salenote';
@@ -1229,7 +1263,19 @@ export default {
                     options: opts
                 }
             ];
-            qz.print(configg, printData).catch(displayError);
+            // qz.print(configg, printData).catch(displayError);
+
+            qz.print(configg, printData)
+                .then(()=>{
+
+                    this.$notify({
+                        title: '',
+                        message: 'Impresión en proceso...',
+                        type: 'success'
+                    })
+
+                })
+                .catch(displayError)
         },
         saveCashDocument() {
             this.$http.post(`/cash/cash_document`, this.form_cash_document)

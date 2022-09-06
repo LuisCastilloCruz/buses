@@ -160,11 +160,25 @@
                         </td>
 
                         <td class="text-right">
+
+<!--                            /*-->
+<!--                             #830-->
+<!--                             */-->
+                            <button v-if="row.btn_options"
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickGenerateDocument(row.id)" >
+                                Generar comprobante
+                            </button>
+<!--                            /*-->
+<!--                             #830-->
+<!--                             */-->
+
                             <button v-if="row.btn_options"
                                     type="button"
                                     class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)" >
-                                Generar comprobante
+                                Generar nota de venta
                             </button>
 
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
@@ -380,6 +394,9 @@
 
                 })
                 this.$eventHub.$emit('reloadData')
+            },
+            clickGenerateDocument(recordId) {
+                window.location.href = `/documents/create/quotations/${recordId}`;
             }
         }
     }

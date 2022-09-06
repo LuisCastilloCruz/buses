@@ -106,6 +106,7 @@
                 loading: false,
                 errors: {},
                 form: {},
+                search: '',
                 lots_: [],
                 records: [],
                 pagination: {},

@@ -244,7 +244,7 @@
                             <div :class="{'has-danger': errors.internal_id}"
                                  class="form-group">
                                 <!-- migracion desarrollo sin terminar #1401 -->
-                                 <template v-if="inventory_configuration && inventory_configuration.generate_internal_id == 1">
+                                 <!-- <template v-if="inventory_configuration && inventory_configuration.generate_internal_id == 1">
                                     <label class="control-label">Código Interno
                                     <el-tooltip class="item"
                                                 content="Código interno de la empresa para el control de sus productos | Autogenerado por el sistema"
@@ -258,8 +258,8 @@
                                     <small v-if="errors.internal_id"
                                        class="form-control-feedback"
                                        v-text="errors.internal_id[0]"></small>
-                                </template>
-                                <template v-else>
+                                </template> -->
+                                <!-- <template v-else> -->
                                     <label class="control-label">Código Interno
                                         <el-tooltip class="item"
                                                     content="Código interno de la empresa para el control de sus productos"
@@ -273,7 +273,7 @@
                                     <small v-if="errors.internal_id"
                                         class="form-control-feedback"
                                         v-text="errors.internal_id[0]"></small>
-                                </template>
+                                <!-- </template> -->
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -363,19 +363,19 @@
                                 <table class="table table-sm mb-0 table-borderless">
                                     <thead>
                                     <tr>
-                                        <th width="33%">
+                                        <th width="25%">
                                             <el-checkbox v-model="form.has_perception"
                                                          @change="changeHasPerception">Incluye percepción
                                             </el-checkbox>
                                         </th>
-                                        <th width="33%">
+                                        <th width="25%">
                                             <div v-show="form.unit_type_id !='ZZ'">
                                                 <el-checkbox v-model="form.lots_enabled"
                                                              @change="changeLotsEnabled">¿Maneja lotes?
                                                 </el-checkbox>
                                             </div>
                                         </th>
-                                        <th width="33%">
+                                        <th width="25%">
                                             <div v-show="form.unit_type_id !='ZZ'">
                                                 <el-checkbox v-model="form.series_enabled"
                                                              @change="changeLotsEnabled">¿Maneja series?
@@ -900,6 +900,57 @@
                                        v-text="errors.percentage_of_profit[0]"></small>
                             </div>
                         </div>
+
+                        <!-- isc compras -->
+                        <div class="col-md-4">
+                            <div :class="{'has-danger': errors.purchase_has_isc}"
+                                 class="form-group">
+                                <el-checkbox v-model="form.purchase_has_isc"
+                                             @change="purchaseChangeIsc">Incluye ISC
+                                </el-checkbox>
+                                <br>
+                                <small v-if="errors.purchase_has_isc"
+                                       class="form-control-feedback"
+                                       v-text="errors.purchase_has_isc[0]"></small>
+                            </div>
+                        </div>
+
+                        <template v-if="form.purchase_has_isc">
+                            <div class="col-md-4">
+                                <div :class="{'has-danger': errors.purchase_system_isc_type_id}"
+                                     class="form-group">
+                                    <label class="control-label">Tipo de sistema ISC</label>
+                                    <el-select
+                                        v-model="form.purchase_system_isc_type_id"
+                                        filterable>
+                                        <el-option
+                                            v-for="option in system_isc_types"
+                                            :key="option.id"
+                                            :label="option.description"
+                                            :value="option.id"
+                                        ></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.purchase_system_isc_type_id"
+                                        class="form-control-feedback"
+                                        v-text="errors.purchase_system_isc_type_id[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div :class="{'has-danger': errors.purchase_percentage_isc}"
+                                     class="form-group">
+                                    <label class="control-label">Porcentaje ISC</label>
+                                    <el-input v-model="form.purchase_percentage_isc"></el-input>
+                                    <small
+                                        v-if="errors.purchase_percentage_isc"
+                                        class="form-control-feedback"
+                                        v-text="errors.purchase_percentage_isc[0]"></small>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- isc compras -->
+
                     </div>
                 </el-tab-pane>
 

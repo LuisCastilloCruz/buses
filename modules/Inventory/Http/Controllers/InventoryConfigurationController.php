@@ -19,12 +19,12 @@ class InventoryConfigurationController extends Controller
         return view('inventory::config.index');
     }
 
-    
+
     public function record() {
 
         $inventory_configuration = InventoryConfiguration::first();
         $record = new InventoryConfigurationResource($inventory_configuration);
-        
+
         return $record;
 
     }
@@ -34,19 +34,19 @@ class InventoryConfigurationController extends Controller
         $id = $request->input('id');
         $inventory_configuration = InventoryConfiguration::find($id);
         $inventory_configuration->fill($request->all());
-        
+
         // migracion desarrollo sin terminar #1401
-        if($request->generate_internal_id == true) {
-            $item = Item::first();
-            if($item) {
-                $inventory_configuration->generate_internal_id = 0;
-                return [
-                    'success' => false,
-                    'message' => 'Solo permitido si no tiene productos'
-                ];
-            }
-        }
-        
+        // if($request->generate_internal_id == true) {
+        //     $item = Item::first();
+        //     if($item) {
+        //         $inventory_configuration->generate_internal_id = 0;
+        //         return [
+        //             'success' => false,
+        //             'message' => 'Solo permitido si no tiene productos'
+        //         ];
+        //     }
+        // }
+
         $inventory_configuration->save();
 
         return [
@@ -55,5 +55,5 @@ class InventoryConfigurationController extends Controller
         ];
 
     }
-    
+
 }

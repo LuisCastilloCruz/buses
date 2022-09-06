@@ -75,7 +75,7 @@
         /**
          * @param Request $request
          *
-         * @return ExpenseCollection
+         * @return BankLoanCollection
          */
         public function records(Request $request)
         {

@@ -140,4 +140,17 @@
         }
 
 
+        /**
+         *
+         * Se agrega scope polimorfico para filtrar destino en global payment
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeWithBankIfExist($query)
+        {
+            return $query->with(['bank']);
+        }
+
+
     }

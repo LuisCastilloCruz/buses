@@ -7,7 +7,7 @@ use App\Models\Tenant\SoapType;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Establishment;
-use App\Models\Tenant\CurrencyType;
+use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\ModelTenant;
 
 class Income extends ModelTenant
@@ -31,12 +31,13 @@ class Income extends ModelTenant
         'time_of_issue',
         'exchange_rate_sale',
         'total',
+        'filename',
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
     ];
-  
+
     public function items()
     {
         return $this->hasMany(IncomeItem::class);
@@ -91,7 +92,7 @@ class Income extends ModelTenant
                 $user = new User();
             }
         }
-        else { 
+        else {
             $user = auth()->user();
         }
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
@@ -111,4 +112,22 @@ class Income extends ModelTenant
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
     }
+
+
+    /**
+     *
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsGlobalPayment($query)
+    {
+        return $query->with([
+                'document_type'=> function($q){
+                    $q->select('id', 'description');
+                },
+            ]);
+    }
+
 }

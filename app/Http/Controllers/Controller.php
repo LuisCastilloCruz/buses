@@ -15,6 +15,7 @@
     use Illuminate\Support\Facades\Route;
     use Modules\Report\Models\ReportConfiguration;
     use App\Models\Tenant\Configuration;
+    use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
 
 
     /**
@@ -277,5 +278,34 @@ $string = var_export($header,true);
             }
         }
 
+
+        /**
+         *
+         * Retornar array para respuestas en peticiones
+         *
+         * @param  bool $success
+         * @param  string $message
+         * @return array
+         */
+        public function generalResponse($success, $message = null)
+        {
+            return [
+                'success' => $success,
+                'message' => $message,
+            ];
+        }
+
+
+        /**
+         *
+         * Obtener datos temporales de imagen cargada
+         *
+         * @param  Request $request
+         * @return array
+         */
+        public function generalUploadTempImage(Request $request)
+        {
+            return app(ItemControllerMobileApp::class)->uploadTempImage($request);
+        }
 
     }

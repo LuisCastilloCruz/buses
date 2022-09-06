@@ -18,12 +18,12 @@ class AuthApi
 
             $company = Company::active();
 
-//            if(!$company->integrated_query_client_id || !$company->integrated_query_client_secret){
-//                return [
-//                    'success' => false,
-//                    'message' => 'No ha configurado correctamente el campo client_id o client_secret',
-//                ];
-//            }
+            if(!$company->integrated_query_client_id || !$company->integrated_query_client_secret){
+                return [
+                    'success' => false,
+                    'message' => 'No ha configurado correctamente el campo client_id o client_secret',
+                ];
+            }
 
             $curl = curl_init();
 

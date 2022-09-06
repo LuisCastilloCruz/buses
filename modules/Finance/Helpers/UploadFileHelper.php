@@ -1,22 +1,23 @@
 <?php
 
-namespace Modules\Finance\Helpers; 
+namespace Modules\Finance\Helpers;
 
 use Illuminate\Support\Facades\Storage;
 use Validator;
+use Illuminate\Support\Str;
 
 
 class UploadFileHelper
-{ 
+{
 
     public static function validateUploadFile($request, $column = 'file', $mimes = 'jpg,jpeg,png,gif,svg,pdf,xlsx')
     {
-        
+
         $validator = Validator::make($request->all(), [
             $column => 'mimes:'.$mimes
         ]);
 
-        if ($validator->fails()) { 
+        if ($validator->fails()) {
             return [
                 'success' => false,
                 'message' =>  'Tipo de archivo no permitido',
@@ -28,11 +29,11 @@ class UploadFileHelper
             'message' =>  '',
         ];
 
-    } 
+    }
 
-     
+
     /**
-     * 
+     *
      * Obtener archivo temporal en base64
      *
      * @param  $request
@@ -59,9 +60,9 @@ class UploadFileHelper
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Cargar archivo
      *
      * @param  string $folder
@@ -81,6 +82,36 @@ class UploadFileHelper
         $filename =  ($prefix ? "{$prefix}_" : "")."{$id}_{$now}".'.'.end($old_filename_array);
 
         Storage::put($directory.$filename, file_get_contents($temp_path));
+
+        return $filename;
+    }
+
+
+    /**
+     *
+     * Cargar imágen
+     *
+     * @param  string $folder
+     * @param  string $old_filename
+     * @param  string $temp_path
+     * @param  string $name
+     * @param  bool $file_get_contents
+     * @param  string $suffix
+     * @return string
+     */
+    public static function uploadImageFromTempFile($folder, $old_filename, $temp_path, $name, $file_get_contents, $suffix = null)
+    {
+
+        $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR;
+        $old_filename_array = explode('.', $old_filename);
+        $now = date('YmdHis');
+
+        $suffix = ($suffix ? "-{$suffix}" : "");
+        $filename =  Str::slug($name)."-{$now}{$suffix}".'.'.end($old_filename_array);
+
+        $file = $file_get_contents ? file_get_contents($temp_path) :  $temp_path;
+
+        Storage::put($directory.$filename, $file);
 
         return $filename;
     }

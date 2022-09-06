@@ -214,6 +214,7 @@
                                 </el-checkbox>
                             </div>
                         </div>
+
                         <div class="col-md-8 mt-2 mb-2">
                             <div class="form-group">
                                 <el-checkbox v-model="form.has_payment"
@@ -691,6 +692,7 @@
                             :exchange-rate-sale="form.exchange_rate_sale"
                             :showDialog.sync="showDialogAddItem"
                             :localHasGlobalIgv="localHasGlobalIgv"
+                            :percentage-igv="percentage_igv"
                             @add="addRow"></purchase-form-item>
 
         <person-form :external="true"
@@ -784,9 +786,9 @@ export default {
             affected_documents: [],
         }
     },
-    mounted() {
+    async mounted() {
         this.initForm()
-        this.$http.get(`/${this.resource}/tables`)
+        await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 let data = response.data
                 this.document_types = data.document_types_invoice
@@ -826,6 +828,7 @@ export default {
             this.initInputPerson()
         })
 
+        await this.getPercentageIgv();
         this.filterCustomers()
         this.isGeneratePurchaseOrder()
         this.changeHasPayment()
@@ -1273,7 +1276,7 @@ export default {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
             });
             this.form.items = items
             this.calculateTotal()

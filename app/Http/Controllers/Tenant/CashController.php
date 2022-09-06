@@ -53,11 +53,10 @@ class CashController extends Controller
 
     public function records(Request $request)
     {
-        $records = Cash::with('user')
+        $records = Cash::withOut(['cash_documents'])
                         ->where($request->column, 'like', "%{$request->value}%")
                         ->whereTypeUser()
                         ->orderBy('date_opening', 'DESC');
-
 
         return new CashCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -133,6 +132,14 @@ class CashController extends Controller
         return compact('cash');
     }
 
+    /**
+     *
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $user_id
+     * @return array
+     */
     public function opening_cash_check($user_id)
     {
         $cash = Cash::where([['user_id', $user_id],['state', true]])->first();
@@ -140,6 +147,14 @@ class CashController extends Controller
     }
 
 
+    /**
+     *
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @return array
+     */
     public function record($id)
     {
         $record = new CashResource(Cash::findOrFail($id));
@@ -147,6 +162,15 @@ class CashController extends Controller
         return $record;
     }
 
+
+    /**
+     *
+     * Usado en:
+     * CashController - App
+     *
+     * @param  CashRequest $request
+     * @return array
+     */
     public function store(CashRequest $request) {
 
         $id = $request->input('id');
@@ -196,6 +220,14 @@ class CashController extends Controller
     }
 
 
+    /**
+     *
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @return array
+     */
     public function close($id) {
 
         $cash = Cash::findOrFail($id);
@@ -274,6 +306,10 @@ class CashController extends Controller
     }
 
     /**
+     *
+     * Usado en:
+     * CashController - App
+     *
      * @param \Illuminate\Http\Request $request
      *
      * @return array
@@ -341,6 +377,14 @@ class CashController extends Controller
     }
 
 
+    /**
+     *
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @return array
+     */
     public function destroy($id)
     {
 
@@ -419,6 +463,16 @@ class CashController extends Controller
 
     }
 
+
+    /**
+     *
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @param  bool $is_garage
+     * @return mixed
+     */
     public function report_products($id, $is_garage = false)
     {
 
@@ -469,6 +523,8 @@ class CashController extends Controller
             $data['description'] = $row->item->description;
             $data['unit_type_id'] = $this->getUnitTypeId($row);
             $data['record_type'] = 'document_item';
+            $data['total'] = $row->document->total;
+            $data['item_id'] =$row->relation_item->id;
             return $data;
         });
 
@@ -499,6 +555,8 @@ class CashController extends Controller
             $data['description'] = $row->item->description;
             $data['unit_type_id'] = $this->getUnitTypeId($row);
             $data['record_type'] = 'sale_note_item';
+            $data['total'] = $row->sale_note->total;
+            $data['item_id'] =$row->relation_item->id;
             return $data;
         });
 
@@ -523,6 +581,8 @@ class CashController extends Controller
             $data['description'] = $row->item->description;
             $data['unit_type_id'] = $this->getUnitTypeId($row);
             $data['record_type'] = 'purchase_item';
+            $data['total'] = $row->purchase->total;
+            $data['item_id'] =$row->purchase->id;
             return $data;
         });
 

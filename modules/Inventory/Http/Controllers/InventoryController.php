@@ -52,7 +52,7 @@ class InventoryController extends Controller
 							})
 							->orderBy('item_id');
 		}
-		else 
+		else
 		{
 			$records = $this->getCommonRecords($request);
 		}
@@ -61,9 +61,9 @@ class InventoryController extends Controller
 	}
 
 
-		
+
 	/**
-	 * 
+	 *
 	 * Obtener registros
 	 *
 	 * @param  Request $request
@@ -214,9 +214,9 @@ class InventoryController extends Controller
 			$inventory->comments = $comments;
 
 			if($created_at) {
-			  $inventory->created_at = $created_at;
+			  $inventory->date_of_issue = $created_at;
 			}
-			
+
 			$inventory->save();
 
 			$lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled : false;

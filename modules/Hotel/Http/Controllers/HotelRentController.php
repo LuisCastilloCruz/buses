@@ -48,7 +48,7 @@ class HotelRentController extends Controller
 			$now = now();
 			$request->merge(['input_date' => $now->format('Y-m-d')]);
 			$request->merge(['input_time' => $now->format('H:i:s')]);
-			$rent = HotelRent::create($request->only('customer_id', 'customer', 'notes', 'towels', 'hotel_room_id', 'duration', 'quantity_persons', 'payment_status', 'output_date', 'output_time', 'input_date', 'input_time'));
+			$rent = HotelRent::create($request->only('customer_id', 'customer', 'notes', 'towels', 'hotel_room_id', 'hotel_rate_id', 'duration', 'quantity_persons', 'payment_status', 'output_date', 'output_time', 'input_date', 'input_time'));
 
 			$room->status = 'OCUPADO';
 			$room->save();
@@ -91,13 +91,14 @@ class HotelRentController extends Controller
 		$rent = HotelRent::with('room')
 			->findOrFail($rentId);
 
+		$establishment = Establishment::query()->find(auth()->user()->establishment_id);
 		$configuration = Configuration::first();
 
 		$products = HotelRentItem::where('hotel_rent_id', $rentId)
 			->where('type', 'PRO')
 			->get();
 
-		return view('hotel::rooms.add-product-to-room', compact('rent', 'configuration', 'products'));
+		return view('hotel::rooms.add-product-to-room', compact('rent', 'configuration', 'products', 'establishment'));
 	}
 
 	public function addProductsToRoom(HotelRentItemRequest $request, $rentId)
@@ -194,7 +195,7 @@ class HotelRentController extends Controller
 		$query = request('input');
 		$search_by_barcode = (bool)request('search_by_barcode');
 		if ($query && $search_by_barcode) {
-			
+
 			$customers = $customers->where('barcode', 'like', "%{$query}%");
 		}else{
 			if (is_numeric($query)) {

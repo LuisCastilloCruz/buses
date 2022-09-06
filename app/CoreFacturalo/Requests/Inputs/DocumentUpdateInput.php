@@ -76,7 +76,8 @@ class DocumentUpdateInput
 			'customer'                  => $customer,
 			'currency_type_id'          => $inputs['currency_type_id'],
 			'purchase_order'            => $inputs['purchase_order'],
-			'quotation_id'              => Functions::valueKeyInArray($inputs, 'quotation_id'),
+            'folio' => Functions::valueKeyInArray($inputs, 'folio'),
+            'quotation_id'              => Functions::valueKeyInArray($inputs, 'quotation_id'),
 			'sale_note_id'              => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'technical_service_id'      => Functions::valueKeyInArray($inputs, 'technical_service_id'),
 			'exchange_rate_sale'        => $inputs['exchange_rate_sale'],
@@ -139,66 +140,72 @@ class DocumentUpdateInput
             'fee' 						=> Functions::valueKeyInArray($inputs, 'fee', []),
             'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
 
-            'sale_notes_relateds'       => Functions::valueKeyInArray($inputs, 'sale_notes_relateds'),
-            'seller_id' 				=> Functions::valueKeyInArray($inputs, 'seller_id'),
+            'sale_notes_relateds' => Functions::valueKeyInArray($inputs, 'sale_notes_relateds'),
+            'seller_id' => Functions::valueKeyInArray($inputs, 'seller_id'),
 
-		];
-	}
+        ];
+    }
 
-	private static function items($inputs)
-	{
-		if (array_key_exists('items', $inputs)) {
-			$items = [];
-			foreach ($inputs['items'] as $row) {
-				$item = Item::find($row['item_id']);
-				$items[] = [
-					'item_id' => $item->id,
-					'item'    => [
-						'description'              => $item->description,
-						'item_type_id'             => $item->item_type_id,
-						'internal_id'              => $item->internal_id,
-						'item_code'                => trim($item->item_code),
-						'item_code_gs1'            => $item->item_code_gs1,
-						'unit_type_id'             => (key_exists('item', $row)) ? $row['item']['unit_type_id'] : $item->unit_type_id,
-						'presentation'             => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation'] : []) : [],
-						'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
-						'is_set'                   => $item->is_set,
-						'lots'                     => self::lots($row),
-						'IdLoteSelected'           => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
-						'model'                    => $item->model,
+    private static function items($inputs)
+    {
+        if (array_key_exists('items', $inputs)) {
+            $items = [];
+            foreach ($inputs['items'] as $row) {
+                $item = Item::find($row['item_id']);
+                $items[] = [
+                    'item_id' => $item->id,
+                    'item' => [
+                        'description' => $item->description,
+                        'item_type_id' => $item->item_type_id,
+                        'internal_id' => $item->internal_id,
+                        'item_code' => trim($item->item_code),
+                        'item_code_gs1' => $item->item_code_gs1,
+                        'unit_type_id' => (key_exists('item', $row)) ? $row['item']['unit_type_id'] : $item->unit_type_id,
+                        'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation'] : []) : [],
+                        'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
+                        'is_set' => $item->is_set,
+                        'lots' => self::lots($row),
+                        'IdLoteSelected' => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
+                        'model' => $item->model,
                         'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
                         'has_igv' => $row['item']['has_igv'] ?? true,
-					],
-					'quantity'                => $row['quantity'],
-					'unit_value'              => $row['unit_value'],
-					'price_type_id'           => $row['price_type_id'],
-					'unit_price'              => $row['unit_price'],
-					'affectation_igv_type_id' => $row['affectation_igv_type_id'],
-					'total_base_igv'          => $row['total_base_igv'],
-					'percentage_igv'          => $row['percentage_igv'],
-					'total_igv'               => $row['total_igv'],
-					'system_isc_type_id'      => $row['system_isc_type_id'],
-					'total_base_isc'          => Functions::valueKeyInArray($row, 'total_base_isc', 0),
-					'percentage_isc'          => Functions::valueKeyInArray($row, 'percentage_isc', 0),
-					'total_isc'               => Functions::valueKeyInArray($row, 'total_isc', 0),
-					'total_base_other_taxes'  => Functions::valueKeyInArray($row, 'total_base_other_taxes', 0),
-					'percentage_other_taxes'  => Functions::valueKeyInArray($row, 'percentage_other_taxes', 0),
-					'total_other_taxes'       => Functions::valueKeyInArray($row, 'total_other_taxes', 0),
-					'total_plastic_bag_taxes' => Functions::valueKeyInArray($row, 'total_plastic_bag_taxes', 0),
-					'total_taxes'             => $row['total_taxes'],
-					'total_value'             => $row['total_value'],
-					'total_charge'            => Functions::valueKeyInArray($row, 'total_charge', 0),
-					'total_discount'          => Functions::valueKeyInArray($row, 'total_discount', 0),
-					'total'                   => $row['total'],
-					'attributes'              => self::attributes($row),
-					'discounts'               => self::discounts($row),
-					'charges'                 => self::charges($row),
-					'warehouse_id'            => Functions::valueKeyInArray($row, 'warehouse_id'),
-					'additional_information'  => Functions::valueKeyInArray($row, 'additional_information'),
-					'name_product_pdf'        => Functions::valueKeyInArray($row, 'name_product_pdf'),
-                    'name_product_xml'        => Functions::valueKeyInArray($row, 'name_product_pdf') ? DocumentInput::getNameProductXml($row, $inputs) : null,
-					'update_description'      => Functions::valueKeyInArray($row, 'update_description', false)
-				];
+                        'sanitary' => $item->sanitary,
+                        'cod_digemid' => $item->cod_digemid,
+                        'unit_price' => $row['unit_price'] ?? 0,
+                        'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,
+
+                    ],
+                    'quantity' => $row['quantity'],
+                    'unit_value' => $row['unit_value'],
+                    'price_type_id' => $row['price_type_id'],
+                    'unit_price' => $row['unit_price'],
+                    'affectation_igv_type_id' => $row['affectation_igv_type_id'],
+                    'total_base_igv' => $row['total_base_igv'],
+                    'percentage_igv' => $row['percentage_igv'],
+                    'total_igv' => $row['total_igv'],
+                    'system_isc_type_id' => $row['system_isc_type_id'],
+                    'total_base_isc' => Functions::valueKeyInArray($row, 'total_base_isc', 0),
+                    'percentage_isc' => Functions::valueKeyInArray($row, 'percentage_isc', 0),
+                    'total_isc' => Functions::valueKeyInArray($row, 'total_isc', 0),
+                    'total_base_other_taxes' => Functions::valueKeyInArray($row, 'total_base_other_taxes', 0),
+                    'percentage_other_taxes' => Functions::valueKeyInArray($row, 'percentage_other_taxes', 0),
+                    'total_other_taxes' => Functions::valueKeyInArray($row, 'total_other_taxes', 0),
+                    'total_plastic_bag_taxes' => Functions::valueKeyInArray($row, 'total_plastic_bag_taxes', 0),
+                    'total_taxes' => $row['total_taxes'],
+                    'total_value' => $row['total_value'],
+                    'total_charge' => Functions::valueKeyInArray($row, 'total_charge', 0),
+                    'total_discount' => Functions::valueKeyInArray($row, 'total_discount', 0),
+                    'total' => $row['total'],
+                    'attributes' => self::attributes($row),
+                    'discounts' => self::discounts($row),
+                    'charges' => self::charges($row),
+                    'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
+                    'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
+                    'name_product_xml' => Functions::valueKeyInArray($row, 'name_product_pdf') ? DocumentInput::getNameProductXml($row, $inputs) : null,
+                    'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
+                    'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
+                ];
 			}
 
 			return $items;

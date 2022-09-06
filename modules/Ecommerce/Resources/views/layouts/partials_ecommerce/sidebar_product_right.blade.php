@@ -32,20 +32,15 @@
 <!-- Carousel a Editar-->
        <div class="widget widget-banners box-carousel">
          <div class="widget-banners-slider owl-carousel owl-theme">
-             @forelse($records as $data)
+             {{-- @forelse($records as $data)
                             @if($data->apply_store === 1)
 
                     <figure class="product-image-container boxing">
                         <a href="/ecommerce/item/{{ $data->id }}" class="product-image">
-                            @if($data->image!="imagen-no-disponible.jpg")
-                                <img src="{{ asset('storage/uploads/items/'.$data->image) }}" alt="product" class="image">
-                            @else
-                                <img src="{{ asset('logo/imagen-no-disponible.jpg') }}" class="image" alt="product">
-                            @endif
-
+                            <img src="{{ asset('storage/uploads/items/'.$data->image) }}" alt="product" class="image">
                         </a>
-                        <a href="{{route('item_partial', ['id' => $data->id])}}" class="btn-quickview">Vista Rápida 5</a>
-                     <span class="product-label label-hot">New Sales Recent 55</span>
+                        <a href="{{route('item_partial', ['id' => $data->id])}}" class="btn-quickview">Vista Rápida</a>
+                     <span class="product-label label-hot">New Sales Recent</span>
                                 <span class="product-label">{{$data->description}}</span>
                     </figure>
                             @endif
@@ -58,7 +53,7 @@
                                     </a>
                             </div><!-- End .banner -->
                         </div>
-                    @endforelse
+                    @endforelse --}}
                             <!-- End .banner -->
             </div><!-- End .banner-->
         </div>

@@ -160,4 +160,30 @@ class ValidateCpe
 
     }
 
+
+    /**
+     *
+     * Obtener estado del ruc
+     *
+     * @param  string $state
+     * @return string
+     */
+    public function getCompanyState($state)
+    {
+        return $this->company_state[$state] ?? null;
+    }
+
+
+    /**
+     *
+     * Obtener condicion del ruc
+     *
+     * @param  string $state
+     * @return string
+     */
+    public function getConditionState($condition)
+    {
+        return $this->company_condition[$condition] ?? null;
+    }
+
 }

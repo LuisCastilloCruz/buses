@@ -250,9 +250,10 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :typeUser="typeUser"
+                           :configuration="configuration"
                            :recordItem="recordItem"
                            :isEditItemNote="false"
-                           :configuration="configuration"
+                           :percentage-igv="percentage_igv"
                            @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -399,6 +400,7 @@ export default {
                 }
 
             })
+        this.getPercentageIgv();
         this.loading_form = true
     },
     methods: {
@@ -568,11 +570,13 @@ export default {
         cleanCustomer() {
             this.form.customer_id = null;
         },
-        changeDateOfIssue() {
+        async changeDateOfIssue() {
             // this.form.date_of_due = this.form.date_of_issue > this.form.date_of_due ? this.form.date_of_issue:null
-            this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                 this.form.exchange_rate_sale = response
             })
+            await this.getPercentageIgv();
+            this.changeCurrencyType();
         },
         allCustomers() {
             this.customers = this.all_customers
@@ -602,7 +606,7 @@ export default {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
             });
             this.form.items = items
             this.calculateTotal()

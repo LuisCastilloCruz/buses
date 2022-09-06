@@ -35,6 +35,11 @@ class Summary extends ModelTenant
         'manually_regularized',
         'error_manually_regularized',
         'unique_filename',
+
+        'send_to_pse',
+        'response_signature_pse',
+        'response_send_cdr_pse',
+
     ];
 
     protected $casts = [
@@ -42,6 +47,7 @@ class Summary extends ModelTenant
         'date_of_reference' => 'date',
         'unknown_error_status_response' => 'boolean',
         'manually_regularized' => 'boolean',
+        'send_to_pse' => 'bool',
     ];
 
     /**

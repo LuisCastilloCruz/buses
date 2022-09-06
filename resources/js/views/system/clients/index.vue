@@ -245,6 +245,9 @@
                             <th class="text-center">F.Creación</th>
                             <th class="text-center">Consultas <br>API Peru <br>(mes)</th>
 
+                            <th class="text-center">Cant.Notas de venta</th>
+                            <th class="text-center">Total<br>(Comprobantes <br>y <br>notas de venta)</th>
+
                             <th class="text-center">Bloquear cuenta</th>
 
                             <th class="text-right">Limitar Doc.</th>
@@ -376,6 +379,9 @@
                             <td class="text-center">{{ row.created_at }}</td>
                             <td>{{ row.queries_to_apiperu }}</td>
 
+                            <td class="text-center"><strong>{{ row.count_sales_notes }}</strong></td>
+                            <td class="text-center"><strong>{{ row.count_doc_month + row.count_sales_notes_month }}</strong></td>
+
                             <td class="text-center">
                                 <template v-if="!row.locked">
                                     <el-switch
@@ -423,7 +429,7 @@
                                         v-if="deletePermission == true"
                                         class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                         type="button"
-                                        @click.prevent="clickDelete(row.id)"
+                                        @click.prevent="clickDelete(row)"
                                     >Eliminar
                                     </button>
                                 </template>
@@ -472,6 +478,9 @@
 
         <account-status :clientId="recordId"
                         :showDialog.sync="showDialogAccountStatus"></account-status>
+
+        <client-delete :record="record"
+                        :showDialog.sync="showDialogDelete"></client-delete>
     </div>
 </template>
 
@@ -483,6 +492,7 @@ import {changeable} from "../../../mixins/changeable";
 import ChartLine from "./charts/Line";
 import ClientPayments from "./partials/payments.vue";
 import AccountStatus from "./partials/account_status.vue";
+import ClientDelete from "./partials/delete.vue";
 
 export default {
     mixins: [
@@ -500,7 +510,8 @@ export default {
         CompaniesForm,
         ChartLine,
         ClientPayments,
-        AccountStatus
+        AccountStatus,
+        ClientDelete
     },
     data() {
         return {
@@ -527,7 +538,9 @@ export default {
                         data: null
                     }
                 ]
-            }
+            },
+            showDialogDelete: false,
+            record: {}
         };
     },
     async mounted() {
@@ -661,10 +674,13 @@ export default {
         clickPassword(id) {
             this.change(`/${this.resource}/password/${id}`);
         },
-        clickDelete(id) {
-            this.destroy(`/${this.resource}/${id}`).then(() =>
-                this.$eventHub.$emit("reloadData")
-            );
+        clickDelete(record) {
+
+            this.record = record
+            this.showDialogDelete = true
+            // this.destroy(`/${this.resource}/${id}`).then(() =>
+            //     this.$eventHub.$emit("reloadData")
+            // );
         },
         clickEdit(recordId) {
             this.recordId = recordId;

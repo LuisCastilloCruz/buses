@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-loading="loading">
         <div class="row">
 
             <div class="col-md-12 col-lg-12 col-xl-12 ">
@@ -49,8 +49,8 @@
                                                 :picker-options="pickerOptionsDates"
                                                 value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                             </div>
-                        </template> 
-                    
+                        </template>
+
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Tipo</label>
@@ -74,7 +74,7 @@
 
                             <template v-if="records.length>0">
 
-                                <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
+                                <!-- <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button> -->
 
                                 <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
 
@@ -97,16 +97,16 @@
                         </thead>
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
-                        </tbody> 
+                        </tbody>
                         <tfoot v-if="resource == 'finances/global-payments'">
                             <tr>
                                 <td colspan="9"></td>
-                                <td ><strong>Totales PEN</strong></td> 
+                                <td ><strong>Totales PEN</strong></td>
                                 <td>{{totals.total_pen}}</td>
                             </tr>
                             <tr>
                                 <td colspan="9"></td>
-                                <td ><strong>Totales USD</strong></td> 
+                                <td ><strong>Totales USD</strong></td>
                                 <td>{{totals.total_usd}}</td>
 
                             </tr>
@@ -140,12 +140,14 @@
     export default {
         props: {
             resource: String,
-            applyCustomer: { type : Boolean, required: false, default: false}
+            applyCustomer: { type : Boolean, required: false, default: false},
+            isAsynchronous: { type : Boolean, required: false, default: false}
         },
         data () {
             return {
                 loading_submit:false,
                 loading_search:false,
+                loading: false,
                 columns: [],
                 records: [],
                 headers: headers_token,
@@ -183,8 +185,8 @@
 
             await this.$http.get(`/${this.resource}/filter`)
                 .then(response => {
-                    this.payment_types = response.data.payment_types; 
-                    this.destination_types = response.data.destination_types; 
+                    this.payment_types = response.data.payment_types;
+                    this.destination_types = response.data.destination_types;
                 });
 
 
@@ -201,10 +203,42 @@
 
             },
             clickDownload(type) {
-                let query = queryString.stringify({
+
+                const query = queryString.stringify({
                     ...this.form
-                });
-                window.open(`/${this.resource}/${type}/?${query}`, '_blank');
+                })
+
+                if(this.isAsynchronous)
+                {
+                    this.generateAsynchronousReport(query, type)
+                }
+                else
+                {
+                    window.open(`/${this.resource}/${type}/?${query}`, '_blank');
+                }
+
+            },
+            async generateAsynchronousReport(query, type){
+
+                this.loading = true
+                await this.$http.get(`/${this.resource}/${type}/?${query}`).then((response) => {
+
+                            this.$notify({
+                                // title: '',
+                                message: response.data.message,
+                                type: 'success',
+                                onClick: ()=>{
+                                    window.open('/reports/download-tray')
+                                }
+                            })
+
+                        })
+                        .catch(error => {
+                            this.$message.error(`Ocurrión un error: ${error.response.data.message}`)
+                        })
+                        .then(()=>{
+                            this.loading = false
+                        })
             },
             initForm(){
 
@@ -218,7 +252,7 @@
                     month_end: moment().format('YYYY-MM'),
                 }
 
-            }, 
+            },
             customIndex(index) {
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },
@@ -245,7 +279,7 @@
                 this.initTotals()
                 this.totals.total_pen = _.round(_.sumBy(_.filter(records, {currency_type_id : 'PEN'}), (row) => { return parseFloat(row.total) }), 2)
                 this.totals.total_usd = _.round(_.sumBy(_.filter(records, {currency_type_id : 'USD'}), (row) => { return parseFloat(row.total) }), 2)
- 
+
             },
             getQueryParameters() {
                 return queryString.stringify({

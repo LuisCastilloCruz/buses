@@ -55,17 +55,44 @@
             </li>
         </ul>
         @endif
-        <span class="separator"></span>
-        <ul class="notifications">
-            <li>
-                <a href="{{ route('tenant_orders_index') }}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Pedidos pendientes">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                    <span class="badge badge-pill badge-info badge-up cart-item-count">{{ $vc_orders }}</span>
-                </a>
-            </li>
-        </ul>
+        @if($vc_document > 0)
+            <span class="separator"></span>
+            <ul class="notifications">
+                <li>
+                    <a href="{{route('tenant.documents.not_sent')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes no enviados/por enviar">
+                        <i class="far fa-bell text-secondary"></i>
+                        <span class="badge badge-pill badge-danger badge-up cart-item-count">{{ $vc_document }}</span>
+                    </a>
+                </li>
+            </ul>
+        @endif
 
-        @if($vc_document > 0 || $vc_document_regularize_shipping > 0 || $vc_finished_downloads > 0)
+        @if($vc_document_regularize_shipping > 0)
+            <span class="separator"></span>
+            <ul class="notifications">
+                <li>
+                    <a href="{{route('tenant.documents.regularize_shipping')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes pendientes de rectificación">
+                        <i class="fas fa-exclamation-triangle text-secondary"></i>
+                        <span class="badge badge-pill badge-danger badge-up cart-item-count">{{ $vc_document_regularize_shipping }}</span>
+                    </a>
+                </li>
+            </ul>
+        @endif
+
+        @if($vc_finished_downloads > 0)
+            <span class="separator"></span>
+            <ul class="notifications">
+                <li>
+
+                    <a href="{{route('tenant.reports.download-tray.index')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Bandeja de descargas (Reportes procesados)">
+                        <i class="fas fa-file-download text-secondary"></i>
+                        <span class="badge badge-pill badge-info badge-up cart-item-count">{{ $vc_finished_downloads }}</span>
+                    </a>
+                </li>
+            </ul>
+        @endif
+
+        {{-- @if($vc_document > 0 || $vc_document_regularize_shipping > 0 || $vc_finished_downloads > 0)
         <span class="separator"></span>
         <ul class="notifications">
             <li class="showed" id="dropdown-notifications">
@@ -73,10 +100,8 @@
                     <i class="far fa-bell text-secondary"></i>
                     <span class="badge {{ $vc_document == 0 && $vc_document_regularize_shipping == 0 && $vc_finished_downloads > 0 ? 'badge-info' : '' }}">!</span>
                 </a>
-
                 <div id="dn-menu" class="dropdown-menu notification-menu" style="">
                     <div class="notification-title"></div>
-
                     <div class="content">
                         <ul>
                             @if($vc_document > 0)
@@ -118,7 +143,7 @@
                 </div>
             </li>
         </ul>
-        @endif
+        @endif --}}
 
         <span class="separator"></span>
         <div id="userbox" class="userbox">

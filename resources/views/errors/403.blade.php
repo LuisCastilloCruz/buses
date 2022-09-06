@@ -45,7 +45,7 @@
                     <div class="main-error">
                         <h2 class="error-code text-dark text-center font-weight-semibold m-0">403 <i class="fas fa-lock"></i></h2>
                         <p class="error-explanation text-center text-e"><strong>Acceso denegado:</strong> Su cuenta está inactiva, comuníquese con el administrador</p>
-                        <p>947474096</p>
+                        <h1><p class="text-center">947474096</p></h1>
                     </div>
                 </div>
             </div>

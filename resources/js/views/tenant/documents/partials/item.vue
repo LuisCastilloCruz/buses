@@ -643,6 +643,7 @@ export default {
         'customerId',
         'currencyTypes',
         'isFromInvoice',
+        'percentageIgv'
     ],
     components: {
         ItemForm,
@@ -909,7 +910,7 @@ export default {
 
         },
         clickIncrease() {
-            this.form.quantity = parseInt(this.form.quantity + 1)
+            this.form.quantity = parseInt(this.form.quantity) + 1
             this.calculateTotal()
         },
         async searchRemoteItems(input) {
@@ -1315,17 +1316,12 @@ export default {
         },
         async clickAddItem() {
 
-                // if(this.form.quantity < this.getMinQuantity()){
-                //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
-                // }
-                if(this.form.unit_price_value<=0){
-                      return this.$message.error('El precio no puede ser menor o igual a 0')
-                }
-                if(this.form.quantity<=0){
-                      return this.$message.error('la cantidad no puede ser menor o igual a 0')
-                }
+            if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
 
-                this.validateQuantity();
+            // if(this.form.quantity < this.getMinQuantity()){
+            //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
+            // }
+            this.validateQuantity()
 
             if (this.form.item.lots_enabled) {
                 if (!this.form.IdLoteSelected)
@@ -1347,7 +1343,7 @@ export default {
                     // do nothing
                     // exonerado de igv
                 } else {
-                    unit_price = this.form.unit_price_value * 1.18;
+                    unit_price = this.form.unit_price_value * (1 + this.percentageIgv);
 
                 }
             }
@@ -1376,7 +1372,7 @@ export default {
 
             let IdLoteSelected = this.form.IdLoteSelected
             let document_item_id = this.form.document_item_id
-            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
 
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
             if (this.recordItem) {

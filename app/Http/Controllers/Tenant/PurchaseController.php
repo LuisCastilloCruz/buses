@@ -149,6 +149,7 @@
             $configuration = Configuration::first();
             $payment_conditions = GeneralPaymentCondition::get();
             $warehouses = Warehouse::get();
+            $permissions = auth()->user()->getPermissionsPurchase();
             $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
             $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
             $note_debit_types = NoteDebitType::whereActive()->orderByDescription()->get();

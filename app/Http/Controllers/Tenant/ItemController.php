@@ -591,15 +591,18 @@ class ItemController extends Controller
         $item->update();
 
         // migracion desarrollo sin terminar #1401
-        $inventory_configuration = InventoryConfiguration::firstOrFail();
+        // $inventory_configuration = InventoryConfiguration::firstOrFail();
 
-        if($inventory_configuration->generate_internal_id == 1) {
-            if(!$item->internal_id) {
-                $items = Item::count();
-                $item->internal_id = (string)($items + 1);
-                $item->save();
-            }
-        }
+        // if($inventory_configuration->generate_internal_id == 1) {
+        //     if(!$item->internal_id) {
+        //         $items = Item::count();
+        //         $item->internal_id = (string)($items + 1);
+        //         $item->save();
+        //     }
+        // }
+
+        $this->generateInternalId($item);
+
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
@@ -656,6 +659,26 @@ class ItemController extends Controller
 
 
     /**
+     *
+     * Generar codigo interno de forma automatica
+     *
+     * @param  Item $item
+     * @return void
+     */
+    public function generateInternalId(Item &$item)
+    {
+        $inventory_configuration = InventoryConfiguration::select('generate_internal_id')->firstOrFail();
+
+        if($inventory_configuration->generate_internal_id && !$item->internal_id)
+        {
+            $item->internal_id = str_pad($item->id, 5, '0', STR_PAD_LEFT);
+            $item->save();
+        }
+    }
+
+
+
+    /**
      * @param ItemRequest|null $request
      * @param null $item
      * @throws Exception
@@ -681,6 +704,16 @@ class ItemController extends Controller
     }
 
 
+    /**
+     * Eliminar item
+     *
+     * Usado en:
+     * Modules\MobileApp\Http\Controllers\Api\ItemController
+     *
+     * @param  int $id
+     * @return array
+     *
+     */
     public function destroy($id)
     {
         try {

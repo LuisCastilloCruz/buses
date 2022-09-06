@@ -11,7 +11,7 @@ use Modules\Transporte\Models\TransporteEncomienda;
 
 class CashDocument extends ModelTenant
 {
-    protected $with = ['document','sale_note'];
+    // protected $with = ['document','sale_note'];
 
     public $timestamps = false;
 

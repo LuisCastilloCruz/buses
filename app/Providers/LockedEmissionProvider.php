@@ -11,6 +11,7 @@ use Exception;
 use Modules\Document\Helpers\DocumentHelper;
 use Illuminate\Support\Facades\Log;
 
+use App\Models\Tenant\SaleNote;
 
 class LockedEmissionProvider extends ServiceProvider
 {
@@ -94,6 +95,17 @@ class LockedEmissionProvider extends ServiceProvider
                     throw new Exception("Ha superado el límite permitido para la creación de usuarios");
                 }
             }
+
+        });
+    }
+
+    private function update_quantity_sales_notes()
+    {
+        SaleNote::created(function ($document) {
+
+            $configuration = Configuration::first();
+            $configuration->quantity_sales_notes++;
+            $configuration->save();
 
         });
     }

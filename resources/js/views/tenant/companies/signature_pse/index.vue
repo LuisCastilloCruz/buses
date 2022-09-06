@@ -4,14 +4,14 @@
             <h3 class="my-0">Firma digital PSE
                 <el-tooltip
                     class="item"
-                    content="Solicitar datos al PSE - Disponible para facturas, boletas y anulaciones de facturas"
+                    content="Solicitar datos al PSE - Disponible para facturas, boletas, resumen de boletas, y anulaciones de facturas"
                     effect="dark"
                     placement="top-start">
                     <i class="fa fa-info-circle"></i>
                 </el-tooltip>
             </h3>
         </div>
-        <div class="card-body"> 
+        <div class="card-body">
             <form autocomplete="off" @submit.prevent="submit">
                 <div class="row pt-1">
                     <div class="col-md-9">
@@ -34,7 +34,7 @@
                                     v-text="errors.send_document_to_pse[0]"></small>
                         </div>
                     </div>
-                    
+
                     <template v-if="form.send_document_to_pse">
 
                         <!-- <div class="col-md-3 mt-3">
@@ -53,7 +53,7 @@
                                 <small class="form-control-feedback" v-if="errors.url_login_pse" v-text="errors.url_login_pse[0]"></small>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6 mt-3">
                             <div class="form-group" :class="{'has-danger': errors.user_pse}">
                                 <label class="control-label">Usuario autenticación <span class="text-danger">*</span></label>
@@ -96,14 +96,14 @@
                             </div>
                         </div>
                     </template>
-    
+
                 </div>
-    
+
                 <div class="form-actions text-right pt-2">
                     <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
                 </div>
             </form>
-        </div> 
+        </div>
     </div>
 </template>
 
@@ -167,7 +167,7 @@
                     .then(response => {
                         this.form = response.data
                     })
-            }, 
+            },
         }
     }
 </script>

@@ -81,6 +81,7 @@
             'name_product_pdf',
             'additional_information',
             'name_product_xml',
+            'additional_data'
         ];
 
         public static function boot()
@@ -593,5 +594,13 @@
 
         }
 
+        public function getAdditionalDataAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
 
+        public function setAdditionalDataAttribute($value)
+        {
+            $this->attributes['additional_data'] = (is_null($value)) ? null : json_encode($value);
+        }
     }

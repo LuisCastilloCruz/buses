@@ -39,13 +39,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Facturación Electrónica 2022</title>
+    <title>Facturación Electrónica 2023</title>
 
     <link async href="{{ asset(mix('css/app.css')) }}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css?id=12') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css?id=13') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/5.11/css/all.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/meteocons/css/meteocons.css') }}" />
@@ -69,12 +69,12 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('porto-light/master/style-switcher/style-switcher.css')}}">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=12') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=12') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=12') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=13') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=13') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=13') }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=12') }}" />
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=13') }}" />
     @endif
 
     @if($vc_compact_sidebar->skin)
@@ -217,12 +217,15 @@
             return transform
         }
 
-        $('#dropdown-notifications').click(function(e) {
-            $('#dropdown-notifications').toggleClass('showed');
-            $('#dn-toggle').toggleClass('show');
-            $('#dn-menu').toggleClass('show');
-            e.stopPropagation();
+        $(document).ready(function () {
+            $('#dropdown-notifications').click(function(e) {
+                $('#dropdown-notifications').toggleClass('showed');
+                $('#dn-toggle').toggleClass('show');
+                $('#dn-menu').toggleClass('show');
+                e.stopPropagation();
+            });
         });
+
         $(document).click(function(){
             $('#dropdown-notifications').removeClass('showed');
             $('#dn-toggle').removeClass('show');

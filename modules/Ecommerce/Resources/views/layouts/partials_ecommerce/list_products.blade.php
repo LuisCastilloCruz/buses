@@ -3,7 +3,7 @@
 </div>
 @foreach ($dataPaginate as $item)
 
-    <div class="col-6 col-md-4">
+    <div class="col-6 {{ \Route::currentRouteName() == 'tenant.restaurant.menu' ? 'col-md-3' : 'col-md-4' }}">
         <div class="product product-style {{ stock($item, $configuration) ? 'productdisabled' : '' }}">
             <figure class="product-image-container">
                 <a href="/ecommerce/item/{{ $item->id }}" class="product-image product-image-list">

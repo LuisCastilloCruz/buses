@@ -19,7 +19,6 @@ use App\Models\Tenant\Configuration;
 
 class DocumentInput
 {
-
     public static function set($inputs)
     {
         $document_type_id = $inputs['document_type_id'];
@@ -64,6 +63,11 @@ class DocumentInput
 
         $items = self::items($inputs);
 
+        //configuracion para envio individual de boleta
+        $ticket_single_shipment = self::getTicketSingleShipment($inputs);
+        $inputs['ticket_single_shipment'] = $ticket_single_shipment;
+
+
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -85,6 +89,7 @@ class DocumentInput
             'customer' => $customer,
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => Functions::valueKeyInArray($inputs, 'purchase_order'),
+            'folio' => Functions::valueKeyInArray($inputs, 'folio'),
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'order_note_id' => Functions::valueKeyInArray($inputs, 'order_note_id'),
@@ -128,6 +133,7 @@ class DocumentInput
             'hotel' => self::hotel($inputs),
             'transport' => self::transport($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
+            //'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
             'plate_number' => Functions::valueKeyInArray($inputs, 'plate_number'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
@@ -145,8 +151,10 @@ class DocumentInput
             'total_pending_payment' => Functions::valueKeyInArray($inputs, 'total_pending_payment', 0),
             // 'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
             'tip' => self::tip($inputs, $soap_type_id),
+            'ticket_single_shipment' => $ticket_single_shipment,
         ];
     }
+
 
     public static function items($inputs)
     {
@@ -206,7 +214,10 @@ class DocumentInput
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
                     'name_product_xml' => Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row, $inputs) : null,
                     'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
+                    'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
+//                    'additional_data' => key_exists('additional_data', $row)?$row['additional_data']:null,
                 ];
+//                dd($arayItem);
                 Item::SaveExtraDataToRequest($arayItem,$row);
                 $items[] = $arayItem;
             }
@@ -231,7 +242,11 @@ class DocumentInput
 
             if($configuration->name_product_pdf_to_xml)
             {
-                return trim((new Html2Text($row['name_product_pdf']))->getText());
+                $text = trim((new Html2Text($row['name_product_pdf']))->getText());
+
+                return preg_replace('~\R{1,2}~', ' ', $text);
+
+                // return trim((new Html2Text($row['name_product_pdf']))->getText());
             }
 
         }
@@ -623,5 +638,24 @@ class DocumentInput
 
         return null;
     }
+
+
+    /**
+     *
+     * Retornar configuracion para envio individual de boletas
+     *
+     * @param  array $inputs
+     * @return bool
+     */
+    public static function getTicketSingleShipment($inputs)
+    {
+        if($inputs['document_type_id'] === Document::DOCUMENT_TYPE_TICKET)
+        {
+            return Configuration::getRecordIndividualColumn('ticket_single_shipment');
+        }
+
+        return false;
+    }
+
 
 }
