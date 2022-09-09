@@ -164,9 +164,14 @@ trait InventoryTrait
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
             ->whereNotIsSet();
         if ($search) {
-            $query->where('description', 'like', "%{$search}%")
-                ->orWhere('barcode', 'like', "%{$search}%")
-                ->orWhere('internal_id', 'like', "%{$search}%");
+            $query = func_filter_items($query, $search);
+//            $query->whereRaw(
+//                'match(text_filter) against(? in natural language mode) > 0.0000001',
+//                [$search]
+//            );
+//            $query->where('description', 'like', "%{$search}%")
+//                ->orWhere('barcode', 'like', "%{$search}%")
+//                ->orWhere('internal_id', 'like', "%{$search}%");
         }
         if ($take) {
             $query->take($take);
