@@ -283,7 +283,8 @@
 <script>
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 import DocumentOptions from "@views/documents/partials/options.vue";
-import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
+//import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
+import SaleNoteOptions from '@views/sale_notes/partials/option_aqp.vue'
 import PersonForm from "@views/persons/form2.vue";
 
 export default {
@@ -1404,7 +1405,12 @@ export default {
 
             if(this.isAutoPrint)
             {
-                this.$http.get(`/printticket/document/${this.documentId}/ticket`)
+                var route = `/printticket/document/${this.documentNewId}/ticket`;
+                if(this.resource_documents!=='documents'){
+                    route = `/sale-notes/ticket/${this.documentNewId}/ticket`;
+                }
+
+                this.$http.get(route)
                     .then(response => {
                         this.printTicket(response.data)
                     })

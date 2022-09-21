@@ -230,7 +230,8 @@
 
 <script>
 import DocumentOptions from "@views/documents/partials/options.vue";
-import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
+// import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
+import SaleNoteOptions from '@views/sale_notes/partials/option_aqp.vue'
 import DocumentsVoided from '@views/documents/partials/voided.vue'
 import Sales from './Sales.vue';
 export default {

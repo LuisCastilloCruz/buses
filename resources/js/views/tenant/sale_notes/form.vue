@@ -496,7 +496,8 @@
 <script>
     import SaleNotesFormItem from './partials/item.vue'
     import PersonForm from '../persons/form.vue'
-    import SaleNotesOptions from './partials/options.vue'
+    // import SaleNotesOptions from './partials/options.vue'
+    import SaleNotesOptions from './partials/option_aqp.vue'
     import {functions, exchangeRate} from '../../../mixins/functions'
     import {calculateRowItem, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
