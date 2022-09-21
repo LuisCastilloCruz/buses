@@ -1,7 +1,7 @@
 <?php
 use Illuminate\Database\Migrations\Migration;
 
-class TenantAddTicketSingleShipmentToConfigurations extends Migration
+class TenantAddTicketSingleShipmentToConfigurationsAqp extends Migration
 {
     /**
      * Run the migrations.
