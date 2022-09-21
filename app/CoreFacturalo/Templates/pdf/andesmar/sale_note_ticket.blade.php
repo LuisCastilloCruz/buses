@@ -71,6 +71,10 @@
         <td class="pt-3"><p class="desc"><b>Hora llegada:</b></p></td>
         <td class="pt-3"><p class="desc">_______________</p></td>
     </tr>
+    <tr>
+        <td class="pt-3 pb-3" colspan="2"><p class="desc"><b>Hora Recepción:</b></p></td>
+        <td class="pt-3 pb-3" colspan="2"><p class="desc" style="font-size: 15px"><b>{{ $document->time_of_issue }}</b></p></td>
+    </tr>
 
     @if ($document->due_date)
         <tr>
