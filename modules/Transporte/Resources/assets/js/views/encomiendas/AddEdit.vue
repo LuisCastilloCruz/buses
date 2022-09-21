@@ -109,17 +109,8 @@
                         <div class="form-group">
                             <label for="nombre">
                                 Destinatario
-                                <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>
+
                             </label>
-<!--                            <el-select v-model="encomienda.destinatario_id" filterable remote  popper-class="el-select-customers"-->
-<!--                                dusk="destinatario_id"-->
-<!--                                placeholder="Buscar destinatario"-->
-<!--                                :remote-method="searchDestinatario"-->
-<!--                                :loading="loadingDestinatario"-->
-<!--                                >-->
-<!--                                <el-option v-for="destinatario in destinatarios" :key="destinatario.id" :value="destinatario.id" :label="destinatario.name">-->
-<!--                                </el-option>-->
-<!--                            </el-select>-->
 
                             <input type="number" class="form-control" v-model="encomienda.destinatario_numero" placeholder="ingrese dni y presione enter" v-on:keyup.enter="buscar_destinatario" ></input>
                             <span v-if="errors.destinatario_id" class="text-danger">{{ errors.destinatario_id[0] }}</span>
