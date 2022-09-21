@@ -22,7 +22,8 @@ class TransporteEncomienda extends ModelTenant
         'estado_envio_id',
         'estado_pago_id',
         'terminal_id',
-        'destino_id'
+        'destino_id',
+        'destinatario_nombre'
     ];
 
 

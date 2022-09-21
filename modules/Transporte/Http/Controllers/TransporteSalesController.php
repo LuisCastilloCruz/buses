@@ -370,11 +370,10 @@ class TransporteSalesController extends Controller
         if($request->tipo_venta == 2){
 
             $request->validate([
-                //'cliente_id'=> ['required'],
+                'cliente_id'=> ['required'],
                 'estado_asiento_id' => ['required'],
                 'fecha_salida' => ['required'],
-                //'pasajero_id' => ['required'],
-                // 'programacion_id' => ['required'],
+                'pasajero_id' => ['required'],
                 'destino_id' => ['required'],
                 'numero_asiento' => ['required'],
                 'hora_salida' => ['required'],
@@ -403,30 +402,32 @@ class TransporteSalesController extends Controller
                 'hora_salida',
             ]);
 
-            $programacion = TransporteProgramacion::with('programacion')
-            ->find($request->input('programacion_id'));
+            if($request->tipo_venta == 2) {//venta con programacion
+                $programacion = TransporteProgramacion::with('programacion')
+                    ->find($request->input('programacion_id'));
 
-            $parentProgramacion = $programacion->programacion;
-
-
-            $viaje = TransporteViajes::where('terminal_origen_id',$programacion->terminal_origen_id)
-            ->where('terminal_destino_id',$programacion->terminal_destino_id)
-            ->whereTime('hora_salida', $programacion->hora_salida)
-            ->whereDate('fecha_salida', $request->fecha_salida )
-            ->where('programacion_id',$parentProgramacion->id)
-            ->first();
-
-            $viaje = !is_null($viaje) ? $viaje : TransporteViajes::create([
-                'terminal_origen_id' => $programacion->terminal_origen_id,
-                'hora_salida' => $programacion->hora_salida,
-                'fecha_salida' => $request->fecha_salida,
-                'vehiculo_id' => $programacion->vehiculo_id,
-                'terminal_destino_id' => $programacion->terminal_destino_id,
-                'programacion_id' => $parentProgramacion->id
-            ]);
+                $parentProgramacion = $programacion->programacion;
 
 
-            if($request->input('tipo_venta') == 1){
+                $viaje = TransporteViajes::where('terminal_origen_id', $programacion->terminal_origen_id)
+                    ->where('terminal_destino_id', $programacion->terminal_destino_id)
+                    ->whereTime('hora_salida', $programacion->hora_salida)
+                    ->whereDate('fecha_salida', $request->fecha_salida)
+                    ->where('programacion_id', $parentProgramacion->id)
+                    ->first();
+
+                $viaje = !is_null($viaje) ? $viaje : TransporteViajes::create([
+                    'terminal_origen_id' => $programacion->terminal_origen_id,
+                    'hora_salida' => $programacion->hora_salida,
+                    'fecha_salida' => $request->fecha_salida,
+                    'vehiculo_id' => $programacion->vehiculo_id,
+                    'terminal_destino_id' => $programacion->terminal_destino_id,
+                    'programacion_id' => $parentProgramacion->id
+                ]);
+            }
+
+
+            if($request->input('tipo_venta') == 1){ //venta libre
                 TransportePasaje::create(
                     array_merge($attributes,[
                         'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
@@ -435,27 +436,12 @@ class TransporteSalesController extends Controller
                         // 'fecha_llegada' => $fechaLLegada,
                         'sucursal_id' => $terminal->id,
                         'user_id' => $user->id,
-                        'viaje_id' => $viaje->id
+                        'viaje_id' => null
                     ])
                 );
 
-            }else if($request->input('tipo_venta') == 2){
-                // $programacion = TransporteProgramacion::find($request->input('programacion_id'));
+            }else if($request->input('tipo_venta') == 2){//venta con programacion
 
-                // $list = $this->getProgramacionesMatch($programacion)->map(function($item){
-                //     return $item->id;
-                // });
-
-                // $exist = TransportePasaje::where('asiento_id',$request->input('asiento_id'))
-                // ->whereIn('programacion_id',$list->toArray())
-                // ->where('fecha_salida',$request->input('fecha_salida'))
-                // ->whereNotIn('estado_asiento_id',[4])
-                // ->first();
-
-                // if( !is_null($exist) ) return response()->json([
-                //     'success' => false,
-                //     'message' => 'Lo sentimos el asiento ya ha sido ocupado'
-                // ]);
 
                 TransportePasaje::create(
                     array_merge($attributes,[

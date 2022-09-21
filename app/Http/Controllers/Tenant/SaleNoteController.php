@@ -1096,7 +1096,7 @@ class SaleNoteController extends Controller
                 $html_footer_legend = "";
                 if ($base_template != 'legend_amazonia') {
                     if($this->configuration->legend_footer){
-                        $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
+                        //$html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
                     }
                 }
 

@@ -92,61 +92,73 @@ class PersonController extends Controller
 
     public function store(PersonRequest $request)
     {
-        /* dd($request->all()); */
+        $number = $request->input('number');
+        $person = Person::firstOrNew(['number' => $number]);
 
-        if (!$request->barcode) {
-            if ($request->internal_id) {
-                $request->merge(['barcode' => $request->internal_id]);
-            }
-        }
-
-        if($request->state){
-            if($request->state != "ACTIVO"){
-                return [
-                    'success' => false,
-                    'message' =>'El estado del contribuyente no es activo, no puede registrarlo',
-                ];
-            }
-        }
-        if($request->identity_document_type_id==6){
-            if($request->address == ""){
-                return [
-                    'success' => false,
-                    'message' =>'Debe completar la dirección',
-                ];
-            }
-        }
-
-        $id = $request->input('id');
-        $person = Person::firstOrNew(['id' => $id]);
-        $data = $request->all();
-        unset($data['optional_email'],$data['id']);
-        $person->fill($data);
-        $person->save();
-
-        $person->addresses()->delete();
-        $addresses = $request->input('addresses');
-        foreach ($addresses as $row)
-        {
-            $person->addresses()->updateOrCreate( ['id' => $row['id']], $row);
-        }
-
-        $optional_email = $request->optional_email;
-        if(!empty($optional_email)){
-            $person->setOptionalEmailArray($optional_email)->push();
-        }
-
-        $msg = '';
-        if($request->type === 'suppliers'){
-            $msg = ($id)?'Proveedor editado con éxito':'Proveedor registrado con éxito';
+        if($person->id){
+            $msg = ($person->id)?'Cliente ya existe':'Cliente encontrato con éxito';
+            return [
+                'success' => true,
+                'message' => $msg,
+                'id' => $person->id
+            ];
         }else{
-            $msg = ($id)?'Cliente editado con éxito':'Cliente registrado con éxito';
+            if (!$request->barcode) {
+                if ($request->internal_id) {
+                    $request->merge(['barcode' => $request->internal_id]);
+                }
+            }
+
+            if($request->state){
+                if($request->state != "ACTIVO"){
+                    return [
+                        'success' => false,
+                        'message' =>'El estado del contribuyente no es activo, no puede registrarlo',
+                    ];
+                }
+            }
+            if($request->identity_document_type_id==6){
+                if($request->address == ""){
+                    return [
+                        'success' => false,
+                        'message' =>'Debe completar la dirección',
+                    ];
+                }
+            }
+
+            $id = $request->input('id');
+            $person = Person::firstOrNew(['id' => $id]);
+            $data = $request->all();
+            unset($data['optional_email'],$data['id']);
+            $person->fill($data);
+            $person->save();
+
+            $person->addresses()->delete();
+            $addresses = $request->input('addresses');
+            foreach ($addresses as $row)
+            {
+                $person->addresses()->updateOrCreate( ['id' => $row['id']], $row);
+            }
+
+            $optional_email = $request->optional_email;
+            if(!empty($optional_email)){
+                $person->setOptionalEmailArray($optional_email)->push();
+            }
+
+            $msg = '';
+            if($request->type === 'suppliers'){
+                $msg = ($id)?'Proveedor editado con éxito':'Proveedor registrado con éxito';
+            }else{
+                $msg = ($id)?'Cliente editado con éxito':'Cliente registrado con éxito';
+            }
+
+            return [
+                'success' => true,
+                'message' => $msg,
+                'id' => $person->id
+            ];
         }
-        return [
-            'success' => true,
-            'message' => $msg,
-            'id' => $person->id
-        ];
+
     }
 
     public function destroy($id)

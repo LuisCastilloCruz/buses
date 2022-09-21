@@ -595,12 +595,31 @@
                     <div class="row py-1 border-bottom m-0 p-0">
                         <div class="col-12">
                             <table class="table table-sm table-borderless mb-0 pos-list-items">
+                                <tr>
+                                    <th><b>UND</b></th>
+                                    <th class="text-center"><b>CANT.</b></th>
+                                    <th class="text-center"><b>P.U.</b></th>
+                                    <th><b>DESCRIPCIÓN</b></th>
+                                    <th></th>
+                                    <th><b>IMPORTE</b></th>
+                                </tr>
                                 <template v-for="(item, index) in form.items">
                                     <tr :key="index">
-                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label font-weight-semibold">
+                                        <td style="width: 30px; text-align: center; vertical-align: top" class="pos-list-label font-weight-semibold">
+                                            <el-select
+                                                v-model="form.cliente_id"
+                                                @change="aqpChangePresentation(item.item.unit_type,index)"
+                                            >
+                                                <el-option
+                                                    v-for="option in item.item.unit_type"
+                                                    :key="option.id"
+                                                    :label="option.description"
+                                                    :value="option.id"
+                                                ></el-option>
+                                            </el-select>
                                             {{ item.unit_type_id }}
                                         </td>
-                                        <td class="font-weight-semibold" style="width: 80px; vertical-align: top">
+                                        <td class="font-weight-semibold" style="width: 50px; vertical-align: top">
                                             <el-input v-model="item.item.aux_quantity"
                                                       @input="clickAddItem(item, index, true)"
                                                       @keyup.enter.native="keyupEnterQuantity"></el-input>
@@ -622,6 +641,11 @@
                                                 "
                                             ></el-input> -->
                                             <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
+                                        </td>
+                                        <td style="width: 100px; text-align: center; vertical-align: top" class="pos-list-label">
+                                            <el-input v-model="item.item.aux_sale_unit_price"  :disabled="configuration.allow_edit_unit_price_to_seller == false"
+                                                      @input="clickAddItem(item, index, true)"
+                                                      @keyup.enter.native="keyupEnterQuantity"></el-input>
                                         </td>
                                         <td class="font-weight-semibold">
                                             <p class="item-description">
@@ -1287,6 +1311,7 @@ export default {
             this.items[index].edit_unit_price = false;
         },
         setPriceItem(price, index) {
+            console.log(price)
             let value = 0;
             switch (price.price_default) {
                 case 1:
@@ -1304,6 +1329,39 @@ export default {
             this.items[index].unit_type_id = price.unit_type_id;
             this.items[index].presentation = price;
             this.$message.success("Precio seleccionado");
+        },
+
+        aqpChangePresentation(presentacion, index){
+            let value = 0;
+            switch (presentacion.price_default) {
+                case 1:
+                    value = presentacion.price1;
+                    break;
+                case 2:
+                    value = presentacion.price2;
+                    break;
+                case 3:
+                    value = presentacion.price3;
+                    break;
+            }
+
+            this.$message.success("Presentación cambiado");
+
+            this.form.items[index].unit_price=50
+            this.form.items[index].unit_value=500
+            this.form.items[index].total_value=200
+
+
+            this.form.items[index].unit_type_id=presentacion.unit_type_id;
+            this.form.items[index].presentation = presentacion;
+            calculateRowItem(
+                this.form.items[index],
+                this.form.currency_type_id,
+                1,
+                this.percentage_igv)
+
+            this.calculateTotal()
+            console.log( this.form.items)
         },
         clickWarehouseDetail(item) {
             this.unittypeDetail = item.unit_type;
@@ -1642,7 +1700,10 @@ export default {
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
             let presentation = item.presentation
-
+                console.log("item")
+                console.log(item)
+                console.log("presentation")
+                console.log(presentation)
             let exist_item = false;
             if(presentation === undefined) {
                 exist_item = _.find(this.form.items, {
@@ -1687,6 +1748,8 @@ export default {
                     }
 
                     exist_item.quantity = exist_item.item.aux_quantity;
+                    exist_item.item.aux_sale_unit_price = exist_item.item.aux_sale_unit_price;
+                    exist_item.item.sale_unit_price=exist_item.item.aux_sale_unit_price
                 } else {
 
                     response = await this.getStatusStock(

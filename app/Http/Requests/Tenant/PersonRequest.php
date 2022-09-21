@@ -19,10 +19,10 @@ class PersonRequest extends FormRequest
         return [
             'number' => [
                 'required',
-                Rule::unique('tenant.persons')->where(function ($query) use($id, $type) {
-                    return $query->where('type', $type)
-                                 ->where('id', '<>' ,$id);
-                })
+//                Rule::unique('tenant.persons')->where(function ($query) use($id, $type) {
+//                    return $query->where('type', $type)
+//                                 ->where('id', '<>' ,$id);
+//                })
             ],
             // esto es una burrada
 //            'name' => [

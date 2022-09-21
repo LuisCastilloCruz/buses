@@ -308,7 +308,8 @@ class TransporteEncomiendaController extends Controller
                 'programacion_id',
                 'estado_pago_id',
                 'estado_envio_id',
-                'destino_id'
+                'destino_id',
+                'destinatario_nombre'
             );
 
             $data = array_merge($data,['terminal_id' => $request->user()->terminal->id,'soap_type_id'=>$soap_type_id]);
@@ -387,7 +388,8 @@ class TransporteEncomiendaController extends Controller
                     'fecha_salida',
                     'programacion_id',
                     'estado_pago_id',
-                    'estado_envio_id'
+                    'estado_envio_id',
+                    'destinatario_nombre'
                 )
             );
 
@@ -480,11 +482,12 @@ class TransporteEncomiendaController extends Controller
             $items = Item::select();
 
             $items->where('item_type_id','01')
-            ->where(function($query) use($search){
-                $query->where('name','like',"%{$search}%")
-                ->orWhere('second_name','like',"%{$search}%")
-                ->orWhere('description','like',"%{$search}%");
-            });
+                ->where('name','LIKE', '%'.$search.'%')
+                ->orWhere('second_name', 'LIKE', '%'.$search.'%')
+                ->orWhere('description', 'LIKE', '%'.$search.'%');
+
+
+            //return $items->toSql();
 
             return response()->json($items->get()->map(function($item){
                 $it = new ItemResource($item);

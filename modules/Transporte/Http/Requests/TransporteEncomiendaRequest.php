@@ -26,7 +26,7 @@ class TransporteEncomiendaRequest extends FormRequest
         return [
             //
             'remitente_id' => ['required'],
-            'destinatario_id' => ['required'],
+            //'destinatario_id' => ['required'],
             'estado_pago_id' => ['required'],
             'estado_envio_id' => ['required'],
             'destino_id' => ['required']

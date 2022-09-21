@@ -25,21 +25,21 @@
             </div>
 
             <div class="form-body">
-                <div class="row" >
-                    <div class="col-lg-12 col-md-12 table-responsive">
-                        <div class="col-lg-5 col-md-5 col-sm-12 pb-2">
-                            <el-input placeholder="Buscar serie ..."
-                                      v-model="search"
-                                      style="width: 100%;"
-                                      prefix-icon="el-icon-search"
-                                      @input="filter">
-                            </el-input>
-                        </div>
+<!--                <div class="row" >-->
+<!--                    <div class="col-lg-12 col-md-12 table-responsive">-->
+<!--                        <div class="col-lg-5 col-md-5 col-sm-12 pb-2">-->
+<!--                            <el-input placeholder="Buscar serie ..."-->
+<!--                                      v-model="search"-->
+<!--                                      style="width: 100%;"-->
+<!--                                      prefix-icon="el-icon-search"-->
+<!--                                      @input="filter">-->
+<!--                            </el-input>-->
+<!--                        </div>-->
 
-                        <p>{{recordId}}</p>
-                    </div>
+<!--                        <p>{{recordId}}</p>-->
+<!--                    </div>-->
 
-                </div>
+<!--                </div>-->
             </div>
 
             <div v-loading="loading" class="card-body">
@@ -75,13 +75,18 @@
                                                     'border-left border-dark': (invoice.document.state_type_id === '09'),
                                                     'border-left border-danger': (invoice.document.state_type_id === '11'),
                                                     'border-left border-warning': (invoice.document.state_type_id === '13')}">
-                                                        <td class="text-right">{{ index+1 }} {{invoice.id}}</td>
+                                                        <td class="text-right">{{ index+1 }}</td>
                                                         <td>{{ invoice.document.series + '-' +invoice.document.number  }}</td>
                                                         <td>{{ invoice.remitente.name }}</td>
-                                                        <td>{{ invoice.destinatario.name }}</td>
+                                                        <td>{{ (invoice.destinatario) ? invoice.destinatario.name : invoice.destinatario_nombre  }}</td>
                                                         <td>{{ invoice.fecha_salida }}</td>
                                                         <td>{{ invoice.programacion ? invoice.programacion.hora_salida : 'Sin programación' }}</td>
-                                                        <td>{{ invoice.estado_envio.nombre }}</td>
+                                                        <td>
+                                                                <span class="badge bg-secondary text-white" :class="{'bg-danger': (invoice.estado_envio_id === 5), 'bg-warning': (invoice.estado_envio_id === 2), 'bg-secondary': (invoice.estado_envio_id === 1), 'bg-info': (invoice.estado_envio_id === 3), 'bg-success': (invoice.estado_envio_id === 4)}">
+                                                                        {{invoice.estado_envio.nombre}}
+                                                                </span>
+
+                                                        </td>
                                                         <td>
                                                             <el-tooltip v-if="tooltip(invoice, false)" class="item" effect="dark" placement="bottom">
                                                                 <div slot="content">{{tooltip(invoice)}}</div>
@@ -166,10 +171,15 @@
                                                         <td class="text-right">{{ index+1 }}</td>
                                                         <td>{{ note.sale_note ? note.sale_note.series + '-' + note.sale_note.number :'' }}</td>
                                                         <td>{{ note.remitente.name }}</td>
-                                                        <td>{{ note.destinatario.name }}</td>
+                                                        <td>{{ (note.destinatario) ? note.destinatario.name : note.destinatario_nombre  }}</td>
                                                         <td>{{ note.fecha_salida }}</td>
                                                         <td>{{ note.programacion ? note.programacion.hora_salida : 'Sin programación' }}</td>
-                                                        <td>{{ note.estado_envio.nombre }}</td>
+                                                        <td>
+                                                                <span class="badge bg-secondary text-white" :class="{'bg-danger': (note.estado_envio_id === 5), 'bg-warning': (note.estado_envio_id === 2), 'bg-secondary': (note.estado_envio_id === 1), 'bg-info': (note.estado_envio_id === 3), 'bg-success': (note.estado_envio_id === 4)}">
+                                                                        {{note.estado_envio.nombre}}
+                                                                </span>
+
+                                                        </td>
                                                         <td class="text-center">
                                                             <el-button type="primary" @click="verNota(note)">
                                                                 <i class="fa fa-file-alt"></i>
@@ -367,6 +377,8 @@ export default {
             loadingNotes:false,
             recordId:null,
             encomiendaId:null,
+            search: '',
+            lots_: []
         };
     },
     mounted() {
@@ -383,10 +395,10 @@ export default {
         {
             if(this.search)
             {
-                this.lots_ = _.filter(this.lots, x => x.series.toUpperCase().includes(this.search.toUpperCase()))
+                this.lots_ = _.filter(this.listInvoices, x => x.listInvoices.toUpperCase().includes(this.search.toUpperCase()))
             }
             else{
-                this.lots_ = this.lots
+                this.lots_ = this.listInvoices
             }
         },
 

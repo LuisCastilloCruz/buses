@@ -78,43 +78,55 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6 mt-4">
                         <div class="form-group">
                             <label for="dni">
                                 Remitente
-                                <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>
+                                <span class="text-danger">*</span>
                             </label>
-                            <el-select v-model="encomienda.remitente_id" filterable remote  popper-class="el-select-customers"
-                                       dusk="remitente_id"
-                                       placeholder="Buscar remitente"
-                                       :remote-method="searchRemitente"
-                                       :loading="loadingRemitente"
-                                       @change="selectCustomer"
-                            >
-                                <el-option v-for="remitente in tempRemitentes" :key="remitente.id" :value="remitente.id" :label="remitente.name">
 
-                                </el-option>
-                            </el-select>
-                            <span v-if="errors.remitente_id" class="text-danger">{{ errors.remitente_id[0] }}</span>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <el-select v-model="persona.identity_document_type_id">
+                                        <el-option value="1" label="DNI"></el-option>
+                                        <el-option value="6" label="RUC"></el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="number" class="form-control" v-model="encomienda.remitente_numero" placeholder="ingrese dni y presione enter" v-on:keyup.enter="buscar_remitente" ></input>
+                                    <span v-if="errors.remitente_id" class="text-danger">{{ errors.remitente_id[0] }}</span>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+                            <el-input type="text" v-model="encomienda.remitente_nombre"></el-input>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6 mt-4">
                         <div class="form-group">
                             <label for="nombre">
                                 Destinatario
                                 <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>
                             </label>
-                            <el-select v-model="encomienda.destinatario_id" filterable remote  popper-class="el-select-customers"
-                                dusk="destinatario_id"
-                                placeholder="Buscar destinatario"
-                                :remote-method="searchDestinatario"
-                                :loading="loadingDestinatario"
-                                >
-                                <el-option v-for="destinatario in destinatarios" :key="destinatario.id" :value="destinatario.id" :label="destinatario.name">
-                                </el-option>
-                            </el-select>
-                            <span v-if="errors.destinatario_id" class="text-danger">{{ errors.destinatario_id[0] }}</span>
+<!--                            <el-select v-model="encomienda.destinatario_id" filterable remote  popper-class="el-select-customers"-->
+<!--                                dusk="destinatario_id"-->
+<!--                                placeholder="Buscar destinatario"-->
+<!--                                :remote-method="searchDestinatario"-->
+<!--                                :loading="loadingDestinatario"-->
+<!--                                >-->
+<!--                                <el-option v-for="destinatario in destinatarios" :key="destinatario.id" :value="destinatario.id" :label="destinatario.name">-->
+<!--                                </el-option>-->
+<!--                            </el-select>-->
 
+                            <input type="number" class="form-control" v-model="encomienda.destinatario_numero" placeholder="ingrese dni y presione enter" v-on:keyup.enter="buscar_destinatario" ></input>
+                            <span v-if="errors.destinatario_id" class="text-danger">{{ errors.destinatario_id[0] }}</span>
+                        </div>
+
+                        <div class="form-group">
+                            <el-input type="text" v-model="encomienda.destinatario_nombre"></el-input>
                         </div>
                     </div>
                 </div>
@@ -199,6 +211,13 @@
                                     </div>
                                     <div class="col-3">
                                         <div class="form-group">
+                                            <label for="">Cant. <span class="text-danger">*</span></label>
+                                            <el-input type="number" v-model="producto.quantity" placeholder="1"></el-input>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
                                             <label for="">Precio unitario <span class="text-danger">*</span></label>
                                             <el-input type="number" v-model="producto.unit_price" placeholder="Precio"></el-input>
                                         </div>
@@ -216,6 +235,7 @@
                                                     <th>Descripcion</th>
                                                     <th>Precio</th>
                                                     <th>Cantidad</th>
+                                                    <th>Importe</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -225,6 +245,7 @@
                                                     <td>{{ producto.item.description }}</td>
                                                     <td>{{ producto.unit_price | toDecimals }}</td>
                                                     <td>{{ producto.quantity }}</td>
+                                                    <td>{{ producto.total_value }}</td>
                                                     <th>
                                                         <el-button v-if="!edit" type="danger" @click="eliminarProducto(index)">
                                                             <i class="fa fa-trash"></i>
@@ -361,13 +382,6 @@
                         </el-collapse>
                     </div>
                 </div>
-                <person-form :showDialog.sync="showDialogNewPerson"
-                type="customers"
-                :external="true"
-                :buscar_destinatario="buscar_destinatario"
-                 :buscar_pasajero="buscar_pasajero"
-                :input_person="input_person"
-                :document_type_id="document.document_type_id"></person-form>
                 <div class="row text-center mt-4">
                     <div class="col-6">
                         <el-button
@@ -505,7 +519,7 @@ export default {
             totalDebt: 0,
             response: {},
             documentId:null,
-            buscar_destinatario:false,
+            //buscar_destinatario:false,
             buscar_pasajero:false,
             document: {
                 payments: [],
@@ -539,7 +553,11 @@ export default {
             encomienda: {
                 document_id:null,
                 remitente_id:null,
+                remitente_numero:null,
+                remitente_nombre:null,
                 destinatario_id:null,
+                destinatario_numero:null,
+                destinatario_nombre:null,
                 estado_pago_id:null,
                 estado_envio_id:null,
                 programacion_id:null,
@@ -559,11 +577,34 @@ export default {
             selectItem:null,
             tempRemitentes:[],
             selva:null,
-            is_document_type_invoice: true
+            is_document_type_invoice: true,
+
+            persona: {
+                id: null,
+                country_id:"PE",
+                type: "customers",
+                identity_document_type_id: '1',
+                edad: null,
+                number: '',
+                name: null,
+                addresses: []
+            }
         };
     },
     async mounted() {
 
+    },
+    computed: {
+        isAutoPrint: function () {
+
+            if(this.configuration)
+            {
+                return this.configuration.auto_print
+            }
+
+            return false
+
+        },
     },
     created(){
         this.initDocument();
@@ -581,6 +622,8 @@ export default {
          this.$eventHub.$on('reloadDataDestinarios', (destinatario_id) => {
                 this.reloadDataDestinatario(destinatario_id)
         })
+
+        this.startConnectionQzTray()
 
     },
     watch:{
@@ -649,6 +692,14 @@ export default {
         }
     },
     methods: {
+        startConnectionQzTray(){
+
+            if (!qz.websocket.isActive() && this.isAutoPrint)
+            {
+                startConnection();
+            }
+
+        },
         modalNote(){
             this.$eventHub.$emit('reloadDataNotes')
             this.showDialogSaleNoteOptions= true
@@ -698,6 +749,15 @@ export default {
         },
         changeDocumentType() {
             this.document.is_receivable = false;
+
+            this.document.customer_id=null
+            this.encomienda.remitente_numero=""
+            this.encomienda.remitente_nombre=""
+            this.persona.number= null
+            this.persona.name=  null
+
+
+
             this.series = [];
             if (this.document.document_type_id !== "nv") {
                 this.filterSeries();
@@ -876,33 +936,39 @@ export default {
             this.encomienda.programacion_id = programacion.id;
         },
         async agregarProducto(evt){
+            console.log(this.producto);
             if(this.producto.item.description && this.producto.unit_price){
                 let precio = parseFloat(this.producto.unit_price);
+                let cant = parseFloat(this.producto.quantity);
                 let valorventa = parseFloat(precio/1.18);
                 let igv = parseFloat(precio-valorventa);
 
+                let total = parseFloat(cant*precio);
+
                 if(this.configuration.legend_footer==1){ // esto agrega producto exonerado
                     this.producto.input_unit_price_value=precio;
+                    this.producto.cant=cant;
                     this.producto.item.name = this.producto.item.description;
                     this.producto.item.sale_unit_price = precio;
                     this.producto.item.unit_price=precio;
-                    this.producto.total=precio;
-                    this.producto.total_base_igv=precio;
-                    this.producto.total_value=precio;
+                    this.producto.total=total;
+                    this.producto.total_base_igv=precio*cant;
+                    this.producto.total_value=precio*cant;
                     this.producto.unit_price=precio;
-                    this.producto.unit_value=precio;
+                    this.producto.unit_value=precio*cant;
                 }
                 else{ // esto es por defecto encomienda grabada
                     this.producto.input_unit_price_value=precio;
+                    this.producto.cant=cant;
                     this.producto.item.name = this.producto.item.description;
                     this.producto.item.sale_unit_price =precio;
-                    this.producto.total=precio;
-                    this.producto.total_base_igv=valorventa;
-                    this.producto.total_value=valorventa;
+                    this.producto.total=total;
+                    this.producto.total_base_igv=valorventa*cant;
+                    this.producto.total_value=valorventa*cant;
                     this.producto.unit_price=precio;
                     this.producto.unit_value=valorventa;
-                    this.producto.total_igv= igv;
-                    this.producto.total_taxes=igv;
+                    this.producto.total_igv= igv*cant;
+                    this.producto.total_taxes=igv*cant;
                 }
 
                 // if(!this.producto.item.id){
@@ -920,7 +986,7 @@ export default {
 
                 this.document.items.push( p );
 
-                this.total += parseFloat(this.producto.unit_price);
+                this.total += parseFloat(this.producto.total);
 
                 if(this.configuration.legend_footer==1){ // zona selva
                     this.initProductoExonerado();
@@ -1029,7 +1095,7 @@ export default {
                 return this.$message.error("El destino del pago es obligatorio");
             }
 
-            if(!this.encomienda.remitente_id || !this.encomienda.destinatario_id){
+            if(!this.encomienda.remitente_id){
                 return this.$message.info('Debe seleccionar remitente y destinatario.');
             }
 
@@ -1077,6 +1143,8 @@ export default {
                         this.$emit("update:showDialog", false);
                         await this.onStore();// guardando encomienda
                         await this.saveCashDocument();
+                        this.autoPrintDocument();
+
                     } else {
                         this.$message.error(response.data.message);
                     }
@@ -1476,7 +1544,127 @@ export default {
 
                     });
             }, 5000)
-        }
-    },
+        },
+        autoPrintDocument(){
+
+            if(this.isAutoPrint)
+            {
+                this.$http.get(`/printticket/document/${this.documentId}/ticket`)
+                    .then(response => {
+                        this.printTicket(response.data)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
+
+        },
+        printTicket(html_pdf){
+
+            if (html_pdf.length > 0)
+            {
+                const config = getUpdatedConfig()
+                const opts = getUpdatedConfig()
+
+                const printData = [
+                    {
+                        type: 'html',
+                        format: 'plain',
+                        data: html_pdf,
+                        options: opts
+                    }
+                ]
+
+                qz.print(config, printData)
+                    .then(()=>{
+
+                        this.$notify({
+                            title: '',
+                            message: 'Impresión en proceso...',
+                            type: 'success'
+                        })
+
+                    })
+                    .catch(displayError)
+            }
+
+        },
+        async buscar_remitente(){
+            let tipo = (this.persona.identity_document_type_id==1) ?"dni" : "ruc"
+
+            this.encomienda.remitente_nombre = null
+            this.loading_search = true
+                let response = await this.$http.get(`/service/${tipo}/${this.encomienda.remitente_numero}`)
+                if(response.data.success) {
+
+                    this.encomienda.remitente_nombre = response.data.data.name
+                    this.persona.number= this.encomienda.remitente_numero
+                    this.persona.name=  response.data.data.name
+                    this.persona.address=  response.data.data.address
+
+                    this.$http
+                        .post("/persons", this.persona)
+                        .then((response) => {
+
+                            this.encomienda.remitente_id = response.data.id
+                            console.log(this.encomienda.remitente_id)
+                            this.document.customer_id = response.data.id
+
+                        })
+                        .finally(() => {
+                            this.persona.number= ""
+                            this.persona.name=  ""
+                            this.loading = false;
+                            this.errors = {};
+                        })
+                        .catch((error) => {
+                            this.persona.number= ""
+                            this.persona.name=  ""
+                            this.loading_search = false
+                            this.axiosError(error);
+                        });
+                }else{
+                    this.encomienda.remitente_nombre = "Sin resultados"
+                }
+
+        },
+        async buscar_destinatario(){
+            this.encomienda.destinatario_nombre = null
+            this.loading_search = true
+
+            let response = await this.$http.get(`/service/dni/${this.encomienda.destinatario_numero}`)
+            if(response.data.success) {
+
+                console.log(response.data.data.name);
+                this.encomienda.destinatario_nombre = response.data.data.name
+                this.persona.number= this.encomienda.destinatario_numero
+                this.persona.name=  response.data.data.name
+
+                this.$http
+                    .post("/persons", this.persona)
+                    .then((response) => {
+
+                        this.encomienda.destinatario_id = response.data.id
+                        console.log(this.encomienda.destinatario_id)
+
+                    })
+                    .finally(() => {
+                        this.persona.number= ""
+                        this.persona.name=  ""
+                        this.loading = false;
+                        this.errors = {};
+                    })
+                    .catch((error) => {
+                        this.persona.number= ""
+                        this.persona.name=  ""
+                        this.loading_search = false
+                        this.axiosError(error);
+                    });
+            } else{
+                this.encomienda.destinatario_nombre = "Sin resultados"
+            }
+
+        },
+    }
 };
 </script>

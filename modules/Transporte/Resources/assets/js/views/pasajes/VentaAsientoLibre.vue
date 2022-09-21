@@ -735,6 +735,8 @@ export default {
 
                            await this.saveCashDocument();
                            await this.guardarPasaje();
+
+                           this.autoPrintDocument()
                        } else {
                            this.$message.error(response.data.message);
                        }
@@ -1264,7 +1266,7 @@ export default {
                     //element.focus();
                 }
 
-                if(!this.clienteId && !this.isReserva){
+                if(!this.clienteId && this.document.document_type_id=='01' && !this.isReserva){
 
                     valid = false;
                     errors.push('Debe seleccionar un cliente o pasajero');
@@ -1396,7 +1398,52 @@ export default {
         onClose(){
             this.$emit('update:visible',false);
             this.$emit('onCancel');
-        }
+        },
+
+        autoPrintDocument(){
+
+            if(this.isAutoPrint)
+            {
+                this.$http.get(`/printticket/document/${this.documentId}/ticket`)
+                    .then(response => {
+                        this.printTicket(response.data)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
+
+        },
+        printTicket(html_pdf){
+
+            if (html_pdf.length > 0)
+            {
+                const config = getUpdatedConfig()
+                const opts = getUpdatedConfig()
+
+                const printData = [
+                    {
+                        type: 'html',
+                        format: 'plain',
+                        data: html_pdf,
+                        options: opts
+                    }
+                ]
+
+                qz.print(config, printData)
+                    .then(()=>{
+
+                        this.$notify({
+                            title: '',
+                            message: 'Impresión en proceso...',
+                            type: 'success'
+                        })
+
+                    })
+                    .catch(displayError)
+            }
+
+        },
     }
 }
 </script>

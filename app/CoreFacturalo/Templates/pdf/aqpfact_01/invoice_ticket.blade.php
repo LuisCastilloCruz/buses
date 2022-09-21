@@ -309,7 +309,11 @@
 <table>
     <tr>
         <td class="desc"><b>Destinatario: </b></td>
-        <td class="desc">{{ $encomienda->destinatario->name }}</td>
+        <td class="desc">{{ ($encomienda->destinatario) ? $encomienda->destinatario->name: $encomienda->destinatario_nombre }}</td>
+    </tr>
+    <tr>
+        <td class="desc"><b>DNI: </b></td>
+        <td class="desc">{{ ($encomienda->destinatario) ? $encomienda->destinatario->number: "" }}</td>
     </tr>
     @if ($encomienda->viaje)
         <tr>
@@ -384,6 +388,18 @@
         </tr>
     @else
         <tr>
+            <td class="desc" with="40"><h3 style="padding: 0px;"><b>Origen: </b></h3> </td>
+            <td class="desc">
+                <h3><b>{{ $pasaje->origen->nombre  }}</b></h3>
+            </td>
+        </tr>
+        <tr style="margin-top: 20px">
+            <td class="desc"><h3><b>Destino: </b></h3> </td>
+            <td class="desc">
+                <h3><b>{{ $pasaje->destino->nombre }}</b></h3>
+            </td>
+        </tr>
+        <tr>
             <td class="align-top desc"><h5><b>Fecha viaje: </b></h5></td>
             <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }}</h4></td>
         </tr>
@@ -442,8 +458,8 @@
         <th class="border-top-bottom desc-9 text-left">CANT.</th>
         <th class="border-top-bottom desc-9 text-left">UNIDAD</th>
         <th class="border-top-bottom desc-9 text-left">DESCRIPCIÓN</th>
-        <th class="border-top-bottom desc-9 text-left">P.UNIT</th>
-        <th class="border-top-bottom desc-9 text-left">TOTAL</th>
+        <th class="border-top-bottom desc-9 text-right">P.UNIT</th>
+        <th class="border-top-bottom desc-9 text-right">TOTAL</th>
     </tr>
     </thead>
     <tbody>

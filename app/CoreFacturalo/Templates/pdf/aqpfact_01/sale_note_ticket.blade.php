@@ -133,7 +133,11 @@
     <table>
         <tr>
             <td class="desc"><b>Destinatario: </b></td>
-            <td class="desc">{{ $encomienda->destinatario->name }}</td>
+            <td class="desc">{{ ($encomienda->destinatario) ? $encomienda->destinatario->name: $encomienda->destinatario_nombre }}</td>
+        </tr>
+        <tr>
+            <td class="desc"><b>DNI: </b></td>
+            <td class="desc">{{ ($encomienda->destinatario) ? $encomienda->destinatario->number: "" }}</td>
         </tr>
         @if ($encomienda->programacion)
             <tr>
