@@ -2,7 +2,9 @@
 
 namespace Modules\Document\Http\Controllers;
 
+use App\CoreFacturalo\Services\Extras\ValidateCpeSunat;
 use App\Models\Tenant\Configuration;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -18,7 +20,6 @@ use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Services\IntegratedQuery\{
     AuthApi,
-    ValidateCpe,
 };
 
 class ValidateDocumentController extends Controller
@@ -36,9 +37,9 @@ class ValidateDocumentController extends Controller
     {
 
 
-        $auth_api = (new AuthApi())->getToken();
-        if(!$auth_api['success']) return $auth_api;
-        $this->access_token = $auth_api['data']['access_token'];
+//        $auth_api = (new AuthApi())->getToken();
+//        if(!$auth_api['success']) return $auth_api;
+//        $this->access_token = $auth_api['data']['access_token'];
 
         $records = $this->getRecords($request);
         $validate_documents = $this->validateDocuments($records);
@@ -61,17 +62,16 @@ class ValidateDocumentController extends Controller
         foreach ($records_paginate->getCollection() as $document)
         {
 
-            $validate_cpe = new ValidateCpe(
-                                $this->access_token,
-                                $document->company->number,
-                                $document->document_type_id,
-                                $document->series,
-                                $document->number,
-                                $document->date_of_issue,
-                                $document->total
-                            );
+            $validate_cpe = new ValidateCpeSunat();
 
-            $response = $validate_cpe->search();
+            $response = $validate_cpe->search(
+                $document->company->number,
+                $document->document_type_id,
+                $document->series,
+                $document->number,
+                Carbon::parse($document->date_of_issue)->format('d/m/Y'),
+                $document->total
+            );
 
             // dd($response);
 
