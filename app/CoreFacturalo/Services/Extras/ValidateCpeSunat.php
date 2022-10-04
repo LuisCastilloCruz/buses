@@ -124,6 +124,8 @@ class ValidateCpeSunat
             if($response->getStatusCode() == 200) {
                 $text =  $response->getBody()->getContents();
                 $datos = json_decode($text,true);
+                Log::info("AQPPPP");
+                Log::info($datos);
                 return [
                     'success' => true,
                     'response' => "Ok ".$response->getBody()->getContents(),
