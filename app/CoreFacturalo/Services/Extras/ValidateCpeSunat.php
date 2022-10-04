@@ -17,6 +17,14 @@ class ValidateCpeSunat
 
     protected $client;
 
+    protected $document_state_code = [
+        '-' => '-',
+        '0' => '0',
+        '1' => '01',
+        '2' => '02',
+        '3' => '03',
+        '4' => '04'
+    ];
     protected $document_state = [
         '-' => '-',
         '0' => 'NO EXISTE',
@@ -130,7 +138,7 @@ class ValidateCpeSunat
                     'success' => true,
                     'response' => "Ok ".$response->getBody()->getContents(),
                     'data' => [
-                        'comprobante_estado_codigo' => $datos['data']['estadoCp'],
+                        'comprobante_estado_codigo' => $this->document_state_code[$datos['data']['estadoCp']],
                         'comprobante_estado_descripcion' => $this->document_state[$datos['data']['estadoCp']],
                         // 'empresa_estado_codigo' => $response->data->estadoRuc,
                         // 'empresa_estado_description' => $this->company_state[$response->data->estadoRuc],
