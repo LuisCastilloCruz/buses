@@ -19,7 +19,7 @@ use Modules\Document\Http\Requests\ValidateDocumentsRequest;
 use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Services\IntegratedQuery\{
-    AuthApi,
+    AuthApi
 };
 
 class ValidateDocumentController extends Controller
@@ -73,18 +73,18 @@ class ValidateDocumentController extends Controller
                 $document->total
             );
 
-            // dd($response);
+            //dd($response['response']);
 
             if ($response['success']) {
 
-                $document->message = $response['message'];
-                $document->sunat_state_type_id = $response['data']['state_type_id'];
-                $document->code = $response['data']['estadoCp'];
+                $document->message =($response['response'] !="") ?$response['response'] : "" ;
+                $document->sunat_state_type_id = $response['data']['comprobante_estado_codigo'];
+                $document->code = $response['data']['comprobante_estado_codigo'];
                 $document->response = $response;
 
             } else{
 
-                $document->message = $response['message'];
+                $document->message = ($response['response'] !="") ?$response['response'] : "" ;
                 $document->sunat_state_type_id = null;
                 $document->code = '-2';  //custom code
                 $document->response = $response;
@@ -138,9 +138,9 @@ class ValidateDocumentController extends Controller
     public function regularize(ValidateDocumentsRequest $request)
     {
 
-        $auth_api = (new AuthApi())->getToken();
-        if(!$auth_api['success']) return $auth_api;
-        $this->access_token = $auth_api['data']['access_token'];
+//        $auth_api = (new AuthApi())->getToken();
+//        if(!$auth_api['success']) return $auth_api;
+//        $this->access_token = $auth_api['data']['access_token'];
 
         $records = $this->getRecords($request)->get();
         $state_types = StateType::get();
@@ -149,23 +149,22 @@ class ValidateDocumentController extends Controller
 
             foreach ($records as $document)
             {
-                $validate_cpe = new ValidateCpe(
-                                    $this->access_token,
-                                    $document->company->number,
-                                    $document->document_type_id,
-                                    $document->series,
-                                    $document->number,
-                                    $document->date_of_issue,
-                                    $document->total
-                                );
+                $validate_cpe = new ValidateCpeSunat();
 
-                $response = $validate_cpe->search();
+                $response = $validate_cpe->search(
+                    $document->company->number,
+                    $document->document_type_id,
+                    $document->series,
+                    $document->number,
+                    Carbon::parse($document->date_of_issue)->format('d/m/Y'),
+                    $document->total
+                );
 
                 // dd($response, $document);
 
                 if ($response['success']) {
 
-                    $sunat_state_type_id = $response['data']['state_type_id'];
+                    $sunat_state_type_id = $response['data']['comprobante_estado_codigo'];
 
                     if($document->state_type_id !== $sunat_state_type_id){
 
