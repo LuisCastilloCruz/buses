@@ -19,7 +19,7 @@ class ValidateCpeSunat
 
     protected $document_state_code = [
         '-' => '-',
-        '0' => '0',
+        '0' => '00',
         '1' => '01',
         '2' => '02',
         '3' => '03',

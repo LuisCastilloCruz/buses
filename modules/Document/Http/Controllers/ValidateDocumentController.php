@@ -78,7 +78,7 @@ class ValidateDocumentController extends Controller
             if ($response['success']) {
 
                 $document->message =($response['response'] !="") ?$response['response'] : "" ;
-                $document->sunat_state_type_id = $response['data']['comprobante_estado_codigo'];
+                $document->sunat_state_type_id = ($response['data']['comprobante_estado_codigo']=="01") ? "05" : null;
                 $document->code = $response['data']['comprobante_estado_codigo'];
                 $document->response = $response;
 
