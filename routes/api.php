@@ -99,6 +99,10 @@ if ($hostname) {
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
 
+        //Clients
+        Route::post('clients', 'System\Api\ClientController@store');
+        Route::post('clients/update', 'System\Api\ClientController@update');
+        Route::get('clients/tables', 'System\Api\ClientController@tables');
 
         Route::middleware(['auth:system_api'])->group(function () {
 

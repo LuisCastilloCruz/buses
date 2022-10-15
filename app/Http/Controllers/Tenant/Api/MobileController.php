@@ -53,13 +53,13 @@ class MobileController extends Controller
 
         $company = Company::active();
 
-        $logo = file_get_contents(public_path("storage/uploads/logos/".$company->logo.""));
-
-        if(!$logo){
-            $logo=file_get_contents(public_path("public/logo/700x300.jpg"));
+        if($company->logo){
+            $logo = file_get_contents(public_path("storage/uploads/logos/".$company->logo.""));
+            $logo_base64 = base64_encode($logo);
+        }else{
+            $logo=file_get_contents(public_path("/logo/700x300.jpg"));
+            $logo_base64 = base64_encode($logo);
         }
-
-        $logo_base64 = base64_encode($logo);
 
         $user = $request->user();
         return [
@@ -77,7 +77,8 @@ class MobileController extends Controller
             'razon_social'=> $company->name,
             'trade_name'=> $company->trade_name,
             'establishment_id'=>$user->establishment->id,
-            'logo_base64'=>$logo_base64
+            'logo_base64'=>$logo_base64,
+            'soap_type_id'=> $company->soap_type_id,
         ];
 
     }

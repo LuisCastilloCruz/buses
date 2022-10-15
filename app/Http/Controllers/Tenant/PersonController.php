@@ -95,14 +95,14 @@ class PersonController extends Controller
         $number = $request->input('number');
         $person = Person::firstOrNew(['number' => $number]);
 
-        if($person->id){
-            $msg = ($person->id)?'Cliente ya existe':'Cliente encontrato con éxito';
-            return [
-                'success' => true,
-                'message' => $msg,
-                'id' => $person->id
-            ];
-        }else{
+//        if($person->id){
+//            $msg = ($person->id)?'Cliente ya existe':'Cliente encontrato con éxito';
+//            return [
+//                'success' => true,
+//                'message' => $msg,
+//                'id' => $person->id
+//            ];
+//        }else{
             if (!$request->barcode) {
                 if ($request->internal_id) {
                     $request->merge(['barcode' => $request->internal_id]);
@@ -157,7 +157,7 @@ class PersonController extends Controller
                 'message' => $msg,
                 'id' => $person->id
             ];
-        }
+//        }
 
     }
 
