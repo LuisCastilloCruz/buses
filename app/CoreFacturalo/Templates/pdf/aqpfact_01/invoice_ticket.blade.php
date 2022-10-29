@@ -808,7 +808,7 @@
     @if ($terms_condition)
         <tr>
             <td class="text-center desc pb-3 pt-3" style="border: 1px solid #ccc;">
-                <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                <h6 style="font-size: 10px; font-weight: bold;">Términos y condiciones del servicio</h6>
                 <p>{!! $terms_condition !!}</p>
             </td>
         </tr>
