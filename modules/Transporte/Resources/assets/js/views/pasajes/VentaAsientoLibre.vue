@@ -104,23 +104,17 @@
 
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label for="dni" style="display: inline; float: left" class="ml-2 mr-2">
-                                                Dni
-<!--                                                <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>-->
-                                            </label>
-<!--                                            <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"-->
-<!--                                                    dusk="pasajeroId"-->
-<!--                                                    placeholder="Buscar pasajero"-->
-<!--                                                    :remote-method="searchPasajero"-->
-<!--                                                    :loading="loadingPasajero"-->
-<!--                                                    :disabled=" (transportePasaje) ? true : false"-->
-<!--                                            >-->
-<!--                                                <el-option v-for="persona in tempPasajeros" :key="persona.id" :value="persona.id" :label="persona.name">-->
-
-<!--                                                </el-option>-->
-<!--                                            </el-select>-->
-
-                                            <input placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" type="number"  style="width:20%;float: left"  maxlength="8" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
+                                            <label class="ml-2 mr-2" for="edad" style="display: inline; float: left;width: 10%">
+                                                <el-select v-model="persona.identity_document_type_id"
+                                                    dusk="persona.identity_document_type_id"
+                                                    filterable
+                                                    popper-class="el-select-identity_document_type"
+                                                    @change="changeIdentityDocType">
+                                                <el-option v-for="option in identity_document_types"
+                                                   :key="option.id"
+                                                   :label="option.description"
+                                                   :value="option.id"></el-option>
+                                            </el-select></label><input placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" id="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" :type="persona.identity_document_type_id==1 ? 'number' : 'text' "  style="width:20%;float: left"  :maxlength="persona.identity_document_type_id==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
                                             <label class="ml-2 mr-2" for="nombre" style="display: inline; float: left">Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" style="width:40%;float: left"></input>
                                             <label class="ml-2 mr-2" for="edad" style="display: inline; float: left">Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" style="width:20%;float: left"></input>
                                         </div>
@@ -138,7 +132,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label for="dni">Asiento</label>
-                                            <el-input :disabled="tipoVenta == 2 ? true : false" v-model="numeroAsiento" type="number" min="1"  id="numero-asiento"></el-input>
+                                            <el-input :disabled="tipoVenta == 2 ? true : false" v-model="numeroAsiento" type="text" min="1"  id="numero-asiento"></el-input>
                                         </div>
                                     </div>
                                 </div>
@@ -418,6 +412,7 @@ export default {
         //         this.reloadDataPasajeros(pasajeroId)
         // })
 
+        this.startConnectionQzTray()
     },
     watch:{
         precio:function(newVal){
@@ -454,7 +449,18 @@ export default {
         },
         isReserva(){
             return this.estadoAsiento == 3;
-        }
+        },
+
+        isAutoPrint: function () {
+
+            if(this.configuration)
+            {
+                return this.configuration.auto_print
+            }
+
+            return false
+
+        },
     },
     data(){
         return ({
@@ -463,6 +469,7 @@ export default {
             resource_documents: "documents",
             input_person:{},
             showDialogNewPerson:false,
+            documentNewId: null,
             clientes:[],
             pasajeros:[],
             pasajero:null,
@@ -526,13 +533,22 @@ export default {
                 type: "customers",
                 identity_document_type_id: '1',
                 edad: null,
-                number: '',
+                number: null,
                 name: null,
                 addresses: []
-            }
+            },
+            identity_document_types: [],
         });
     },
     methods:{
+        startConnectionQzTray(){
+
+            if (!qz.websocket.isActive() && this.isAutoPrint)
+            {
+                startConnection();
+            }
+
+        },
         modalNote(){
             this.$eventHub.$emit('reloadDataNotes')
             this.showDialogSaleNoteOptions= true
@@ -542,45 +558,14 @@ export default {
             this.buscar_pasajero = buscar_pasajero
 
         },
-        // reloadDataCustomers(cliente_Id) {
-        //     this.$http
-        //         .get(`/documents/search/customer/${cliente_Id}`)
-        //         .then((response) => {
-        //             this.tempClientes = this.clientes  = response.data.customers;
-        //             this.clienteId = cliente_Id;
-        //         });
-        // },
-        // reloadDataPasajeros(pasajero_id) {
-        //     this.$http
-        //         .get(`/documents/search/customer/${pasajero_id}`)
-        //         .then((response) => {
-        //             this.tempPasajeros = this.pasajeros  = response.data.customers;
-        //             this.pasajeroId = pasajero_id;
-        //         });
-        // },
-        // async searchCliente(input=''){
-        //     this.loadingCliente = true;
-        //     const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
-        //     this.loadingCliente = false;
-        //     this.tempClientes = this.clientes  = data.clientes;
-        // },
-        // async searchPasajero(input=''){
-        //     this.loadingPasajero = true;
-        //     const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
-        //     this.loadingPasajero = false;
-        //     this.tempPasajeros = this.pasajeros  = data.clientes;
-        //     this.personas =  _.filter(data.clientes, (c) => { return c.identity_document_type_id !== '6' });
-        //
-        // },
-
 
         async onCreate(){
+            await this.$http.get(`/persons/tables`)
+                .then(response => {
+                    console.log(this.identity_document_types)
+                    this.identity_document_types = response.data.identity_document_types.filter(  doc => doc.description == "DNI" || doc.description == "CE" || doc.description == "Pasaporte" );
+                })
             this.estadoAsiento = 2;
-
-
-
-            // this.transportePasaje = this.asiento.transporte_pasaje || null;
-
             this.initProducto();
             //this.initDocument();
             this.clickAddPayment();
@@ -725,6 +710,7 @@ export default {
                    .then(async (response) => {
                        if (response.data.success) {
                            this.documentId = response.data.data.id;
+                           this.documentNewId = response.data.data.id;
 
                            if (this.document.document_type_id === "nv"){
                                this.form_cash_document.sale_note_id = response.data.data.id;
@@ -1298,7 +1284,7 @@ export default {
                     let element = document.getElementById('precio-boleto');
                     //element.focus();
                 }
-                if(!this.pasajeroId && this.document.document_type_id=='03' && !this.isReserva){
+                if(!this.pasajeroId && this.document.document_type_id=='03' && !this.isReserva && !this.persona.name){
 
                     valid = false;
                     errors.push('Debe seleccionar un pasajero');
@@ -1449,6 +1435,17 @@ export default {
                     .catch(displayError)
             }
 
+        },
+
+        changeIdentityDocType() {
+            console.log(this.persona.identity_document_type_id)
+            if(this.persona.identity_document_type_id ===4 ){ //cedula
+
+            }
+            else if(this.persona.identity_document_type_id ===7 ){ //pasaporte
+
+
+            }
         },
     }
 }

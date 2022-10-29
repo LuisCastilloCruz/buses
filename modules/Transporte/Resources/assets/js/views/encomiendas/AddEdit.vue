@@ -1120,6 +1120,7 @@ export default {
                 .then(async (response) => {
                     if (response.data.success) {
                         this.documentId = response.data.data.id;
+                        this.documentNewId = response.data.data.id;
 
 
                         if (this.document.document_type_id === "nv"){

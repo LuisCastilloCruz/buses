@@ -59,7 +59,7 @@
 <body>
 <div>
     <p align="center" class="title">
-        <strong>Reporte Punto de Venta
+        <strong>Reporte Punto de Venta 4
         </strong>
     </p>
 </div>

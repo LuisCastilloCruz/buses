@@ -12,6 +12,7 @@
 
      foreach($configuracion as $config){
         $legend_footer= $config['legend_footer'];
+        $terms_condition=$config['terms_condition'];
      }
 
     if($document_base) {
@@ -804,18 +805,17 @@
                 <td class="text-center desc"><p>Código Hash: {{ $document->hash }}</p></td>
             </tr>
 
-    @if ($document->terms_condition)
+    @if ($terms_condition)
         <tr>
-            <td class="desc">
-                <br>
-                <h6 style="font-size: 10px; font-weight: bold;">Términos y condiciones del servicio</h6>
-                {!! $document->terms_condition !!}
+            <td class="text-center desc pb-3 pt-3" style="border: 1px solid #ccc;">
+                <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                <p>{!! $terms_condition !!}</p>
             </td>
         </tr>
     @endif
     <tr>
         <td class="text-center desc">
-            <p>Representación impresa del Comprobante de Pago Electrónico.</p>
+            <p style="font-size: 11.5px">Representación impresa del Comprobante de Pago Electrónico</p>
         </td>
     </tr>
 
