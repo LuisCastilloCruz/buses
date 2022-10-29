@@ -809,7 +809,7 @@
         <tr>
             <td class="text-center desc pb-3 pt-3" style="border: 1px solid #ccc;">
                 <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
-                <p style="font-size: 10px;>{!! $terms_condition !!}</p>
+                <p style="font-size: 10px;">{!! $terms_condition !!}</p>
             </td>
         </tr>
     @endif
