@@ -243,7 +243,7 @@ class TransporteVehiculoController extends Controller
         }catch(Exception $e){
             return response()->json([
                 'success' => false,
-                'message' => 'No se puedo eliminar el asiento'
+                'message' => 'No se pudo eliminar el asiento'
             ],500);
         }
     }
