@@ -25,7 +25,6 @@ use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\PaymentMethodType;
 use Exception;
 use Modules\Finance\Traits\FinanceTrait;
-use Modules\Transporte\Models\TransporteTerminales;
 use Modules\Transporte\Models\TransporteViajes;
 use Modules\Transporte\Traits\PasajerosRuta;
 
@@ -366,12 +365,9 @@ class TransporteSalesController extends Controller
 
         $terminal = $user->terminal;
 
-        $terminal_destino= TransporteTerminales::findOrFail($request->destino_id);
-        $ciudad_destino_id=$terminal_destino->destino_id;
-
         DB::connection('tenant')->beginTransaction();
 
-        if($request->tipo_venta == 2){// venta libre
+        if($request->tipo_venta == 2){
 
             $request->validate([
                 //'cliente_id'=> ['required'],
@@ -402,7 +398,7 @@ class TransporteSalesController extends Controller
                 'estado_asiento_id',
                 'tipo_venta',
                 'numero_asiento',
-                //'destino_id',
+                'destino_id',
                 'hora_salida',
             ]);
 
@@ -436,7 +432,6 @@ class TransporteSalesController extends Controller
                     array_merge($attributes,[
                         'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
                         'origen_id' => $terminal->id,
-                        'destino_id' => $ciudad_destino_id,
                         'soap_type_id'=>$soap_type_id,
                         // 'fecha_llegada' => $fechaLLegada,
                         'sucursal_id' => $terminal->id,
@@ -447,11 +442,11 @@ class TransporteSalesController extends Controller
 
             }else if($request->input('tipo_venta') == 2){//venta con programacion
 
+
                 TransportePasaje::create(
                     array_merge($attributes,[
                         'fecha_salida' => Carbon::parse($request->fecha_salida)->format('Y-m-d'),
                         'origen_id' => $terminal->id,
-                        'destino_id' => $ciudad_destino_id,
                         'soap_type_id'=>$soap_type_id,
                         'user_name' => auth()->user()->name,
                         'sucursal_id' => $terminal->id,
