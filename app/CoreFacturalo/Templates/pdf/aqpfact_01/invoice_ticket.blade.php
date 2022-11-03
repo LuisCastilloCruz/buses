@@ -60,7 +60,7 @@
 @endif
 <table class="full-width">
     <tr>
-        <td class="text-center"><h4><b>{{ $company->name }}</b></h4></td>
+        <td class="text-center"><h5><b>{{ $company->name }}</b></h5></td>
     </tr>
     {{--<tr>
         <td class="text-center"><h5>{{ $company->trade_name }}</h5></td>
@@ -68,6 +68,7 @@
     <tr>
         <td class="text-center"><h4>RUC: {{ $company->number }}</h4></td>
     </tr>
+    @if($establishment->address != '-')
     <tr>
         <td class="text-center" style="text-transform: uppercase;">
             <p style="font-size: 10px">
@@ -78,6 +79,7 @@
             </p>
         </td>
     </tr>
+    @endif
 
     @isset($establishment->trade_address)
         <tr>
@@ -128,7 +130,7 @@
         <td><p class="desc"><b>{{ $customer->identity_document_type->description }}:</b></p></td>
         <td colspan="2">{{ $customer->number }}</td>
     </tr>
-    @if ($customer->address !== '')
+    @if ($customer->identity_document_type->description==='RUC')
         <tr>
             <td class="align-top"><p class="desc"><b>Dirección:</b></p></td>
             <td colspan="2">
@@ -359,7 +361,7 @@
 @endif
 
 @if(!is_null($pasaje))
-<table>
+<table border="1" class="full-width">
     @if ($pasaje->pasajero->name && $document->document_type->id=='01')
     <tr>
         <td class="align-top desc"><h5><b>Pasajero: </b></h5></td>
@@ -380,13 +382,10 @@
             </td>
         </tr>
         <tr>
-            <td class="align-top desc"><h5><b>Fecha viaje: </b></h5></td>
-            <td class="text-left desc"><h4>{{ $pasaje->fecha_salida }}</h4></td>
+            <td style="width: 50%"><p class="desc font-lg"><b>F. viaje:</b> </p> <p style="font-size:20px;font-weight: bold">{{ $pasaje->fecha_salida }}</p></td>
+            <td style="width: 50%" class="text-right"> <p class="font-lg"><b>Hora viaje:</b> </p> <p style="font-size:20px;font-weight: bold">{{ $pasaje->viaje->hora_salida }}</p></td>
         </tr>
-        <tr>
-            <td class="desc"> <h5> <b>Hora viaje: </b> </h5> </td>
-            <td class="desc"> <h4> <strong>{{ $pasaje->viaje->hora_salida }}</strong></h4></td>
-        </tr>
+
     @else
         <tr>
             <td class="desc" with="40"><h3 style="padding: 0px;"><b>Origen: </b></h3> </td>
@@ -410,11 +409,11 @@
         </tr>
     @endif
     <tr>
-        <td class="desc">
-            <h5><b>N°. Asiento: </b></h5>
+        <td class="desc text-right pr-3">
+            <h5 style="font-size: 15px" ><b>N°. Asiento: </b></h5>
         </td>
-        <td class="desc">
-            <h4 style="font-size: 30pt;"><b>{{ $pasaje->numero_asiento }}</b></h4>
+        <td class="desc text-left pl-3">
+            <p style="font-size: 40px;font-weight: bold">{{ $pasaje->numero_asiento }}</p>
         </td>
     </tr>
 

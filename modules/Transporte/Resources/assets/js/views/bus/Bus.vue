@@ -211,57 +211,6 @@ export default {
                 fill:'#fff',
                 animation:'none'
             }
-            
-            // if(asiento.estado_asiento_id == 1){//Disponible
-            //     return {
-            //         fill:'#fff',
-            //         animation:'none'
-            //     }
-            // }else if(asiento.estado_asiento_id == 2 ){ //Ocupado
-
-            //     if(config.isBelt){ //Hay un path que se pinta de azul
-            //         return{
-            //             fill:'#fff'
-            //         };
-            //     }
-
-            //     return {
-            //         fill: this.changeColor ? this.changeColor(asiento) : '#ff0000', // '#ff0000'
-            //         animation:'none',
-            //         color: this.changeColor ? this.changeColor(asiento) : '#fff'
-            //     }
-
-            // }else if(asiento.estado_asiento_id == 3){ //Reservado
-
-            //     if(config.isSeat){
-            //         return {
-            //             fill:'#fff',
-            //             animation:'reservado 1s infinite'
-            //         }
-            //     }
-
-            //     return {
-            //         fill:'#fff',
-            //         animation:'none'
-            //     }
-
-
-
-            // }else if(asiento.estado_asiento_id == 4){ //Seleccionado
-
-            //     if(config.isSeat){
-            //         return {
-            //             fill:'#ff6600',
-            //             animation:'reservado 1s infinite'
-            //         }
-            //     }
-
-            //     return {
-            //         fill:'#ff6600',
-            //         animation:'none'
-            //     }
-
-            // }
         },
         childOnMouseDown(evt,asiento,index){
             evt.stopPropagation();

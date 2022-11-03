@@ -14,7 +14,7 @@ trait PasajerosRuta{
 
     public function getPasajeros(TransporteProgramacion $programacion, $fechaSalida, $onlyPassage = false){
         $pasajes = collect([]);
-        $programacion->load(['programacion','origen','destino']);
+        $programacion->load(['programacion','origen','destino']); //terminal
         $programacionPadre = $programacion->programacion;
 
         $rutas = $programacionPadre->rutas()->get();

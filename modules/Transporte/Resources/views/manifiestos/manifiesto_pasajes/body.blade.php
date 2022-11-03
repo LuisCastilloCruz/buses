@@ -186,6 +186,7 @@
         <td> <strong>DESTINO</strong> </td>
         <td> <strong>TIPO DOC.</strong> </td>
         <td> <strong>Nº DE DOC</strong> </td>
+        <td> <strong>EDAD</strong> </td>
         <td> <strong>Nº ASIENTO</strong> </td>
         <td> <strong> SERIE Nº BOLETO</strong></td>
         <td> <strong>IMPORTE S/</strong> </td>
@@ -202,6 +203,7 @@
                 <td>{{ $pasaje->destino->nombre }}</td>
                 <td>{{ $pasajero->identity_document_type->description }}</td>
                 <td>{{ $pasajero->number  }}</td>
+                <td>{{ $pasajero->edad  }}</td>
                 <td>{{ $pasaje->numero_asiento }}</td>
                 <td>{{ $document->series }} - {{ $document->number }}</td>
                 <td>{{  number_format($pasaje->precio,2,'.','')   }}</td>

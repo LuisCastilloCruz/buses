@@ -234,12 +234,16 @@
                     </div>
                 </div>
                 <div class="row card-body no-gutters">
-                    <div class="col-md-12 text-center">
-                        <p>Leyenda( Se vendió en el terminal de )</p>
+                    <div class="col-md-8 text-left">
+                        <p><b>Leyenda( Se vendió en el terminal de )</b></p>
 
                         <span v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :style="{'background':terminal.color,'padding': '10px','margin': '0 5px'}">
                             <b class="text-white">{{terminal.nombre}}</b>
                         </span>
+                    </div>
+                    <div class="col-md-4 text-left">
+                        <p><b>Imprimir manifiesto</b></p>
+                        <el-button type="primary" @click="imprimirManifiesto">Manifiesto</el-button>
                     </div>
                 </div>
             </div>
@@ -605,7 +609,7 @@ export default {
                 const { Manager } = this.io;
 
                 const url = `${protocol}//${domain}:${port}`;
-                
+
                 const manager = new Manager(`${url}`);
 
                 this.socketClient = manager.socket("/");
@@ -701,7 +705,7 @@ export default {
             this.documentId = documentId;
             this.showDialogDocumentOptions = true;
 
-           
+
             // if(this.tipoVenta == 2){
             //     await this.onUpdateItem()
             //     this.documentId = documentId;
@@ -791,7 +795,7 @@ export default {
                 this.loadAsientosOcupados = true;
                 this.asientosOcupados = await this.getAsientosOcupados(programacion, this.fecha_salida)
                 this.vehiculo = programacion.vehiculo;
-                
+
                 // this.asientosOcupados = programacion.asientos_ocupados;
                 this.asientos = programacion.vehiculo.seats;
 
@@ -802,12 +806,12 @@ export default {
 
         },
         async getAsientosOcupados(programacion, fechaSalida){
-           
+
             const {data} = await this.$http.post('/transportes/sales/obtener-asientos',{
                 programacion_id:programacion.id,
                 fecha_salida: fechaSalida
             });
-            
+
             return data;
 
 
@@ -830,6 +834,11 @@ export default {
                 this.horaSalida = null;
             }
 
+        },
+
+        imprimirManifiesto(){
+            alert('En desarrollo, vaya a la sección de manifiestos.');
+            // window.open(`/transportes/manifiestos/${manifiesto.id}/imprimir-manifiesto`);
         },
 
         anularBoleto(pasaje){
