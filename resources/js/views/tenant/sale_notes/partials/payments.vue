@@ -143,7 +143,7 @@
 
         <document-options
             :recordId="this.documentId"
-            :showDialogOptions="showDialogOptions"
+            :showDialogOptions.sync="showDialogOptions"
             :showClose="showDialogClose"
             :type="this.type"
             :configuration="this.configuration"
@@ -173,6 +173,9 @@
     export default {
         props: ['showDialog', 'documentId','external','configuration'],
         mixins: [deletable],
+        components: {
+            DocumentOptions
+        },
         data() {
             return {
                 title: null,
@@ -246,7 +249,7 @@
                 await this.$http.get(`/${this.resource}/document/${this.documentId}`)
                     .then(response => {
                         this.document = response.data;
-                        this.title = 'Pagos del comprobante: '+this.document.number_full;
+                        this.title = 'Pagos del comprobante nota: '+this.document.number_full;
                     });
                 await this.$http.get(`/${this.resource}/records/${this.documentId}`)
                     .then(response => {
@@ -335,7 +338,7 @@
             close() {
                 this.$emit('update:showDialog', false);
                 // this.initDocumentTypes()
-                // this.initForm()
+                this.initForm()
             },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>{

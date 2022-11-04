@@ -88,7 +88,7 @@
                         <div v-loading="loadingProgramaciones" v-if="destino && tipoVenta == 2" class="col-md-12">
                             <div v-if="programaciones.length > 0" class="row mt-2">
                                 <div class="col-md-12 px-0">
-                                    <table class="table table-striped table-border">
+                                    <table class="table table-striped table-border responsive">
                                         <thead>
                                         <tr>
                                             <th>Terminal</th>
@@ -242,8 +242,9 @@
                         </span>
                     </div>
                     <div class="col-md-4 text-left">
-                        <p><b>Imprimir manifiesto</b></p>
-                        <el-button type="primary" @click="imprimirManifiesto">Manifiesto</el-button>
+                        <p><b>Manifiesto</b></p>
+                        <el-button v-if="existe_manifiesto"  type="primary" @click="imprimirManifiesto(id_manifiesto)">Imprimir</el-button>
+                        <el-button v-else  type="primary" @click="generarManifiesto">Generar</el-button>
                     </div>
                 </div>
             </div>
@@ -316,6 +317,16 @@
         :showDialog.sync="showDialogVoided"
         :recordId="documentId"></documents-voided>
 
+        <generar-manifiesto
+            :visible.sync="modalManifiestoVisible"
+            :series="series"
+            :fecha="fecha_salida"
+            :programacion="selectProgramacion"
+            :choferes="choferes"
+            :origen="origen"
+            :destino="destino"
+        />
+
     </div>
     </div>
 </template>
@@ -358,7 +369,9 @@ import VentaAsientoLibre from './VentaAsientoLibre.vue';
 import DocumentOptions from "@views/documents/partials/options.vue";
 import DocumentsVoided from '@views/documents/partials/voided.vue';
 import DetalleBoleto from './DetalleBoleto.vue';
+import GenerarManifiesto from './../manifiestos/GenerarManifiestoSimple.vue';
 import SocketClient from '@mixins/socket.js'
+
 import moment from 'moment';
 
 export default {
@@ -418,7 +431,11 @@ export default {
         user:{
             type:Object,
             required:true,
-        }
+        },
+        choferes:{
+            type:Array,
+            default:() => []
+        },
 
     },
     components:{
@@ -426,7 +443,8 @@ export default {
         VentaAsientoLibre,
         DocumentOptions,
         DocumentsVoided,
-        DetalleBoleto
+        DetalleBoleto,
+        GenerarManifiesto
     },
     watch:{
         terminalId(newVal){
@@ -514,6 +532,9 @@ export default {
             timeSegundo: null,
             asientosOcupados: [],
             loadAsientosOcupados:false,
+            modalManifiestoVisible:false,
+            existe_manifiesto:false,
+            id_manifiesto:null
         });
     },
     computed:{
@@ -789,6 +810,8 @@ export default {
             })
         },
         async seleccionar(programacion){
+            console.log('programacion id');
+            console.log(programacion);
             this.visibleAsientoLibre = false;
             this.selectProgramacion = programacion;
             if(this.tipoVenta == 2){
@@ -796,14 +819,35 @@ export default {
                 this.asientosOcupados = await this.getAsientosOcupados(programacion, this.fecha_salida)
                 this.vehiculo = programacion.vehiculo;
 
-                // this.asientosOcupados = programacion.asientos_ocupados;
                 this.asientos = programacion.vehiculo.seats;
 
                 this.loadAsientosOcupados = false;
 
+                this.verificarManifiesto(programacion.id);
+
                 this.$nextTick(() => this.$forceUpdate());
             }
 
+        },
+
+        async verificarManifiesto(programacion_id){
+
+            let form ={
+                programacion_id: programacion_id
+            }
+            try{
+                const { data } = await this.$http.post('/transportes/manifiestos/verificar-manifiesto',form);
+
+                this.existe_manifiesto = (data.id >0) ? true : false;
+                if(this.existe_manifiesto){
+                    this.id_manifiesto=data.id
+                }
+
+                console.log(data)
+
+            }catch(error){
+                return null;
+            }
         },
         async getAsientosOcupados(programacion, fechaSalida){
 
@@ -836,9 +880,12 @@ export default {
 
         },
 
-        imprimirManifiesto(){
-            alert('En desarrollo, vaya a la sección de manifiestos.');
-            // window.open(`/transportes/manifiestos/${manifiesto.id}/imprimir-manifiesto`);
+        imprimirManifiesto(id){
+            window.open(`/transportes/manifiestos/${id}/imprimir-manifiesto`);
+        },
+        generarManifiesto(){
+            this.tipo = 2;
+            this.modalManifiestoVisible = true;
         },
 
         anularBoleto(pasaje){

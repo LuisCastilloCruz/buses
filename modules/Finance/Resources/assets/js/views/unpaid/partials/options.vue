@@ -1,11 +1,11 @@
 <template>
-    <el-dialog
+    <el-dialog :close-on-click-modal="true"
                :title="titleDialog"
                :visible="showDialogOptions"
                append-to-body
                width="30%"
                @open="create"
-               @close="closeUnpaid">
+                @close="closeUnpaid">
         <!--
         <Keypress
             key-event="keyup"
@@ -75,6 +75,7 @@ import {mapState, mapActions} from "vuex/dist/vuex.mjs";
 
 export default {
     props: ['showDialogOptions', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type'],
+    emit:['update:showDialogOptions'],
     components: {
     },
     data() {
@@ -192,9 +193,9 @@ export default {
         },
         closeUnpaid() {
             this.$emit('update:showDialogOptions', false);
-            // this.initDocumentTypes()
-            // this.initForm()
-        },
+             //this.initDocumentTypes()
+             this.initForm()
+        }
     }
 }
 </script>

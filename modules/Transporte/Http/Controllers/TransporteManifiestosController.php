@@ -409,6 +409,16 @@ class TransporteManifiestosController extends Controller
         ]);
     }
 
+    public  function verificarManifiestos(Request  $request){
+        $manifiesto= TransporteManifiesto::where('programacion_id',$request->programacion_id)
+            ->orderBy('id','desc')
+            ->first();
+
+        return response()->json([
+            'id' => $manifiesto->id
+        ]);
+    }
+
 
 
 }

@@ -14,7 +14,7 @@
                     </el-select>
                     <span v-if="errors.serie" class="invalid-feedback" :style="{display:'block'}">{{ errors.serie[0] }}</span>
                 </div>
-                
+
             </div>
             <div class="col-3">
                 <div class="form-group">
@@ -78,12 +78,12 @@
                             </el-option>
 
                         </template>
-                        
+
                     </el-select>
                     <span v-if="errors.copiloto_id" class="invalid-feedback" :style="{display:'block'}">{{ errors.copiloto_id[0] }}</span>
                 </div>
             </div>
-           
+
             <div class="col-6">
                 <label for="">Observaciones</label>
                 <div class="form-group">
@@ -111,7 +111,7 @@
                                 <td>{{ programacion.destino.nombre }}</td>
                                 <td>{{ programacion.hora_salida }}</td>
                                 <td class="text-center">
-                                    
+
                                     <el-button v-if="manifiesto.programacion_id == programacion.id"  type="danger" @click="deseleccionar">
                                         <i class="fa fa-trash"></i>
                                     </el-button>
@@ -120,7 +120,7 @@
                                     </el-button>
                                 </td>
                             </tr>
-                        
+
                         </tbody>
                     </template>
                     <template v-else>
@@ -135,20 +135,20 @@
                             </td>
                         </tr>
                     </template>
-                    
-                       
-                        
+
+
+
                 </table>
             </div>
         </div> -->
         <div class="row mt-2">
             <div class="col-12 text-center">
-                <el-button :loading="loading" type="primary" @click="onStore"> 
+                <el-button :loading="loading" type="primary" @click="onStore">
                     <i class="fa fa-save"></i>
                     Generar manifiesto
                 </el-button>
             </div>
-            
+
         </div>
     </el-dialog>
 </template>
@@ -211,6 +211,7 @@ export default {
             }
         },
         onStore(){
+            alert('hula');
             this.loading = true;
             this.$http.post('/transportes/manifiestos/guardar-manifiesto',this.manifiesto)
             .then( async response => {
@@ -228,6 +229,6 @@ export default {
             });
         },
     }
-    
+
 }
 </script>

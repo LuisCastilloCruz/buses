@@ -296,7 +296,7 @@ export default {
                     message: response.data.message
                 });
                 this.$emit('onAddUpdateManifiesto');
-                // window.open(`/transportes/manifiestos/${response.data.manifiesto.id}/imprimir-manifiesto`);
+                 window.open(`/transportes/manifiestos/${response.data.manifiesto.id}/imprimir-manifiesto`);
                 this.onClose();
             }).catch(error => {
                 this.loading = false;

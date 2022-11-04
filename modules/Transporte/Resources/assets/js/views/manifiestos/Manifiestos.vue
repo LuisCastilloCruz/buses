@@ -16,6 +16,81 @@
                 <div class="row">
                     <div class="col-md-12">
                         <el-tabs v-model="tab" >
+                            <el-tab-pane label="Pasajes" name="pasajes">
+
+                                <div class="row">
+                                    <div class="col-md-12 d-flex justify-content-end">
+                                        <el-button type="primary" @click="onCreate(2)"> Nuevo </el-button>
+                                    </div>
+                                    <div v-loading="loadingPasajes" class="col-md-12 mt-2">
+                                        <table class="table table-bordered table-striped">
+                                            <template v-if="listPasajes.length > 0">
+                                                <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Número</th>
+                                                    <th>Origen - Destino</th>
+                                                    <th>Chofer</th>
+                                                    <th>Copiloto</th>
+                                                    <th>Fecha salida</th>
+                                                    <th>Hora salida</th>
+                                                    <th>Observaciones</th>
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="(manifiesto, index) in listPasajes" :key="manifiesto.id">
+                                                    <td>{{index+1}}</td>
+                                                    <td>{{ manifiesto.serie }}-{{ manifiesto.numero }}</td>
+                                                    <td>{{ manifiesto.programacion.origen.nombre }} - {{ manifiesto.programacion.destino.nombre }}</td>
+                                                    <td>{{ manifiesto.chofer.nombre }}</td>
+                                                    <td>
+                                                        <span v-if="manifiesto.copiloto">{{ manifiesto.copiloto.nombre }}</span>
+                                                    </td>
+                                                    <td>{{ manifiesto.fecha }}</td>
+                                                    <td>{{ manifiesto.hora }}</td>
+                                                    <td>{{ manifiesto.observaciones }}</td>
+                                                    <td class="text-center">
+
+
+                                                        <el-tooltip class="item" effect="dark" content="Editar" placement="top-start">
+                                                            <el-button type="default" @click="editar(manifiesto)">
+                                                                <i class="fa fa-edit"></i>
+                                                            </el-button>
+                                                        </el-tooltip>
+                                                        <el-tooltip class="item" effect="dark" content="Imprimir" placement="top-start">
+                                                            <el-button type="primary" @click="imprimir(manifiesto)">
+                                                                <i class="fa fa-file-alt"></i>
+                                                            </el-button>
+                                                        </el-tooltip>
+
+
+                                                        <!-- <el-button type="danger" @click="onDelete(encomienda)">
+                                                            <i class="fa fa-trash"></i>
+                                                        </el-button> -->
+                                                    </td>
+                                                </tr>
+
+                                                </tbody>
+                                            </template>
+                                            <template v-else>
+                                                <tr>
+                                                    <td class="text-center" colspan="8">
+                                                        <el-alert
+                                                            center
+                                                            title="No hay manifiestos registrados"
+                                                            type="info"
+                                                            :closable="false">
+                                                        </el-alert>
+                                                    </td>
+                                                </tr>
+                                            </template>
+
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </el-tab-pane>
                             <el-tab-pane label="Encomiendas" name="encomiendas">
                                 <div class="row">
                                     <div class="col-md-12 d-flex justify-content-end">
@@ -28,6 +103,7 @@
                                                 <template v-if="listManifiestos.length > 0">
                                                     <thead>
                                                     <tr>
+                                                        <th>#</th>
                                                         <th>Serie</th>
                                                         <th>Número</th>
                                                         <th>Conductor</th>
@@ -39,7 +115,8 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="manifiesto in listManifiestos" :key="manifiesto.id">
+                                                    <tr v-for="(manifiesto, index) in listManifiestos" :key="manifiesto.id">
+                                                        <td>{{index+1}}</td>
                                                         <td>{{ manifiesto.serie }}</td>
                                                         <td>{{ manifiesto.numero }}</td>
                                                         <td>{{ manifiesto.chofer.nombre }}</td>
@@ -99,79 +176,6 @@
 
 
                             </el-tab-pane>
-                            <el-tab-pane label="Pasajes" name="pasajes">
-
-                                <div class="row">
-                                    <div class="col-md-12 d-flex justify-content-end">
-                                        <el-button type="primary" @click="onCreate(2)"> Nuevo </el-button>
-                                    </div>
-                                    <div v-loading="loadingPasajes" class="col-md-12 mt-2">
-                                         <table class="table table-bordered table-striped">
-                                                <template v-if="listPasajes.length > 0">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>Serie</th>
-                                                        <th>Número</th>
-                                                        <th>Chofer</th>
-                                                        <th>Copiloto</th>
-                                                        <th>Fecha salida</th>
-                                                        <th>Hora salida</th>
-                                                        <th>Observaciones</th>
-                                                        <th></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="manifiesto in listPasajes" :key="manifiesto.id">
-                                                        <td>{{ manifiesto.serie }}</td>
-                                                        <td>{{ manifiesto.numero }}</td>
-                                                        <td>{{ manifiesto.chofer.nombre }}</td>
-                                                        <td>
-                                                            <span v-if="manifiesto.copiloto">{{ manifiesto.copiloto.nombre }}</span>
-                                                        </td>
-                                                        <td>{{ manifiesto.fecha }}</td>
-                                                        <td>{{ manifiesto.hora }}</td>
-                                                        <td>{{ manifiesto.observaciones }}</td>
-                                                        <td class="text-center">
-
-
-                                                            <el-tooltip class="item" effect="dark" content="Editar" placement="top-start">
-                                                                <el-button type="default" @click="editar(manifiesto)">
-                                                                    <i class="fa fa-edit"></i>
-                                                                </el-button>
-                                                            </el-tooltip>
-                                                            <el-tooltip class="item" effect="dark" content="Imprimir" placement="top-start">
-                                                                <el-button type="primary" @click="imprimir(manifiesto)">
-                                                                    <i class="fa fa-file-alt"></i>
-                                                                </el-button>
-                                                            </el-tooltip>
-
-
-                                                            <!-- <el-button type="danger" @click="onDelete(encomienda)">
-                                                                <i class="fa fa-trash"></i>
-                                                            </el-button> -->
-                                                        </td>
-                                                    </tr>
-
-                                                </tbody>
-                                                </template>
-                                                <template v-else>
-                                                    <tr>
-                                                        <td class="text-center" colspan="8">
-                                                        <el-alert
-                                                            center
-                                                            title="No hay manifiestos registrados"
-                                                            type="info"
-                                                            :closable="false">
-                                                            </el-alert>
-                                                        </td>
-                                                    </tr>
-                                                </template>
-
-                                            </table>
-                                    </div>
-                                </div>
-
-                            </el-tab-pane>
                         </el-tabs>
                     </div>
 
@@ -220,7 +224,7 @@ export default {
             loadingEncomiendas:false,
             loadingPasajes:false,
             tipo:null,
-            tab:'encomiendas',
+            tab:'pasajes',
             visible:false,
             programacion:null,
             manifiesto:null

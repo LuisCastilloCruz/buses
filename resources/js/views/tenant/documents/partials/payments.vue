@@ -467,7 +467,7 @@
             close() {
                 this.$emit('update:showDialog', false);
                 // this.initDocumentTypes()
-                // this.initForm()
+                this.initForm()
             },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>{

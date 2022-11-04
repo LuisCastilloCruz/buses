@@ -23,6 +23,7 @@
     :configuration='@json($configuration)'
     :is-cash-open='@json($isCashOpen)'
     :user='@json($user)'
+    :choferes='@json($choferes)'
     ></tenant-transporte-bus-sales>
 
     {{-- <div class="draggable-area" style="background:#ddd;width:200px;height:200px;">

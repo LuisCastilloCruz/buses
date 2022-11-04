@@ -94,6 +94,7 @@ if ($hostname) {
 				Route::post('manifiestos/asignacion-encomienda','TransporteManifiestosController@asignarEncomienda');
 				Route::post('manifiestos/desasignar-encomienda','TransporteManifiestosController@desasignarEncomienda');
 				Route::get('manifiestos/get-manifiestos','TransporteManifiestosController@getManifiestos');
+                Route::post('manifiestos/verificar-manifiesto','TransporteManifiestosController@verificarManifiestos');
 
 				//usuarios terminales
 				Route::get('usuarios-terminales','TransporteUsersTerminalController@index');

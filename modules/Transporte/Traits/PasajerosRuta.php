@@ -24,31 +24,9 @@ trait PasajerosRuta{
 
         $date = new Carbon(sprintf('%s %s', $fechaSalida,$programacion->hora_salida));
 
-        // $viaje = TransporteViajes::where('terminal_origen_id',$programacion->terminal_origen_id)
-        // ->where('terminal_destino_id',$programacion->terminal_destino_id)
-        // ->whereTime('hora_salida', $programacion->hora_salida)
-        // ->whereDate('fecha_salida', $fechaSalida )
-        // ->where('programacion_id',$programacionPadre->id)
-        // ->first();
-
-        // if(is_null($viaje)) {
-        //     if($onlyPassage) return $pasajes;
-
-        //     return [
-        //         $pasajes,
-        //         $pasajesEnTerminal,
-        //         $recogidosEnRuta
-        //     ];
-
-
-        // }
-
-
-
         $rutas->prepend($programacionPadre->origen);
         $rutas->push($programacionPadre->destino);
 
-        // return response()->json($viaje->terminal_origen_id);
         $indexOrigen = $this->getPositionInRoute($programacion->origen,$rutas);
         $indexDestino = $this->getPositionInRoute($programacion->destino, $rutas);
 
