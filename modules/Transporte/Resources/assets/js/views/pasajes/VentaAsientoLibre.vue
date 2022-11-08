@@ -615,7 +615,7 @@ export default {
             sobre_equipajes: {
                     descripcion: "",
                     importe: 0
-                },
+            },
             total_vista:0
         });
     },
@@ -935,8 +935,19 @@ export default {
                 this.persona.number = null
                 this.persona.name = null
                 this.persona.edad  = null
-                this.menores = null
-                this.sobre_equipajes = null
+
+                this.menores = [
+                    {
+                        dni: "",
+                        nombres: "",
+                        edad:null
+                    },
+                ]
+
+                this.sobre_equipajes = {
+                    descripcion: "",
+                    importe: 0
+                }
 
                 this.$emit('onUpdateItem');
                 this.$emit('notificationAll'); //sirve para notificar que se ha hecho una venta de un pasaje
