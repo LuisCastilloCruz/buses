@@ -107,9 +107,12 @@ class TransportePasajeController extends Controller
                 'document',
                 'pasajero',
                 'asiento',
-                'programacion' => function($programacion){
-                    $programacion->with('origen:id,nombre','destino:id,nombre');
-                }
+//                'programacion' => function($programacion){
+//                    $programacion->with('origen:id,nombre','destino:id,nombre');
+//                },
+                'viaje',
+                'origen',
+                'destino'
             ])
             ->whereNotNull('document_id')
             ->whereNotNull('pasajero_id')
@@ -142,9 +145,12 @@ class TransportePasajeController extends Controller
                 'saleNote',
                 'pasajero',
                 'asiento',
-                'programacion' => function($programacion){
-                    $programacion->with('origen:id,nombre','destino:id,nombre');
-                }
+//                'programacion' => function($programacion){
+//                    $programacion->with('origen:id,nombre','destino:id,nombre');
+//                },
+                'viaje',
+                'origen',
+                'destino'
             ])
                 ->whereNotNull('note_id')
                 ->where('origen_id',$terminal->id)

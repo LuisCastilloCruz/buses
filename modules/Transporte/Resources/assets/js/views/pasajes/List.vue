@@ -36,6 +36,7 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Número</th>
+                                                <th>Origen - Destino</th>
                                                 <th>Fecha y hora salida </th>
                                                 <th># Asiento</th>
                                                 <th>Cliente</th>
@@ -59,6 +60,23 @@
                                                         'border-left border-warning': (pasaje.document.state_type_id === '13')}">
                                                         <td class="text-right">{{ pasaje.id }}</td>
                                                         <td>{{ pasaje.document.series }}-{{pasaje.document.number}}</td>
+                                                        <td>
+                                                            <p>
+                                                                <span  class="badge bg-secondary text-white bg-success">
+                                                                {{ pasaje.origen.nombre }}
+                                                            </span>
+                                                                ->
+
+                                                                <span v-if="pasaje.programacion_id >0" class="badge bg-secondary text-white bg-success">
+                                                                {{ pasaje.destino.nombre }}
+                                                            </span>
+
+                                                                <span v-else class="badge bg-secondary text-white bg-info">
+                                                                {{ pasaje.destino.nombre }}
+                                                            </span>
+                                                            </p>
+
+                                                        </td>
                                                         <td>{{ pasaje.fecha_salida }} {{ pasaje.hora_salida }}</td>
                                                         <td class="text-center"> <div style="background: limegreen;color:white"><b>{{ pasaje.numero_asiento }}</b></div></td>
                                                         <td>{{ pasaje.pasajero.name }}</td>
@@ -137,6 +155,7 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Número</th>
+                                                <th>Origen - Destino</th>
                                                 <th>Fecha y hora salida </th>
                                                 <th># Asiento</th>
                                                 <th>Cliente</th>
@@ -151,6 +170,23 @@
                                             <tr v-for="(note, index) in listNotes" :key="note.id">
                                                 <td class="text-right">{{ index+1 }}</td>
                                                 <td>{{ note.sale_note.series + '-' + note.sale_note.number}}</td>
+                                                <td>
+                                                    <p>
+                                                        <span  class="badge bg-secondary text-white bg-success">
+                                                                {{ note.origen.nombre }}
+                                                        </span>
+                                                        ->
+
+<!--                                                        <span v-if="note.programacion_id >0" class="badge bg-secondary text-white bg-success">-->
+<!--                                                                {{ note.destino.nombre }}-->
+<!--                                                        </span>-->
+
+                                                        <span class="badge bg-secondary text-white bg-info">
+                                                                {{ note.destino.nombre }}
+                                                        </span>
+                                                    </p>
+
+                                                </td>
                                                 <td>{{ note.fecha_salida }} {{ note.hora_salida }}</td>
                                                 <td class="text-center"> <div style="background: limegreen;color:white"><b>{{ note.numero_asiento }}</b></div></td>
                                                 <td>{{ note.pasajero.name }}</td>

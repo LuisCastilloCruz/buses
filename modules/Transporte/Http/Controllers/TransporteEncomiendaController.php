@@ -122,7 +122,9 @@ class TransporteEncomiendaController extends Controller
                 'remitente:id,name',
                 'destinatario:id,name',
                 'estadoPago',
-                'estadoEnvio'
+                'estadoEnvio',
+                'terminal',
+                'destino'
             ])
             ->whereNotNull('document_id')
             ->orderBy('id', 'DESC')
@@ -159,7 +161,9 @@ class TransporteEncomiendaController extends Controller
                 'remitente:id,name',
                 'destinatario:id,name',
                 'estadoPago',
-                'estadoEnvio'
+                'estadoEnvio',
+                'terminal',
+                'destino'
             ])
             ->whereNotNull('note_id')
             ->orderBy('transporte_encomiendas.id', 'DESC')

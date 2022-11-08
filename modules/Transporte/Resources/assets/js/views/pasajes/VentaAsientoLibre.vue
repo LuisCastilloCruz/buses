@@ -884,9 +884,6 @@ export default {
                 persona: this.persona
             };
 
-            console.log("aqui mami")
-            console.log(data)
-
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
             .then( ({data}) => {
                 this.loading = false;
@@ -938,6 +935,8 @@ export default {
                 this.persona.number = null
                 this.persona.name = null
                 this.persona.edad  = null
+                this.menores = null
+                this.sobre_equipajes = null
 
                 this.$emit('onUpdateItem');
                 this.$emit('notificationAll'); //sirve para notificar que se ha hecho una venta de un pasaje

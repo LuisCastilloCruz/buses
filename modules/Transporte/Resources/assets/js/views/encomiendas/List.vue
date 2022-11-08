@@ -55,6 +55,7 @@
                                                     <tr>
                                                         <th>#</th>
                                                         <th>Numero</th>
+                                                        <th>Origen - Destino</th>
                                                         <th>Remitente</th>
                                                         <th>Destinatario</th>
                                                         <th>Fecha salida</th>
@@ -77,6 +78,23 @@
                                                     'border-left border-warning': (invoice.document.state_type_id === '13')}">
                                                         <td class="text-right">{{ index+1 }}</td>
                                                         <td>{{ invoice.document.series + '-' +invoice.document.number  }}</td>
+                                                        <td>
+                                                            <p>
+                                                                <span  class="badge bg-secondary text-white bg-success">
+                                                                {{ invoice.terminal.nombre }}
+                                                            </span>
+                                                                ->
+
+                                                                <span v-if="invoice.programacion_id >0" class="badge bg-secondary text-white bg-success">
+                                                                {{ invoice.destino.nombre }}
+                                                            </span>
+
+                                                                <span v-else class="badge bg-secondary text-white bg-info">
+                                                                {{ invoice.destino.nombre }}
+                                                            </span>
+                                                            </p>
+
+                                                        </td>
                                                         <td>{{ invoice.remitente.name }}</td>
                                                         <td>{{ (invoice.destinatario) ? invoice.destinatario.name : invoice.destinatario_nombre  }}</td>
                                                         <td>{{ invoice.fecha_salida }}</td>
@@ -158,6 +176,7 @@
                                                     <tr>
                                                         <th>#</th>
                                                         <th>Numero</th>
+                                                        <th>Origen - Destino</th>
                                                         <th>Remitente</th>
                                                         <th>Destinatario</th>
                                                         <th>Fecha salida</th>
@@ -170,6 +189,23 @@
                                                     <tr v-for="(note, index) in listNotes" :key="note.id">
                                                         <td class="text-right">{{ index+1 }}</td>
                                                         <td>{{ note.sale_note ? note.sale_note.series + '-' + note.sale_note.number :'' }}</td>
+                                                        <td>
+                                                            <p>
+                                                                <span  class="badge bg-secondary text-white bg-success">
+                                                                {{ note.terminal.nombre }}
+                                                            </span>
+                                                                ->
+
+                                                                <span v-if="note.programacion_id >0" class="badge bg-secondary text-white bg-success">
+                                                                {{ note.destino.nombre }}
+                                                            </span>
+
+                                                                <span v-else class="badge bg-secondary text-white bg-info">
+                                                                {{ note.destino.nombre }}
+                                                            </span>
+                                                            </p>
+
+                                                        </td>
                                                         <td>{{ note.remitente.name }}</td>
                                                         <td>{{ (note.destinatario) ? note.destinatario.name : note.destinatario_nombre  }}</td>
                                                         <td>{{ note.fecha_salida }}</td>
@@ -419,8 +455,6 @@ export default {
                 const { data } = await this.$http.get(`/transportes/encomiendas/get-encomiendas?page=${this.page}&limit=${this.limit}`);
                 this.listInvoices = data.data;
                 this.total = data.count;
-
-
                 this.loading = false;
 
             }catch(error){
@@ -433,6 +467,8 @@ export default {
                 this.loading = true;
                 const { data } = await this.$http.get('/transportes/encomiendas/get-encomiendas-notes');
                 this.listNotes = data;
+
+                console.log(this.listNotes)
                 this.loading = false;
             }catch(error){
                 this.loading = false;
