@@ -3,8 +3,10 @@
 namespace Modules\Transporte\Http\Controllers;
 
 use App\Models\Tenant\Cash;
+use App\Models\Tenant\CashDocument;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Person;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -287,6 +289,26 @@ class TransporteSalesController extends Controller
                     ])
                 );
             }
+
+            //GUARDAMOS CAJA
+            $cash = Cash::where([
+                ['user_id', auth()->user()->id],
+                ['state', true],
+            ])->first();
+
+            $cash_document = new CashDocument();
+            $cash_document->cash_id =$cash->id;
+            $cash_document->document_id = $request->document_id;
+            $cash_document->sale_note_id = $request->sale_note_id;
+            $cash_document->save();
+
+            //actualizamos datos del pasajero
+            //dd($request->persona['id']);
+
+            $person =  Person::findOrFail($request->persona['id']);
+
+            $person->edad =$request->persona['edad'];
+            $person->update();
 
             DB::connection('tenant')->commit();
 

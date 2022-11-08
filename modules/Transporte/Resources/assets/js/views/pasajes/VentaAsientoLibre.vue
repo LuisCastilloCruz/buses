@@ -788,7 +788,7 @@ export default {
                     this.producto.total_taxes=igv*cant;
 
                     let id = await this.createItem(this.producto.item);
-                    await this.searchProducto(id);
+                    //await this.searchProducto(id);
                     if(!id) return this.$message.error('Lo sentimos no se pudo agregar el producto');
                     this.producto.item_id = this.producto.item.id = id;
 
@@ -832,8 +832,6 @@ export default {
                            else{
                                this.form_cash_document.document_id = response.data.data.id;
                            }
-
-                           await this.saveCashDocument();
                            await this.guardarPasaje();
 
                            this.autoPrintDocument()
@@ -877,8 +875,13 @@ export default {
                 destino_id: this.destino.id,
                 hora_salida: this.tipoVenta == 2 ?  this.programacion.hora_salida : this.horaSalida,
                 programacion_id: this.tipoVenta == 2 ? this.programacion.id : null,
-                ninios: this.menores
+                ninios: this.menores,
+                form_cash_document: this.form_cash_document,
+                persona: this.persona
             };
+
+            console.log("aqui mami")
+            console.log(data)
 
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
             .then( ({data}) => {
@@ -1271,20 +1274,7 @@ export default {
                 sale_note_id: null,
             };
         },
-        saveCashDocument() {
-            this.$http
-                .post(`/cash/cash_document`, this.form_cash_document)
-                .then((response) => {
-                    if (!response.data.success) {
-                        this.$message.error(response.data.message);
-                    }
-                })
-                .catch((error) => {
-                    this.axiosError(error);
-                });
-        },
         changeDocumentType() {
-            //this.clienteId=null;
             this.series = [];
             if (this.document.document_type_id !== "nv") {
                 this.filterSeries();
@@ -1298,8 +1288,6 @@ export default {
 
                 this.is_document_type_invoice = false;
             }
-            //this.cleanCustomer();
-            //this.filterCustomers();
         },
         cleanCustomer(){
             this.document.customer_id = null
@@ -1319,15 +1307,6 @@ export default {
                 reference: null,
                 payment: payment,
             };
-            // this.document.payments.push({
-            //     id: null,
-            //     document_id: null,
-            //     date_of_payment: moment().format("YYYY-MM-DD"),
-            //     payment_method_type_id: "01",
-            //     payment_destination_id: null,
-            //     reference: null,
-            //     payment: payment,
-            // });
         },
         validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
@@ -1387,17 +1366,10 @@ export default {
             const { data } = await this.$http.get(`/transportes/encomiendas/get-productos?search=${q}`);
             this.loadingSProducto = false;
             this.items = data;
-
-            console.log('data')
-            console.log(data)
         },
         async createItem(item){
             try{
                 const { data } = await this.$http.post('/items',item);
-
-                console.log('createItem')
-                console.log(data)
-
                 return data.id;
 
             }catch(error){
