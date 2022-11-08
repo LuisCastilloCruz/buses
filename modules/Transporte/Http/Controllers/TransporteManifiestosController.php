@@ -418,11 +418,19 @@ class TransporteManifiestosController extends Controller
 
         //dd($manifiesto);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Existe',
-            'manifiesto' => $manifiesto->id,
-        ]);
+        if($manifiesto){
+            return response()->json([
+                'success' => true,
+                'message' => 'Existe',
+                'manifiesto' => $manifiesto->id,
+            ]);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'No existe',
+                'manifiesto' => null,
+            ]);
+        }
     }
 
 
