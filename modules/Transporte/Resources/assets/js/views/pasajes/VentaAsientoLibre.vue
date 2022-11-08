@@ -282,7 +282,7 @@
                                             </el-collapse-item>
                                         </el-collapse>
 
-                                        <h1>Total: {{ precio + sobre_equipajes.importe}}</h1>
+<!--                                        <h1>Total: {{ total_vista}}</h1>-->
                                     </div>
                                 </div>
                             </div>
@@ -503,6 +503,9 @@ export default {
                 this.tempEstadosAsientos = this.estadosAsientos.filter(  estado => estado.id != 3 )
             }
             else this.tempEstadosAsientos = this.estadosAsientos;
+        },
+        total_vista(){
+            this.total_vista = this.precio+ this.sobre_equipajes.importe
         }
     },
     computed:{
@@ -612,7 +615,8 @@ export default {
             sobre_equipajes: {
                     descripcion: "",
                     importe: 0
-                }
+                },
+            total_vista:0
         });
     },
     methods:{
@@ -1598,9 +1602,6 @@ export default {
         agregarLineaEquipaje(){
             this.sobre_equipajes.push({cant: '', descripcion: '' , precio_unitario: '', importe:''});
         },
-        calcular_total(){
-            alert('hola');
-        }
     }
 }
 </script>
