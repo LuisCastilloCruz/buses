@@ -36,7 +36,8 @@ class TransportePasaje extends ModelTenant
         'sucursal_id',
         'color',
         'user_id',
-        'viaje_id'
+        'viaje_id',
+        'ninios'
     ];
 
 

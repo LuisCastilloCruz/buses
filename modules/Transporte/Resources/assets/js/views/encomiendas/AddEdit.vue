@@ -93,7 +93,7 @@
                                     </el-select>
                                 </div>
                                 <div class="col-md-8">
-                                    <input type="number" class="form-control" v-model="encomienda.remitente_numero" placeholder="ingrese dni y presione enter" v-on:keyup.enter="buscar_remitente" ></input>
+                                    <input type="number" class="form-control" v-model="encomienda.remitente_numero" placeholder="ingrese dni y presione enter" v-on:keyup.enter="buscar_remitente" :maxlength="persona.identity_document_type_id==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"></input>
                                     <span v-if="errors.remitente_id" class="text-danger">{{ errors.remitente_id[0] }}</span>
                                 </div>
                             </div>
@@ -112,7 +112,7 @@
 
                             </label>
 
-                            <input type="number" class="form-control" v-model="encomienda.destinatario_numero" placeholder="ingrese dni y presione enter" v-on:keyup.enter="buscar_destinatario" ></input>
+                            <input type="number" class="form-control" v-model="encomienda.destinatario_numero" placeholder="ingrese dni y presione enter" v-on:keyup.enter="buscar_destinatario" :loading="loading" ></input>
                             <span v-if="errors.destinatario_id" class="text-danger">{{ errors.destinatario_id[0] }}</span>
                         </div>
 
@@ -546,10 +546,10 @@ export default {
                 document_id:null,
                 remitente_id:null,
                 remitente_numero:null,
-                remitente_nombre:null,
+                remitente_nombre:'null',
                 destinatario_id:null,
-                destinatario_numero:null,
-                destinatario_nombre:'dfdf',
+                destinatario_numero:'',
+                destinatario_nombre:'',
                 estado_pago_id:null,
                 estado_envio_id:null,
                 programacion_id:null,
@@ -600,7 +600,6 @@ export default {
     },
     created(){
         this.initDocument();
-        this.setTime()
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
         this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
@@ -608,12 +607,12 @@ export default {
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
 
-        this.$eventHub.$on('reloadDataPersons', (remitente_id) => {
-                this.reloadDataRemitente(remitente_id)
-        })
-         this.$eventHub.$on('reloadDataDestinarios', (destinatario_id) => {
-                this.reloadDataDestinatario(destinatario_id)
-        })
+        // this.$eventHub.$on('reloadDataPersons', (remitente_id) => {
+        //         this.reloadDataRemitente(remitente_id)
+        // })
+        //  this.$eventHub.$on('reloadDataDestinarios', (destinatario_id) => {
+        //         this.reloadDataDestinatario(destinatario_id)
+        // })
 
         this.startConnectionQzTray()
 
@@ -696,33 +695,33 @@ export default {
             this.$eventHub.$emit('reloadDataNotes')
             this.showDialogSaleNoteOptions= true
         },
-        modalPerson(buscar_destinatario){
-            this.showDialogNewPerson=true;
-            this.buscar_destinatario = buscar_destinatario
-
-        },
-        reloadDataRemitente(remitente_id) {
-            this.$http
-                .get(`/${this.resource}/search/customer/${remitente_id}`)
-                .then((response) => {
-                    this.tempRemitentes = this.remitentes  = response.data.customers;
-                    this.encomienda.remitente_id = remitente_id;
-                    this.document.customer_id = remitente_id;
-                });
-        },
-        reloadDataDestinatario(destinatario_id) {
-            this.$http
-                .get(`/${this.resource}/search/customer/${destinatario_id}`)
-                .then((response) => {
-                    this.destinatarios = response.data.customers;
-                    this.encomienda.destinatario_id = destinatario_id;
-                });
-        },
-        selectCustomer(){
-            this.document.customer_id = this.encomienda.remitente_id;
-            this.document.customer = this.remitentes.find( remitente => remitente.id == this.encomienda.remitente_id );
-
-        },
+        // modalPerson(buscar_destinatario){
+        //     this.showDialogNewPerson=true;
+        //     this.buscar_destinatario = buscar_destinatario
+        //
+        // },
+        // reloadDataRemitente(remitente_id) {
+        //     this.$http
+        //         .get(`/${this.resource}/search/customer/${remitente_id}`)
+        //         .then((response) => {
+        //             this.tempRemitentes = this.remitentes  = response.data.customers;
+        //             this.encomienda.remitente_id = remitente_id;
+        //             this.document.customer_id = remitente_id;
+        //         });
+        // },
+        // reloadDataDestinatario(destinatario_id) {
+        //     this.$http
+        //         .get(`/${this.resource}/search/customer/${destinatario_id}`)
+        //         .then((response) => {
+        //             this.destinatarios = response.data.customers;
+        //             this.encomienda.destinatario_id = destinatario_id;
+        //         });
+        // },
+        // selectCustomer(){
+        //     this.document.customer_id = this.encomienda.remitente_id;
+        //     this.document.customer = this.remitentes.find( remitente => remitente.id == this.encomienda.remitente_id );
+        //
+        // },
         validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
             let customer = this.document.customer;
@@ -824,34 +823,14 @@ export default {
             this.programaciones = programaciones.programaciones;
 
         },
-
         async searchProducto(q=''){
 
             this.loadingSProducto = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/get-productos?search=${q}`);
             this.loadingSProducto = false;
             this.items = data;
-
-
         },
 
-        // async initializeSelects(){
-        //     await this.searchRemitente();
-        //     await this.searchDestinatario()
-        // },
-        async searchRemitente(input = ''){
-            this.loadingRemitente = true;
-            const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
-            this.loadingRemitente = false;
-            this.remitentes = data.clientes;
-            this.filterCustomers();
-        },
-        async searchDestinatario(input = ''){
-            this.loadingDestinatario = true;
-            const { data } = await this.$http.get(`/transportes/encomiendas/get-clientes?search=${input}`);
-            this.loadingDestinatario = false;
-            this.destinatarios = data.clientes;
-        },
         async searchTerminales(input = ''){
             this.loadingTerminales = true;
             const { data } = await this.$http.get(`/transportes/encomiendas/get-terminales?search=${input}`);
@@ -999,6 +978,8 @@ export default {
             this.total = total;
         },
         async onCreate() {
+            this.setTime()
+
              if(this.configuration.legend_footer==1){ // zona selva
                  this.initProductoExonerado();
              }
@@ -1115,6 +1096,7 @@ export default {
                 this.resource_documents = "documents";
             }
 
+            console.log(this.document)
             this.$http
                 .post(`/${this.resource_documents}`, this.document)
                 .then(async (response) => {
@@ -1525,7 +1507,9 @@ export default {
              }
         },
         setTime(){
-            setInterval(() => {
+
+            console.log("tu prima");
+            //setInterval(() => {
                 this.$http
                     .get(`/documents/fecha-actual`)
                     .then((response) => {
@@ -1536,7 +1520,7 @@ export default {
 
 
                     });
-            }, 5000)
+            //}, 5000)
         },
         autoPrintDocument(){
 
@@ -1588,95 +1572,44 @@ export default {
 
         },
         async buscar_remitente(){
-            let tipo = (this.persona.identity_document_type_id==1) ?"dni" : "ruc"
-
-            //this.encomienda.remitente_nombre = null
+            let type = this.persona.identity_document_type_id
+            this.encomienda.remitente_nombre = ""
             this.loading = true
-            let response_local = await this.$http.get(`/transportes/encomiendas/get-pasajero/${this.encomienda.remitente_numero}`)
 
+            let response_local =  await this.$http.get(`/transportes/encomiendas/get-pasajero/${type}/${this.encomienda.remitente_numero}`)
             if(response_local.data.success){
-                this.encomienda.remitente_id   = response_local.data.id
-                this.encomienda.remitente_nombre= response_local.data.name
-                this.document.customer_id = response_local.data.id
-                this.persona.id  = response_local.data.id
-                this.persona.number = response_local.data.number
-                this.persona.name = response_local.data.name
-                this.persona.edad = response_local.data.edad
+                this.encomienda.remitente_id   = response_local.data.data.id
+                this.encomienda.remitente_nombre= response_local.data.data.name
+                this.document.customer_id = response_local.data.data.id
+            }else{
+                this.encomienda.remitente_nombre= response_local.data.name.name
             }
-            else{
-                    let response = await this.$http.get(`/service/${tipo}/${this.encomienda.remitente_numero}`)
-                    if(response.data.success) {
-                        this.persona.number = response.data.number
-                        this.persona.name = response.data.data.name
+            this.loading = false
 
-                        await this.$http
-                            .post("/persons", this.persona)
-                            .then((response) => {
-                                this.encomienda.remitente_id = response.data.id
-                                this.encomienda.remitente_nombre= response.data.name
-                                console.log(this.encomienda.remitente_id)
-                                this.document.customer_id = response.data.id
-                            })
-                            .finally(() => {
-                                this.persona.number= ""
-                                this.persona.name=  ""
-                                this.loading = false;
-                                this.errors = {};
-                            })
-                            .catch((error) => {
-                                this.axiosError(error);
-                            });
-                    }
-                }
+        },
 
+        limpiarPersona(){
+            this.persona.id=""
+            this.persona.number= ""
+            this.persona.name=  ""
+            this.persona.edad=""
         },
         async buscar_destinatario(){
-            //this.encomienda.destinatario_nombre = null
+            //let type = this.persona.identity_document_type_id
+            let type = 1 //solo dni
+            this.encomienda.destinatario_nombre = ""
             this.loading = true
 
-            let response_local = await this.$http.get(`/transportes/encomiendas/get-pasajero/${this.encomienda.destinatario_numero}`)
-
+            let response_local = await this.$http.get(`/transportes/encomiendas/get-pasajero/${type}/${this.encomienda.destinatario_numero}`)
             if(response_local.data.success){
-                this.encomienda.destinatario_id   = response_local.data.id
-                this.encomienda.destinatario_nombre= response_local.data.name
-                this.persona.id  = response_local.data.id
-                this.persona.number = response_local.data.number
-                this.persona.name = response_local.data.name
-                this.persona.edad = response_local.data.edad
-
-                console.log("if")
-                console.log( this.encomienda.destinatario_nombre)
+                this.encomienda.destinatario_id   = response_local.data.data.id
+                this.encomienda.destinatario_nombre= response_local.data.data.name
+            }else{
+                this.encomienda.destinatario_nombre= response_local.data.name.name
             }
-            else{
-                let response = await this.$http.get(`/service/dni/${this.encomienda.destinatario_numero}`)
-                if(response.data.success) {
-                    console.log("else")
-                    console.log(response.data.data.number)
-                    this.persona.number = response.data.data.number
-                    this.persona.name = response.data.data.name
+            this.loading = false
 
-                    await this.$http
-                        .post("/persons", this.persona)
-                        .then((response) => {
-                            this.encomienda.destinatario_id = response.data.id
-                            this.encomienda.destinatario_nombre= response.data.name
-                        })
-                        .finally(() => {
-                            this.persona.number= ""
-                            this.persona.name=  ""
-                            this.loading = false;
-                            this.errors = {};
-                        })
-                        .catch((error) => {
-                            this.persona.number= ""
-                            this.persona.name=  ""
-                            this.loading = false
-                            this.axiosError(error);
-                        });
-                }
-            }
-
-        },
+        }
     }
 };
 </script>

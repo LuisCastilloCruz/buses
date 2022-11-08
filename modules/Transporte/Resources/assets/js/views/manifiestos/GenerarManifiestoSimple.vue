@@ -95,7 +95,7 @@
             </div>
 
         </div>
-        <div v-if="programacion.programacion_id" class="row mt-2">
+        <div v-if="programacion" class="row mt-2">
             <div class="col-12 text-center">
                 <el-button type="primary" @click="onStore">
                     <i class="fa fa-save"></i>
@@ -145,7 +145,13 @@ export default {
             type:String,
             default:null
         },
+        existe_manifiesto:{
+            type: Boolean,
+            required: true,
+            default: false,
+        }
     },
+    emit:['update:existe_manifiesto'],
     data(){
         return ({
             loadingOrigen:false,
@@ -174,7 +180,9 @@ export default {
             this.initForm();
             this.manifiesto.fecha= this.fecha
             this.manifiesto.hora= this.programacion.hora_salida
-            this.manifiesto.programacion_id= this.programacion.programacion_id
+            this.manifiesto.programacion_id= (this.programacion) ? this.programacion.programacion_id : 0
+
+            this.$emit('update:visible',false);
         },
         onStore(){
             this.loading = true;
@@ -187,6 +195,7 @@ export default {
                     message: response.data.message
                 });
                 this.$emit('onAddUpdateManifiesto');
+                this.$emit('update:existe_manifiesto', true)
                 window.open(`/transportes/manifiestos/${response.data.manifiesto.id}/imprimir-manifiesto`);
                 this.onClose();
             }).catch(error => {

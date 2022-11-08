@@ -12,9 +12,11 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Services\Data\ServiceData;
 use Modules\Transporte\Http\Requests\ProgramacionesDisponiblesRequest;
 use Modules\Transporte\Http\Requests\TransporteEncomiendaRequest;
 use Modules\Transporte\Models\TransporteEncomienda;
@@ -197,16 +199,84 @@ class TransporteEncomiendaController extends Controller
         if($cliente){
             return response()->json([
                 'success' => true,
-                'id' => $cliente->id,
-                'number' => $cliente->number,
-                'name' => $cliente->name,
-                'address' => $cliente->address,
-                'edad' => $cliente->edad
+                'data'    => [
+                    'id' => $cliente->id,
+                    'number' => $cliente->number,
+                    'name' => $cliente->name,
+                    'address' => $cliente->address,
+                    'edad' => $cliente->edad,
+
+                    'condition'=> $cliente->condition,
+                    'department_id'=> $cliente->department_id,
+                    'district_id'=> $cliente->district_id,
+                    'province_id'=> $cliente->province_id,
+                    'trade_name'=> $cliente->trade_name,
+                ]
             ]);
         }else{
-            return response()->json([
-                'success' => false,
-            ]);
+
+
+            $number=$request->number;
+            $type=($request->type==1) ? "dni" : "ruc";
+
+            $data     = ServiceData::service($type, $number);
+
+            //dd($data);
+
+            if($data['success']){
+                $person = new Person();
+
+                if($type=="dni"){
+                    $person->type="customers";
+                    $person->identity_document_type_id=$request->type;
+                    $person->number=$data['data']['numero'];  //ojo
+                    $person->name=$data['data']['nombre_completo'];
+                    $person->address=$data['data']['direccion'];
+                    $person->country_id="PE";
+
+                }elseif ($type=="ruc"){
+                    $person->type="customers";
+                    $person->identity_document_type_id=$request->type;
+                    $person->number=$data['data']['ruc'];  //ojo
+                    $person->name=$data['data']['nombre_o_razon_social'];
+                    $person->address=$data['data']['direccion'];
+                    $person->country_id="PE";
+                    $person->state=$data['data']['state'];
+                    $person->condition=$data['data']['condicion'];
+                    $person->department_id=$data['data']['ubigeo'][0];
+                    $person->province_id=$data['data']['ubigeo'][1];
+                    $person->district_id=$data['data']['ubigeo'][2];
+                    $person->trade_name=$data['data']['trade_name'];
+                }
+
+                $person->save();
+
+
+                $response = [
+                    'success' => true,
+                    'data'    => [
+                        'id'      => $person->id,
+                        'number'  => $person->number,
+                        'name'    => $person->name,
+                        'address' => $person->address,
+                    ]
+                ];
+            }else{
+                $response = [
+                    'success' => false,
+                    'data'    => [
+                        'number'  => "",
+                        'name'    => "No se encontró",
+                    ]
+                ];
+            }
+
+            return response()->json($response, 200);
+
+
+//            return response()->json([
+//                'success' => false,
+//            ]);
         }
 
 

@@ -8,9 +8,6 @@
                             <li class="nav-item active">
                                 <a class="nav-link active" href="#boleto" data-toggle="tab"><i class="fas fa-star"></i> Boleto</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#manifiesto" data-toggle="tab">Manifiesto de pasajeros</a>
-                            </li>
                         </ul>
 
                         <div class="tab-content">
@@ -70,23 +67,10 @@
                                         <div class="form-group">
                                             <label for="ruc" class="mr-2"  style="display: inline; float: left">
                                                 Ruc
-<!--                                                <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>-->
                                             </label>
                                             <input placeholder="Ingrese el Ruc y presione enter" name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left"  maxlength="11" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
                                             <label class="ml-2 mr-2"  style="display: inline; float: left" id="cliente">Razón Social</label><input name="nombre" class="form-control" v-model="empresa.name" type="text" style="width:30%;float: left"></input>
                                             <label class="ml-2 mr-2" style="display: inline; float: left">Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text" style="width:30%;float: left"></input>
-
-<!--                                            <el-select v-model="clienteId" filterable remote  popper-class="el-select-customers" id="cliente"-->
-<!--                                                    dusk="clienteId"-->
-<!--                                                    placeholder="Buscar cliente"-->
-<!--                                                    :remote-method="searchCliente"-->
-<!--                                                    :loading="loadingCliente"-->
-<!--                                                    :disabled=" (transportePasaje) ? true : false"-->
-<!--                                            >-->
-<!--                                                <el-option v-for="cliente in tempClientes" :key="cliente.id" :value="cliente.id" :label="cliente.name">-->
-
-<!--                                                </el-option>-->
-<!--                                            </el-select>-->
                                         </div>
                                     </div>
                                     <div v-if="isReserva" class="col-12">
@@ -114,7 +98,9 @@
                                                    :key="option.id"
                                                    :label="option.description"
                                                    :value="option.id"></el-option>
-                                            </el-select></label><input placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" id="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" :type="persona.identity_document_type_id==1 ? 'number' : 'text' "  style="width:20%;float: left"  :maxlength="persona.identity_document_type_id==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
+                                            </el-select>
+                                            </label>
+                                            <input :loading="loading_search" placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" id="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" :type="persona.identity_document_type_id==1 ? 'number' : 'text' "  style="width:20%;float: left"  :maxlength="persona.identity_document_type_id==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
                                             <label class="ml-2 mr-2" for="nombre" style="display: inline; float: left">Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" style="width:40%;float: left"></input>
                                             <label class="ml-2 mr-2" for="edad" style="display: inline; float: left">Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" style="width:20%;float: left"></input>
                                         </div>
@@ -152,6 +138,47 @@
                                 <div v-if="!transportePasaje && !isReserva" class="row mt-2">
                                     <div class="col-md-12">
                                         <el-collapse v-model="activePanel" accordion>
+                                            <el-collapse-item name="2" >
+                                                <template slot="title">
+                                                    <i class="fa fa-plus text-info"></i> &nbsp;Menor de edad<i class="header-icon el-icon-information"></i>
+                                                </template>
+                                                <div  class="row mt-2">
+                                                    <div class="col-12">
+                                                        <div class="row mt-2">
+                                                            <div class="col-12">
+                                                                <el-button type="info"  icon="el-icon-plus" @click="agregarLineaNino">Agregar linea </el-button>
+                                                                <table class="table table-bordered table-stripped">
+                                                                    <thead>
+                                                                    <th>Dni</th>
+                                                                    <th>Nombre apellidos</th>
+                                                                    <th>Edad</th>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr v-for="menor in menores">
+                                                                            <td>
+                                                                                <div class="form-group mb-2 mr-2">
+                                                                                    <el-input v-model="menor.dni"></el-input>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="form-group mb-2 mr-2">
+                                                                                    <el-input v-model="menor.nombres"></el-input>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="form-group mb-2 mr-2">
+                                                                                    <el-input v-model="menor.edad"></el-input>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </el-collapse-item>
                                             <el-collapse-item name="1" >
                                                 <template slot="title">
                                                     <i class="fa fa-plus text-info"></i> &nbsp;Pagos<i class="header-icon el-icon-information"></i>
@@ -219,7 +246,43 @@
                                                     </div>
                                                 </div>
                                             </el-collapse-item>
+                                            <el-collapse-item name="3" >
+                                                <template slot="title">
+                                                    <i class="fa fa-plus text-info"></i> &nbsp;Exceso de Equipaje<i class="header-icon el-icon-information"></i>
+                                                </template>
+                                                <div  class="row mt-2">
+                                                    <div class="col-12">
+                                                        <div class="row mt-2">
+                                                            <div class="col-12">
+                                                                <table class="table table-bordered table-stripped">
+                                                                    <thead>
+                                                                    <th>Descripción</th>
+                                                                    <th>Importe</th>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="form-group mb-2 mr-2">
+                                                                                <el-input v-model="sobre_equipajes.descripcion"></el-input>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="form-group mb-2 mr-2">
+                                                                                <el-input v-model="sobre_equipajes.importe"></el-input>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </el-collapse-item>
                                         </el-collapse>
+
+                                        <h1>Total: {{ precio + sobre_equipajes.importe}}</h1>
                                     </div>
                                 </div>
                             </div>
@@ -464,6 +527,7 @@ export default {
     },
     data(){
         return ({
+            loading_search:false,
             nombrePasajero:null,
             tabs:'venta',
             resource_documents: "documents",
@@ -538,6 +602,17 @@ export default {
                 addresses: []
             },
             identity_document_types: [],
+            menores:[
+                {
+                    dni: "",
+                    nombres: "",
+                    edad:null
+                },
+            ],
+            sobre_equipajes: {
+                    descripcion: "",
+                    importe: 0
+                }
         });
     },
     methods:{
@@ -562,7 +637,6 @@ export default {
         async onCreate(){
             await this.$http.get(`/persons/tables`)
                 .then(response => {
-                    console.log(this.identity_document_types)
                     this.identity_document_types = response.data.identity_document_types.filter(  doc => doc.description == "DNI" || doc.description == "CE" || doc.description == "Pasaporte" );
                 })
             this.estadoAsiento = 2;
@@ -687,7 +761,46 @@ export default {
                this.producto.item_id = this.producto.item.id = id;
 
                this.document.items.push(this.producto);
-               this.payment.payment= precio;
+
+            let total_sobreequipaje = 0
+                if(this.sobre_equipajes.importe > 0){
+
+                    this.initProductoGrabado()
+
+                    let precio = parseFloat(this.sobre_equipajes.importe);
+                    let cant = 1;
+                    let valorventa = parseFloat(precio/1.18);
+                    let igv = parseFloat(precio-valorventa);
+
+                    let total = parseFloat(cant*precio);
+
+                    this.producto.input_unit_price_value=precio;
+                    this.producto.cant=1;
+                    this.producto.item.description = this.sobre_equipajes.descripcion;
+                    this.producto.item.name = this.sobre_equipajes.descripcion;
+                    this.producto.item.sale_unit_price =precio;
+                    this.producto.total=total;
+                    this.producto.total_base_igv=valorventa*cant;
+                    this.producto.total_value=valorventa*cant;
+                    this.producto.unit_price=precio;
+                    this.producto.unit_value=valorventa;
+                    this.producto.total_igv= igv*cant;
+                    this.producto.total_taxes=igv*cant;
+
+                    let id = await this.createItem(this.producto.item);
+                    await this.searchProducto(id);
+                    if(!id) return this.$message.error('Lo sentimos no se pudo agregar el producto');
+                    this.producto.item_id = this.producto.item.id = id;
+
+                    let p =  JSON.parse(JSON.stringify(this.producto));
+
+                    this.document.items.push( p );
+
+                    total_sobreequipaje = total
+                }
+
+
+               this.payment.payment= precio+total_sobreequipaje;
                this.document.payments.push(this.payment);
 
                this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
@@ -764,6 +877,7 @@ export default {
                 destino_id: this.destino.id,
                 hora_salida: this.tipoVenta == 2 ?  this.programacion.hora_salida : this.horaSalida,
                 programacion_id: this.tipoVenta == 2 ? this.programacion.id : null,
+                ninios: this.menores
             };
 
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
@@ -938,6 +1052,83 @@ export default {
                 total_value: 100,//cambiado
                 unit_price: 100,//cambiado
                 unit_value: 100,//cambiado
+                warehouse_id: null
+            };
+        },
+        initProductoGrabado(){
+            this.producto = {
+                IdLoteSelected: null,
+                affectation_igv_type: {
+                    active: 1,
+                    description: "Grabado - Operación Onerosa",
+                    exportation: 0,
+                    free: 0,
+                    id: "10"
+                },
+                affectation_igv_type_id: "10",
+                attributes: [],
+                charges: [],
+                currency_type_id: "PEN",
+                discounts: [],
+                document_item_id: null,
+                input_unit_price_value: "100",//cambiado
+                item: {
+                    id: null,
+                    name:null,
+                    second_name:null,
+                    amount_plastic_bag_taxes: "0.10",
+                    attributes: [],
+                    barcode: "",
+                    brand: "",
+                    calculate_quantity: false,
+                    category: "",
+                    currency_type_id: "PEN",
+                    currency_type_symbol: "S/",
+                    description: null, //cambiado
+                    full_description: "",
+                    has_igv: false,
+                    internal_id: null,
+                    item_unit_types: [],
+                    lots: [],
+                    lots_enabled: false,
+                    lots_group: [],
+                    presentation: [],
+                    purchase_affectation_igv_type_id: "10",
+                    purchase_unit_price: "0.000000",
+                    sale_affectation_igv_type_id: "10",
+                    sale_unit_price: 0,
+                    stock: 1,
+                    stock_min:1,
+                    unit_price: "0", //cambiado
+                    unit_type_id: "ZZ",
+                    is_set: false,
+                    series_enabled: false,
+                    purchase_has_igv: true,
+                    web_platform_id:null,
+                    has_plastic_bag_taxes: false,
+                    item_warehouse_prices: [],
+                },
+                item_id: 1,
+                percentage_igv: 18,
+                percentage_isc: 0,
+                percentage_other_taxes: 0,
+                price_type_id: "01",
+                quantity: 1,
+                system_isc_type_id: null,
+                total: 0,//cambiado
+                total_base_igv: 0,//cambiado
+                total_base_isc: 0,
+                total_base_other_taxes: 0,
+                total_charge: 0,
+                total_discount: 0,
+                total_igv: 0,
+                total_isc: 0,
+                total_other_taxes: 0,
+                total_plastic_bag_taxes: 0,
+                total_taxes: 0,
+                total_value: 0,//cambiado
+                unit_price: 0,//cambiado
+                unit_value: 0,//cambiado
                 warehouse_id: null
             };
         },
@@ -1190,9 +1381,23 @@ export default {
 
 
         },
+        async searchProducto(q=''){
+
+            this.loadingSProducto = true;
+            const { data } = await this.$http.get(`/transportes/encomiendas/get-productos?search=${q}`);
+            this.loadingSProducto = false;
+            this.items = data;
+
+            console.log('data')
+            console.log(data)
+        },
         async createItem(item){
             try{
                 const { data } = await this.$http.post('/items',item);
+
+                console.log('createItem')
+                console.log(data)
+
                 return data.id;
 
             }catch(error){
@@ -1311,75 +1516,43 @@ export default {
             }
         },
         async buscar_rapida_dni(){
-
+            this.persona.name=""
             this.loading_search = true
-            let response_local = await this.$http.get(`/transportes/encomiendas/get-pasajero/${this.persona.number}`)
+            let response_local = await this.$http.get(`/transportes/encomiendas/get-pasajero/1/${this.persona.number}`)
 
             if(response_local.data.success){
-                this.pasajeroId   = response_local.data.id
-                this.persona.id  = response_local.data.id
-                this.persona.number = response_local.data.number
-                this.persona.name = response_local.data.name
-                this.persona.edad = response_local.data.edad
+                this.pasajeroId   = response_local.data.data.id
+                this.persona.id  = response_local.data.data.id
+                this.persona.number = response_local.data.data.number
+                this.persona.name = response_local.data.data.name
+                this.persona.edad = response_local.data.data.edad
+            }else{
+                this.persona.name = response_local.data.data.name
             }
-            else{
-                let response = await this.$http.get(`/service/dni/${this.persona.number}`)
-                if(response.data.success) {
-                    this.persona.name = response.data.data.name
-
-                    this.$http
-                        .post("/persons", this.persona)
-                        .then((response) => {
-                            this.pasajeroId= response.data.id
-                            this.persona.id  = response.data.id
-                        })
-                        .finally(() => {
-                            this.loading = false;
-                            this.errors = {};
-                        })
-                        .catch((error) => {
-                            this.axiosError(error);
-                        });
-                }
-            }
+            this.loading_search = false
         },
         async buscar_rapida_ruc(){
 
             this.loading_search = true
-            let response_local = await this.$http.get(`/transportes/encomiendas/get-pasajero/${this.empresa.number}`)
+            let response_local = await this.$http.get(`/transportes/encomiendas/get-pasajero/6/${this.empresa.number}`)
 
             if(response_local.data.success){
-                this.clienteId     = response_local.data.id
-                this.empresa.id    = response_local.data.id
-                this.empresa.name  = response_local.data.name
-                this.empresa.address= response_local.data.address
-                this.empresa.condition= response_local.data.condition
-                this.empresa.state= response_local.data.state
+                this.clienteId     = response_local.data.data.id
+                this.empresa.id    = response_local.data.data.id
+                this.empresa.name  = response_local.data.data.name
+                this.empresa.address= response_local.data.data.address
+                this.empresa.condition= response_local.data.data.condition
+                this.empresa.state= response_local.data.data.state
+
+                this.empresa.department_id= response.data.data.department_id
+                this.empresa.district_id= response.data.data.district_id
+                this.empresa.province_id= response.data.data.province_id
+                this.empresa.trade_name= response.data.data.trade_name
+
+            }else{
+                this.empresa.name= response_local.data.data.name
             }
-            else{
-                let response = await this.$http.get(`/service/ruc/${this.empresa.number}`)
-                if(response.data.success) {
-                    this.empresa.name = response.data.data.name
-                    this.empresa.address= response.data.data.address
-                    this.empresa.department_id= response.data.data.department_id
-                    this.empresa.district_id= response.data.data.district_id
-                    this.empresa.province_id= response.data.data.province_id
-                    this.empresa.trade_name= response.data.data.trade_name
-
-
-                    this.$http
-                        .post("/persons", this.empresa)
-                        .then((response) => {
-                            this.clienteId = response.data.id
-                            this.empresa.id    = response.data.id
-
-                        })
-                        .finally(() => {
-                            this.loading = false;
-                            this.errors = {};
-                        })
-                }
-            }
+            this.loading_search = false
         },
 
         onClose(){
@@ -1438,7 +1611,6 @@ export default {
         },
 
         changeIdentityDocType() {
-            console.log(this.persona.identity_document_type_id)
             if(this.persona.identity_document_type_id ===4 ){ //cedula
 
             }
@@ -1447,6 +1619,16 @@ export default {
 
             }
         },
+        agregarLineaNino(){
+            this.menores.push({dni: '', nombres: '' , edad: ''});
+        },
+
+        agregarLineaEquipaje(){
+            this.sobre_equipajes.push({cant: '', descripcion: '' , precio_unitario: '', importe:''});
+        },
+        calcular_total(){
+            alert('hola');
+        }
     }
 }
 </script>

@@ -207,19 +207,14 @@ class TransporteSalesController extends Controller
         if($request->tipo_venta == 2){
 
             $request->validate([
-                //'cliente_id'=> ['required'],
                 'estado_asiento_id' => ['required'],
                 'fecha_salida' => ['required'],
-                //'pasajero_id' => ['required'],
                 'destino_id' => ['required'],
                 'numero_asiento' => ['required'],
                 'hora_salida' => ['required'],
-                //'programacion_id' => ['required']
             ]);
 
         }
-
-
 
         try {
 
@@ -245,7 +240,6 @@ class TransporteSalesController extends Controller
 
                 $parentProgramacion = $programacion->programacion;
 
-
                 $viaje = TransporteViajes::where('terminal_origen_id', $programacion->terminal_origen_id)
                     ->where('terminal_destino_id', $programacion->terminal_destino_id)
                     ->whereTime('hora_salida', $programacion->hora_salida)
@@ -263,7 +257,6 @@ class TransporteSalesController extends Controller
                 ]);
             }
 
-
             if($request->input('tipo_venta') == 1){ //venta libre
                 TransportePasaje::create(
                     array_merge($attributes,[
@@ -273,12 +266,12 @@ class TransporteSalesController extends Controller
                         // 'fecha_llegada' => $fechaLLegada,
                         'sucursal_id' => $terminal->id,
                         'user_id' => $user->id,
-                        'viaje_id' => null
+                        'viaje_id' => null,
+                        'ninios'=>json_encode($request->fecha_salida)
                     ])
                 );
 
             }else if($request->input('tipo_venta') == 2){//venta con programacion
-
 
                 TransportePasaje::create(
                     array_merge($attributes,[
@@ -289,15 +282,11 @@ class TransporteSalesController extends Controller
                         'sucursal_id' => $terminal->id,
                         'color' => $terminal->color,
                         'user_id' => $user->id,
-                        'viaje_id' => $viaje->id
+                        'viaje_id' => $viaje->id,
+                        'ninios'=>json_encode($request->ninios)
                     ])
                 );
-
-
-
             }
-
-
 
             DB::connection('tenant')->commit();
 
@@ -305,7 +294,6 @@ class TransporteSalesController extends Controller
                 'success' => true,
                 'message' => 'Éxito!!'
             ],200);
-
 
         } catch (\Throwable $th) {
             return response()->json([

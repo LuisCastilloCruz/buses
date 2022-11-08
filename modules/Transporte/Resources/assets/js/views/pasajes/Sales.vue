@@ -244,7 +244,7 @@
                     <div class="col-md-4 text-left">
                         <p><b>Manifiesto</b></p>
                         <el-button v-if="existe_manifiesto"  type="primary" @click="imprimirManifiesto(id_manifiesto)">Imprimir</el-button>
-                        <el-button v-else  type="primary" @click="generarManifiesto">Generar</el-button>
+                        <el-button v-else  type="primary" @click="generarManifiesto" :disabled='!existe_manifiesto'>Generar</el-button>
                     </div>
                 </div>
             </div>
@@ -325,6 +325,7 @@
             :choferes="choferes"
             :origen="origen"
             :destino="destino"
+            :existe_manifiesto.sync="existe_manifiesto"
         />
 
     </div>
@@ -725,22 +726,12 @@ export default {
         async onSuccessVenta(documentId){
             this.documentId = documentId;
             this.showDialogDocumentOptions = true;
-
-
-            // if(this.tipoVenta == 2){
-            //     await this.onUpdateItem()
-            //     this.documentId = documentId;
-            //     this.showDialogDocumentOptions = true;
-            // }else {
-            //     this.$emit('onSuccessVenta',documentId);
-            //     this.$emit('update:sale',false);
-            // }
-
         },
 
         quitar(){
             this.selectProgramacion = null;
             this.asientos = [];
+            this.existe_manifiesto = false
         },
 
         async getProgramaciones(){
@@ -810,10 +801,9 @@ export default {
             })
         },
         async seleccionar(programacion){
-            console.log('programacion id');
-            console.log(programacion);
             this.visibleAsientoLibre = false;
             this.selectProgramacion = programacion;
+
             if(this.tipoVenta == 2){
                 this.loadAsientosOcupados = true;
                 this.asientosOcupados = await this.getAsientosOcupados(programacion, this.fecha_salida)
@@ -823,27 +813,26 @@ export default {
 
                 this.loadAsientosOcupados = false;
 
-                this.verificarManifiesto(programacion.id);
+                this.verificarManifiesto(this.selectProgramacion);
 
                 this.$nextTick(() => this.$forceUpdate());
             }
 
         },
 
-        async verificarManifiesto(programacion_id){
+        async verificarManifiesto(programacion){
 
             let form ={
-                programacion_id: programacion_id
+                programacion: programacion,
+                fecha_salida: this.fecha_salida
             }
             try{
                 const { data } = await this.$http.post('/transportes/manifiestos/verificar-manifiesto',form);
 
-                this.existe_manifiesto = (data.id >0) ? true : false;
-                if(this.existe_manifiesto){
-                    this.id_manifiesto=data.id
+                if(data.success){
+                    this.existe_manifiesto = true
+                    this.id_manifiesto=data.manifiesto
                 }
-
-                console.log(data)
 
             }catch(error){
                 return null;

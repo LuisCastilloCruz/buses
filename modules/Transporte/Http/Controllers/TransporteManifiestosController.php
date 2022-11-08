@@ -410,12 +410,18 @@ class TransporteManifiestosController extends Controller
     }
 
     public  function verificarManifiestos(Request  $request){
-        $manifiesto= TransporteManifiesto::where('programacion_id',$request->programacion_id)
-            ->orderBy('id','desc')
+        //dd($request->programacion['hora_salida']);
+        $manifiesto= TransporteManifiesto::where('programacion_id',$request->programacion['id'])
+            ->where('fecha',$request->fecha_salida)
+            ->where('hora',$request->programacion['hora_salida'])
             ->first();
 
+        //dd($manifiesto);
+
         return response()->json([
-            'id' => $manifiesto->id
+            'success' => true,
+            'message' => 'Existe',
+            'manifiesto' => $manifiesto->id,
         ]);
     }
 
