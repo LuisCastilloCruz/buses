@@ -303,12 +303,12 @@ class TransporteSalesController extends Controller
             $cash_document->save();
 
             //actualizamos datos del pasajero
-            //dd($request->persona['id']);
+            if($request->estado_asiento_id ==2){ // asiento ocupado  ---3 es reservado
+                $person =  Person::findOrFail($request->persona['id']);
+                $person->edad =$request->persona['edad'];
+                $person->update();
+            }
 
-            $person =  Person::findOrFail($request->persona['id']);
-
-            $person->edad =$request->persona['edad'];
-            $person->update();
 
             DB::connection('tenant')->commit();
 
