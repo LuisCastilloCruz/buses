@@ -362,7 +362,7 @@ Vue.component('tenant-transporte-usuariosterminales',require('@viewsModuleTransp
 //Transporte :: manifiestos
 Vue.component('tenant-transporte-manifiestos',require('@viewsModuleTransporte/manifiestos/Manifiestos.vue'));
 Vue.component('tenant-transporte-encomiendas-manifiesto', require('@viewsModuleTransporte/manifiestos/AsignacionEncomiendaManifiestos.vue'));
-
+Vue.component('tenant-transporte-asistencia-modal', require('@viewsModuleTransporte/manifiestos/AsistenciaModal.vue'));
 //Transporte :: REPORTES
 
 Vue.component('tenant-transporte-reportes', require('@viewsModuleTransporte/reportes/Reportes.vue'))
