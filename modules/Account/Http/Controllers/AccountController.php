@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\Document;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Configuration;
+use Modules\Account\Exports\ReportAccountingAbContExport;
 use Modules\Account\Models\CompanyAccount;
 use Modules\Account\Exports\ReportAccountingAdsoftExport;
 use Modules\Account\Exports\ReportAccountingConcarExport;
@@ -95,6 +96,16 @@ class AccountController extends Controller
                 return (new ReportAccountingSumeriusExport)
                     ->data($data)
                     ->download($filename.'.xlsx');
+
+            case 'abcont':
+
+                $data = [
+                    'records' => $this->getStructureAbcont($records),
+                ];
+
+                return (new ReportAccountingAbContExport)
+                    ->data($data)
+                    ->download($filename.'.csv');
         }
     }
 
@@ -185,6 +196,97 @@ class AccountController extends Controller
                     $document['imp_igv'] = 0;
                 }
             }
+            array_push($rows, $document);
+        }
+        return $rows;
+    }
+
+    private function getStructureAbcont($documents)
+    {
+        $rows = [];
+        foreach ($documents as $row)
+        {
+            $glosa='';
+            if($row->document_type_id=='03' || $row->document_type_id=='01'){
+                $glosa="VENTA";
+            }
+            elseif($row->document_type_id=='07'){
+                $glosa="DSCTO";
+            }
+            elseif($row->document_type_id=='08'){
+                $glosa="GASTOS";
+            }
+            if($row->total_exonerated>0){
+                $glosa="EXONERADA";
+            }
+            elseif($row->state_type_id == '11'){
+                $glosa="ANULADA";
+            }
+
+            $document = [
+                'tipdoc' => $row->document_type_id,
+                'serie' => $row->series,
+                'numero' => $row->number,
+                'fecfac' => Carbon::parse($row->date_of_issue)->format('d/m/Y'),
+                'nro_ruc' => $row->customer->identity_document_type_id === '6' ? $row->customer->number : '',
+                'nombre' => $row->customer->name,
+                'tipmon' => strtoupper($row->currency_type->description),
+                'detrac' => '',
+                'isc' => $row->state_type_id == '11' ? 0 : number_format($row->total_isc, 2, '.', ''),
+                'icbper' => '',
+                'imp_ina' => 0,
+                'imp_exp' => '',
+                'recargo' => '',
+                'st' => $row->state_type_id === '11' ? 'A' : '',
+                'ser_dqm' => '',
+                'nro_dqm' => '',
+                'fec_dqm' => '',
+                'tip_dqm' => '',
+                'serie_fin' => '',
+                'numero_fin' => '',
+                'nro_dni' => $row->customer->identity_document_type_id === '1' ? $row->customer->number : '',
+                'pasaporte' => '',
+                'cta_vta' => '',
+                'tip_cam' => ($row->exchange_rate_sale >1) ?$row->exchange_rate_sale : "1.000",
+                'glosa'=>$glosa
+            ];
+
+            if ($row->state_type_id === '11') {
+                $document['imp_exo'] = 0;
+                $document['imp_vta'] = 0;
+                $document['imp_tot'] = 0;
+                $document['imp_igv'] = 0;
+            } else {
+                if ($row->total_exonerated == 0) {
+                    $document['imp_exo'] = 0;
+                    $document['imp_vta'] = number_format($row->total_value, 2, '.', '');
+                    $document['imp_tot'] = number_format($row->total, 2, '.', '');
+                    $document['imp_igv'] = number_format($row->total_igv, 2, '.', '');
+                } else {
+                    $document['imp_exo'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_vta'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_tot'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_igv'] = 0;
+                }
+            }
+
+            $reference_document_type_id = '';
+            $reference_series='';
+            $reference_number='';
+            $reference_date_of_issue = '';
+
+            if(in_array($row->document_type_id, ['07', '08']))
+            {
+                $reference_document_type_id = $this->getShortDocumentType($row->note->affected_document->document_type_id);
+                $reference_series = $row->note->affected_document->series;
+                $reference_number = $row->note->affected_document->number;
+                $reference_date_of_issue = $row->note->affected_document->date_of_issue->format('d/m/Y');
+            }
+            $document['tref'] =$reference_document_type_id;
+            $document['sref'] =$reference_series;
+            $document['nref'] =$reference_number;
+            $document['fref'] =$reference_date_of_issue;
+
             array_push($rows, $document);
         }
         return $rows;

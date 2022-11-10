@@ -12,7 +12,7 @@ class TransporteViajes extends ModelTenant
         'terminal_origen_id',
         'hora_salida',
         'fecha_salida',
-        'vehiculo_id',  
+        'vehiculo_id',
         'terminal_destino_id',
         'programacion_id'
     ];

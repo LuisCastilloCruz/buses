@@ -14,7 +14,9 @@ class TransportePasaje extends ModelTenant
 {
     //
     protected $table = 'transporte_pasajes';
-
+    protected $casts = [
+        'asistencia' => 'boolean',
+    ];
     protected $fillable = [
         'soap_type_id',
         'document_id',
@@ -32,12 +34,14 @@ class TransportePasaje extends ModelTenant
         'origen_id',
         'cliente_id',
         'nombre_pasajero',
+        'telefono',
         'user_name',
         'sucursal_id',
         'color',
         'user_id',
         'viaje_id',
-        'ninios'
+        'ninios',
+        'asistencia'
     ];
 
 

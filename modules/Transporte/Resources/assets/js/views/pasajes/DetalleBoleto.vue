@@ -96,7 +96,7 @@
 
                     </label>
                     <el-input disabled v-model="nombrePasajero" type="text" placeholder="Nombre del pasajero" ></el-input>
-
+                    <p class="text-center text-green-light text-blue"><b>{{telPasajero}}</b></p>
                 </div>
             </div>
             <div v-if="isReserva && document.document_type_id == '01'" class="col-5">
@@ -411,6 +411,7 @@ export default {
             sale_note_id:null,
             showDialogSaleNoteOptions:false,
             nombrePasajero:null,
+            telPasajero:null,
             tempEstadosAsientos: this.estadosAsientos,
             usuario: null
         });
@@ -468,6 +469,7 @@ export default {
 
             if(this.transportePasaje){
                 this.nombrePasajero = this.transportePasaje.nombre_pasajero;
+                this.telPasajero = this.transportePasaje.telefono;
                 this.pasajero = this.transportePasaje.pasajero;
                 this.precio = this.transportePasaje.precio;
                 this.pasajeroId = this.pasajero ? this.pasajero.id : null;

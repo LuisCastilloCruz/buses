@@ -227,6 +227,7 @@ class TransporteSalesController extends Controller
                 'pasajero_id',
                 'asiento_id',
                 'nombre_pasajero',
+                'telefono',
                 'precio',
                 'fecha_salida',
                 'estado_asiento_id',
@@ -305,8 +306,30 @@ class TransporteSalesController extends Controller
             //actualizamos datos del pasajero
             if($request->estado_asiento_id ==2){ // asiento ocupado  ---3 es reservado
                 $person =  Person::findOrFail($request->persona['id']);
+                $person->telephone = $request->telefono;
                 $person->edad =$request->persona['edad'];
                 $person->update();
+            }
+
+            if($request->estado_asiento_id ==3){ // asiento reservado  ---3 es reservado
+
+                $person =  Person::where('number',$request->dniPasajero)->first();
+
+                if($person){
+                    $person->number = $request->dniPasajero;
+                    $person->name = $request->nombrePasajero;
+                    $person->telephone = $request->telPasajero;
+                    $person->update();
+                }else{
+                    $person = new Person();
+                    $person->country_id="PE";
+                    $person->type= "customers";
+                    $person->identity_document_type_id= '1';
+                    $person->number = $request->dniPasajero;
+                    $person->name = $request->nombrePasajero;
+                    $person->telephone = $request->telefono;
+                    $person->update();
+                }
             }
 
 

@@ -109,7 +109,27 @@ class TransporteManifiestosController extends Controller
 
     }
 
+    public function listaPasajeros(Request $request,TransporteManifiesto $manifiesto){
+        try{
+            $programacion = $manifiesto->programacion;
+
+            [$pasajes, $pasajesEnTerminal, $pasajesRecogidosRuta] = $this->getPasajeros($programacion, $manifiesto->fecha);
+
+            return response()->json([
+                'pasajes' => $pasajes
+
+            ],200);
+        }catch(Exception $e){
+
+            return response()->json([
+                'message' => 'Lo sentimos ocurrio un error'
+            ],500);
+
+        }
+    }
+
     private function documentPasajeros(Request $request,TransporteManifiesto $manifiesto){
+
         $pdf = new Mpdf([
             'mode' => 'utf-8',
             'margin_top' => 2,
@@ -430,6 +450,29 @@ class TransporteManifiestosController extends Controller
                 'message' => 'No existe',
                 'manifiesto' => null,
             ]);
+        }
+    }
+
+    public function confirmarAsistencia(Request $request){
+        try{
+
+
+            $transporte_pasaje = TransportePasaje::findOrFail($request->id);
+            $transporte_pasaje->asistencia = $request->estado;
+            $transporte_pasaje->update();
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se actualizó el estado de asistencia',
+            ],200);
+
+        }catch(Exception $e){
+
+            return response()->json([
+                'message' => 'Lo sentimos ha ocurrido un error'
+            ],500);
+
         }
     }
 

@@ -13,6 +13,19 @@
                         <div class="tab-content">
                             <div id="boleto" class="tab-pane active">
                                 <div class="row mt-2">
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label for="dni">Estado de asiento</label>
+                                            <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
+                                                       placeholder="Estado asiento"
+                                                       :disabled=" (transportePasaje) ? true : false"
+                                            >
+                                                <el-option v-for="estado in tempEstadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
+
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
                                     <div v-if="!isReserva" class="col-5">
                                         <div class="form-group">
                                             <label for="">Tipo de comprobante</label>
@@ -48,47 +61,53 @@
                                             </el-select>
                                         </div>
                                     </div>
-                                    <div class="col-3">
-                                        <div class="form-group">
-                                            <label for="dni">Estado de asiento</label>
-                                            <el-select v-model="estadoAsiento"  popper-class="el-select-customers"
-                                                    placeholder="Estado asiento"
-                                                    :disabled=" (transportePasaje) ? true : false"
-                                            >
-                                                <el-option v-for="estado in tempEstadosAsientos" :key="estado.id" :value="estado.id" :label="estado.nombre">
-
-                                                </el-option>
-                                            </el-select>
-                                        </div>
-                                    </div>
                                 </div>
-                                <div class="row pt-2">
-                                    <div v-if="(!isReserva && document.document_type_id === '01')" class="col-12">
-                                        <div class="form-group">
-                                            <label for="ruc" class="mr-2"  style="display: inline; float: left">
-                                                Ruc
-                                            </label>
-                                            <input placeholder="Ingrese el Ruc y presione enter" name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number" style="width:20%;float: left"  maxlength="11" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
-                                            <label class="ml-2 mr-2"  style="display: inline; float: left" id="cliente">Razón Social</label><input name="nombre" class="form-control" v-model="empresa.name" type="text" style="width:30%;float: left"></input>
-                                            <label class="ml-2 mr-2" style="display: inline; float: left">Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text" style="width:30%;float: left"></input>
-                                        </div>
-                                    </div>
-                                    <div v-if="isReserva" class="col-12">
-                                        <div class="form-group">
-                                            <label for="dni">
-                                                Cliente
+                                <div class="row mt-4" v-if="(!isReserva && document.document_type_id === '01')">
+                                    <div class="col-md-3">
+                                        <label for="ruc">
+                                            Ruc
+                                        </label>
+                                        <input placeholder="Ingrese el Ruc y presione enter" name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number"   maxlength="11" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
 
-                                            </label>
-                                            <el-input ref="nombrePasajero" id="nombrePasajero" v-model="nombrePasajero" type="text" placeholder="Nombre del cliente" ></el-input>
-
-                                        </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <label>Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text"></input>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label  id="cliente">Razón Social</label><input name="nombre" class="form-control" v-model="empresa.name" type="text"></input>
+                                    </div>
+
                                 </div>
-                                <div v-if="!isReserva" class="row pt-2">
 
+                                <div class="row mt-4" v-if="isReserva">
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label class="ml-2 mr-2" for="edad" style="display: inline; float: left;width: 10%">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="dni">
+                                                        Dni
+                                                    </label>
+                                                    <input ref="dniPasajero" id="dniPasajero"  class="form-control" v-model="dniPasajero" type="number" placeholder="Dni y enter" v-on:keyup.enter="buscar_rapida_dni_reserva"></input>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="dni">
+                                                        Cliente
+                                                    </label>
+                                                    <el-input ref="nombrePasajero" id="nombrePasajero"  v-model="nombrePasajero" type="text" placeholder="Nombre del cliente"></el-input>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="dni">
+                                                        Teléfono
+                                                    </label>
+                                                    <el-input ref="telPasajero" id="telPasajero"  v-model="telPasajero" type="number" placeholder="Teléfono" ></el-input>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-if="!isReserva" class="row mt-4">
+                                    <div class="col-md-3">
+                                            <label class="ml-2 mr-2" for="edad">
                                                 <el-select v-model="persona.identity_document_type_id"
                                                     dusk="persona.identity_document_type_id"
                                                     filterable
@@ -100,14 +119,20 @@
                                                    :value="option.id"></el-option>
                                             </el-select>
                                             </label>
-                                            <input :loading="loading_search" placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" id="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" :type="persona.identity_document_type_id==1 ? 'number' : 'text' "  style="width:20%;float: left"  :maxlength="persona.identity_document_type_id==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
-                                            <label class="ml-2 mr-2" for="nombre" style="display: inline; float: left">Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" style="width:40%;float: left"></input>
-                                            <label class="ml-2 mr-2" for="edad" style="display: inline; float: left">Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" style="width:20%;float: left"></input>
-                                        </div>
+                                            <input :loading="loading_search" placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" id="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" :type="persona.identity_document_type_id==1 ? 'number' : 'text' "  :maxlength="persona.identity_document_type_id==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
+                                    </div>
+                                    <div class="col-md-4">
+                                            <label  for="nombre" >Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" ></input>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label  for="edad" >Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" ></input>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label  for="edad">Tel:</label><input name="edad" class="form-control" v-model="persona.telephone" type="text" ></input>
                                     </div>
 
                                 </div>
-                                <div class="row">
+                                <div class="row mt-4">
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label for="dni">Precio</label>
@@ -531,7 +556,9 @@ export default {
     data(){
         return ({
             loading_search:false,
+            dniPasajero:null,
             nombrePasajero:null,
+            telPasajero:null,
             tabs:'venta',
             resource_documents: "documents",
             input_person:{},
@@ -551,7 +578,7 @@ export default {
             buscar_destinatario:false,
             buscar_pasajero:false,
             loading:false,
-            tempEstadosAsientos:this.estadosAsientos,
+            tempEstadosAsientos:this.estadosAsientos.filter(  estado => estado.id != 3 || estado.id != 4 ),
             //document
             documentId:null,
             sale_note_id:null,
@@ -881,7 +908,13 @@ export default {
                 programacion_id: this.tipoVenta == 2 ? this.programacion.id : null,
                 ninios: this.menores,
                 form_cash_document: this.form_cash_document,
-                persona: this.persona
+                persona: this.persona,
+
+                dniPasajero:this.dniPasajero,
+                nombrePasajero:this.nombrePasajero,
+                telefono:this.telPasajero
+
+
             };
 
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
@@ -935,7 +968,7 @@ export default {
                 this.persona.number = null
                 this.persona.name = null
                 this.persona.edad  = null
-
+                this.persona.telephone= null
                 this.menores = [
                     {
                         dni: "",
@@ -948,6 +981,10 @@ export default {
                     descripcion: "",
                     importe: 0
                 }
+
+                this.dniPasajero=null
+                this.nombrePasajero=null
+                this.telefono=null
 
                 this.$emit('onUpdateItem');
                 this.$emit('notificationAll'); //sirve para notificar que se ha hecho una venta de un pasaje
@@ -1512,6 +1549,7 @@ export default {
                 this.persona.number = response_local.data.data.number
                 this.persona.name = response_local.data.data.name
                 this.persona.edad = response_local.data.data.edad
+                this.persona.telephone= response_local.data.data.telephone
             }else{
                 this.persona.name = response_local.data.data.name
             }
@@ -1612,6 +1650,23 @@ export default {
         agregarLineaEquipaje(){
             this.sobre_equipajes.push({cant: '', descripcion: '' , precio_unitario: '', importe:''});
         },
+        async buscar_rapida_dni_reserva(){
+
+            this.nombrePasajero=""
+            this.loading_search = true
+            let response_local = await this.$http.get(`/transportes/encomiendas/get-pasajero/1/${this.dniPasajero}`)
+
+            if(response_local.data.success){
+                this.pasajeroId   = response_local.data.data.id
+
+                this.nombrePasajero=response_local.data.data.name
+                this.telPasajero=response_local.data.data.telephone
+
+            }else{
+                this.nombrePasajero = response_local.data.data.name
+            }
+            this.loading_search = false
+        }
     }
 }
 </script>

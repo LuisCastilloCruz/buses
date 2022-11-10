@@ -63,6 +63,11 @@
                                                                 <i class="fa fa-file-alt"></i>
                                                             </el-button>
                                                         </el-tooltip>
+                                                        <el-tooltip class="item" effect="dark" content="Registrar asistencia" placement="top-start">
+                                                            <el-button type="primary" @click="registrarAsistencia(manifiesto)">
+                                                                <i class="fa fa-bus"></i>
+                                                            </el-button>
+                                                        </el-tooltip>
 
 
                                                         <!-- <el-button type="danger" @click="onDelete(encomienda)">
@@ -194,13 +199,24 @@
         :item-manifiesto="manifiesto"
         />
 
-        <!-- <add-edit :visible.sync="visible" :series="series"></add-edit> -->
+        <tenant-transporte-asistencia-modal
+            :visible.sync="visibleAsistencia"
+            :programacion="programacion"
+            :manifiesto="manifiesto"
+        />
+
     </div>
 </template>
 <script>
 import AddEdit from './AddEdit';
 import GenerarManifiesto from './GenerarManifiesto.vue';
-export default {
+import AsistenciaModal from './AsistenciaModal.vue';
+export default{
+    components: {
+        AddEdit,
+        GenerarManifiesto,
+        AsistenciaModal
+    },
     props:{
         series:{
             type:Array,
@@ -210,10 +226,6 @@ export default {
             type:Array,
             default:() => []
         }
-    },
-    components:{
-        AddEdit,
-        GenerarManifiesto
     },
     created(){
         this.getManifiestosEncomiendas();
@@ -226,6 +238,7 @@ export default {
             tipo:null,
             tab:'pasajes',
             visible:false,
+            visibleAsistencia:false,
             programacion:null,
             manifiesto:null
         });
@@ -279,6 +292,11 @@ export default {
         editar(manifiesto){
             this.manifiesto = manifiesto;
             this.visible = true;
+        },
+        registrarAsistencia(manifiesto){
+            this.manifiesto = manifiesto
+            this.programacion = manifiesto.programacion
+            this.visibleAsistencia = true;
         }
     }
 

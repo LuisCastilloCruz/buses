@@ -209,6 +209,7 @@ class TransporteEncomiendaController extends Controller
                     'name' => $cliente->name,
                     'address' => $cliente->address,
                     'edad' => $cliente->edad,
+                    'telephone' => $cliente->telephone,
 
                     'condition'=> $cliente->condition,
                     'department_id'=> $cliente->department_id,
