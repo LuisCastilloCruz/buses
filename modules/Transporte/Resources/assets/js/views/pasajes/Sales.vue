@@ -244,7 +244,7 @@
                     <div class="col-md-4 text-left">
                         <p><b>Manifiesto</b></p>
                         <el-button v-if="existe_manifiesto"  type="primary" @click="imprimirManifiesto(id_manifiesto)">Imprimir</el-button>
-                        <el-button v-else  type="primary" @click="generarManifiesto" :disabled='!existe_manifiesto'>Generar</el-button>
+                        <el-button v-else type="primary" @click="generarManifiesto">Generar</el-button>
                     </div>
                 </div>
             </div>
@@ -873,8 +873,16 @@ export default {
             window.open(`/transportes/manifiestos/${id}/imprimir-manifiesto`);
         },
         generarManifiesto(){
-            this.tipo = 2;
-            this.modalManifiestoVisible = true;
+            if(this.selectProgramacion.id){
+                this.tipo = 2;
+                this.modalManifiestoVisible = true;
+            }else {
+                this.$message({
+                    type: 'warning',
+                    message: 'Seleccione una programación.'
+                });
+            }
+
         },
 
         anularBoleto(pasaje){

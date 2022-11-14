@@ -182,7 +182,7 @@ export default {
             this.manifiesto.hora= this.programacion.hora_salida
             this.manifiesto.programacion_id= (this.programacion) ? this.programacion.programacion_id : 0
 
-            this.$emit('update:visible',false);
+            // this.$emit('update:visible',false);
         },
         onStore(){
             this.loading = true;

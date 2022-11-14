@@ -90,14 +90,16 @@
 
                         <div class="row">
                             <div class="col-md-3">
-                                <div :class="{'has-danger': errors.credit_days}" class="form-group">
+                                <div :class="{'has-danger': errors.credit_days}"
+                                     class="form-group">
                                     <label class="control-label">Dias de crédito</label>
                                     <el-input-number
+                                        v-model="form.credit_days"
                                         :controls="false"
-                                        :precision="0"
                                         :min="0"
-                                        v-model="form.credit_days"></el-input-number>
-                                    <small v-if="errors.credit_days" class="form-control-feedback"
+                                        :precision="0"></el-input-number>
+                                    <small v-if="errors.credit_days"
+                                           class="form-control-feedback"
                                            v-text="errors.credit_days[0]"></small>
                                 </div>
                             </div>
@@ -121,6 +123,16 @@
                                     </el-select>
                                     <small v-if="errors.person_type_id" class="form-control-feedback"
                                            v-text="errors.person_type_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.barcode}"
+                                     class="form-group">
+                                    <label class="control-label">Código de barra</label>
+                                    <el-input v-model="form.barcode"></el-input>
+                                    <small v-if="errors.barcode"
+                                           class="form-control-feedback"
+                                           v-text="errors.barcode[0]"></small>
                                 </div>
                             </div>
                             <div v-if="form.state" class="col-md-6">
@@ -171,9 +183,29 @@
                         </div>
                     </el-tab-pane>
 
-                    <el-tab-pane class name="second">
+                    <el-tab-pane class
+                                 name="second">
                         <span slot="label">Dirección</span>
                         <div class="row">
+                            <!-- Nacionalidad -->
+
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.country_id}"
+                                     class="form-group">
+                                    <label class="control-label">Nacionalidad</label>
+                                    <el-select v-model="form.nationality_id"
+                                               dusk="country_id"
+                                               filterable>
+                                        <el-option v-for="option in countries"
+                                                   :key="option.id"
+                                                   :label="option.description"
+                                                   :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.country_id"
+                                           class="form-control-feedback"
+                                           v-text="errors.country_id[0]"></small>
+                                </div>
+                            </div>
                             <!-- País -->
 
                             <div class="col-md-3">
@@ -259,10 +291,61 @@
                                            v-text="errors.email[0]"></small>
                                 </div>
                             </div>
+
+                            <!-- Correos electronicos alterno -->
+                            <div class="col-6">
+                                <div
+                                    class="form-group">
+                                    <label class="control-label">Correos opcionales </label>
+                                    <el-input
+
+                                        v-model="temp_email"
+                                        dusk="email"
+                                        @change="checkEmail()"
+                                    >
+
+                                    </el-input>
+
+
+                                    <el-button
+                                        v-if="temp_email != null && temp_email.length > 1 && checkEmail() == true"
+                                        icon="el-icon-plus"
+                                        size="mini"
+                                        @click.prevent="clickAddMail()">
+                                        Agregar Correo
+                                    </el-button>
+
+                                    <label v-if="temp_optional_email !== undefined &&
+                                     temp_optional_email.length > 0"
+                                           class="control-label">
+                                        <el-tag
+                                            v-for="mail in temp_optional_email"
+                                            :key="mail.email"
+                                            :closable="true"
+                                            :type="'success'"
+                                            @close="removeEmail(mail)"
+                                        >
+                                            {{ mail.email }}
+                                        </el-tag>
+
+                                    </label>
+                                    <small v-if="errors.temp_email && errors.temp_email.length > 0"
+                                           class="form-control-feedback"
+                                           v-text="errors.temp_email"></small>
+
+
+                                    <small v-if="errors.email"
+                                           class="form-control-feedback"
+                                           v-text="errors.email[0]"></small>
+                                </div>
+                            </div>
+                            <!-- Correos electronicos alterno -->
                         </div>
                         <div class="row m-t-10">
                             <div class="col-md-12 text-center">
-                                <el-button icon="el-icon-plus" size="mini" @click.prevent="clickAddAddress()">
+                                <el-button icon="el-icon-plus"
+                                           size="mini"
+                                           @click.prevent="clickAddAddress()">
                                     Agregar dirección
                                 </el-button>
                             </div>
@@ -350,21 +433,15 @@
                             </div>
                         </div>
                         <div class="row">
-                            <!--Zona -->
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.zone }" class="form-group">
-                                    <label class="control-label">Zona</label>
-                                    <el-input v-model="form.zone"></el-input>
-                                    <small v-if="errors.zone" class="form-control-feedback"
-                                           v-text="errors.zone[0]"></small>
-                                </div>
-                            </div>
+
                             <!--SitioWeb -->
                             <div class="col-md-6">
-                                <div :class="{'has-danger': errors.website }" class="form-group">
+                                <div :class="{'has-danger': errors.website }"
+                                     class="form-group">
                                     <label class="control-label">Sitio Web</label>
                                     <el-input v-model="form.website"></el-input>
-                                    <small v-if="errors.website" class="form-control-feedback"
+                                    <small v-if="errors.website"
+                                           class="form-control-feedback"
                                            v-text="errors.website[0]"></small>
                                 </div>
                             </div>
@@ -380,26 +457,105 @@
                             <!--ID Días Crédito -->
 
                         </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4">
+
+                                <div :class="{'has-danger': errors.seller_id}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Vendedor
+                                    </label>
+                                    <el-select v-model="form.seller_id"
+                                               clearable>
+                                        <el-option v-for="option in sellers"
+                                                   :key="option.id"
+                                                   :label="option.name"
+                                                   :value="option.id">{{ option.name }}
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div :class="{'has-danger': errors.zone_id}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Zona
+                                    </label>
+
+                                    <a v-if="form_zone.add == false"
+                                       class="control-label font-weight-bold text-info"
+                                       href="#"
+                                       @click="form_zone.add = true"> [ + Nuevo]</a>
+                                    <a v-if="form_zone.add == true"
+                                       class="control-label font-weight-bold text-info"
+                                       href="#"
+                                       @click="saveZone()"> [ + Guardar]</a>
+                                    <a v-if="form_zone.add == true"
+                                       class="control-label font-weight-bold text-danger"
+                                       href="#"
+                                       @click="form_zone.add = false"> [ Cancelar]</a>
+                                    <el-input v-if="form_zone.add == true"
+                                              v-model="form_zone.name"
+                                              dusk="item_code"
+                                              style="margin-bottom:1.5%;"></el-input>
+
+                                    <el-select v-if="form_zone.add == false"
+                                               v-model="form.zone_id"
+                                               clearable
+                                               filterable>
+                                        <el-option v-for="option in zones"
+                                                   :key="option.id"
+                                                   :label="option.name"
+                                                   :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.zone_id"
+                                           class="form-control-feedback"
+                                           v-text="errors.zone_id[0]"></small>
+                                </div>
+                            </div>
+
+
+                            <!--Zona -->
+                            <!--
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.zone }"
+                                     class="form-group">
+                                    <label class="control-label">Zona</label>
+                                    <el-input v-model="form.zone"></el-input>
+                                    <small v-if="errors.zone"
+                                           class="form-control-feedback"
+                                           v-text="errors.zone[0]"></small>
+                                </div>
+                            </div>
+                            -->
+                        </div>
                     </el-tab-pane>
                 </el-tabs>
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
-                <el-button :loading="loading_submit" native-type="submit" type="primary">Guardar</el-button>
+                <el-button :loading="loading_submit"
+                           native-type="submit"
+                           type="primary">Guardar
+                </el-button>
             </div>
         </form>
     </el-dialog>
 </template>
 
 <script>
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 import {serviceNumber} from '../../../mixins/functions'
 
 export default {
     mixins: [serviceNumber],
-    props: ['showDialog', 'type', 'recordId', 'external','buscar_destinatario','buscar_pasajero', 'document_type_id', 'input_person'],
+    props: ['showDialog', 'type', 'recordId', 'external','buscar_cliente','buscar_pasajero', 'document_type_id', 'input_person','parentId'],
     data() {
         return {
+            form_zone: {add: false, name: null, id: null},
+            parent: null,
             loading_submit: false,
             titleDialog: null,
             titleTabDialog: null,
@@ -407,8 +563,14 @@ export default {
             resource: 'persons',
             errors: {},
             api_service_token: false,
-            form: {},
+            form: {
+                optional_email: []
+            },
+            temp_optional_email: [],
+            temp_email: null,
             countries: [],
+            zones: [],
+            sellers: [],
             all_departments: [],
             all_provinces: [],
             all_districts: [],
@@ -421,6 +583,8 @@ export default {
         }
     },
     async created() {
+
+        this.loadConfiguration()
         await this.initForm()
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
@@ -428,6 +592,8 @@ export default {
                 // console.log(this.api_service_token)
 
                 this.countries = response.data.countries
+                this.zones = response.data.zones
+                this.sellers = response.data.sellers
                 this.all_departments = response.data.departments;
                 this.all_provinces = response.data.provinces;
                 this.all_districts = response.data.districts;
@@ -435,9 +601,21 @@ export default {
                 this.locations = response.data.locations;
                 this.person_types = response.data.person_types;
             })
+        .finally(()=>{
+            if(this.api_service_token === false){
+                if(this.config.api_service_token !== undefined){
+                    this.api_service_token = this.config.api_service_token
+                }
+            }
+        })
 
     },
     computed: {
+        ...mapState([
+            'config',
+            'person',
+            'parentPerson',
+        ]),
         maxLength: function () {
             if (this.form.identity_document_type_id === '6') {
                 return 11
@@ -445,20 +623,24 @@ export default {
             if (this.form.identity_document_type_id === '1') {
                 return 8
             }
-        }
+        },
     },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+        ]),
         initForm() {
             this.errors = {}
             this.form = {
                 id: null,
                 type: this.type,
-                credit_days:0,
+                credit_days: 0,
                 identity_document_type_id: '6',
                 number: '',
                 name: null,
                 trade_name: null,
                 country_id: 'PE',
+                nationality_id: 'PE',
                 department_id: null,
                 province_id: null,
                 district_id: null,
@@ -476,7 +658,10 @@ export default {
                     full_name: null,
                     phone: null,
                 },
+                optional_email: []
             }
+            this.updateEmail()
+
         },
         async opened() {
 
@@ -493,7 +678,19 @@ export default {
         },
         create() {
             // console.log(this.input_person)
-            if(this.external && (this.buscar_destinatario ==false || this.buscar_pasajero == false) ) {
+            this.parent = 0;
+            if(this.parentId !== undefined){
+                this.parent = this.parentId;
+            }
+            /*
+
+            'person',
+            'parentPerson',
+            */
+            if(this.external &&  this.buscar_pasajero == true){
+                this.form.identity_document_type_id = '1'
+            }
+            if(this.external &&  this.buscar_pasajero == false) {
                 if (this.document_type_id === '01') {
                     this.form.identity_document_type_id = '6'
                 }
@@ -505,9 +702,7 @@ export default {
                     this.form.identity_document_type_id = (this.input_person.identity_document_type_id) ? this.input_person.identity_document_type_id : this.form.identity_document_type_id
                     this.form.number = (this.input_person.number) ? this.input_person.number : ''
                 }
-                if(this.external && (this.buscar_destinatario ==true || this.buscar_pasajero == true)){
-                    this.form.identity_document_type_id = '1'
-                }
+
             }
             if (this.type === 'customers') {
                 this.titleDialog = (this.recordId) ? 'Editar Cliente' : 'Nuevo Cliente'
@@ -519,6 +714,7 @@ export default {
                 this.titleTabDialog =  'Datos del proveedor';
                 this.typeDialog= 'Tipo de proveedor'
             }
+
             if (this.recordId) {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
@@ -531,7 +727,10 @@ export default {
                         }
                         this.filterProvinces()
                         this.filterDistricts()
-                    })
+                    }).then(() => {
+                    this.updateEmail()
+
+                })
             }
         },
         clickAddAddress() {
@@ -549,6 +748,60 @@ export default {
                 'phone': null,
                 'main': false,
             });
+        },
+        validateEmail(email) {
+            var re = /\S+@\S+\.\S+/;
+            return re.test(email);
+        },
+        updateEmail() {
+            this.temp_optional_email = this.form.optional_email;
+
+        },
+        removeEmail(email) {
+            if (this.form.optional_email === undefined) this.form.optional_email = []
+            this.form.optional_email = this.form.optional_email.filter(function (item) {
+                return item.email !== email.email;
+            });
+
+            this.updateEmail()
+
+        },
+        checkEmail() {
+            this.errors.temp_email = null;
+            if (this.temp_email === null) {
+                return false;
+            }
+            if (this.temp_email === undefined) {
+                return false;
+            }
+            let email = this.temp_email;
+
+            if (this.validateEmail(email)) {
+                if (this.form.optional_email !== undefined) {
+                    let tem = _.find(this.form.optional_email, {'email': email});
+                    if (tem === undefined) {
+                        return true;
+                    } else {
+                        // this.errors.temp_email = "Correo ya registrado"
+                    }
+                }
+            } else {
+                // this.errors.temp_email = "No es un correo valido"
+            }
+            return false;
+
+        },
+        clickAddMail() {
+            if (this.form.optional_email === undefined) this.form.optional_email = []
+            if (this.checkEmail() === true) {
+                let email = this.temp_email;
+                this.form.optional_email.push(
+                    {email: email,}
+                )
+                this.updateEmail()
+                this.temp_email = null;
+            }
+
         },
         validateDigits() {
 
@@ -617,16 +870,13 @@ export default {
             }
 
             this.loading_submit = true
-
+            this.form.parent_id = parseInt(this.parent);
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
-                        if (this.external && this.buscar_destinatario ==false && this.buscar_pasajero==false) {
-                            this.$eventHub.$emit('reloadDataPersons', response.data.id)
-                        }
-                        else if(this.external && this.buscar_destinatario ==true){
-                            this.$eventHub.$emit('reloadDataDestinarios', response.data.id)
+                        if(this.external && this.buscar_cliente ==true){
+                            this.$eventHub.$emit('reloadDataCustomers', response.data.id)
                         }
                         else if(this.external && this.buscar_pasajero ==true){
                             this.$eventHub.$emit('reloadDataPasajeros', response.data.id)
@@ -638,6 +888,7 @@ export default {
                     } else {
                         this.$message.error(response.data.message)
                     }
+
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
@@ -646,7 +897,7 @@ export default {
                         console.log(error)
                     }
                 })
-                .then(() => {
+                .finally(() => {
                     this.loading_submit = false
                 })
         },
@@ -689,7 +940,30 @@ export default {
         },
         clickRemoveAddress(index) {
             this.form.addresses.splice(index, 1);
-        }
+        },
+
+        saveZone() {
+            this.form_zone.add = false
+
+            this.$http.post(`/zones`, this.form_zone)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.zones.push(response.data.data)
+                        this.form_zone.name = null
+
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+
+                })
+
+
+        },
+
+
     }
 }
 </script>

@@ -57,7 +57,7 @@
                 <div class="form-group">
                     <label for="dni">
                         Cliente
-                        <a href="#" @click.prevent="modalPerson(false)">[+ Nuevo]</a>
+                        <a href="#" @click.prevent="modalPerson(true,false)">[+ Nuevo]</a>
                     </label>
                     <el-select v-if="transportePasaje && isReserva" v-model="clienteId" filterable remote  popper-class="el-select-customers"
                         dusk="clienteId"
@@ -103,7 +103,7 @@
                 <div class="form-group">
                     <label for="dni">
                         Pasajero
-                        <a href="#" @click.prevent="modalPerson(true)">[+ Nuevo]</a>
+                        <a href="#" @click.prevent="modalPerson(false,true)">[+ Nuevo]</a>
                     </label>
                     <el-select v-model="pasajeroId" filterable remote  popper-class="el-select-customers"
                                dusk="pasajeroId"
@@ -245,8 +245,8 @@
         type="customers"
         :external="true"
         :input_person="input_person"
+        :buscar_cliente="buscar_cliente"
         :buscar_pasajero="buscar_pasajero"
-        :buscar_destinatario="buscar_destinatario"
         :document_type_id="document.document_type_id"></person-form>
 
         <div class="row mt-4">
@@ -270,7 +270,7 @@
 import { exchangeRate } from '../../../../../../../resources/js/mixins/functions';
 import DocumentOptions from "@views/documents/partials/options.vue";
 import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
-import PersonForm from "@views/persons/form.vue";
+import PersonForm from "@views/persons/form2.vue";
 export default {
     mixins: [exchangeRate],
     components:{
@@ -373,7 +373,7 @@ export default {
     },
     data(){
         return ({
-            buscar_destinatario:false,
+            buscar_cliente:false,
             input_person:{},
             showDialogNewPerson:false,
             pasajeros:[],
@@ -1005,8 +1005,9 @@ export default {
 
             }
         },
-        modalPerson(buscar_pasajero){
+        modalPerson(buscar_cliente,buscar_pasajero){
             this.showDialogNewPerson=true;
+            this.buscar_cliente = buscar_cliente
             this.buscar_pasajero = buscar_pasajero
 
         },

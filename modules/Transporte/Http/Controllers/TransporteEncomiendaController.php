@@ -187,7 +187,7 @@ class TransporteEncomiendaController extends Controller
     public function getClientes(Request $request){
         extract($request->only(['search']));
         $clientes = Person::select()
-        ->orderBy('name');
+        ->orderBy('id','DESC');
         if(!empty($search)){
             $clientes->where('name','like',"%{$search}%");
         }
