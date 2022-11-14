@@ -128,7 +128,7 @@
                                         <label  for="edad" >Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" ></input>
                                     </div>
                                     <div class="col-md-3">
-                                        <label  for="edad">Tel:</label><input name="edad" class="form-control" v-model="persona.telephone" type="text" ></input>
+                                        <label  for="telfono">Tel:</label><input name="telefono" class="form-control" v-model="persona.telephone" type="text" ></input>
                                     </div>
 
                                 </div>
@@ -626,7 +626,7 @@ export default {
                 country_id:"PE",
                 type: "customers",
                 identity_document_type_id: '1',
-                edad: null,
+                edad: '',
                 number: null,
                 name: null,
                 addresses: []
@@ -908,7 +908,7 @@ export default {
                 programacion_id: this.tipoVenta == 2 ? this.programacion.id : null,
                 ninios: this.menores,
                 form_cash_document: this.form_cash_document,
-                persona: this.persona,
+                persona:this.persona,
 
                 dniPasajero:this.dniPasajero,
                 nombrePasajero:this.nombrePasajero,
@@ -928,6 +928,8 @@ export default {
                         type: 'error',
                         message: data.message
                     });
+
+                    this.limpiar_datos()
                 }
 
                 if (this.document.document_type_id === "nv") {
@@ -937,54 +939,7 @@ export default {
                 }
 
 
-                this.estadoAsiento = 2;
-
-                //this.precio = null;
-                this.clienteId=null;
-                this.pasajeroId = null;
-                this.numeroAsiento = null;
-                this.form_cash_document.document_id=null;
-                this.form_cash_document.sale_note_id=null;
-                this.document.document_type_id = '03';
-                this.document.cliente_id =
-                this.nombrePasajero = null;
-                this.filterSeries();
-                //this.filterCustomers();
-                this.initProducto();
-                this.document.payments= [];
-
-                this.empresa.id    = null
-                this.empresa.number = null
-                this.empresa.name  = null
-                this.empresa.address= null
-                this.empresa.condition= null
-                this.empresa.state = null
-                this.empresa.department_id= null
-                this.empresa.district_id= null
-                this.empresa.province_id= null
-                this.empresa.trade_name= null
-                //
-                this.persona.id  = null
-                this.persona.number = null
-                this.persona.name = null
-                this.persona.edad  = null
-                this.persona.telephone= null
-                this.menores = [
-                    {
-                        dni: "",
-                        nombres: "",
-                        edad:null
-                    },
-                ]
-
-                this.sobre_equipajes = {
-                    descripcion: "",
-                    importe: 0
-                }
-
-                this.dniPasajero=null
-                this.nombrePasajero=null
-                this.telefono=null
+                this.limpiar_datos()
 
                 this.$emit('onUpdateItem');
                 this.$emit('notificationAll'); //sirve para notificar que se ha hecho una venta de un pasaje
@@ -997,11 +952,62 @@ export default {
 
 
             }).catch( error => {
+                this.limpiar_datos()
                  alert(error);
                 this.axiosError(error);
             }).finally(() => {
                 this.loading = false;
             });
+        },
+        limpiar_datos(){
+            this.estadoAsiento = 2;
+
+            //this.precio = null;
+            this.clienteId=null;
+            this.pasajeroId = null;
+            this.numeroAsiento = null;
+            this.form_cash_document.document_id=null;
+            this.form_cash_document.sale_note_id=null;
+            this.document.document_type_id = '03';
+            this.document.cliente_id =
+                this.nombrePasajero = null;
+            this.filterSeries();
+            //this.filterCustomers();
+            this.initProducto();
+            this.document.payments= [];
+
+            this.empresa.id    = null
+            this.empresa.number = null
+            this.empresa.name  = null
+            this.empresa.address= null
+            this.empresa.condition= null
+            this.empresa.state = null
+            this.empresa.department_id= null
+            this.empresa.district_id= null
+            this.empresa.province_id= null
+            this.empresa.trade_name= null
+            //
+            this.persona.id  = null
+            this.persona.number = null
+            this.persona.name = null
+            this.persona.edad  = ''
+            this.persona.telephone= ''
+            this.menores = [
+                {
+                    dni: "",
+                    nombres: "",
+                    edad:null
+                },
+            ]
+
+            this.sobre_equipajes = {
+                descripcion: "",
+                importe: 0
+            }
+
+            this.dniPasajero=null
+            this.nombrePasajero=null
+            this.telefono=null
         },
         async actualizarPasaje(){
             let data = {

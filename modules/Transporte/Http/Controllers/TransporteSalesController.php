@@ -297,17 +297,23 @@ class TransporteSalesController extends Controller
                 ['state', true],
             ])->first();
 
+//            if(isset($request->persona['edad'])){
+//                dd('ok');
+//            }else{
+//                dd('malo');
+//            }
             $cash_document = new CashDocument();
             $cash_document->cash_id =$cash->id;
             $cash_document->document_id = $request->document_id;
             $cash_document->sale_note_id = $request->sale_note_id;
             $cash_document->save();
 
+
             //actualizamos datos del pasajero
             if($request->estado_asiento_id ==2){ // asiento ocupado  ---3 es reservado
                 $person =  Person::findOrFail($request->persona['id']);
                 $person->telephone = $request->telefono;
-                $person->edad =$request->persona['edad'];
+                $person->edad =(isset($request->persona['edad'])) ? $request->persona['edad'] : '';
                 $person->update();
             }
 

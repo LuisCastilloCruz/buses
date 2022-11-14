@@ -409,6 +409,8 @@ class Facturalo
             $document_transport     = ($this->document->transport) ? 30 : 0;
             $document_retention     = ($this->document->retention) ? 10 : 0;
 
+            $ticket_control= ($this->document->pasaje!= '' || $this->document->encomienda!= '')  ? '60' : '0';
+
             $extra_by_item_additional_information = 0;
             $extra_by_item_description = 0;
             $discount_global = 0;
@@ -470,7 +472,8 @@ class Facturalo
                     $extra_by_item_additional_information+
                     $height_legend+
                     $document_transport+
-                    $document_retention
+                    $document_retention+
+                    $ticket_control
                 ],
                 'margin_top' => 0,
                 'margin_right' => 1,

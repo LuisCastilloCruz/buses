@@ -841,7 +841,6 @@
     @endif
 </table>
 @if(!is_null($pasaje))
-    <pagebreak/>
 
     <table class="full-width">
         <tr>
