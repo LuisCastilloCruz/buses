@@ -228,7 +228,7 @@ class AccountController extends Controller
                 'serie' => $row->series,
                 'numero' => $row->number,
                 'fecfac' => Carbon::parse($row->date_of_issue)->format('d/m/Y'),
-                'nro_ruc' => $row->customer->identity_document_type_id === '6' ? $row->customer->number : '',
+                'nro_ruc' => $row->state_type_id == '11' ? 1 : $row->customer->number,
                 'nombre' => $row->customer->name,
                 'tipmon' => strtoupper($row->currency_type->description),
                 'detrac' => '',
@@ -247,6 +247,7 @@ class AccountController extends Controller
                 'nro_dni' => $row->customer->identity_document_type_id === '1' ? $row->customer->number : '',
                 'pasaporte' => '',
                 'cta_vta' => '',
+                't_base' => ($row->total_igv >1) ? 'A' : "X",
                 'tip_cam' => ($row->exchange_rate_sale >1) ?$row->exchange_rate_sale : "1.000",
                 'glosa'=>$glosa
             ];

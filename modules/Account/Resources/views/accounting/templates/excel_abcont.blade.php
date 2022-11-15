@@ -44,7 +44,7 @@
             <td style="min-width: 160px; font-size: 9px;">{{ $row['fecfac'] }}</td>
             <td style="min-width: 190px; font-size: 9px;">{{ $row['nro_ruc'] }}</td>
             <td style="min-width: 500px; font-size: 9px;">{{ $row['nombre'] }}</td>
-            <td style="min-width: 100px; font-size: 9px;">A</td>
+            <td style="min-width: 100px; font-size: 9px;">{{ $row['t_base'] }}</td>
             <td style="min-width: 100px; font-size: 9px;">{{ $row['imp_vta'] }}</td>
             <td style="min-width: 100px; font-size: 9px;">{{ $row['imp_exo'] }}</td>
             <td style="min-width: 100px; font-size: 9px;">{{ $row['isc'] }}</td>
@@ -60,8 +60,8 @@
             <td style="min-width: 100px; font-size: 9px;">{{ $row['glosa'] }}</td>
             <td style="min-width: 100px; font-size: 9px;">{{-- serv --}}</td>
             <td style="min-width: 100px; font-size: 9px;">{{ $row['fecfac'] }}</td>
-            <td style="min-width: 100px; font-size: 9px;">{{ $row['fecfac'] }}</td>
-            <td style="min-width: 100px; font-size: 9px;">{{ $row['fecfac'] }}</td>
+            <td style="min-width: 100px; font-size: 9px;">101</td>
+            <td style="min-width: 100px; font-size: 9px;">{{ $row['imp_tot'] }}</td>
         </tr>
         @endforeach
     </table>
