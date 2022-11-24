@@ -85,9 +85,34 @@ Route::prefix('restaurant')->group(function() {
         Route::get('report/products/{cash}', 'CashController@report_products');
         Route::get('report/products-excel/{cash}', 'CashController@report_products_excel');
 
+        //mis modificaciones
+        Route::get('sales', 'SaleController@index')->name('tenant.restaurant.sales.index');
+        Route::get('sales/items', 'SaleController@items')->name('tenant.restaurant.sales.items');
+        Route::post('sales/store', 'SaleController@store')->name('tenant.restaurant.sales.store');
+        Route::get('sales/get-pedidos-detalles/{pedido_id}', 'SaleController@getPedidosDetalle');
+        Route::post('sales/estado-mesa', 'SaleController@getEstadoMesa');
+        Route::put('sales/item/update_item', 'SaleController@updateItem')->name('tenant.restaurant.sales.update_item');
+        Route::put('sales/item/delete_item', 'SaleController@deleteItem')->name('tenant.restaurant.sales.delete_item');
+        Route::put('sales/updatePedidoDocument', 'SaleController@updatePedidoDocument')->name('tenant.restaurant.sales.updatePedidoDocument');
+    });
+
+    Route::prefix('mesas')->group(function() {
+
+        Route::get('', 'MesaController@index')->name('tenant.restaurant.mesas.index');
+        Route::put('{mesa}/update', 'MesaController@update')->name('tenant.restaurant.mesas.update');
+        Route::post('store', 'MesaController@store')->name('tenant.restaurant.mesas.store');
+        Route::get('records', 'MesaController@records')->name('tenant.restaurant.mesas.records');
 
     });
 
+    Route::prefix('niveles')->group(function() {
+
+        Route::get('', 'NivelController@index')->name('tenant.restaurant.niveles.index');
+        Route::put('{nivel}/update', 'NivelController@update')->name('tenant.restaurant.niveles.update');
+        Route::post('store', 'NivelController@store')->name('tenant.restaurant.niveles.store');
+        Route::get('records', 'NivelController@records')->name('tenant.restaurant.niveles.records');
+
+    });
 
 
 });

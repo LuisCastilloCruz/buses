@@ -1574,10 +1574,10 @@ export default {
                 this.empresa.condition= response_local.data.data.condition
                 this.empresa.state= response_local.data.data.state
 
-                this.empresa.department_id= response.data.data.department_id
-                this.empresa.district_id= response.data.data.district_id
-                this.empresa.province_id= response.data.data.province_id
-                this.empresa.trade_name= response.data.data.trade_name
+                this.empresa.department_id= response_local.data.data.department_id
+                this.empresa.district_id= response_local.data.data.district_id
+                this.empresa.province_id= response_local.data.data.province_id
+                this.empresa.trade_name= response_local.data.data.trade_name
 
             }else{
                 this.empresa.name= response_local.data.data.name

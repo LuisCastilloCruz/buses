@@ -241,10 +241,14 @@
                             <b class="text-white">{{terminal.nombre}}</b>
                         </span>
                     </div>
-                    <div class="col-md-4 text-left">
+                    <div class="col-md-2 text-left">
                         <p><b>Manifiesto</b></p>
                         <el-button v-if="existe_manifiesto"  type="primary" @click="imprimirManifiesto(id_manifiesto)">Imprimir</el-button>
                         <el-button v-else type="primary" @click="generarManifiesto">Generar</el-button>
+                    </div>
+                    <div class="col-md-2 text-left">
+                        <p><b>Traspaso</b></p>
+                        <el-button  type="primary" @click="generarManifiesto">Traspasar</el-button>
                     </div>
                 </div>
             </div>
@@ -466,7 +470,7 @@ export default {
         this.load = true;
         // this.searchCiudad();
         this.$eventHub.$on('reloadData',async() => {
-            this.cancelarBoleto();
+            //this.cancelarBoleto();
         });
 
         await this.searchTerminales();
