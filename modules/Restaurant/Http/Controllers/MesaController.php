@@ -71,6 +71,16 @@ class MesaController extends Controller
             'data'    => $mesas
         ], 200);
     }
+    public function delete(Request $request){
+        $item = Mesa::where('id',$request->mesa);
+        $item->delete();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $item,
+            'message' => 'Información actualizada'
+        ], 200);
+    }
 
 }
 

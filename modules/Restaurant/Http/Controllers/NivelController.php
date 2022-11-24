@@ -84,5 +84,16 @@ class NivelController extends Controller
         ], 200);
     }
 
+    public function delete(Request $request){
+        $item = Nivel::where('id',$request->nivel);
+        $item->delete();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $item,
+            'message' => 'Información actualizada'
+        ], 200);
+    }
+
 }
 

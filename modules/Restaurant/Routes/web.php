@@ -101,6 +101,7 @@ Route::prefix('restaurant')->group(function() {
         Route::get('', 'MesaController@index')->name('tenant.restaurant.mesas.index');
         Route::put('{mesa}/update', 'MesaController@update')->name('tenant.restaurant.mesas.update');
         Route::post('store', 'MesaController@store')->name('tenant.restaurant.mesas.store');
+        Route::delete('{mesa}/delete', 'MesaController@delete')->name('tenant.restaurant.niveles.delete');
         Route::get('records', 'MesaController@records')->name('tenant.restaurant.mesas.records');
 
     });
@@ -109,6 +110,7 @@ Route::prefix('restaurant')->group(function() {
 
         Route::get('', 'NivelController@index')->name('tenant.restaurant.niveles.index');
         Route::put('{nivel}/update', 'NivelController@update')->name('tenant.restaurant.niveles.update');
+        Route::delete('{nivel}/delete', 'NivelController@delete')->name('tenant.restaurant.niveles.delete');
         Route::post('store', 'NivelController@store')->name('tenant.restaurant.niveles.store');
         Route::get('records', 'NivelController@records')->name('tenant.restaurant.niveles.records');
 
