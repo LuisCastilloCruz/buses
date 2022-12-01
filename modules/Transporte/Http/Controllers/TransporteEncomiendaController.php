@@ -246,7 +246,7 @@ class TransporteEncomiendaController extends Controller
                     $person->name=$data['data']['nombre_o_razon_social'];
                     $person->address=$data['data']['direccion'];
                     $person->country_id="PE";
-                    $person->state=$data['data']['state'];
+                    //$person->state=$data['data']['state'];
                     $person->condition=$data['data']['condicion'];
                     $person->department_id=$data['data']['ubigeo'][0];
                     $person->province_id=$data['data']['ubigeo'][1];
