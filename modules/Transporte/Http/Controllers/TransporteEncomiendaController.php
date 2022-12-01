@@ -251,7 +251,7 @@ class TransporteEncomiendaController extends Controller
                     $person->department_id=$data['data']['ubigeo'][0];
                     $person->province_id=$data['data']['ubigeo'][1];
                     $person->district_id=$data['data']['ubigeo'][2];
-                    $person->trade_name=$data['data']['trade_name'];
+                    //$person->trade_name=$data['data']['trade_name'];
                 }
 
                 $person->save();
