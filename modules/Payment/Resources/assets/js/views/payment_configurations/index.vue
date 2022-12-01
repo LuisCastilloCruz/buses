@@ -3,13 +3,13 @@
         <div class="card-header bg-info">
             <h3 class="my-0">Configuración de pagos
             </h3>
-            
+
             <div class="card-actions white-text">
                 <a href="#" class="card-action card-action-toggle text-white" data-card-toggle=""></a>
             </div>
         </div>
-        <div class="card-body"> 
-            
+        <div class="card-body">
+
             <el-tabs v-model="form.type" @tab-click="handleClick">
 
                 <el-tab-pane label="Yape" name="01">
@@ -26,7 +26,7 @@
                                         v-text="errors.enabled_yape[0]"></small>
                             </div>
                         </div>
-                        
+
                         <template v-if="form.enabled_yape">
 
                             <div class="col-md-6 mt-3">
@@ -49,7 +49,7 @@
                             <div class="col-md-6  mt-3">
                                 <div class="form-group" :class="{'has-danger': errors.qrcode_yape}">
                                     <label class="control-label">Adjuntar código QR (Imágen) <span class="text-danger">*</span></label>
-                                    
+
                                     <el-upload class="uploader"
                                             :headers="headers"
                                             :action="`/${resource}/upload-qrcode-yape`"
@@ -63,7 +63,7 @@
                             </div>
 
                         </template>
-        
+
                     </div>
                     <!-- <div class="form-actions text-right mt-3">
                         <el-button type="primary" @click="submit" :loading="loading_submit">Guardar</el-button>
@@ -86,7 +86,7 @@
                                         v-text="errors.enabled_mp[0]"></small>
                             </div>
                         </div>
-                        
+
                         <template v-if="form.enabled_mp">
 
                             <div class="col-md-12 mt-3">
@@ -111,7 +111,7 @@
                             </div>
 
                         </template>
-        
+
                     </div>
                 </el-tab-pane>
 
@@ -120,7 +120,7 @@
                 </div>
             </el-tabs>
 
-        </div> 
+        </div>
     </div>
 </template>
 
@@ -174,6 +174,7 @@
                             this.errors = error.response.data
                         } else {
                             console.log(error)
+                            this.$message.error(error.response.data.message)
                         }
                     })
                     .then(() => {
@@ -181,12 +182,12 @@
                     })
 
             },
-            onSuccess(response) { 
+            onSuccess(response) {
 
                 if (response.success) {
                     this.form.qrcode_yape = response.data.filename
                     this.form.image_url_yape = response.data.temp_image
-                    this.form.temp_path_yape = response.data.temp_path 
+                    this.form.temp_path_yape = response.data.temp_path
                 } else {
                     this.$message.error(response.message)
                 }
@@ -203,7 +204,7 @@
                     image_url_yape: null,
                     temp_path_yape: null,
 
-                    
+
                     enabled_mp : false,
                     access_token_mp: null,
                     public_key_mp: null,
@@ -218,7 +219,7 @@
                         this.form = response.data.data
                         this.form.type = '01'
                     })
-            }, 
+            },
         }
     }
 </script>

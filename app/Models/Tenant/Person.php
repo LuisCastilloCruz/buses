@@ -104,6 +104,7 @@
         use UsesTenantConnection;
 
         protected $table = 'persons';
+
         protected $with = [
             'identity_document_type',
             'country',
@@ -111,17 +112,7 @@
             'province',
             'district'
         ];
-        protected $casts = [
-            'perception_agent' => 'bool',
-            'person_type_id' => 'int',
-            'percentage_perception' => 'float',
-            'enabled' => 'bool',
-            'status' => 'int',
-            'credit_days' => 'int',
-            'seller_id' => 'int',
-            'zone_id' => 'int',
-            'parent_id' => 'int',
-        ];
+
         protected $fillable = [
             'type',
             'identity_document_type_id',
@@ -156,7 +147,26 @@
             'zone_id',
             'status',
             'parent_id',
+            'accumulated_points',
+            'has_discount',
+            'discount_type',
+            'discount_amount',
             'edad'
+        ];
+
+        protected $casts = [
+            'perception_agent' => 'bool',
+            'person_type_id' => 'int',
+            'percentage_perception' => 'float',
+            'enabled' => 'bool',
+            'status' => 'int',
+            'credit_days' => 'int',
+            'seller_id' => 'int',
+            'zone_id' => 'int',
+            'parent_id' => 'int',
+            'accumulated_points' => 'float',
+            'has_discount' => 'bool',
+            'discount_amount' => 'float',
         ];
 
         // protected static function boot()
@@ -570,8 +580,8 @@
                 'website' => $this->website,
                 'document_type' => $this->identity_document_type->description,
                 'enabled' => (bool)$this->enabled,
-                'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-                'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+                'created_at' => optional($this->created_at)->format('Y-m-d H:i:s'),
+                'updated_at' => optional($this->updated_at)->format('Y-m-d H:i:s'),
                 'type' => $this->type,
                 'trade_name' => $this->trade_name,
                 'country_id' => $this->country_id,
@@ -600,7 +610,12 @@
                 'optional_email' => $optional_mail,
                 'optional_email_send' => implode(',', $optional_mail_send),
                 'childrens' => [],
+                'accumulated_points' => $this->accumulated_points,
+                'has_discount' => $this->has_discount,
+                'discount_type' => $this->discount_type,
+                'discount_amount' => $this->discount_amount,
                 'edad'=>$this->edad
+
             ];
             if ($childrens == true) {
                 $child = $this->children_person->transform(function ($row) {
@@ -913,6 +928,20 @@
                 ['number', '99999999'],
                 ['type', 'customers'],
             ]);
+        }
+
+
+        /**
+         *
+         * Obtener puntos acumulados
+         *
+         * @param Builder $query
+         * @param int $id
+         * @return float
+         */
+        public function scopeGetOnlyAccumulatedPoints($query, $id)
+        {
+            return $query->whereFilterWithOutRelations()->select('accumulated_points')->findOrFail($id)->accumulated_points;
         }
 
     }

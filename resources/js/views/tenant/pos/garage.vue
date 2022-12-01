@@ -6,6 +6,13 @@
                 :key-code="112"
                 @success="handleFn112"
             />
+
+            <!-- F4 -->
+            <Keypress :key-code="115"
+                key-event="keyup"
+                @success="handleFn115"/>
+            <!-- F4 -->
+
             <div class="col-md-4">
                 <h2>
                     <el-switch
@@ -138,6 +145,9 @@
                         @keyup.native="keyupTabCustomer"
                         ref="ref_search_items"
                         class="m-bottom mt-3"
+
+                        @focus="searchFromBarcode = true"
+                        @blur="searchFromBarcode = false"
                     >
                         <el-button
                             slot="append"
@@ -226,6 +236,7 @@
                                     </p>
                                 </div>
                                 <div class="card-footer pointer text-center bg-primary">
+
                                     <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                                     <template v-if="!item.edit_unit_price">
@@ -273,6 +284,8 @@
                                             ></el-button>
                                         </el-input>
                                     </template>
+
+
                                 </div>
                                 <div
                                     v-if="configuration.options_pos"
@@ -483,6 +496,30 @@
                                                 </el-popover>
                                             </el-tooltip>
                                         </el-col>
+
+
+                                        <el-col :span="6" v-if="allowedChangeAffectationExoneratedIgv(item.sale_affectation_igv_type_id)">
+                                            <el-tooltip class="item" effect="dark" content="Modificar el tipo de afectación" placement="bottom-end">
+
+                                                <el-popover
+                                                    placement="top"
+                                                    title="Seleccionar tipo de afectación"
+                                                    width="330"
+                                                    trigger="click"
+                                                >
+                                                    <div v-for="(row, index) in getAffectationExoneratedIgv" class="pt-1 mt-1 pb-1">
+                                                        <el-radio v-model="item.sale_affectation_igv_type_id" :label="row.id" @change="changeAffectationExoneratedIgv(row, item)">{{row.description}}</el-radio>
+                                                    </div>
+
+                                                    <button slot="reference" style="width:100%" type="button" class="btn btn-xs btn-primary-pos">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+
+                                                </el-popover>
+
+                                            </el-tooltip>
+                                        </el-col>
+
                                     </el-row>
                                 </div>
                             </section>
@@ -500,6 +537,7 @@
                     :records="items"
                     :typeUser="typeUser"
                     :visibleTagsCustomer="focusClienteSelect"
+                    :searchFromBarcode="searchFromBarcode"
                 ></table-items>
 
                 <div v-if="place == 'prod' || place == 'cat2'" class="row">
@@ -592,10 +630,7 @@
                                             <small>
                                                 {{ nameSets(item.item_id) }}
                                             </small>
-
                                         </td>
-
-
                                         <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
                                             {{ currency_type.symbol }}
                                         </td>
@@ -830,7 +865,9 @@ export default {
             category_selected: "",
             focusClienteSelect: false,
             show_fast_payment_garage: false,
-            itemUnitTypes: []
+            itemUnitTypes: [],
+            affectations_exonerated_igv: ['10', '20'],
+            searchFromBarcode: false,
         };
     },
     async created() {
@@ -852,12 +889,20 @@ export default {
 
         this.form.establishment_id = this.establishment.id;
 
+        this.enabledSearchItemByBarcode()
+
     },
 
     computed: {
-            ...mapState([
-                'config',
-            ]),
+        getAffectationExoneratedIgv()
+        {
+            return _.filter(this.affectation_igv_types, (row) =>{
+                return this.isExoneratedIgv(row.id)
+            })
+        },
+        ...mapState([
+            'config',
+        ]),
         classObjectCol() {
             let cols = this.configuration.colums_grid_item;
 
@@ -900,6 +945,51 @@ export default {
         }
     },
     methods: {
+        enabledSearchItemByBarcode()
+        {
+            if (this.configuration.search_item_by_barcode)
+            {
+                this.search_item_by_barcode = true
+            }
+        },
+        isExoneratedIgv(affectation_igv_type_id)
+        {
+            return this.affectations_exonerated_igv.includes(affectation_igv_type_id)
+        },
+        allowedChangeAffectationExoneratedIgv(affectation_igv_type_id)
+        {
+            if(this.configuration)
+            {
+                return (this.configuration.change_affectation_exonerated_igv && this.isExoneratedIgv(affectation_igv_type_id))
+            }
+
+            return false
+        },
+        changeAffectationExoneratedIgv(affectation_igv_type, item)
+        {
+            const exist_item = _.find(this.form.items, { item_id : item.item_id })
+
+            if(exist_item)
+            {
+                if(exist_item.affectation_igv_type_id != affectation_igv_type.id) this.$message.warning('Ya agregó el producto con otro tipo de afectación, para aplicar el cambio debe eliminarlo y agregarlo nuevamente.')
+            }
+
+            item.change_affectation_exonerated_igv = true
+        },
+        setOriginalAffectationToItems()
+        {
+            if(this.configuration !== undefined && this.configuration.change_affectation_exonerated_igv)
+            {
+                this.items.forEach(row => {
+
+                    if(row.change_affectation_exonerated_igv !== undefined && row.change_affectation_exonerated_igv && row.sale_affectation_igv_type_id != row.original_affectation_igv_type_id)
+                    {
+                        row.sale_affectation_igv_type_id = row.original_affectation_igv_type_id
+                    }
+
+                })
+            }
+        },
         ...mapActions(['loadConfiguration']),
         keyupEnterQuantity() {
             this.initFocus();
@@ -909,6 +999,10 @@ export default {
         },
         handleFn113() {
             this.setView("cat3");
+        },
+        handleFn115()
+        {
+            this.openDialogNewPerson()
         },
         initFocus() {
             this.$refs.ref_search_items.$el
@@ -1096,9 +1190,36 @@ export default {
                 return;
             }
 
-            if (this.input_person.number) {
-                if (!isNaN(parseInt(this.input_person.number))) {
-                    switch (this.input_person.number.length) {
+            this.openDialogNewPerson()
+
+            // if (this.input_person.number) {
+            //     if (!isNaN(parseInt(this.input_person.number))) {
+            //         switch (this.input_person.number.length) {
+            //             case 8:
+            //                 this.input_person.identity_document_type_id = "1";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+
+            //             case 11:
+            //                 this.input_person.identity_document_type_id = "6";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+            //             default:
+            //                 this.input_person.identity_document_type_id = "6";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+            //         }
+            //     }
+            // }
+        },
+        openDialogNewPerson()
+        {
+            if (this.input_person.number)
+            {
+                if (!isNaN(parseInt(this.input_person.number)))
+                {
+                    switch (this.input_person.number.length)
+                    {
                         case 8:
                             this.input_person.identity_document_type_id = "1";
                             this.showDialogNewPerson = true;
@@ -1192,12 +1313,19 @@ export default {
             });
             this.customer = customer;
 
-            if (this.configuration.default_document_type_03) {
+            if (this.configuration.default_document_type_80)
+            {
+                this.form.document_type_id = "80"
+            }
+            else if (this.configuration.default_document_type_03)
+            {
                 this.form.document_type_id = "03";
             } else {
                 this.form.document_type_id =
                     customer.identity_document_type_id == "6" ? "01" : "03";
             }
+
+            // console.log(this.customer);
 
             if(this.$refs.componentFastPaymentGarage) this.$refs.componentFastPaymentGarage.filterSeries()
 
@@ -1265,6 +1393,7 @@ export default {
                 this.initForm();
                 this.getTables();
                 this.setFormPosLocalStorage();
+                this.setOriginalAffectationToItems()
 
             });
 
@@ -1394,6 +1523,8 @@ export default {
         },
         clickDeleteCustomer() {
             this.form.customer_id = null;
+            this.customer = null;
+            this.setLocalStorageIndex("customer", null);
             this.setFormPosLocalStorage();
         },
         async clickAddItem(item, index, input = false) {

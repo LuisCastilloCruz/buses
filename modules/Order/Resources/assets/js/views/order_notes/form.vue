@@ -154,10 +154,11 @@
                                     <table class="table">
                                         <thead>
                                         <tr>
-                                            <th>#</th>
-                                            <th class="font-weight-bold">Descripción</th>
-                                            <th class="text-center font-weight-bold">Unidad</th>
-                                            <th class="text-right font-weight-bold">Cantidad</th>
+                                            <th width="5%">#</th>
+                                            <th class="font-weight-bold"
+                                                width="30%">Descripción</th>
+                                            <th width="8%" class="text-center font-weight-bold">Unidad</th>
+                                            <th width="8%" class="text-right font-weight-bold">Cantidad</th>
                                             <th class="text-right font-weight-bold">Precio Unitario</th>
                                             <th class="text-right font-weight-bold">Subtotal</th>
                                             <!--<th class="text-right font-weight-bold">Cargo</th>-->
@@ -332,9 +333,9 @@ export default {
         this.loadEstablishment()
         this.loadCompany()
     },
-    mounted() {
+    async mounted() {
         this.initForm()
-        this.$http.get(`/documents/tables`)
+        await this.$http.get(`/documents/tables`)
             .then(response => {
                 this.business_turns = response.data.business_turns
             })
@@ -344,7 +345,7 @@ export default {
         this.$eventHub.$on('initInputPerson', () => {
             this.initInputPerson()
         });
-        this.$http.get(`/${this.resource}/tables`)
+        await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.currency_types = response.data.currency_types
                 this.establishments = response.data.establishments
@@ -400,7 +401,7 @@ export default {
                 }
 
             })
-        this.getPercentageIgv();
+        await this.getPercentageIgv();
         this.loading_form = true
     },
     methods: {

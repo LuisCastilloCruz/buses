@@ -178,6 +178,11 @@ class Item extends ModelTenant
 
         'subject_to_detraction',
         'favorite',
+
+        'exchange_points',
+        'quantity_of_points',
+        'factory_code',
+
         // 'warehouse_id'
     ];
 
@@ -191,6 +196,8 @@ class Item extends ModelTenant
         'sale_unit_price' => 'float',
         'purchase_unit_price' => 'float',
         'favorite' => 'boolean',
+        'exchange_points' => 'boolean',
+        'quantity_of_points' => 'float',
     ];
 
     /**
@@ -407,6 +414,16 @@ class Item extends ModelTenant
     public function scopeWhereNotIsSet($query)
     {
         return $query->where('is_set', false);
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeWhereIsNotService($query)
+    {
+        return $query->where('unit_type_id', '!=', 'ZZ');
     }
 
     /**
@@ -2238,7 +2255,7 @@ class Item extends ModelTenant
      */
     public function scopeWhereFilterWithOutRelations($query)
     {
-        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags']);
+        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags', 'item_lots']);
     }
 
 
@@ -2380,7 +2397,9 @@ class Item extends ModelTenant
             'active' => (bool) $this->active,
             'stock' => $this->getWarehouseCurrentStock(),
             'favorite' => $this->favorite,
-
+            'has_isc' => (bool)$this->has_isc,
+            'system_isc_type_id' => $this->system_isc_type_id,
+            'percentage_isc' => $this->percentage_isc,
         ];
     }
 
@@ -2560,6 +2579,100 @@ class Item extends ModelTenant
         ];
     }
 
+
+    /**
+     * Stock de variantes para revision inventario
+     *
+     * @param  int $establishment_id
+     * @return array
+     */
+    public function getStockByVariantsInventoryReview($establishment_id)
+    {
+        return ItemMovement::getStockByVariantSizeColor($this->id, $establishment_id);
+    }
+
+
+    /**
+     *
+     * Filtrar por almacen
+     *
+     * @param  Builder $query
+     * @param  int $warehouse_id
+     * @return Builder
+     */
+    public function scopeFilterByWarehouseId($query, $warehouse_id)
+    {
+        if(!is_null($warehouse_id) && $warehouse_id != 'all')
+        {
+            $query->whereHas('warehouses', function ($query) use ($warehouse_id) {
+                return $query->where('warehouse_id', $warehouse_id);
+            });
+        }
+
+        return $query;
+    }
+
+
+    /**
+     *
+     * Filtro por coincidencia para X campo
+     *
+     * @param  Builder $query
+     * @param  string $column
+     * @param  string $input
+     * @return Builder
+     */
+    public function scopeWhereColumnFilterLike($query, $column, $input)
+    {
+        return $query->where($column, 'like', "%{$input}%");
+    }
+
+
+    /**
+     *
+     * Filtro por coincidencia para X campo de una tabla relacionada
+     *
+     * @param  Builder $query
+     * @param  string $relation
+     * @param  string $column
+     * @param  string $input
+     * @return Builder
+     */
+    public function scopeFilterLikeCustomRelation($query, $relation, $column, $input)
+    {
+        return $query->whereHas($relation, function($q) use($column, $input){
+            return $q->where($column, 'like', "%{$input}%");
+        });
+    }
+
+
+    /**
+     *
+     * Filtro para reporte ajuste stock - inventario
+     *
+     * @param  Builder $query
+     * @param  string $column
+     * @param  string $input
+     * @return Builder
+     */
+    public function scopeFilterRecordsStockReport($query, $column, $input)
+    {
+        switch($column)
+        {
+            case 'description':
+            case 'internal_id':
+            case 'model':
+                $query->whereColumnFilterLike($column, $input);
+                break;
+
+            case 'category':
+            case 'brand':
+                $query->filterLikeCustomRelation($column, 'name', $input);
+                break;
+        }
+
+        return $query;
+    }
 
 }
 

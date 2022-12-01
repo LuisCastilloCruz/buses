@@ -523,8 +523,15 @@ class CashController extends Controller
             $data['description'] = $row->item->description;
             $data['unit_type_id'] = $this->getUnitTypeId($row);
             $data['record_type'] = 'document_item';
+
+            $data['total'] = $row->total;
+            $data['item_id'] = $row->item_id;
+
+            /*
             $data['total'] = $row->document->total;
             $data['item_id'] =$row->relation_item->id;
+            */
+
             return $data;
         });
 
@@ -555,8 +562,15 @@ class CashController extends Controller
             $data['description'] = $row->item->description;
             $data['unit_type_id'] = $this->getUnitTypeId($row);
             $data['record_type'] = 'sale_note_item';
+
+            $data['total'] = $row->total;
+            $data['item_id'] = $row->item_id;
+
+            /*
             $data['total'] = $row->sale_note->total;
             $data['item_id'] =$row->relation_item->id;
+            */
+
             return $data;
         });
 
@@ -581,8 +595,15 @@ class CashController extends Controller
             $data['description'] = $row->item->description;
             $data['unit_type_id'] = $this->getUnitTypeId($row);
             $data['record_type'] = 'purchase_item';
+
+            $data['total'] = $row->total;
+            $data['item_id'] = $row->item_id;
+
+            /*
             $data['total'] = $row->purchase->total;
             $data['item_id'] =$row->purchase->id;
+            */
+
             return $data;
         });
 

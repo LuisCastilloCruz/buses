@@ -22,9 +22,9 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 
 class ItemController extends Controller
 {
-          
+
     /**
-     * 
+     *
      * Obtener tablas relacionadas
      *
      * @return array
@@ -34,11 +34,11 @@ class ItemController extends Controller
         return [
             'categories' => $this->table('categories')
         ];
-    } 
-    
+    }
+
 
     /**
-     * 
+     *
      * @return array
      */
     public function table($table)
@@ -57,11 +57,11 @@ class ItemController extends Controller
         }
 
         return $data;
-    } 
-    
+    }
+
 
     /**
-     * 
+     *
      * Obtener registros paginados
      * Mantenimiento items - App
      *
@@ -71,13 +71,13 @@ class ItemController extends Controller
     public function records(Request $request)
     {
         $records = Item::whereFilterRecordsApi($request->input, $request->search_by_barcode);
-        
+
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener registros paginados para ventas - Modo POS App
      *
      * @param  Request $request
@@ -89,24 +89,24 @@ class ItemController extends Controller
 
         return new ItemSaleCollection($records->paginate(config('tenant.items_per_page')));
     }
-    
- 
-    
+
+
+
     /**
      * obtener registro
      *
      * @param  int $id
      * @return ItemResource
-     * 
+     *
      */
     public function record($id)
     {
         return new ItemResource(Item::findOrFail($id));
     }
-    
+
 
     /**
-     * 
+     *
      * Actualizar item
      *
      * @param  ItemRequest $request
@@ -151,9 +151,9 @@ class ItemController extends Controller
         ];
     }
 
-        
+
     /**
-     * 
+     *
      * Eliminar item, usa método del proceso por web
      *
      * @param  int $id
@@ -164,9 +164,9 @@ class ItemController extends Controller
         return app(ItemControllerWeb::class)->destroy($id);
     }
 
-        
+
     /**
-     * 
+     *
      * Activar/Desactivar producto
      *
      * @param  int $id
@@ -178,16 +178,16 @@ class ItemController extends Controller
         $record = Item::findOrFail($id);
         $record->active = $active;
         $record->save();
-        
+
         return [
             'success' => true,
             'message' => $active ? 'Producto habilitado con éxito' : 'Producto inhabilitado con éxito'
         ];
     }
 
-     
+
     /**
-     * 
+     *
      * Activar/Desactivar favorito
      *
      * @param  int $id
@@ -199,16 +199,16 @@ class ItemController extends Controller
         $record = Item::findOrFail($id);
         $record->favorite = $favorite;
         $record->save();
-        
+
         return [
             'success' => true,
             'message' => $favorite ? 'Agregado a favoritos' : 'Eliminado de favoritos'
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Guardar imágen de diferentes tamaños
      *
      * @param  Item $item
@@ -219,7 +219,7 @@ class ItemController extends Controller
     {
         $temp_path = $request->temp_path;
 
-        if($temp_path) 
+        if($temp_path)
         {
             $old_filename = $request->image;
             $folder = 'items';
@@ -228,11 +228,11 @@ class ItemController extends Controller
 
             //size medium
             $image_medium = $item->getImageResize($temp_path, 512);
-            $item->image_medium = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $image_medium->encode('jpg', 30), "{$item->description}-{$item->id}", false, 'medium');
+            $item->image_medium = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, (string) $image_medium->encode('jpg', 30), "{$item->description}-{$item->id}", false, 'medium');
 
               //size small
             $image_small = $item->getImageResize($temp_path, 256);
-            $item->image_small = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $image_small->encode('jpg', 20), "{$item->description}-{$item->id}", false, 'small');
+            $item->image_small = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, (string) $image_small->encode('jpg', 20), "{$item->description}-{$item->id}", false, 'small');
         }
         else if(!$request->image && !$request->temp_path && !$request->image_url)
         {
@@ -244,9 +244,9 @@ class ItemController extends Controller
 
     }
 
-    
+
     /**
-     * 
+     *
      * Cargar imágen desde app
      *
      * @param  Request $request

@@ -72,7 +72,7 @@
                                     </td>
                                     <td>
                                         <div class="form-group mb-0">
-                                            
+
                                             <el-upload
                                                     :data="{'index': index}"
                                                     :headers="headers"
@@ -187,19 +187,19 @@
                 }
 
                 // console.log(this.records)
-            
+
             },
             cleanFileList(){
                 this.fileList = []
             },
-            handleRemove(file, fileList) {       
-                
+            handleRemove(file, fileList) {
+
                 this.records[this.index_file].filename = null
                 this.records[this.index_file].temp_path = null
                 this.fileList = []
                 this.index_file = null
 
-            }, 
+            },
             initForm() {
                 this.records = [];
                 this.fileList = [];
@@ -244,7 +244,7 @@
                 if(this.records[index].payment > parseFloat(this.purchase.total_difference)) {
                     this.$message.error('El monto ingresado supera al monto pendiente de pago, verifique.');
                     return;
-                } 
+                }
 
                 let form = {
                     id: this.records[index].id,
@@ -275,9 +275,10 @@
                             this.records[index].errors = error.response.data;
                         } else {
                             console.log(error);
+                            this.$message.error(error.response.data.message)
                         }
                     })
-            }, 
+            },
             close() {
                 this.$emit('update:showDialog', false);
             },

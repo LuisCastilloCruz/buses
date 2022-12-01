@@ -141,8 +141,8 @@
                                                 <th width="5%">#</th>
                                                 <th class="font-weight-bold"
                                                     width="30%">Descripción</th>
-                                                <th class="text-center font-weight-bold">Unidad</th>
-                                                <th class="text-right font-weight-bold">Cantidad</th>
+                                                <th width="8%" class="text-center font-weight-bold">Unidad</th>
+                                                <th width="8%" class="text-right font-weight-bold">Cantidad</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
@@ -414,13 +414,12 @@
                     // }
                 }
             },
-            initRecord()
-            {
-                this.$http.get(`/${this.resource}/record/${this.resourceId}` )
+            async initRecord() {
+                await this.$http.get(`/${this.resource}/record/${this.resourceId}` )
                     .then(response => {
-
                         let data = response.data.data.order_note
                         this.form.id = data.id
+                        this.form.establishment_id = data.establishment_id
                         this.form.customer_id = data.customer_id
                         this.form.currency_type_id = data.currency_type_id
                         this.form.payment_method_type_id = data.payment_method_type_id
@@ -434,9 +433,8 @@
                         this.form.observation = data.observation
                         this.calculateTotal()
                         this.reloadDataCustomers(this.form.customer_id)
-
                     })
-
+                await this.getPercentageIgv();
             },
 
             searchRemoteCustomers(input) {
@@ -523,11 +521,13 @@
             cleanCustomer(){
                 this.form.customer_id = null;
             },
-            changeDateOfIssue() {
+            async changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
-                this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+                await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
+                await this.getPercentageIgv();
+                this.changeCurrencyType();
             },
             allCustomers() {
                 this.customers = this.all_customers
@@ -558,7 +558,7 @@
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 let items = []
                 this.form.items.forEach((row) => {
-                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale,this.percentage_igv))
+                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
                 });
                 this.form.items = items
                 this.calculateTotal()

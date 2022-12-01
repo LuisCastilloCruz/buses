@@ -30,6 +30,12 @@
 
         public const STATE_TYPES_ACCEPTED = ['01', '03', '05', '07', '13'];
 
+        public const STATE_TYPE_REGISTERED = '01';
+
+        public const SOAP_TYPE_PRODUCTION = '02';
+
+        public const NATIONAL_CURRENCY_ID = 'PEN';
+
 
         /**
          * Devuelve un esqueleto del array de data extra. Previene error de no enconrarse la funcion en otros modelos

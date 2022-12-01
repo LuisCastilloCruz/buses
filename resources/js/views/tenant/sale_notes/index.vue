@@ -31,9 +31,11 @@
                         <th class="text-right"  v-if="columns.seller_name.visible" >Vendedor</th>
 
                         <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center" v-if="columns.date_payment.visible">Fecha de pago</th>
                         <th>Cliente</th>
                         <th>Nota de Venta</th>
                         <th>Estado</th>
+                        <th class="text-right" v-if="columns.exchange_rate_sale.visible">T.C.</th>
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.due_date.visible">F. Vencimiento</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
@@ -56,6 +58,9 @@
                         <th class="text-center" v-if="columns.recurrence.visible">
                             Recurrencia
                         </th>
+                        <td class="text-right" v-if="columns.region.visible">
+                            Region
+                        </td>
                          <th class="text-center" v-if="columns.type_period.visible" >
                             Tipo Periodo
                         </th>
@@ -74,12 +79,13 @@
                         <td>{{ index }}</td>
                     <td class="text-right"  v-if="columns.seller_name.visible" >{{ row.seller_name }}</td>
 
-
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                        <td class="text-center" v-if="columns.date_payment.visible" >{{ row.date_of_payment }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.full_number }}
                         </td>
                         <td>{{ row.state_type_description }}</td>
+                        <td class="text-center" v-if="columns.exchange_rate_sale.visible" >{{ row.exchange_rate_sale }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
 
                         <td class="text-right"  v-if="columns.due_date.visible" >{{ row.due_date }}</td>
@@ -129,6 +135,10 @@
                             <template v-if="row.type_period && row.quantity_period>0">
                                 <el-switch :disabled="row.apply_concurrency" v-model="row.enabled_concurrency" active-text="Si" inactive-text="No" @change="changeConcurrency(row)"></el-switch>
                             </template>
+                        </td>
+
+                        <td class="text-right" v-if="columns.region.visible">
+                            {{ row.customer_region }}
                         </td>
 
                         <td class="text-right" v-if="columns.type_period.visible">
@@ -352,6 +362,10 @@
                         title: 'Fecha de Vencimiento',
                         visible: false
                     },
+                    exchange_rate_sale: {
+                        title: 'Tipo de cambio',
+                        visible: false
+                    },
                     total_free: {
                         title: 'T.Gratuito',
                         visible: false
@@ -406,6 +420,14 @@
                     },
                     recurrence: {
                         title: 'Recurrencia',
+                        visible: false
+                    },
+                    region: {
+                        title: 'Region',
+                        visible: false
+                    },
+                    date_payment: {
+                        title: 'Fecha de pago',
                         visible: false
                     }
 

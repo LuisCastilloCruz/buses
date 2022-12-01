@@ -183,6 +183,8 @@
             clickDownloadReport(id, template, mm = 80){
                 if(template == 'ticket') {
                     window.open(`/${this.resource}/report-${template}/${id}/${mm}`, '_blank');
+                } else if(template == 'simple_a4') {
+                    window.open(`/${this.resource}/simple/report-a4/${id}/`, '_blank');
                 } else {
                     window.open(`/${this.resource}/report-${template}/${id}`, '_blank');
 

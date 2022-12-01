@@ -121,7 +121,7 @@
                             </table>
                         </div>
                     </div>
-                   
+
                     <div class="col-md-12">
                         <h5 class="separator-title">Campos adicionales</h5>
                     </div>
@@ -374,7 +374,7 @@ import ItemSetFormItem from './partials/item.vue'
             },
             changeIndividualItems(){
                 this.calculateTotal();
-            
+
 
             },
             initForm() {
@@ -567,6 +567,7 @@ import ItemSetFormItem from './partials/item.vue'
                             this.errors = error.response.data
                         } else {
                             console.log(error)
+                            this.$message.error(error.response.data.message)
                         }
                     })
                     .then(() => {

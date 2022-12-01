@@ -74,7 +74,7 @@
         <tr>
             <td class="td-custom">
                 <p><strong>Habitaciones disponibles: </strong></p>
-
+                
             </td>
             <td align="center">{{$available}}</td>
         </tr>
@@ -88,11 +88,11 @@
             <td class="td-custom">
                 <p>
                     <strong>
-                        Habitaciones en limpieza:
+                        Habitaciones en limpieza: 
                     </strong>
-
+                    
                 </p>
-
+                
             </td>
             <td align="center">{{$cleaning}}</td>
         </tr>
@@ -152,7 +152,7 @@
     }
     $name_room = $value->name;
     @endphp
-
+        
         <tr>
             <td class="celda">{{$key+1}}</td>
             <td class="celda">{{$name_room}}</td>
@@ -234,7 +234,7 @@
                             $nationality = 0;
                         }
                     }
-
+                    
                     /* dd($nationality); */
                     $date_initial = new DateTime($value->input_date);
                     $date_end = new DateTime($value ->output_date);
@@ -279,7 +279,7 @@
                         <td class="celda">{{$total_nigth_days}}</td>
                     </tr>
                     <tr></tr>
-
+                    
                     <tr></tr>
                 </tbody>
             </table>

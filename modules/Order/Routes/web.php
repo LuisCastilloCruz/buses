@@ -37,6 +37,7 @@ if($current_hostname) {
              * order-notes/document_tables
              * order-notes/search-items
              * order-notes/search/item/{item}
+             * order-notes/import/MiTiendaPe
              */
             Route::prefix('order-notes/not-sent')->group(function() {
                 Route::get('', 'OrderNoteController@index_not_sent')->name('tenant.order_notes.not_sent')->middleware('redirect.level','tenant.internal.mode');

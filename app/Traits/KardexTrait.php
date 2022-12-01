@@ -19,6 +19,7 @@ trait KardexTrait
             'item_id' => $item_id,
             'document_id' => ($relation == 'document') ? $id : null,
             'purchase_id' => ($relation == 'purchase') ? $id : null,
+            'purchase_settlement_id' => ($relation == 'purchase_settlement') ? $id : null,
             'sale_note_id' => ($relation == 'sale_note') ? $id : null,
             'quantity' => $quantity,
         ]);

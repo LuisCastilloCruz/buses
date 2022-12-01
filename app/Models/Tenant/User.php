@@ -33,6 +33,8 @@ use Modules\Sale\Models\UserCommission;
 use App\Models\Tenant\Configuration;
 use Modules\Restaurant\Models\RestaurantRole;
 use Modules\MobileApp\Models\AppModule;
+use Modules\LevelAccess\Models\SystemActivityLog;
+use Modules\LevelAccess\Models\AuthorizedDiscountUser;
 use Modules\Transporte\Models\TransporteUserTerminal;
 
 

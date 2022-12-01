@@ -10,7 +10,7 @@ use App\Models\Tenant\Catalogs\{
 
 class PurchaseSettlementItem extends ModelTenant
 {
-    
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -62,5 +62,21 @@ class PurchaseSettlementItem extends ModelTenant
     public function price_type()
     {
         return $this->belongsTo(PriceType::class, 'price_type_id');
+    }
+
+     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function purchase_settlement()
+    {
+        return $this->belongsTo(PurchaseSettlement::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
     }
 }

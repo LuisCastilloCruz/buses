@@ -46,7 +46,6 @@
                     </div>
                     <!-- botones de status -->
                     <div class="col-md-4 col-sm-12 pb-2">
-                        ghk
                         <el-button-group
                         >
                             <el-button

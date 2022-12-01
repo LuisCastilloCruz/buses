@@ -31,4 +31,17 @@ class Category extends ModelTenant
             'selected' => false,
         ];
     }
+
+
+    /**
+     *
+     * Data para filtros - select
+     *
+     * @return array
+     */
+    public static function getDataForFilters()
+    {
+        return self::select(['id', 'name'])->orderBy('name')->get();
+    }
+
 }

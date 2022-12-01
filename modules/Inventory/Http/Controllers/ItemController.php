@@ -10,9 +10,9 @@ use Illuminate\Http\Request;
 class ItemController extends Controller
 {
 
-        
+
     /**
-     * 
+     *
      * Búsqueda avanzada de items para reporte kardex
      *
      * @param  Request $request
@@ -32,6 +32,9 @@ class ItemController extends Controller
         {
             $items->take(10);
         }
+
+        // filtrar por almacen
+        if($request->has('warehouse_id')) $items->filterByWarehouseId($request->warehouse_id);
 
         return [
             'items' => $items->get()->transform(function ($row) {

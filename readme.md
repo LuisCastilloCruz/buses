@@ -1,5 +1,14 @@
 # **AQPFACT 2021**
 
+1.- Este repositorio es de código abierto pero de acceso privado, se permite la distribución y/o modificaciones si se hace referencio a la casa matriz del desarrollo de este es software es [https://facturaloperu.com](https://facturaloperu.com)
+
+2.- Esta sección de términos y condiciones no puede ser removida al compartir o distribuir el repositorio de alguna forma, de hacerlo, [https://facturaloperu.com](https://facturaloperu.com) se reserva el derecho de remover el acceso y limitar el uso a quien lo distribuya de esa forma o a quien se atribuya el desarrollo del mismo.
+
+3.- Si desea distribuir el código fuente como propio, debe tener al menos un 30% de modificaciones en todo el código, y previamente debe validarse dicho % por [https://facturaloperu.com](https://facturaloperu.com)
+
+4.- El uso del software a nivel funcional es marca blanca, sin embargo a nivel de distribución del código fuente, debe contener esta sección de términos y condiciones.
+
+5.- [https://facturaloperu.com](https://facturaloperu.com) no se hace responsable por los daños o perjuicios del uso del código de este software cuando no ha sido distribuido directamente por [https://facturaloperu.com](https://facturaloperu.com)
 
 ## Manuales de Instalación
 
@@ -17,8 +26,8 @@
 ### Scripts de instalación con Docker
 
 Linux - Ubuntu 18 - Docker - SSL opcional<br>
-[Guia](https://gitlab.com/b.mendoza/facturadorpro3/snippets/1971490 "Clic")<br>
-[Script](https://gitlab.com/b.mendoza/facturadorpro3/snippets/1971490/raw "Clic")<br>
+[Guia](https://gitlab.com/-/snippets/2079063 "Clic")<br>
+[Script](https://gitlab.com/-/snippets/2079063/raw/master/install.sh "Clic")<br>
 
 
 ### Manuales de actualización
@@ -52,7 +61,7 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ## API
 
-[Descargar colección para Postman](https://drive.google.com/file/d/1MhFHT0UF4CayjZfHkCqi5VMpqN34PGkV/view?usp=sharing "Clic")<br>
+[Descargar colección para Postman](https://drive.google.com/file/d/1-SAGfGuUQx0sm43kNRPZeoP1kx2JisxJ/view?usp=sharing "Clic")<br>
 [Documentación - Ver json con respuestas](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 [Documentación - Ver ejemplos para Lenguajes](https://documenter.getpostman.com/view/1431398/U16onhgw "Clic")<br>
 
@@ -128,25 +137,10 @@ Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suR
 
 ### APLICATIVO MÓVIL <br>
 ### Descargar APK - Android <br><br>
-* Fondo  Green  - Icono SolidFact <br>
- Descarga comprobantes en modelo ticktet<br>
-* Solid vs1.2 [Descargar](https://solidcompany.pe/descarga/solidfact1.apk "Clic")<br><br>
-
-* Fondo  Green - Icono SolidFact <br>
- Descarga comprobantes en modelo A4 <br>
-* Solid vs 1.1[Descargar](https://solidcompany.pe/descarga/solidfact.apk "Clic")<br><br>
-
-* Fondo  Rojo - Icono Facturalo <br>
-* Facturalo vs 1.0[Descargar](https://solidcompany.pe/descarga/facturalo.apk "Clic")
-
-* Fondo Azul <br>
- Tiene configuración de tamaños de impresión, impresión directa a bluetooth<br>
- Ver funcionamiento [Ver](https://www.youtube.com/watch?v=m-0UDXqrq6g "Clic")<br><br>
- 
- Nota<br>
- 
- La app solo funciona con la modificación de AQPFACT, si no lo tiene, contactar a los números de cel. +51950360472
-* Aqpfact_app vs 1.0 Google Play [Descargar](https://play.google.com/store/apps/details?id=com.azetasoft.aqpfact&hl=es&gl=es "Clic")
+* AqpFact App <br>
+ Unico App con impresión directra mediante blueto<br>
+ La app solo funciona con la modificación de AQPFACT, si no lo tiene, contactar a los números de cel. +51947474096
+* Aqpfact_app vs 3.0 Google Play [Descargar](https://play.google.com/store/apps/details?id=com.azetasoft.aqpfact&hl=es&gl=es "Clic")
 
 
 ## AQPFACT - Peru

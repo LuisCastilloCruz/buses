@@ -212,7 +212,8 @@
             </div>
         </div>
 
-        <div class="card" id="client-list">
+        <div id="client-list"
+             class="card">
             <div class="card-header bg-info">Listado de Clientes</div>
             <div class="card-body">
                 <div class="row">

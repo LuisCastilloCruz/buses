@@ -368,6 +368,7 @@ class Quotation extends ModelTenant
             'customer_number' => $row->customer->number,
             'customer_telephone' => $row->customer->telephone,
             'customer_email' => optional($row->customer)->email,
+            'exchange_rate_sale' => $row->exchange_rate_sale,
             'currency_type_id' => $row->currency_type_id,
             'total_exportation' => number_format($row->total_exportation,2),
             'total_free' => number_format($row->total_free,2),
@@ -400,6 +401,7 @@ class Quotation extends ModelTenant
             'created_at' => $row->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             'print_ticket' => $row->getUrlPrintPdf('ticket'),
+            'filename' => $row->filename,
         ];
     }
 

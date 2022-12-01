@@ -12,14 +12,17 @@
                                   :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''"></logo>
                         </div>
                         <div class="col-sm-10 text-left mt-3 mb-0">
-                            <address class="ib mr-2" >
+                            <address class="ib mr-2">
                                 <span class="font-weight-bold d-block">OPORTUNIDAD DE VENTA</span>
                                 <span class="font-weight-bold d-block">CASO-XXX</span>
-                                <span class="font-weight-bold">{{company.name}}</span>
+                                <span class="font-weight-bold">{{ company.name }}</span>
                                 <br>
-                                <div v-if="establishment.address != '-'">{{ establishment.address }}, </div> {{ establishment.district.description }}, {{ establishment.province.description }}, {{ establishment.department.description }} - {{ establishment.country.description }}
+                                <div v-if="establishment.address != '-'">{{ establishment.address }},</div>
+                                {{ establishment.district.description }}, {{ establishment.province.description }},
+                                {{ establishment.department.description }} - {{ establishment.country.description }}
                                 <br>
-                                {{establishment.email}} - <span v-if="establishment.telephone != '-'">{{establishment.telephone}}</span>
+                                {{ establishment.email }} - <span
+                                v-if="establishment.telephone != '-'">{{ establishment.telephone }}</span>
                             </address>
                         </div>
                     </div>
@@ -27,30 +30,36 @@
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body">
                         <div class="row mt-1">
-                             <div class="col-lg-6 pb-2">
+                            <div class="col-lg-6 pb-2">
                                 <div class="form-group" :class="{'has-danger': errors.customer_id}">
                                     <label class="control-label font-weight-bold text-info">
                                         Cliente
                                         <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
                                     </label>
-                                    <el-select v-model="form.customer_id" filterable remote class="border-left rounded-left border-info" popper-class="el-select-customers"
-                                        dusk="customer_id"
-                                        placeholder="Escriba el nombre o número de documento del cliente"
-                                        :remote-method="searchRemoteCustomers"
-                                        :loading="loading_search">
+                                    <el-select v-model="form.customer_id" filterable remote
+                                               class="border-left rounded-left border-info"
+                                               popper-class="el-select-customers"
+                                               dusk="customer_id"
+                                               placeholder="Escriba el nombre o número de documento del cliente"
+                                               :remote-method="searchRemoteCustomers"
+                                               :loading="loading_search">
 
-                                        <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                        <el-option v-for="option in customers" :key="option.id" :value="option.id"
+                                                   :label="option.description"></el-option>
 
                                     </el-select>
-                                    <small class="form-control-feedback" v-if="errors.customer_id" v-text="errors.customer_id[0]"></small>
+                                    <small class="form-control-feedback" v-if="errors.customer_id"
+                                           v-text="errors.customer_id[0]"></small>
                                 </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                     <!--<label class="control-label">Fecha de emisión</label>-->
                                     <label class="control-label">Fec. Emisión</label>
-                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
-                                    <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
+                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd"
+                                                    :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.date_of_issue"
+                                           v-text="errors.date_of_issue[0]"></small>
                                 </div>
                             </div>
 
@@ -58,20 +67,25 @@
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
-                                        <el-option v-for="option in currency_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                        <el-option v-for="option in currency_types" :key="option.id" :value="option.id"
+                                                   :label="option.description"></el-option>
                                     </el-select>
-                                    <small class="form-control-feedback" v-if="errors.currency_type_id" v-text="errors.currency_type_id[0]"></small>
+                                    <small class="form-control-feedback" v-if="errors.currency_type_id"
+                                           v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
-                                        <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">
+                                        <el-tooltip class="item" effect="dark"
+                                                    content="Tipo de cambio del día, extraído de SUNAT"
+                                                    placement="top-end">
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
                                     <el-input v-model="form.exchange_rate_sale"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
+                                    <small class="form-control-feedback" v-if="errors.exchange_rate_sale"
+                                           v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
 
@@ -79,21 +93,23 @@
                                 <div class="form-group" :class="{'has-danger': errors.observation}">
                                     <label class="control-label">Observaciónes
                                     </label>
-                                    <el-input  type="textarea"  autosize v-model="form.observation"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
+                                    <el-input type="textarea" autosize v-model="form.observation"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.observation"
+                                           v-text="errors.observation[0]"></small>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="form-group" :class="{'has-danger': errors.detail}">
                                     <label class="control-label">Detalles
                                     </label>
-                                    <el-input  type="textarea" autosize  v-model="form.detail"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.detail" v-text="errors.detail[0]"></small>
+                                    <el-input type="textarea" autosize v-model="form.detail"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.detail"
+                                           v-text="errors.detail[0]"></small>
                                 </div>
                             </div>
 
 
-                            <div class="col-md-4 mt-4" >
+                            <div class="col-md-4 mt-4">
                                 <el-upload
                                     class="upload-demo full"
                                     :headers="headers"
@@ -101,7 +117,9 @@
                                     :on-remove="handleRemove"
                                     :on-success="onSuccess"
                                     :file-list="form.files">
-                                    <el-button size="small" type="primary" icon="el-icon-upload">Clic para cargar archivos</el-button>
+                                    <el-button size="small" type="primary" icon="el-icon-upload">Clic para cargar
+                                        archivos
+                                    </el-button>
                                 </el-upload>
                             </div>
 
@@ -156,7 +174,9 @@
                             </div>
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
-                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
+                                    <button type="button" class="btn waves-effect waves-light btn-primary"
+                                            @click.prevent="showDialogAddItem = true">+ Agregar Producto
+                                    </button>
                                 </div>
                             </div>
 
@@ -181,29 +201,31 @@
 
                     <div class="form-actions text-right mt-4">
                         <el-button @click.prevent="close()">Cancelar</el-button>
-                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
+                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit"
+                                   v-if="form.items.length > 0">Generar
+                        </el-button>
                     </div>
                 </form>
             </div>
         </div>
 
         <sale-opportunity-form-item :showDialog.sync="showDialogAddItem"
-                           :currency-type-id-active="form.currency_type_id"
-                           :exchange-rate-sale="form.exchange_rate_sale"
-                           :percentage-igv="percentage_igv"
-                           @add="addRow"></sale-opportunity-form-item>
+                                    :currency-type-id-active="form.currency_type_id"
+                                    :exchange-rate-sale="form.exchange_rate_sale"
+                                    :percentage-igv="percentage_igv"
+                                    @add="addRow"></sale-opportunity-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
-                       type="customers"
-                       :external="true"
-                       :document_type_id = form.document_type_id></person-form>
+                     type="customers"
+                     :external="true"
+                     :document_type_id=form.document_type_id></person-form>
 
         <sale-opportunity-options :showDialog.sync="showDialogOptions"
-                          :recordId="saleOpportunityNewId"
-                          :typeUser="typeUser"
-                          :showGenerate="false"
-                          :type="id ? 'edit':'create'"
-                          :showClose="false"></sale-opportunity-options>
+                                  :recordId="saleOpportunityNewId"
+                                  :typeUser="typeUser"
+                                  :showGenerate="false"
+                                  :type="id ? 'edit':'create'"
+                                  :showClose="false"></sale-opportunity-options>
     </div>
 </template>
 

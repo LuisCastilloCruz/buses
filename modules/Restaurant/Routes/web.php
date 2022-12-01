@@ -103,7 +103,13 @@ Route::prefix('restaurant')->group(function() {
         Route::post('store', 'MesaController@store')->name('tenant.restaurant.mesas.store');
         Route::delete('{mesa}/delete', 'MesaController@delete')->name('tenant.restaurant.niveles.delete');
         Route::get('records', 'MesaController@records')->name('tenant.restaurant.mesas.records');
+    });
 
+      //Waiters
+      Route::prefix('waiter')->group(function() {
+        Route::post('', 'WaiterController@store');
+        Route::get('', 'WaiterController@records');
+        Route::delete('{id}', 'WaiterController@destroy');
     });
 
     Route::prefix('niveles')->group(function() {

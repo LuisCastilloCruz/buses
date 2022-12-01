@@ -72,6 +72,13 @@ class MobileController extends Controller
             'restaurant_role_id' => $user->restaurant_role_id,
             'ruc' => $company->number,
             'app_logo' => $company->app_logo,
+            'app_logo_base64' => '',//base64_encode(file_get_contents(config('app.url').'/storage/uploads/logos/'.$company->app_logo)),
+            'company' => [
+                'name' => $company->name,
+                'address' => auth()->user()->establishment->department->description.', '.auth()->user()->establishment->province->description.', '.auth()->user()->establishment->district->description.', '.auth()->user()->establishment->address,
+                'phone' => auth()->user()->establishment->telephone,
+                'email' => auth()->user()->establishment->email
+            ],
             'app_configuration' => $this->getAppConfiguration(),
             'logo' => $company->logo,
             'razon_social'=> $company->name,
@@ -256,6 +263,8 @@ class MobileController extends Controller
 
             if($temp_path) {
 
+                UploadFileHelper::checkIfValidFile($request->input('image'), $temp_path, true);
+
                 $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
 
                 $file_name_old = $request->input('image');
@@ -439,6 +448,9 @@ class MobileController extends Controller
                                     'price_default' => $row->price_default,
                                 ];
                             }),
+                            'has_isc' => (bool)$row->has_isc,
+                            'system_isc_type_id' => $row->system_isc_type_id,
+                            'percentage_isc' => $row->percentage_isc,
                         ];
                     });
 

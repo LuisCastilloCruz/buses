@@ -262,7 +262,7 @@
                     'data' => [
                         'id' => $expense->id,
                     ],
-                    'message' => 'Gasto anulado exitosamente',
+                    'message' => 'Credito bancario anulado exitosamente',
                 ];
             } catch (\Exception $e) {
                 return [

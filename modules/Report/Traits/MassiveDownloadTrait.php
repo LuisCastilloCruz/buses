@@ -137,7 +137,12 @@
             $temp = tempnam(sys_get_temp_dir(), $folder);
             file_put_contents($temp, $view);
 
-            return response()->file($temp);
+            $headers = [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="file.pdf"'
+            ];
+
+            return response()->file($temp, $headers);
 
         }
 

@@ -74,6 +74,7 @@ class DispatchInput
             'secondary_license_plates' => self::secondary_license_plates($inputs),
             'related' => self::related($inputs),
             'order_form_external' => Functions::valueKeyInArray($inputs, 'order_form_external'),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
         ];
 
         if(isset($inputs['data_affected_document'])){
@@ -191,6 +192,7 @@ class DispatchInput
                     ],
                     'quantity' => $row['quantity'],
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
+                    'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
                 ];
 
                 if(isset($temp['item']['lot_group']['date_of_due'])){
@@ -200,7 +202,6 @@ class DispatchInput
                 }
                 $items[] = $temp;
             }
-
             return $items;
         }
         return null;

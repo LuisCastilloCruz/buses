@@ -26,6 +26,8 @@ use App\Models\Tenant\FormatTemplate;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Validator;
 use App\Models\Tenant\Skin;
+use Modules\Finance\Helpers\UploadFileHelper;
+
 
 class ConfigurationController extends Controller
 {
@@ -103,7 +105,12 @@ class ConfigurationController extends Controller
 
     public function show($template)
     {
-        return response()->file(storage_path('app' . DIRECTORY_SEPARATOR . 'preprintedpdf' . DIRECTORY_SEPARATOR . $template . '.pdf'));
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="file.pdf"'
+        ];
+
+        return response()->file(storage_path('app' . DIRECTORY_SEPARATOR . 'preprintedpdf' . DIRECTORY_SEPARATOR . $template . '.pdf'), $headers);
     }
 
     // public function dispatch(Request $request) {
@@ -453,14 +460,18 @@ class ConfigurationController extends Controller
             $file = $request->file('file');
             $ext = $file->getClientOriginalExtension();
             $name = $type.'_'.$company->number.'.'.$ext;
+            request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
 
-            if (($type === 'fondo')) request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
+            if (($type === 'fondo')) {
 
-            $file->storeAs(($type === 'fondo') ? 'public/uploads/fondos' : 'certificates', $name);
+                $file->storeAs(($type === 'fondo') ? 'public/uploads/fondos' : 'certificates', $name);
+            }
 
-            if (($type === 'header_images')) request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
+            if (($type === 'header_images')){
+                UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
+                $file->storeAs(($type === 'header_images') ? 'public/uploads/header_images' : 'certificates', $name);
+            }
 
-            $file->storeAs(($type === 'header_images') ? 'public/uploads/header_images' : 'certificates', $name);
 
             $configuration->$type = $name;
 
@@ -560,6 +571,7 @@ class ConfigurationController extends Controller
             $filename = $file->getClientOriginalName();
             $name = pathinfo($file->getClientOriginalName());
 
+            UploadFileHelper::checkIfValidCssFile($filename, $file->getPathName(), 'css', ['text/css', 'text/plain']);
 
             Storage::disk('public')->put('skins'.DIRECTORY_SEPARATOR.$filename, $file_content);
 

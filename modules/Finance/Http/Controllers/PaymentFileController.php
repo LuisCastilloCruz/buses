@@ -11,17 +11,17 @@ use Illuminate\Support\Facades\Storage;
 use Modules\Finance\Helpers\UploadFileHelper;
 
 class PaymentFileController extends Controller
-{ 
+{
 
-    public function download($filename, $type) { 
+    public function download($filename, $type) {
         return Storage::disk('tenant')->download('payment_files'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.$filename);
     }
 
     public function uploadAttached(Request $request)
     {
         // dd($request->all());
-        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file');
-        
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg,pdf', false);
+
         if(!$validate_upload['success']){
             return $validate_upload;
         }

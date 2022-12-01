@@ -338,7 +338,7 @@
                                     </el-tooltip>
                                 </h5>
                                 <table class="table">
-                                    <thead>
+                                    <thead class="bg-light">
                                     <tr>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
@@ -412,10 +412,15 @@
                                                     <el-input v-model="row.description"></el-input>
                                                 </td>
                                                 <td>
-                                                    <el-checkbox v-model="row.is_amount">Ingresar monto fijo
+                                                    <el-checkbox v-model="row.is_amount" @change="changeIsDiscountAmount(index)">Ingresar monto fijo
                                                     </el-checkbox>
                                                     <br>
-                                                    <el-input v-model="row.percentage"></el-input>
+                                                    <template v-if="row.is_amount">
+                                                        <el-input v-model="row.amount"></el-input>
+                                                    </template>
+                                                    <template v-else>
+                                                        <el-input v-model="row.percentage"></el-input>
+                                                    </template>
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-danger"
@@ -598,6 +603,7 @@
         </select-lots-form>
 
 
+
     </el-dialog>
 </template>
 <style>
@@ -643,7 +649,8 @@ export default {
         'customerId',
         'currencyTypes',
         'isFromInvoice',
-        'percentageIgv'
+        'percentageIgv',
+        'isCreditNoteAndType03',
     ],
     components: {
         ItemForm,
@@ -804,6 +811,16 @@ export default {
 
             return false
 
+        },
+        enabledSearchFactoryCodeItems()
+        {
+            if(this.configuration) return this.configuration.search_factory_code_items ? 1 : 0
+            return 0
+        },
+        isNoteErrorDescription()
+        {
+            if(this.isCreditNoteAndType03 !== undefined) return this.isCreditNoteAndType03
+            return false
         }
     },
     methods: {
@@ -922,6 +939,7 @@ export default {
                     'input': input,
                     'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
                     'search_item_by_barcode_presentation': this.search_item_by_barcode_presentation ? 1 : 0,
+                    'search_factory_code_items' : this.enabledSearchFactoryCodeItems
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
@@ -1126,10 +1144,14 @@ export default {
                     }
                 }
                 this.calculateQuantity()
+
+                if(this.recordItem.item.exchanged_for_points) this.form.item.exchanged_for_points = this.recordItem.item.exchanged_for_points
+
             } else {
                 this.isUpdateWarehouseId = null
             }
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+
 
         },
         setPresentationEditItem() {
@@ -1178,7 +1200,8 @@ export default {
                 factor: 0,
                 amount: 0,
                 base: 0,
-                is_amount: false
+                is_amount: false,
+                use_input_amount: true,
             })
         },
         clickRemoveDiscount(index) {
@@ -1187,6 +1210,11 @@ export default {
         changeDiscountType(index) {
             let discount_type_id = this.form.discounts[index].discount_type_id
             this.form.discounts[index].discount_type = _.find(this.discount_types, {id: discount_type_id})
+        },
+        changeIsDiscountAmount(index)
+        {
+            this.form.discounts[index].amount = 0
+            this.form.discounts[index].percentage = 0
         },
         clickAddCharge() {
             this.form.charges.push({
@@ -1314,9 +1342,16 @@ export default {
         cleanTotalItem() {
             this.total_item = null
         },
-        async clickAddItem() {
-
-            if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
+        async clickAddItem()
+        {
+            if(this.isNoteErrorDescription)
+            {
+                if(parseFloat(this.form.unit_price_value) < 0) return this.$message.error('El Precio Unitario debe ser mayor o igual 0');
+            }
+            else
+            {
+                if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
+            }
 
             // if(this.form.quantity < this.getMinQuantity()){
             //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
@@ -1673,7 +1708,8 @@ export default {
         },
         async getLastPriceItem() {
             this.itemLastPrice =null
-            if(this.configuration.show_last_price_sale) {
+            let show_last_price_sale = _.has(this.configuration, 'show_last_price_sale')?this.configuration.show_last_price_sale:false;
+            if(show_last_price_sale) {
                 if(this.customerId && this.form.item_id) {
                     const params = {
                         'type_document': 'CPE',

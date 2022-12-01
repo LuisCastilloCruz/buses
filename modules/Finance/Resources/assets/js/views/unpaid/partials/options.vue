@@ -5,7 +5,7 @@
                append-to-body
                width="30%"
                @open="create"
-                @close="closeUnpaid">
+               @close="closeUnpaid">
         <!--
         <Keypress
             key-event="keyup"
@@ -193,9 +193,9 @@ export default {
         },
         closeUnpaid() {
             this.$emit('update:showDialogOptions', false);
-             //this.initDocumentTypes()
-             this.initForm()
-        }
+            // this.initDocumentTypes()
+            // this.initForm()
+        },
     }
 }
 </script>
