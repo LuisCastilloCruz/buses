@@ -501,6 +501,8 @@ export default {
         // })
 
         this.startConnectionQzTray()
+        console.log('programa')
+        console.log(this.programacion)
     },
     watch:{
         precio:function(newVal){
@@ -1468,7 +1470,7 @@ export default {
 
             if(!this.programacion && !this.isReserva) {
                 valid = false;
-                errors.push('Debe seleccionar una programación');
+                errors.push('Debe seleccionar una programación.');
             }
             if(this.precio){
                     let p = parseFloat(this.precio);
