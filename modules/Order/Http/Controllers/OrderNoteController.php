@@ -767,7 +767,7 @@
 
 
                 $this->order_note->fill($data);
-                //$this->order_note->items()->delete();
+                $this->order_note->items()->delete();
 
                 foreach ($request['items'] as $row) {
 

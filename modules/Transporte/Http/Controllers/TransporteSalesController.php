@@ -311,7 +311,7 @@ class TransporteSalesController extends Controller
 
             //actualizamos datos del pasajero
             if($request->estado_asiento_id ==2){ // asiento ocupado  ---3 es reservado
-                $person =  Person::findOrFail($request->persona['id']);
+                $person =  Person::findOrFail($request->cliente_id);
                 $person->telephone = $request->telefono;
                 $person->edad =(isset($request->persona['edad'])) ? $request->persona['edad'] : '';
                 $person->update();

@@ -119,10 +119,10 @@
                                                    :value="option.id"></el-option>
                                             </el-select>
                                             </label>
-                                            <input :loading="loading_search" placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" id="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" :type="persona.identity_document_type_id==1 ? 'number' : 'text' "  :maxlength="persona.identity_document_type_id==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
+                                            <input :loading="loading_search" placeholder="Ingrese el Dni y presione enter" name="dni" ref="pasajero" id="pasajero" class="form-control" v-model="persona.number" v-on:keyup.enter="buscar_rapida_dni" :type="persona.identity_document_type_id==1 ? 'number' : 'text' "  :maxlength="persona.identity_document_type_id==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" required> </input>
                                     </div>
                                     <div class="col-md-4">
-                                            <label  for="nombre" >Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" ></input>
+                                            <label  for="nombre" >Nombre</label><input name="nombre" class="form-control" v-model="persona.name" type="text" :loading="loading_search"></input>
                                     </div>
                                     <div class="col-md-2">
                                         <label  for="edad" >Edad</label><input name="edad" class="form-control" v-model="persona.edad" type="text" ></input>
@@ -136,7 +136,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label for="dni">Precio</label>
-                                            <el-input ref="precioBoleto" v-model="precio" type="number" id="precio-boleto"></el-input>
+                                            <el-input ref="precioBoleto" v-model="precio" type="number" id="precio-boleto" required></el-input>
                                         </div>
 
                                     </div>
@@ -710,8 +710,22 @@ export default {
         async guardarComprobante(){
             this.loading = true;
 
+            let validator = this.validate();
+
+            if(validator.fails){
+                this.loading = false;
+                return this.$message.info(validator.first);
+            }
+
+            // let precio = parseFloat(this.precio);
+            // if(!precio) {
+            //     this.$message.info('Por favor indique el precio de el asiento');
+            //     this.loading = false;
+            //     return;
+            // }
+
             if(!this.pasajeroId && !this.isReserva) {
-                this.$http
+               await this.$http
                     .post("/persons", this.persona)
                     .then((response) => {
 
@@ -727,14 +741,16 @@ export default {
                     .finally(() => {
                         //this.loading = false;
                         this.errors = {};
+                        this.loading = false;
                     })
                     .catch((error) => {
                         console.log(error);
+                        this.loading = false;
                     });
 
             }
-            if(!this.clienteId && this.document.document_type_id == '01' && !this.isReserva) {
-                this.$http
+            else if(!this.clienteId && this.document.document_type_id == '01' && !this.isReserva) {
+                await this.$http
                     .post("/persons", this.empresa)
                     .then((response) => {
 
@@ -746,9 +762,11 @@ export default {
                     .finally(() => {
                         //this.loading = false;
                         this.errors = {};
+                        this.loading = false;
                     })
                     .catch((error) => {
                         console.log(error);
+                        this.loading = false;
                     });
             }
 
@@ -759,18 +777,7 @@ export default {
         },
 
         async saveDocument(){
-
-               let validator = this.validate();
-
-               if(validator.fails){
-                   return this.$message.info(validator.first);
-               }
-
-               let precio = parseFloat(this.precio);
-               if(!precio) {
-                   this.$message.info('Por favor indique el precio de el asiento');
-                   return;
-               }
+            let precio = parseFloat(this.precio);
 
                if(this.isReserva) return this.guardarPasaje()
 
@@ -871,12 +878,13 @@ export default {
                        }
                    })
                    .catch((error) => {
+                       this.loading = false;
                        if (error.response) {
                            this.$message.error(error.response.data.message);
                        }
 
                    }).then(() => {
-                       this.loading_submit = false;
+                       this.loading = false;
                    });
 
         },
@@ -955,6 +963,7 @@ export default {
                 this.limpiar_datos()
                  alert(error);
                 this.axiosError(error);
+                this.loading = false;
             }).finally(() => {
                 this.loading = false;
             });

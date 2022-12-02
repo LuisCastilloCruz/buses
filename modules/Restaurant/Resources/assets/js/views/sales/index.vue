@@ -6,13 +6,13 @@
                     <!-- piso -->
                     <div class="col-md-12 col-sm-12 pb-2 text-center">
                         <el-button-group>
-                            <el-button class="btn btn-success px-4 py-2 mr-1" size="medium" @click="cargarTap(1)">POS</el-button>
+                            <a href="#" class="btn btn-success px-4 py-2 mr-1" size="medium" :class="AqpTap.active==1 ? 'btn-warning': '' " @click="cargarTap(1)">POS</a>
 
-                            <el-button class="btn btn-info px-4 py-2" size="medium" @click="cargarTap(2)">MESAS</el-button>
+                            <a href="#" class="btn btn-success px-4 py-2" size="medium" :class="AqpTap.active==2 ? 'btn-warning': '' " @click="cargarTap(2)">MESAS</a>
 
-                            <el-button class="btn btn-success px-4 py-2 ml-1" size="medium" @click="cargarTap(3)">PEDIDOS</el-button>
+                            <a href="#" class="btn btn-success px-4 py-2 ml-1" size="medium" :class="AqpTap.active==3 ? 'btn-warning': '' " @click="cargarTap(3)">PEDIDOS</a>
 
-                            <el-button class="btn btn-success px-4 py-2 ml-1" @click="cargarTap(4)">PRECIOS</el-button>
+                            <a href="#" class="btn btn-success px-4 py-2 ml-1" :class="AqpTap.active==4 ? 'btn-warning': '' " @click="cargarTap(4)">PRECIOS</a>
 
                         </el-button-group>
                     </div>
@@ -115,7 +115,7 @@
                         PEDIDOS
                     </div>
                     <div v-else-if="AqpTap.active==4" class="col-md-12">
-                        PRECIOS
+                        <tenant-restaurant-precios></tenant-restaurant-precios>
                     </div>
 
                 </div>
@@ -137,11 +137,20 @@
 </template>
 <script>
 import tenantRestaurantPedidosOptions from './partials/options.vue'
+import tenantRestaurantPrecios from './taps/precios.vue'
+import SocketClient from '@mixins/socket.js'
+
 export default {
+    mixins:[SocketClient],
     components: {
-        tenantRestaurantPedidosOptions
+        tenantRestaurantPedidosOptions,
+        tenantRestaurantPrecios
     },
     props: {
+        configuracionSocket:{
+            type: Object,
+            default: () => ({})
+        },
         configuration: {
             type: Array,
             required: true,
@@ -169,6 +178,7 @@ export default {
             recordId: null,
             AqpTap:{
                 active:2 //mesas
+                //active:4 //precios
             },
             activeName: '',
             mesas:[],
@@ -193,8 +203,46 @@ export default {
         this.vistaMesas = true
 
         //console.log(this.items)
+        this.initSocket();
     },
     methods: {
+        initSocket(){
+
+            if(!this.configuracionSocket) return
+
+            if(!this.configuracionSocket.active) return;
+
+            try{
+
+                const protocol = window.location.protocol;
+
+                const { domain, port } = this.configuracionSocket;
+
+                const { Manager } = this.io;
+
+                const url = `${protocol}//${domain}:${port}`;
+
+                const manager = new Manager(`${url}`);
+
+                this.socketClient = manager.socket("/");
+
+                this.socketClient.on('mesa-ocupada', (params) => {
+                    this.onUpdateItem();
+                });
+
+
+            }catch(error){
+                this.socketClient = null;
+            }
+
+        },
+        notificationAll(){
+            if(this.socketClient) this.socketClient.emit('mesa-ocupada',true);
+        },
+        async onUpdateItem(){
+            console.log("socket jugando")
+
+        },
         cargarTap(id){
             this.AqpTap.active=id
             this.vistaMesas=true

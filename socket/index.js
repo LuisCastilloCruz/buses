@@ -24,7 +24,7 @@ const io = new Server(server,{
         origin: "*",
         methods: ["GET", "POST"]
     },
-}); 
+});
 
 
 
@@ -32,6 +32,9 @@ io.on('connection',(socket) => {
 
     socket.on('venta-completada',() => {
         socket.broadcast.emit('venta-completada',true); //emito a todos excepto a mi
+    })
+    socket.on('mesa-ocupada',() => {
+        socket.broadcast.emit('mesa-ocupada',true); //emito a todos excepto a mi
     })
 
 })

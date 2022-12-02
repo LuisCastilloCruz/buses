@@ -85,7 +85,7 @@ Route::prefix('restaurant')->group(function() {
         Route::get('report/products/{cash}', 'CashController@report_products');
         Route::get('report/products-excel/{cash}', 'CashController@report_products_excel');
 
-        //mis modificaciones
+    //mis modificaciones
         Route::get('sales', 'SaleController@index')->name('tenant.restaurant.sales.index');
         Route::get('sales/items', 'SaleController@items')->name('tenant.restaurant.sales.items');
         Route::post('sales/store', 'SaleController@store')->name('tenant.restaurant.sales.store');
@@ -94,6 +94,11 @@ Route::prefix('restaurant')->group(function() {
         Route::put('sales/item/update_item', 'SaleController@updateItem')->name('tenant.restaurant.sales.update_item');
         Route::put('sales/item/delete_item', 'SaleController@deleteItem')->name('tenant.restaurant.sales.delete_item');
         Route::put('sales/updatePedidoDocument', 'SaleController@updatePedidoDocument')->name('tenant.restaurant.sales.updatePedidoDocument');
+    });
+
+    Route::prefix('taps')->group(function() {
+        Route::get('items', 'RestaurantController@items')->name('tenant.restaurant.items');
+        Route::post('item/update-price', 'RestaurantController@savePrice')->name('tenant.restaurant.items');
     });
 
     Route::prefix('mesas')->group(function() {
@@ -121,7 +126,6 @@ Route::prefix('restaurant')->group(function() {
         Route::get('records', 'NivelController@records')->name('tenant.restaurant.niveles.records');
 
     });
-
 
 });
 

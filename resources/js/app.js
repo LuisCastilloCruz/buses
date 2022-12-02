@@ -478,7 +478,8 @@ Vue.component('tenant-restaurant-sales-index', require('../../modules/Restaurant
 Vue.component('tenant-restaurant-mesas-index', require('../../modules/Restaurant/Resources/assets/js/views/mesas/index.vue'));
 Vue.component('tenant-restaurant-niveles-index', require('../../modules/Restaurant/Resources/assets/js/views/niveles/index.vue'));
 Vue.component('tenant-restaurant-pedidos-options', require('../../modules/Restaurant/Resources/assets/js/views/sales/partials/options'));
-
+Vue.component('tenant-restaurant-precios', require('../../modules/Restaurant/Resources/assets/js/views/sales/taps/precios.vue'));
+Vue.component('tenant-restaurant-dialog-precio', require('../../modules/Restaurant/Resources/assets/js/views/sales/taps/modal_precio'));
 
 //Pagos
 Vue.component('tenant-payment-configurations-index', require('@viewsModulePayment/payment_configurations/index.vue'));
