@@ -5,7 +5,7 @@
     use Closure;
     use Illuminate\Http\RedirectResponse;
     use Illuminate\Http\Request;
-    use Modules\LevelAccess\Traits\SystemActivityTrait;
+    //use Modules\LevelAccess\Traits\SystemActivityTrait;
 
     /**
      * Class RedirectModule
@@ -15,7 +15,7 @@
     class RedirectModule
     {
 
-        use SystemActivityTrait;
+        //use SystemActivityTrait;
 
         private $route_path;
 
