@@ -1465,6 +1465,11 @@ export default {
                 }
             }
 
+
+            if(!this.programacion && !this.isReserva) {
+                valid = false;
+                errors.push('Debe seleccionar una programación');
+            }
             if(this.precio){
                     let p = parseFloat(this.precio);
                     if(p <= 0){
