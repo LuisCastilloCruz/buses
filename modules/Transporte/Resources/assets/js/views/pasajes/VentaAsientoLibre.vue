@@ -324,7 +324,7 @@
             <div class="col-12 d-flex justify-content-center">
 <!--                    <el-button v-if="transportePasaje && destino" :loading="loading" type="primary" @click="actualizarPasaje">Actualizar</el-button>-->
                     <el-button v-if="!transportePasaje" :loading="loading" type="primary" @click="guardarComprobante">Guardar</el-button>
-                <p v-if="transportePasaje" class="bg-danger text-white p-2">Este asiento fué vendido en otro punto</p>
+                <p v-else class="bg-danger text-white p-2">Este asiento fué vendido en otro punto</p>
                 </div>
             </div>
         </el-dialog>
@@ -705,6 +705,9 @@ export default {
             //await this.searchPasajero();
             this.filterSeries();
             //this.filterCustomers();
+
+            console.log("transportePasaje")
+            console.log(this.transportePasaje)
         },
 
         async guardarComprobante(){
