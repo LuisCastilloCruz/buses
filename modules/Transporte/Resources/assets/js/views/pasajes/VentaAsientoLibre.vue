@@ -501,8 +501,6 @@ export default {
         // })
 
         this.startConnectionQzTray()
-        console.log('programa')
-        console.log(this.programacion)
     },
     watch:{
         precio:function(newVal){
@@ -711,7 +709,8 @@ export default {
 
         async guardarComprobante(){
             this.loading = true;
-
+            console.log('programa')
+            console.log(this.programacion)
             let validator = this.validate();
 
             if(validator.fails){
