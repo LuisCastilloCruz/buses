@@ -98,6 +98,7 @@ Route::prefix('restaurant')->group(function() {
 
     Route::prefix('taps')->group(function() {
         Route::get('items', 'RestaurantController@items')->name('tenant.restaurant.items');
+        Route::get('pedidos', 'RestaurantController@pedidos')->name('tenant.restaurant.pedidos');
         Route::post('item/update-price', 'RestaurantController@savePrice')->name('tenant.restaurant.items');
     });
 

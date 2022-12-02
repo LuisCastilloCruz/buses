@@ -2,6 +2,7 @@
 
 namespace Modules\Restaurant\Http\Controllers;
 
+use App\Http\Resources\Tenant\OrderCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -232,6 +233,14 @@ class RestaurantController extends Controller
         return [
             'success' => true,
             'message' => 'Precio editado correctamente.'
+        ];
+    }
+
+    public function pedidos(Request $request){
+        $records = new OrderCollection(Order::where('apply_restaurant', 1)->get());
+        return [
+            'success' => true,
+            'data' => $records
         ];
     }
 

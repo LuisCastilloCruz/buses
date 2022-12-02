@@ -120,7 +120,7 @@
                         </el-tabs>
                     </div>
                     <div v-else-if="AqpTap.active==3" class="col-md-12">
-                        PEDIDOS
+                        <tenant-restaurant-pedidos></tenant-restaurant-pedidos>
                     </div>
                     <div v-else-if="AqpTap.active==4" class="col-md-12">
                         <tenant-restaurant-precios></tenant-restaurant-precios>
@@ -146,13 +146,15 @@
 <script>
 import tenantRestaurantPedidosOptions from './partials/options.vue'
 import tenantRestaurantPrecios from './taps/precios.vue'
+import tenantRestaurantPedidos from './taps/pedidos.vue'
 import SocketClient from '@mixins/socket.js'
 
 export default {
     mixins:[SocketClient],
     components: {
         tenantRestaurantPedidosOptions,
-        tenantRestaurantPrecios
+        tenantRestaurantPrecios,
+        tenantRestaurantPedidos
     },
     props: {
         configuracionSocket:{
