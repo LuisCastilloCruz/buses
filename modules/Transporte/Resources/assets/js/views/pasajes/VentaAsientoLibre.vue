@@ -1465,11 +1465,6 @@ export default {
                 }
             }
 
-
-            if(!this.programacion) {
-                valid = false;
-                errors.push('Debe seleccionar una programación');
-            }
             if(this.precio){
                     let p = parseFloat(this.precio);
                     if(p <= 0){
@@ -1513,7 +1508,7 @@ export default {
                 }
             }
 
-            if(this.tipoVenta == 2){//venta con programación
+            else if(this.tipoVenta == 2){//venta con programación
 
                 if(!this.programacion){
                     valid = false;
