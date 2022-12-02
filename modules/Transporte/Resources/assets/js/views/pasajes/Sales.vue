@@ -765,10 +765,10 @@ export default {
         dbClick(asiento){
             this.pasajero = null;
 
-            if(this.terminalId !== this.terminal.id){
-                alert('Para evitar confusiones, solo se puede visualizar los estados, mas nó vender. Cambie a su terminal asignado por el administrador.')
-                return
-            }
+            // if(this.terminalId !== this.terminal.id){
+            //     alert('Para evitar confusiones, solo se puede visualizar los estados, mas nó vender. Cambie a su terminal asignado por el administrador.')
+            //     return
+            // }
 
             if(asiento.type != 'ss') return;
 

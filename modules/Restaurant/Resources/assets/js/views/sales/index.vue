@@ -98,6 +98,14 @@
                                                 </table>
 
                                                     <p style="font-size: 2em"><b style="color:blue">TOTAL:</b> <b style="color:darkgreen">{{total}}</b></p>
+                                                <div class="text-center">
+                                                    <table class="table">
+                                                        <tr>
+                                                            <td style="width: 50%"><el-button size="small" icon="el-icon-s-order" class="btn-block" @click="precuenta">Precuenta</el-button></td>
+                                                            <td style="width: 50%"><el-button size="small" icon="el-icon-dish" class="btn-block" @click="enviar_comanda">Enviar Comanda</el-button></td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
                                                 <el-button v-if="pedidoId>0  && pedidos_detalles.length>0" type="primary" icon="el-icon-save" @click="finalizarVenta"> Finalizar Venta</el-button>
                                                     <el-button v-else type="danger" icon="el-icon-plus" @click="abrirMesa"> Abrir Mesa</el-button>
                                             </div>
@@ -435,7 +443,13 @@ export default {
                //this.pedidoId = pedidoId
                this.showDialogOptions = true
 
-       }
+       },
+        precuenta(){
+            alert("precuenta")
+        },
+        enviar_comanda(){
+            alert("comanda")
+        }
     }
 }
 </script>
