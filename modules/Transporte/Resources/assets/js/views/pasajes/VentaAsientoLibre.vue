@@ -70,11 +70,11 @@
                                         <input placeholder="Ingrese el Ruc y presione enter" name="ruc" id="ruc" class="form-control" v-model="empresa.number" v-on:keyup.enter="buscar_rapida_ruc" type="number"   maxlength="11" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"> </input>
 
                                     </div>
-                                    <div class="col-md-4">
-                                        <label>Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text"></input>
-                                    </div>
                                     <div class="col-md-5">
                                         <label  id="cliente">Razón Social</label><input name="nombre" class="form-control" v-model="empresa.name" type="text"></input>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Direccion</label><input name="edad" class="form-control" v-model="empresa.address" type="text"></input>
                                     </div>
 
                                 </div>
@@ -488,16 +488,6 @@ export default {
         this.series  = this.allSeries;
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
-        //this.document.document_type_id = '03';
-        // this.onCreate();
-        // this.$eventHub.$on('reloadDataPersons', (clienteId) => {
-        //         this.reloadDataCustomers(clienteId)
-        //     })
-        //
-        // this.$eventHub.$on('reloadDataPasajeros', (pasajeroId) => {
-        //         this.reloadDataPasajeros(pasajeroId)
-        // })
-
         this.startConnectionQzTray()
     },
     watch:{
@@ -509,16 +499,16 @@ export default {
         asiento(value){
             this.numeroAsiento = value ? value.numero_asiento : null;
         },
-        transportePasaje(value){
-
-            if(!value){
-                this.estadoAsiento = 2;
-                this.pasajeroId = {};
-                this.precio = null;
-                this.clienteId =null;
-            }
-
-        },
+        // transportePasaje(value){
+        //
+        //     if(!value){
+        //         this.estadoAsiento = 2;
+        //         this.pasajeroId = {};
+        //         this.precio = null;
+        //         this.clienteId =null;
+        //     }
+        //
+        // },
         tipoVenta(newVal){
             if(newVal == 1) {
 
@@ -706,29 +696,9 @@ export default {
         },
 
         async guardarComprobante(){
-            this.loading = true;
             console.log('programa')
             console.log(this.programacion)
-
-            console.log('clienteId')
-            console.log(this.clienteId)
-
-            console.log('pasajeroId')
-            console.log(this.pasajeroId)
-
-            console.log('document_type_id')
-            console.log(this.document.document_type_id)
-
-
-            console.log("isReserva")
-            console.log(this.isReserva)
-
-
-            console.log('persona')
-            console.log(this.persona)
-
-
-
+            //
             let validator = this.validate();
 
             if(validator.fails){
@@ -737,9 +707,8 @@ export default {
             }
 
             if(!this.pasajeroId && !this.isReserva) {
-
-                console.log("mala")
-                console.log(this.persona.name)
+                this.loading = true;
+                //console.log("mala")
 
                await this.$http
                     .post("/persons", this.persona)
@@ -751,11 +720,8 @@ export default {
                             this.document.customer_id=response.data.id
                         }
 
-                        this.saveDocument()
-
                     })
                     .finally(() => {
-                        //this.loading = false;
                         this.errors = {};
                         this.loading = false;
                     })
@@ -765,16 +731,15 @@ export default {
                     });
 
             }
-            else if(!this.clienteId && this.document.document_type_id == '01' && !this.isReserva) {
-                console.log("lala")
+            if(!this.clienteId && this.document.document_type_id == '01' && !this.isReserva) {
+                this.loading = true;
+                //console.log("lala")
                 await this.$http
                     .post("/persons", this.empresa)
                     .then((response) => {
 
                         this.clienteId   = response.data.id
                         this.document.customer_id=response.data.id
-
-                        this.saveDocument()
                     })
                     .finally(() => {
                         //this.loading = false;
@@ -786,16 +751,32 @@ export default {
                         this.loading = false;
                     });
             }
-
             else{
-                console.log("yala")
-                this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
-                this.saveDocument()
+                console.log("Ningun contenido")
             }
+
+            // console.log("this.clienteId")
+            // console.log(this.clienteId)
+            //
+            // console.log("this.pasajeroId")
+            // console.log(this.pasajeroId)
+            //
+            // console.log("this.document.document_type_id")
+            // console.log(this.document.document_type_id)
+            //
+            //
+            // console.log("persona?")
+            // console.log(this.persona)
+
+            this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
+            // console.log("document.customer_id")
+            // console.log(this.document.customer_id)
+            this.saveDocument()
 
         },
 
         async saveDocument(){
+            this.loading = true;
             let precio = parseFloat(this.precio);
 
                if(this.isReserva) return this.guardarPasaje()
@@ -907,6 +888,7 @@ export default {
 
         },
         async guardarPasaje(){
+            this.loading = true;
             let doc = null;
             let note = null;
             let client = null;
@@ -945,7 +927,6 @@ export default {
 
             this.$http.post('/transportes/sales/realizar-venta-boleto',data)
             .then( ({data}) => {
-                this.loading = false;
 
                 if(!data.success){
                     this.$emit('update:visible',false);
@@ -976,6 +957,7 @@ export default {
 
                 this.$emit('update:visible',false);
 
+                this.loading = false;
 
             }).catch( error => {
                 this.limpiar_datos()
@@ -1551,13 +1533,6 @@ export default {
                     let element = document.getElementById('pasajero');
                     //element.focus();
                 }
-                // if(!this.clienteId && this.document.document_type_id=='01' && !this.isReserva){
-                //
-                //     valid = false;
-                //     errors.push('Debe seleccionar un Cliente');
-                //     let element = document.getElementById('cliente');
-                //     //element.focus();
-                // }
                 if(!this.asiento) {
                     valid = false;
                     errors.push('Debe seleccionar un asiento');
