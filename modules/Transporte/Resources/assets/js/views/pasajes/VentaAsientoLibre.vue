@@ -703,9 +703,6 @@ export default {
             //await this.searchPasajero();
             this.filterSeries();
             //this.filterCustomers();
-
-            console.log("transportePasaje")
-            console.log(this.transportePasaje)
         },
 
         async guardarComprobante(){
@@ -721,6 +718,7 @@ export default {
 
             if(!this.pasajeroId && !this.isReserva) {
 
+                console.log("mala")
                 console.log(this.persona.name)
 
                await this.$http
@@ -748,6 +746,7 @@ export default {
 
             }
             else if(!this.clienteId && this.document.document_type_id == '01' && !this.isReserva) {
+                console.log("lala")
                 await this.$http
                     .post("/persons", this.empresa)
                     .then((response) => {
@@ -769,6 +768,7 @@ export default {
             }
 
             else{
+                console.log("yala")
                 this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
                 this.saveDocument()
             }
