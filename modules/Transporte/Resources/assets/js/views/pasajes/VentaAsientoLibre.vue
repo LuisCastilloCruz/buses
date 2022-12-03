@@ -709,6 +709,26 @@ export default {
             this.loading = true;
             console.log('programa')
             console.log(this.programacion)
+
+            console.log('clienteId')
+            console.log(this.clienteId)
+
+            console.log('pasajeroId')
+            console.log(this.pasajeroId)
+
+            console.log('document_type_id')
+            console.log(this.document.document_type_id)
+
+
+            console.log("isReserva")
+            console.log(this.isReserva)
+
+
+            console.log('persona')
+            console.log(this.persona)
+
+
+
             let validator = this.validate();
 
             if(validator.fails){
