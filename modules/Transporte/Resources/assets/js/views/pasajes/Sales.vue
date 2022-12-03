@@ -733,7 +733,7 @@ export default {
         },
 
         quitar(){
-            this.selectProgramacion = null;
+            this.selectProgramacion = {};
             this.asientos = [];
             this.existe_manifiesto = false
         },
@@ -805,6 +805,8 @@ export default {
             })
         },
         async seleccionar(programacion){
+            console.log("select programacion")
+            console.log(programacion)
             this.visibleAsientoLibre = false;
             this.selectProgramacion = programacion;
 

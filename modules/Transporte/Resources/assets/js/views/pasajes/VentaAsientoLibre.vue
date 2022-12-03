@@ -109,8 +109,6 @@
                                     <div class="col-md-3">
                                             <label class="ml-2 mr-2" for="edad">
                                                 <el-select v-model="persona.identity_document_type_id"
-                                                    dusk="persona.identity_document_type_id"
-                                                    filterable
                                                     popper-class="el-select-identity_document_type"
                                                     @change="changeIdentityDocType">
                                                 <el-option v-for="option in identity_document_types"
@@ -721,26 +719,22 @@ export default {
                 return this.$message.info(validator.first);
             }
 
-            // let precio = parseFloat(this.precio);
-            // if(!precio) {
-            //     this.$message.info('Por favor indique el precio de el asiento');
-            //     this.loading = false;
-            //     return;
-            // }
-
             if(!this.pasajeroId && !this.isReserva) {
+
+                console.log(this.persona.name)
+
                await this.$http
                     .post("/persons", this.persona)
                     .then((response) => {
 
-                        if(!this.pasajeroId){
-                            this.pasajeroId   = response.data.id
-
-                            if(this.document.document_type_id=='03'){
-                                this.clienteId   = response.data.id
-                                this.saveDocument()
-                            }
+                        this.pasajeroId   = response.data.id
+                        if(this.document.document_type_id == '03'){
+                            this.clienteId   = response.data.id
+                            this.document.customer_id=response.data.id
                         }
+
+                        this.saveDocument()
+
                     })
                     .finally(() => {
                         //this.loading = false;
@@ -758,9 +752,9 @@ export default {
                     .post("/persons", this.empresa)
                     .then((response) => {
 
-                        if(!this.clienteId){
-                            this.clienteId   = response.data.id
-                        }
+                        this.clienteId   = response.data.id
+                        this.document.customer_id=response.data.id
+
                         this.saveDocument()
                     })
                     .finally(() => {
@@ -775,6 +769,7 @@ export default {
             }
 
             else{
+                this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
                 this.saveDocument()
             }
 
@@ -845,7 +840,6 @@ export default {
                this.payment.payment= precio+total_sobreequipaje;
                this.document.payments.push(this.payment);
 
-               this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
                this.onCalculateTotals();
 
                let validate_payment_destination = this.validatePaymentDestination();
@@ -982,8 +976,7 @@ export default {
             this.form_cash_document.document_id=null;
             this.form_cash_document.sale_note_id=null;
             this.document.document_type_id = '03';
-            this.document.cliente_id =
-                this.nombrePasajero = null;
+            this.nombrePasajero = null;
             this.filterSeries();
             //this.filterCustomers();
             this.initProducto();
@@ -1564,6 +1557,12 @@ export default {
 
             if(response_local.data.success){
                 this.pasajeroId   = response_local.data.data.id
+
+                if(this.document.document_type_id == '03'){
+                    this.clienteId   = response_local.data.id
+                    this.document.customer_id = response_local.data.data.id
+                }
+
                 this.persona.id  = response_local.data.data.id
                 this.persona.number = response_local.data.data.number
                 this.persona.name = response_local.data.data.name
@@ -1581,6 +1580,7 @@ export default {
 
             if(response_local.data.success){
                 this.clienteId     = response_local.data.data.id
+                this.document.customer_id=response_local.data.id
                 this.empresa.id    = response_local.data.data.id
                 this.empresa.name  = response_local.data.data.name
                 this.empresa.address= response_local.data.data.address
