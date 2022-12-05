@@ -179,3 +179,34 @@ ul.nav-main li .nav-children {
     }
 }
 
+
+/*=========PEDIDOS RESTAURANTE=======*/
+
+
+.kanban-aqp{
+    background:#e3e4e5;
+    border-radius: 8px;
+}
+
+.kanban-aqp .icon{
+    font-size: 32px;
+}
+
+.kanban-aqp .title{
+    font-size: 2em;
+}
+
+.recibido-aqp{
+    color: #fff;
+    background: #f53f3f
+}
+
+.enviado-aqp{
+    color: #fff;
+    background: #ffa500
+}
+
+.entregado-aqp{
+    color: #fff;
+    background: #14c508;
+}

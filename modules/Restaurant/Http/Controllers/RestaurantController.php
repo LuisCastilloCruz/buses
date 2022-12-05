@@ -237,11 +237,38 @@ class RestaurantController extends Controller
     }
 
     public function pedidos(Request $request){
-        $records = new OrderCollection(Order::where('apply_restaurant', 1)->get());
+        $records = new OrderCollection(Order::where([['apply_restaurant', 1],['status_order_id',1]])->get());
         return [
             'success' => true,
             'data' => $records
         ];
     }
+
+    public function enviados(Request $request){
+        $records = new OrderCollection(Order::where([['apply_restaurant', 1],['status_order_id',3]])->get());
+        return [
+            'success' => true,
+            'data' => $records
+        ];
+    }
+    public function entregados(Request $request){
+        $records = new OrderCollection(Order::where([['apply_restaurant', 1],['status_order_id',4]])->get());
+        return [
+            'success' => true,
+            'data' => $records
+        ];
+    }
+
+    public function updateState(Request $request){
+        $order = Order::find($request->id);
+        $order->status_order_id = $request->status_order_id;
+        $order->save();
+
+        return [
+            'success' => true,
+            'message' => 'Precio editado correctamente.'
+        ];
+    }
+
 
 }
