@@ -588,7 +588,7 @@
 
                             <!-- descuentos -->
 
-                            <div class="row mt-1 mb-2"  v-if="form.total > 0">
+                            <div class="row mt-1 mb-2"  v-if="form.total > 0 && global_discount_type">
 
                                 <div class="col-lg-10 float-right">
                                     <label class="float-right control-label">
