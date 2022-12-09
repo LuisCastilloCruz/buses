@@ -162,9 +162,9 @@ export default {
             default: () => ({})
         },
         configuration: {
-            type: Array,
+            type: Object,
             required: true,
-            default: [],
+            default: () => ({})
         },
         items: {
             type: Array,
@@ -180,6 +180,18 @@ export default {
         },
 
     }, //'typeUser'
+    computed:{
+        isAutoPrint: function () {
+
+            if(this.configuration)
+            {
+                return this.configuration.auto_print
+            }
+
+            return false
+
+        },
+    },
     data() {
         return {
             showDialogOptions:false,
@@ -251,7 +263,56 @@ export default {
 
             if (!qz.websocket.isActive() && this.isAutoPrint)
             {
-                startConnection("192.168.1.2:8182");
+                startConnection("192.168.1.200:8181");
+            }
+
+        },
+        autoPrintDocument(){
+
+            if(this.isAutoPrint)
+            {
+                var route = `/printticket/document/${this.documentNewId}/ticket`;
+                if(this.resource_documents!=='documents'){
+                    route = `/sale-notes/ticket/${this.documentNewId}/ticket`;
+                }
+
+                this.$http.get(route)
+                    .then(response => {
+                        this.printTicket(response.data)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
+
+        },
+        printTicket(html_pdf){
+
+            if (html_pdf.length > 0)
+            {
+                const config = getUpdatedConfig()
+                const opts = getUpdatedConfig()
+
+                const printData = [
+                    {
+                        type: 'html',
+                        format: 'plain',
+                        data: html_pdf,
+                        options: opts
+                    }
+                ]
+
+                qz.print(config, printData)
+                    .then(()=>{
+
+                        this.$notify({
+                            title: '',
+                            message: 'Impresión en proceso...',
+                            type: 'success'
+                        })
+
+                    })
+                    .catch(displayError)
             }
 
         },
@@ -317,16 +378,15 @@ export default {
                     this.insertarItem(this.pedidoId, data)
                 }
             }
-            // else{
-            //     if(exist){
-            //         console.log("hula")
-            //         this.pedidos_detalles.find(item2 => item2.producto_id === producto.id).cantidad +=1
-            //     }else{
-            //         this.pedidos_detalles.push({producto_id: producto.id, cantidad: 1, precio: producto.sale_unit_price , descripcion: producto.name});
-            //     }
-            // }
-            //
-            // this.calculateTotal()
+            else{
+                if(exist){
+                    this.pedidos_detalles.find(item2 => item2.producto_id === producto.id).cantidad +=1
+                }else{
+                    this.pedidos_detalles.push({producto_id: producto.id, cantidad: 1, precio: producto.sale_unit_price , descripcion: producto.name});
+                }
+            }
+
+            this.calculateTotal()
         },
         disminuirCantidad(item){
             if(item.cantidad==1){
@@ -551,6 +611,7 @@ export default {
                 })
             }else{
                 this.showDialogOptions = true
+                this.autoPrintDocument()
             }
 
 

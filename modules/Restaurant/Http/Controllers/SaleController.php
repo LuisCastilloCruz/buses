@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Restaurant\Http\Controllers;
 
-use App\Models\System\Configuration;
+use App\Models\Tenant\Configuration;
 use Exception;
 
 use App\Models\Tenant\Order;
@@ -33,7 +33,7 @@ class SaleController extends Controller
     public function index()
     {
         $items = Item::where('apply_restaurant',true)->get();
-        $configuration= Configuration::all();
+        $configuration= Configuration::first();
 
         $user = auth()->user();
         $type_user = $user->type;
