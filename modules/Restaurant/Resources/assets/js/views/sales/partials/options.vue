@@ -221,7 +221,18 @@ export default {
     },
     mixins: [functions, exchangeRate],
     props: ["showDialogOptions", "recordId", "showClose", "showGenerate", "type", "id_user2","typeUser", "configuration","items","mesa_id","mesaIsActivo"],
+    computed:{
+        isAutoPrint: function () {
 
+            if(this.configuration)
+            {
+                return this.configuration.auto_print
+            }
+
+            return false
+
+        },
+    },
     data() {
         return {
             customer_email: "",
@@ -425,6 +436,8 @@ export default {
                         this.saveCashDocument();
                         this.updatePedidoDocument(this.recordId,this.documentNewId)
 
+                        this.autoPrintDocument()
+
                         this.initForm()
                         this.initDocument()
                         this.$eventHub.$emit('onLimPiarDatos')
@@ -584,6 +597,7 @@ export default {
             this.clickAddPayment()
 
             this.changeDateOfIssue()
+            this.startConnectionQzTray()
 
         },
         prepararItems(){
@@ -988,7 +1002,64 @@ export default {
                 .catch((error) => {
                     this.axiosError(error);
                 });
-        }
+        },
+        startConnectionQzTray(){
+
+            if (!qz.websocket.isActive() && this.isAutoPrint)
+            {
+                startConnection("192.168.1.200:8181");
+            }
+
+        },
+        autoPrintDocument(){
+
+            if(this.isAutoPrint)
+            {
+                var route = `/printticket/document/${this.documentNewId}/ticket`;
+                if(this.resource_documents!=='documents'){
+                    route = `/sale-notes/ticket/${this.documentNewId}/ticket`;
+                }
+
+                this.$http.get(route)
+                    .then(response => {
+                        this.printTicket(response.data)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
+
+        },
+        printTicket(html_pdf){
+
+            if (html_pdf.length > 0)
+            {
+                const config = getUpdatedConfig()
+                const opts = getUpdatedConfig()
+
+                const printData = [
+                    {
+                        type: 'html',
+                        format: 'plain',
+                        data: html_pdf,
+                        options: opts
+                    }
+                ]
+
+                qz.print(config, printData)
+                    .then(()=>{
+
+                        this.$notify({
+                            title: '',
+                            message: 'Impresión en proceso...',
+                            type: 'success'
+                        })
+
+                    })
+                    .catch(displayError)
+            }
+
+        },
     }
 };
 </script>

@@ -611,7 +611,6 @@ export default {
                 })
             }else{
                 this.showDialogOptions = true
-                this.autoPrintDocument()
             }
 
 
