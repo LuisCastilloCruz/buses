@@ -14,7 +14,7 @@
         border-collapse: collapse;
     }
 
-    .aqpfact-color:{
+    .aqpfact-color{
         background-color: #003c71 !important;
     }
 
@@ -179,7 +179,7 @@
     </tr>
 </table>
 
-<table class="bordered" style="width: 100%;font-size:9px;margin-top:20px;text-align:center">
+<table class="bordered" style="width: 100%;font-size:8px;margin-top:20px;text-align:center">
     <tr>
         <td><strong>Item</strong></td>
         <td> <strong>NOMBRES Y APELLIDOS</strong> </td>
