@@ -96,6 +96,16 @@ class SaleController extends Controller
         }
     }
 
+    public function insertItem(Request $request){
+            $pedido_detalle = new PedidoDetalle();
+            $pedido_detalle->pedido_id = $request->pedido_id;
+            $pedido_detalle->producto_id = $request->item["producto_id"];
+            $pedido_detalle->descripcion = $request->item["descripcion"];
+            $pedido_detalle->cantidad = 1;
+            $pedido_detalle->precio = $request->item["precio"];
+            $pedido_detalle->save();
+    }
+
     public function updatePedidoDocument(Request $request){
         try{
 

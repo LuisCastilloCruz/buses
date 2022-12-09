@@ -16,6 +16,7 @@ use App\Models\Tenant\ConfigurationEcommerce;
 use App\Models\Tenant\Order;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use Modules\Restaurante\Models\PedidoDetalle;
 use stdClass;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Tenant\EmailController;
@@ -266,7 +267,27 @@ class RestaurantController extends Controller
 
         return [
             'success' => true,
-            'message' => 'Precio editado correctamente.'
+            'message' => 'Estado cambiado.'
+        ];
+    }
+
+    public function updateQuantity(Request $request) {
+        $item = PedidoDetalle::find($request->pedido_detalle_id);
+        $item->cantidad = $request->cantidad;
+        $item->save();
+
+        return [
+            'success' => true,
+            'message' => 'Cantidad editada.'
+        ];
+    }
+    public function deleteDetail(Request $request) {
+        $item = PedidoDetalle::find($request->pedido_detalle_id);
+        $item->delete();
+
+        return [
+            'success' => true,
+            'message' => 'Producto eliminado.'
         ];
     }
 

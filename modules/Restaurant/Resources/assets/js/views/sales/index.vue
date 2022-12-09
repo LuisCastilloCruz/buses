@@ -98,7 +98,7 @@
                                                 </table>
 
                                                     <p style="font-size: 2em"><b style="color:blue">TOTAL:</b> <b style="color:darkgreen">{{total}}</b></p>
-                                                <div class="text-center">
+                                                <div v-if="pedidos_detalles.length>0" class="text-center">
                                                     <table class="table">
                                                         <tr>
                                                             <td style="width: 50%"><el-button size="small" icon="el-icon-s-order" class="btn-block" @click="precuenta">Precuenta</el-button></td>
@@ -106,7 +106,7 @@
                                                         </tr>
                                                     </table>
                                                 </div>
-                                                <el-button v-if="pedidoId>0  && pedidos_detalles.length>0" type="primary" icon="el-icon-save" @click="finalizarVenta"> Finalizar Venta</el-button>
+                                                <el-button v-if="pedidoId>0" type="primary" icon="el-icon-save" @click="finalizarVenta"> Finalizar Venta</el-button>
                                                     <el-button v-else type="danger" icon="el-icon-plus" @click="abrirMesa"> Abrir Mesa</el-button>
                                             </div>
 
@@ -214,6 +214,7 @@ export default {
 
         //console.log(this.items)
         this.initSocket();
+        this.startConnectionQzTray()
     },
     methods: {
         initSocket(){
@@ -243,6 +244,14 @@ export default {
 
             }catch(error){
                 this.socketClient = null;
+            }
+
+        },
+        startConnectionQzTray(){
+
+            if (!qz.websocket.isActive() && this.isAutoPrint)
+            {
+                startConnection("192.168.1.2:8182");
             }
 
         },
@@ -287,41 +296,130 @@ export default {
 
             this.verificarEstadoMesa(mesa)
         },
-        agregarItem(item){
-            let exist = this.checkIfExists(item.id)
-            if(exist){
-                this.pedidos_detalles.find(item2 => item2.producto_id === item.id).cantidad +=1
-            }else{
-                this.pedidos_detalles.push({producto_id: item.id, cantidad: 1, precio: item.sale_unit_price , descripcion: item.name});
-            }
+        agregarItem(producto){
+            console.log(producto)
+            let exist = this.checkIfExists(producto.id)
 
-            this.calculateTotal()
+
+            if(this.pedidoId>0){
+                if(exist){
+                    let cantidad = this.pedidos_detalles.find(item2 => item2.producto_id === producto.id).cantidad+=1
+                    let producto_detalle_id = this.pedidos_detalles.find(item2 => item2.producto_id === producto.id).id
+                    this.actualizarCantidad(producto_detalle_id,cantidad)
+                }else{
+                    let data ={
+                        pedido_id:this.pedidoId,
+                        producto_id:producto.id,
+                        descripcion:producto.description,
+                        cantidad:1,
+                        precio:producto.sale_unit_price
+                    }
+                    this.insertarItem(this.pedidoId, data)
+                }
+            }
+            // else{
+            //     if(exist){
+            //         console.log("hula")
+            //         this.pedidos_detalles.find(item2 => item2.producto_id === producto.id).cantidad +=1
+            //     }else{
+            //         this.pedidos_detalles.push({producto_id: producto.id, cantidad: 1, precio: producto.sale_unit_price , descripcion: producto.name});
+            //     }
+            // }
+            //
+            // this.calculateTotal()
         },
         disminuirCantidad(item){
-
             if(item.cantidad==1){
                 return
-            }else {
-                this.pedidos_detalles.find(item2 => item2.producto_id === item.id).cantidad -=1
+            }else if(this.pedidoId>0){
+                let cantidad = this.pedidos_detalles.find(item2 => item2.producto_id === item.producto_id).cantidad -=1
+                this.actualizarCantidad(item.id,cantidad)
+            } else {
+                this.pedidos_detalles.find(item2 => item2.producto_id === item.producto_id).cantidad -=1
             }
 
             this.calculateTotal()
         },
         incrementarCantidad(item){
-            this.pedidos_detalles.find(item2 => item2.producto_id === item.id).cantidad +=1
+            let cantidad =  this.pedidos_detalles.find(item2 => item2.producto_id === item.producto_id).cantidad +=1
+            if(this.pedidoId>0){
+                this.actualizarCantidad(item.id,cantidad)
+            }else{
+                this.pedidos_detalles.find(item2 => item2.producto_id === item.producto_id).cantidad +=1
+            }
             this.calculateTotal()
         },
-        borrarItem(index,item){
+        async insertarItem(pedido_id, item){
+            this.loading = true;
+            let data = {
+                pedido_id : pedido_id,
+                item: item
+            }
+            await this.$http
+                .post(`/restaurant/cash/sales/item/insert-item`, data)
+                .then((response) => {
+
+                    this.cargarPedidosDetalle(this.pedidoId)
+
+                    this.$notify({
+                        title: '',
+                        message: 'Producto agregado...',
+                        type: 'success'
+                    })
+
+                })
+                .finally(() => {
+                    this.loading = false;
+                    this.errors = {};
+                })
+                .catch((error) => {
+                    this.axiosError(error);
+                });
+        },
+        async actualizarCantidad(pedido_detalle_id, cantidad){
+            this.loading = true;
+            let data = {
+                pedido_detalle_id : pedido_detalle_id,
+                cantidad: cantidad
+            }
+            await this.$http
+                .put(`/restaurant/taps/pedidos-detalles/update-quantity`, data)
+                .then((response) => {
+
+                    this.cargarPedidosDetalle(this.pedidoId)
+
+                    this.$notify({
+                        title: '',
+                        message: 'Cantidad editada...',
+                        type: 'success'
+                    })
+
+                })
+                .finally(() => {
+                    this.loading = false;
+                    this.errors = {};
+                })
+                .catch((error) => {
+                    this.axiosError(error);
+                });
+        },
+        async borrarItem(index,item){
             if(this.pedidoId>0){
                 let data = {
                     pedido_id : this.pedidoId,
                     item_id: item.id
                 }
                 this.loading = true;
-                this.$http
+                await this.$http
                     .put(`/restaurant/cash/sales/item/delete_item`, data)
                     .then((response) => {
                         this.cargarPedidosDetalle(this.pedidoId)
+
+                        this.$notify({
+                            title: '',
+                            message: 'Producto eliminado',
+                            type: 'success'
+                        })
                     })
                     .finally(() => {
                         this.loading = false;
@@ -417,6 +515,8 @@ export default {
                 .then(data => {
                     this.loading = false;
                     this.pedidoId = data.data.pedidoId;
+                    console.log("hulaaaaaaaaaaaa")
+                    console.log(this.pedidoId)
                     if(this.pedidoId>0){
                         this.cargarPedidosDetalle(this.pedidoId)
                     }else{
@@ -442,8 +542,17 @@ export default {
        },
 
        finalizarVenta(pedidoId = null){
-               //this.pedidoId = pedidoId
-               this.showDialogOptions = true
+
+            if(this.pedidos_detalles.length<=0){
+                this.$notify({
+                    title: '',
+                    message: 'Agregue productos...',
+                    type: 'error'
+                })
+            }else{
+                this.showDialogOptions = true
+            }
+
 
        },
         precuenta(){

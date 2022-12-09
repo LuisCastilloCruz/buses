@@ -93,6 +93,7 @@ Route::prefix('restaurant')->group(function() {
         Route::post('sales/estado-mesa', 'SaleController@getEstadoMesa');
         Route::put('sales/item/update_item', 'SaleController@updateItem')->name('tenant.restaurant.sales.update_item');
         Route::put('sales/item/delete_item', 'SaleController@deleteItem')->name('tenant.restaurant.sales.delete_item');
+        Route::post('sales/item/insert-item', 'SaleController@insertItem')->name('tenant.restaurant.sales.insert_item');
         Route::put('sales/updatePedidoDocument', 'SaleController@updatePedidoDocument')->name('tenant.restaurant.sales.updatePedidoDocument');
     });
 
@@ -103,6 +104,7 @@ Route::prefix('restaurant')->group(function() {
         Route::get('entregados', 'RestaurantController@entregados')->name('tenant.restaurant.entregados');
         Route::post('pedidos/update-state', 'RestaurantController@updateState')->name('tenant.restaurant.update_estate');
         Route::post('item/update-price', 'RestaurantController@savePrice')->name('tenant.restaurant.items');
+        Route::put('pedidos-detalles/update-quantity', 'RestaurantController@updateQuantity')->name('tenant.restaurant.update_quantity');
     });
 
     Route::prefix('mesas')->group(function() {
