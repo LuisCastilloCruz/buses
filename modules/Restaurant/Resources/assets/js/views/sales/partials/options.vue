@@ -63,7 +63,7 @@
                             </el-select>
                         </div>
                         <div class="col-md-8">
-                            <input type="number" class="form-control" v-model="cliente_numero" placeholder="ingrese dni y presione enter" v-on:keyup.enter="buscar_cliente" :maxlength="tipo_doc==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"></input>
+                            <input type="number" class="form-control" v-model="cliente_numero" placeholder="ingrese dni y presione enter"   v-on:keyup.enter="buscar_cliente" :maxlength="tipo_doc==1 ? 8 : 12 " oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"></input>
                             <span v-if="errors.cliente_numero" class="text-danger">{{ errors.cliente_numero[0] }}</span>
                         </div>
                     </div>
@@ -221,6 +221,13 @@ export default {
     },
     mixins: [functions, exchangeRate],
     props: ["showDialogOptions", "recordId", "showClose", "showGenerate", "type", "id_user2","typeUser", "configuration","items","mesa_id","mesaIsActivo"],
+    watch:{
+        cliente_numero(){
+            if(this.cliente_numero.length >= 8){
+                console.log("mandado")
+            }
+        }
+    },
     computed:{
         isAutoPrint: function () {
 
@@ -260,7 +267,7 @@ export default {
             payment_method_types: [],
             producto: [],
             sellers: [],
-            tipo_doc:'DNI',
+            tipo_doc:'1',
             cliente_numero:null,
             cliente_nombre:'',
             percentage_igv: null
@@ -300,6 +307,8 @@ export default {
                 document_id: null,
                 sale_note_id: null
             }
+            this.cliente_numero=""
+            this.cliente_nombre=""
 
         },
         getCustomer() {
@@ -318,7 +327,7 @@ export default {
         },
         initDocument() {
             this.document = {
-                document_type_id: null,
+                document_type_id: "03",
                 series_id: null,
                 establishment_id: null,
                 number: "#",
@@ -385,8 +394,7 @@ export default {
         resetDocument() {
             this.generate = this.showGenerate ? true : false;
             this.initDocument();
-            this.document.document_type_id =
-                this.document_types.length > 0 ? this.document_types[0].id : null;
+            this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
             this.changeDocumentType();
         },
         validatePaymentDestination() {
@@ -403,6 +411,9 @@ export default {
 
         },
         async submit() {
+            if (this.document.customer_id==null) {
+                return this.$message.error('El Cliente es obligatorio');
+            }
             await this.assignDocument();
 
             let validate_payment_destination = await this.validatePaymentDestination()
@@ -555,7 +566,6 @@ export default {
 
             this.initForm();
             this.initDocument();
-            this.document.document_type_id = '03';
             await this.$http.get(`/documents/tables`)
                 .then(response => {
                     this.document_types = response.data.document_types_invoice;
@@ -586,17 +596,18 @@ export default {
                     this.payment_conditions = response.data.payment_conditions;
                     this.document.currency_type_id = "PEN";
                 })
-            this.changeDocumentType()
             await this.getPercentageIgv2()
             //this.validateIdentityDocumentType()
-
             if(this.recordId>0)
             {
                 this.prepararItems()
             }
             this.clickAddPayment()
-
             this.changeDateOfIssue()
+
+            this.document.document_type_id = '03';
+            this.changeDocumentType()
+
             this.startConnectionQzTray()
 
         },
@@ -1002,6 +1013,11 @@ export default {
                 .catch((error) => {
                     this.axiosError(error);
                 });
+        },
+        limitText() {
+            if (this.inputValue.length == 8) {
+                this.buscar_cliente()
+            }
         },
         startConnectionQzTray(){
 

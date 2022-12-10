@@ -575,8 +575,6 @@ export default {
                 .then(data => {
                     this.loading = false;
                     this.pedidoId = data.data.pedidoId;
-                    console.log("hulaaaaaaaaaaaa")
-                    console.log(this.pedidoId)
                     if(this.pedidoId>0){
                         this.cargarPedidosDetalle(this.pedidoId)
                     }else{
