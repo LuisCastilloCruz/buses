@@ -1023,7 +1023,7 @@ export default {
 
             if (!qz.websocket.isActive() && this.isAutoPrint)
             {
-                startConnection("192.168.1.200:8181");
+                startConnection({host: "192.168.1.200"});
             }
 
         },
