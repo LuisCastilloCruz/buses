@@ -265,9 +265,9 @@ class AccountController extends Controller
                     $document['imp_igv'] = number_format($row->total_igv, 2, '.', '');
                 } else {
                     $document['imp_exo'] = number_format($row->total_exonerated, 2, '.', '');
-                    $document['imp_vta'] = number_format($row->total_exonerated, 2, '.', '');
-                    $document['imp_tot'] = number_format($row->total_exonerated, 2, '.', '');
-                    $document['imp_igv'] = 0;
+                    $document['imp_vta'] = number_format($row->total_taxed, 2, '.', '');
+                    $document['imp_tot'] = number_format($row->total, 2, '.', '');
+                    $document['imp_igv'] =  number_format($row->total_igv, 2, '.', '');
                 }
             }
 
@@ -297,7 +297,7 @@ class AccountController extends Controller
     {
         return Document::query()
                                 ->whereBetween('date_of_issue', [$d_start, $d_end])
-                                ->whereIn('document_type_id', ['01', '03'])
+                                ->whereIn('document_type_id', ['01', '03','07','08'])
                                 ->whereIn('currency_type_id', ['PEN','USD'])
                                 ->orderBy('series')
                                 ->orderBy('number')
