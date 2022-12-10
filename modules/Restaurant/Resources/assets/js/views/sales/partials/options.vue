@@ -224,7 +224,7 @@ export default {
     watch:{
         cliente_numero(){
             if(this.cliente_numero.length >= 8){
-                console.log("mandado")
+                this.buscar_cliente()
             }
         }
     },
@@ -979,7 +979,7 @@ export default {
             };
         },
         async buscar_cliente(){
-            let type = (this.tipo_doc == "DNI") ? "1" : "6"
+            let type = this.tipo_doc
             this.loading = true
 
             let response_local =  await this.$http.get(`/transportes/encomiendas/get-pasajero/${type}/${this.cliente_numero}`)
