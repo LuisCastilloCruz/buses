@@ -133,9 +133,9 @@ class TransporteManifiestosController extends Controller
         $pdf = new Mpdf([
             'mode' => 'utf-8',
             'margin_top' => 2,
-            'margin_right' => 2,
+            'margin_right' => 5,
             'margin_bottom' => 0,
-            'margin_left' => 2
+            'margin_left' => 15
         ]);
 
         $company = $this->company;
@@ -144,7 +144,7 @@ class TransporteManifiestosController extends Controller
         $vehiculo = $programacion->vehiculo;
 
         [$pasajes, $pasajesEnTerminal, $pasajesRecogidosRuta] = $this->getPasajeros($programacion, $manifiesto->fecha);
-
+        $leftText = '<div style="position: absolute;rotate: 90; text-align: center;font-size: 1.1em;color:#5d5a5a"><b>NÚMERO DE AUTORIZACIÓN DE IMPRESIÓN: ' .$company->num_aut_manifiesto_pasajero.'</b></div>';
 
 
         $content = view('transporte::manifiestos.manifiesto_pasajes.body',compact(
@@ -157,8 +157,7 @@ class TransporteManifiestosController extends Controller
             'company',
             'establishment'
         ));
-        $pdf->SetHTMLFooter('<div style="text-align: center; font-size: 7pt">Numéro de autorización SUNAT: '.$company->num_aut_manifiesto_pasajero.'</div>'
-            ,0);
+        $pdf->WriteFixedPosHTML($leftText, 5, 100, 200, 90, 'auto');
         $pdf->WriteHTML($content);
 
         $name = 'manifiesto_pasajeros_'.(new DateTime())->getTimestamp().'.pdf';
