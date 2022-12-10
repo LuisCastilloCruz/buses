@@ -77,7 +77,7 @@
     </tr>
 </table>
 
-<table style="width: 100%;font-size:11px;margin-top:20px">
+<table style="width: 100%;font-size:11px;margin-top:10px">
     <tr>
         <td style="width: 100%">
             <table style="width: 100%">
@@ -95,7 +95,7 @@
                 </tr>
 
             </table>
-            <table style="width: 100%;margin-top:20px">
+            <table style="width: 100%;margin-top:10px">
                 <tr>
                     <td style="width: 110px"><strong>Marca de vehículo: </strong></td>
                     <td style="text-align: left;border-bottom:1px solid black">
@@ -121,7 +121,7 @@
 
 <?php $chofer = $manifiesto->chofer; ?>
 <?php $copiloto = $manifiesto->copiloto; ?>
-<table style="width: 100%;font-size:11px;margin-top:20px">
+<table style="width: 100%;font-size:11px;margin-top:10px">
 
     <tr>
 
@@ -158,7 +158,7 @@
 
 </table>
 
-<table style="width: 100%;font-size:9px;margin-top:20px">
+<table style="width: 100%;font-size:9px;margin-top:10px">
     <tr>
         <td style="width: 115px">Cantidad Max de Asientos: </td>
         <td style="border: 1px solid black;width:30px;text-align:center">
@@ -179,7 +179,7 @@
     </tr>
 </table>
 
-<table class="bordered" style="width: 100%;font-size:8px;margin-top:20px;text-align:center">
+<table class="bordered" style="width: 100%;font-size:7px;margin-top:10px;text-align:center">
     <tr>
         <td><strong>Item</strong></td>
         <td> <strong>NOMBRES Y APELLIDOS</strong> </td>
@@ -227,7 +227,7 @@
 </table>
 
 
-<table style="width: 100%;font-size:10px;margin-top:20px">
+<table style="width: 100%;font-size:10px;margin-top:10px">
 
     <tr>
         <td style="width: 100px">OBSERVACIONES: </td>
@@ -239,7 +239,7 @@
 </table>
 
 
-<table style="width: 100%;font-size:10px;margin-top:60px">
+<table style="width: 100%;font-size:10px;margin-top:30px">
 
     <tr>
         <td style="width: 50%;text-align:center">
