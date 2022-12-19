@@ -46,7 +46,7 @@
                                                 <div style="padding: 14px;">
                                                     <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
                                                     <div class="bottom clearfix">
-                                                        <span class="font-medium font-weight-bold"> {{ item.name }}</span>
+                                                        <span class="font-medium font-weight-bold"> {{ item.description }}</span>
 <!--                                                        <el-button type="text" class="button"><h5></h5>{{item.description}}</el-button>-->
                                                     </div>
                                                 </div>
@@ -226,7 +226,7 @@ export default {
 
         //console.log(this.items)
         this.initSocket();
-        //this.startConnectionQzTray()
+        this.startConnectionQzTray()
     },
     methods: {
         initSocket(){
@@ -359,8 +359,9 @@ export default {
         },
         agregarItem(producto){
             console.log(producto)
-            let exist = this.checkIfExists(producto.id)
+            console.log(this.pedidos_detalles)
 
+            let exist = this.checkIfExists(producto.id)
 
             if(this.pedidoId>0){
                 if(exist){
@@ -382,7 +383,7 @@ export default {
                 if(exist){
                     this.pedidos_detalles.find(item2 => item2.producto_id === producto.id).cantidad +=1
                 }else{
-                    this.pedidos_detalles.push({producto_id: producto.id, cantidad: 1, precio: producto.sale_unit_price , descripcion: producto.name});
+                    this.pedidos_detalles.push({producto_id: producto.id, cantidad: 1, precio: producto.sale_unit_price , descripcion: producto.description});
                 }
             }
 
@@ -613,8 +614,40 @@ export default {
 
 
        },
+        generateHtml() {
+            let productsHtml = "";
+            let data=this.pedidos_detalles
+            for (let i = 0; i < data.length; i++) {
+                productsHtml += `<tr>
+                        <td>${data[i].cantidad}</td>
+                        <td>${data[i].descripcion}</td>
+                        <td style="text-align:right;">${data[i].precio}</td>
+                        <td style="text-align:right;">${data[i].precio * data[i].cantidad}</td>
+                    </tr>`;
+            }
+
+            return `
+            <table border="0" width="99%" style="font-size:11px; font-family: Sans-serif, Arial;width: 250px;margin-bottom: 20px;">
+              <tr><th colspan="4" style="text-align:center;">Mesa ${this.mesaActivo.numero} </th></tr>
+              <tr>
+                <th>CANT.</th>
+                <th>DESCRIPCI\xD3N</th>
+                <th>P.UNIT</th>
+                <th style="text-align:right;">TOTAL</th>
+              </tr>
+              ${productsHtml}
+              <tr>
+              <td colspan="3" style="text-align:right;">TOTAL</td>
+              <td style="text-align:right;">${this.total}</td>
+              </tr>
+            </table>
+            <br/>`;
+        },
+
         precuenta(){
             alert("precuenta")
+            // this.startPrint()
+            this.printTicket(this.generateHtml())
         },
         enviar_comanda(){
             alert("comanda")
