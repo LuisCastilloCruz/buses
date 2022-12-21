@@ -215,7 +215,7 @@
                                         effect="dark"
                                         content="Generar guía desde Nota Venta"
                                         placement="left">
-                                        <a :href="`/dispatches/generate/${row.id}`"
+                                        <a :href="`/dispatches/create_new/sale_note/${row.id}`"
                                         class="dropdown-item"
                                         >
                                             Generar guía
@@ -320,8 +320,7 @@
     import DataTable from '../../../components/DataTableSaleNote.vue'
     import UploadToOtherServer from './partials/upload_other_server_group.vue'
     import SaleNotePayments from './partials/payments.vue'
-    // import SaleNotesOptions from './partials/options.vue'
-    import SaleNotesOptions from './partials/option_aqp.vue'
+    import SaleNotesOptions from './partials/options.vue'
     import SaleNoteGenerate from './partials/option_documents'
     import {deletable} from '../../../mixins/deletable'
     import ModalGenerateCPE from './ModalGenerateCPE'

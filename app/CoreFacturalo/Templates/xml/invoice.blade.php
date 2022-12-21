@@ -219,7 +219,8 @@
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>{{ $charge->charge_type_id }}</cbc:AllowanceChargeReasonCode>
-        <cbc:MultiplierFactorNumeric>{{ $charge->factor }}</cbc:MultiplierFactorNumeric>
+        <cbc:MultiplierFactorNumeric>{{ $document->generalApplyNumberFormat($charge->factor, 5) }}</cbc:MultiplierFactorNumeric>
+        {{-- <cbc:MultiplierFactorNumeric>{{ $charge->factor }}</cbc:MultiplierFactorNumeric> --}}
         <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{ $charge->amount }}</cbc:Amount>
         <cbc:BaseAmount currencyID="{{ $document->currency_type_id }}">{{ $charge->base }}</cbc:BaseAmount>
     </cac:AllowanceCharge>
@@ -244,6 +245,16 @@
         <cbc:MultiplierFactorNumeric>{{ $perception->percentage }}</cbc:MultiplierFactorNumeric>
         <cbc:Amount currencyID="PEN">{{ $perception->amount }}</cbc:Amount>
         <cbc:BaseAmount currencyID="PEN">{{ $perception->base }}</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    @endif
+    @if($document->retention)
+    @php($retention = $document->retention)
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>{{ $retention->code }}</cbc:AllowanceChargeReasonCode>
+        <cbc:MultiplierFactorNumeric>{{ $retention->percentage }}</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{ $retention->amount }}</cbc:Amount>
+        <cbc:BaseAmount currencyID="{{ $document->currency_type_id }}">{{ $retention->base }}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     @endif
     <cac:TaxTotal>
@@ -449,19 +460,19 @@
         <cac:Delivery>
             <cac:DeliveryTerms>
                 <cbc:ID>01</cbc:ID>
-                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_service}}</cbc:Amount>
+                <cbc:Amount currencyID="PEN">{{$document->detraction->reference_value_service}}</cbc:Amount>
             </cac:DeliveryTerms>
         </cac:Delivery>
         <cac:Delivery>
             <cac:DeliveryTerms>
                 <cbc:ID>02</cbc:ID>
-                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_effective_load}}</cbc:Amount>
+                <cbc:Amount currencyID="PEN">{{$document->detraction->reference_value_effective_load}}</cbc:Amount>
             </cac:DeliveryTerms>
         </cac:Delivery>
         <cac:Delivery>
             <cac:DeliveryTerms>
                 <cbc:ID>03</cbc:ID>
-                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_payload}}</cbc:Amount>
+                <cbc:Amount currencyID="PEN">{{$document->detraction->reference_value_payload}}</cbc:Amount>
             </cac:DeliveryTerms>
         </cac:Delivery>
         <cac:Delivery>

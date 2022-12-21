@@ -35,15 +35,15 @@ class DispatchRequest extends FormRequest
                 'max:100',
 
             ],
-            'dispatcher.identity_document_type_id'=> [
-                'required',
-            ],
-            'dispatcher.number'=> [
-                'required',
-            ],
-            'dispatcher.name'=> [
-                'required',
-            ],
+//            'dispatcher.identity_document_type_id'=> [
+//                'required',
+//            ],
+//            'dispatcher.number'=> [
+//                'required',
+//            ],
+//            'dispatcher.name'=> [
+//                'required',
+//            ],
             // 'driver.identity_document_type_id'=> [
             //     'required',
             // ],

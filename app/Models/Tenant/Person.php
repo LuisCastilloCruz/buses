@@ -529,6 +529,7 @@
                 ];
             }
 
+            $location_id = [];
             /** @var \App\Models\Tenant\Catalogs\Department  $department */
             $department = \App\Models\Tenant\Catalogs\Department::find($this->department_id);
             if(!empty($department)){
@@ -537,6 +538,7 @@
                 "description" => $department->description,
                 "active" => $department->active,
                 ];
+                array_push($location_id, $department['id']);
             }
             $province = \App\Models\Tenant\Catalogs\Province::find($this->province_id);
 
@@ -546,6 +548,7 @@
                     "description" => $province->description,
                     "active" => $province->active,
                 ];
+                array_push($location_id, $province['id']);
             }
             $district = \App\Models\Tenant\Catalogs\District::find($this->district_id);
 
@@ -555,6 +558,7 @@
                     "description" => $district->description,
                     "active" => $district->active,
                 ];
+                array_push($location_id, $district['id']);
             }
             $seller = User::find($this->seller_id);
             if(!empty($seller)){
@@ -614,6 +618,7 @@
                 'has_discount' => $this->has_discount,
                 'discount_type' => $this->discount_type,
                 'discount_amount' => $this->discount_amount,
+                'location_id' => $location_id,
                 'edad'=>$this->edad
 
             ];
@@ -913,7 +918,6 @@
                         ->take($take);
         }
 
-
         /**
          *
          * Filtro para cliente varios por defecto
@@ -943,5 +947,4 @@
         {
             return $query->whereFilterWithOutRelations()->select('accumulated_points')->findOrFail($id)->accumulated_points;
         }
-
     }

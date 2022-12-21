@@ -6,7 +6,8 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Tenant\{
     Configuration,
-    Document
+    Document,
+    SaleNote
 };
 use Hyn\Tenancy\Environment;
 use App\Models\System\Client;
@@ -14,7 +15,7 @@ use App\Models\System\Client;
 
 class DocumentHelper
 {
-    
+
     /**
      * Obtener fecha de ciclo de facturacion desde client (system), relacionado al tenant
      */
@@ -27,18 +28,18 @@ class DocumentHelper
         return $client->start_billing_cycle;
     }
 
-            
+
     /**
-     * 
+     *
      * Validar si los documentos emitidos superan el limite permitido por el plan (ciclo facturacion)
      *
-     * Usado en: 
+     * Usado en:
      * App\Providers\LockedEmissionProvider
      * App\Http\Controllers\Tenant\DocumentController
-     * 
+     *
      * @param  $configuration
      * @return array
-     */     
+     */
     public static function exceedLimitDocuments($configuration = null)
     {
 
@@ -51,15 +52,15 @@ class DocumentHelper
         {
             //fecha de inicio del ciclo de facturacion
             $start_billing_cycle = self::getStartBillingCycleFromSystem();
-            
+
             if($start_billing_cycle){
 
                 //obtener fecha inicio y fin
                 $start_end_date = self::getStartEndDateForFilterDocument($start_billing_cycle);
-    
+
                 //cantidad de documentos emitidos en el rango de fechas obtenido desde el ciclo de facturacion
                 $quantity_documents = Document::whereBetween('date_of_issue', [ $start_end_date['start_date'], $start_end_date['end_date'] ])->count();
-    
+
                 if($quantity_documents > $limit_documents)
                 {
                     return [
@@ -81,19 +82,19 @@ class DocumentHelper
 
 
     /**
-     * 
-     * Obtener fecha de inicio y fin para filtrar documentos en base 
+     *
+     * Obtener fecha de inicio y fin para filtrar documentos en base
      * a la fecha de inicio del ciclo de facturacion (planes) del cliente
      *
-     * Usado en: 
+     * Usado en:
      * App\Http\Controllers\System\ClientController
-     * 
+     *
      * @param  $start_billing_cycle
      * @return array
      */
     public static function getStartEndDateForFilterDocument($start_billing_cycle)
-    { 
-        
+    {
+
         $day_start_billing = date_format($start_billing_cycle, 'j');
         $day_now = (int) date('j');
         $end = Carbon::parse(date('Y-m-d'));
@@ -107,7 +108,7 @@ class DocumentHelper
         } else {
 
             $init = Carbon::parse(date('Y') . '-' . ((int)date('n')) . '-' . $day_start_billing);
-            
+
         }
 
         return [
@@ -116,5 +117,70 @@ class DocumentHelper
         ];
 
     }
- 
+
+
+    /**
+     * Obtener modelo por tipo de documento
+     *
+     * @param  string $document_type_id
+     * @return string
+     */
+    public function getModelByDocumentType($document_type_id)
+    {
+        $model = null;
+
+        switch ($document_type_id)
+        {
+            case '01':
+            case '03':
+                $model = Document::class;
+                break;
+
+            case '80':
+                $model = SaleNote::class;
+                break;
+        }
+
+        if(is_null($model)) throw new Exception('No se encontró un modelo para el tipo de documento.');
+
+        return $model;
+    }
+
+
+    /**
+     *
+     * Obtener documento para envio de mensaje por ws
+     *
+     * @param  string $model
+     * @param  string $id
+     * @return Document|SaleNote
+     */
+    public function getDocumentDataForSendMessage($model, $id)
+    {
+        return $model::filterDataForSendMessage()->findOrFail($id);
+    }
+
+
+    /**
+     *
+     *  Obtener parametros para envio de mensaje por ws
+     *
+     * @param  mixed $phone_number
+     * @param  mixed $format
+     * @param  mixed $document
+     * @return void
+     */
+    public function getParamsForAppSendMessage($phone_number, $format, $document)
+    {
+        return [
+            'send_type' => 'text',
+            'phone_number' => $phone_number,
+            'message' => "Su comprobante {$document->number_full} ha sido generado correctamente.",
+            'document' => [
+                'filename'=> "{$document->filename}.pdf",
+                'link'=> $document->getUrlPrintByFormat($format)
+            ]
+        ];
+    }
+
 }

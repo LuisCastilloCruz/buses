@@ -1,7 +1,7 @@
 <?php
     $iscType = $value->system_isc_type;
     $warehouse_description = \App\CoreFacturalo\Helpers\Template\ReportHelper::getWarehouseDescription($value, $purchase);
-    
+
     $apply_conversion_to_pen = $request_apply_conversion_to_pen == 'true';
 
     $unit_price = $value->unit_price;
@@ -58,7 +58,7 @@
     </td>
     --}}
     <td class="celda"> {{$purchase->currency_type_id}} {{ $description_apply_conversion_to_pen ?? ''}}</td>
-    <td class="celda"> {{$purchase->exchange_rate_sale}}</td>
+    {{-- <td class="celda"> {{$purchase->exchange_rate_sale}}</td> --}}
     <td class="celda"> {{$value->item->unit_type_id}}</td>
     <td class="celda"> {{$value->relation_item ? $value->relation_item->internal_id:''}}</td>
     <td class="celda"> {{$value->item->description}}</td>
@@ -83,7 +83,7 @@
     <td class="celda"> {{$total_isc}}</td>
     <td class="celda"> {{$value->total_plastic_bag_taxes}}</td>
     <td class="celda"> {{$total}}</td>
-    
+
     <td class="celda">{{ $purchase->exchange_rate_sale }}</td>
     <td class="celda">{{ $warehouse_description }}</td>
 

@@ -4,7 +4,7 @@
 
     use App\Models\Tenant\Configuration;
     use Illuminate\Http\Resources\Json\ResourceCollection;
-
+    use App\Models\Tenant\Person;
     /**
      * Class SaleNoteCollection
      *

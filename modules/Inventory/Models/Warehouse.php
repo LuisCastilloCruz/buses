@@ -84,7 +84,7 @@ class Warehouse extends ModelTenant
 
 
     /**
-     *
+     * 
      * Data para filtros - select
      *
      * @return array
@@ -100,10 +100,10 @@ class Warehouse extends ModelTenant
                 return $row->getRowForFilter();
             });
     }
-
+    
 
     /**
-     *
+     * 
      * Campos para filtros - select
      *
      * @return array
@@ -118,7 +118,7 @@ class Warehouse extends ModelTenant
         ];
     }
 
-
+    
     /**
      *
      * @param  Builder $query
@@ -130,6 +130,22 @@ class Warehouse extends ModelTenant
             'id',
             'description',
         ]);
+    }
+
+    
+    /**
+     * 
+     * Obtener id del almacen
+     *
+     * @param  Builder $query
+     * @param  int $establishment_id
+     * @return Builder
+     */
+    public function scopeGetWarehouseId($query, $establishment_id = null)
+    {
+        $establishment_id = $establishment_id ?? auth()->user()->establishment_id;
+
+        return $query->where('establishment_id', $establishment_id)->select('id')->firstOrFail()->id;
     }
 
 }

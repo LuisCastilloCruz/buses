@@ -312,8 +312,7 @@
                                                 width="145"
                                                 trigger="hover"
                                                 content="Presiona F2">
-                                                <el-button
-                                                           slot="reference"
+                                                <el-button slot="reference"
                                                            class="btn waves-effect waves-light btn-primary btn-sm hidden-sm-down"
                                                            style="width: 180px;"
                                                            type="button"

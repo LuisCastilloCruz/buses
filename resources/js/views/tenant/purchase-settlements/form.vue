@@ -188,7 +188,7 @@
                         </div>
 
                     </div>
-                    
+
                     <!-- METODO DE PAGO -->
                         <div class="row">
                         <template v-if="form.has_payment">
@@ -378,11 +378,11 @@
                                 class="text-right"><b>TOTAL: </b>{{ currency_type.symbol }} {{ form.total }}
                             </h3>
 
-                            
+
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
                     <el-button v-if="form.items !== undefined && form.items.length > 0 && !hide_button"
@@ -400,6 +400,7 @@
                             :localHasGlobalIgv="localHasGlobalIgv"
                             :supplier_id="this.form.supplier_id"
                             :type="this.type"
+                            :percentage-igv="percentage_igv"
                             @add="addRow"></purchase-form-item>
 
         <person-form :external="true"
@@ -536,6 +537,8 @@ export default {
         this.changeHasPayment()
         this.changeHasClient()
         this.initOperationData()
+
+
     },
     created() {
         if (this.type === 'settlements') {
@@ -552,7 +555,7 @@ export default {
             'loadConfiguration',
             'loadEstablishment',
             'loadHasGlobalIgv',
-            
+
         ]),
         changeHasGlobalIgv() {
             // if(this.form.items.length < 1 && this.config.enabled_global_igv_to_purchase === true) {
@@ -585,7 +588,7 @@ export default {
                 this.form.exchange_rate_sale = response
             })
             }
-            
+
         },
         searchRemotePersons(input) {
 
@@ -963,7 +966,7 @@ export default {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
             });
             this.form.items = items
             this.calculateTotal()
@@ -1000,7 +1003,7 @@ export default {
             this.form.total_igv = _.round(total_igv, 2)
             this.form.total_value = _.round(total_value, 2)
             // this.form.total_taxes = _.round(total_igv, 2)
-            
+
             //impuestos (isc + igv)
             this.form.total_taxes = _.round(total_igv, 2)
             this.form.subtotal = _.round(total, 2)
@@ -1053,7 +1056,7 @@ export default {
             // await this.changePaymentMethodType(false)
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
-                        
+
                     if (response.data.success) {
                             //this.resetForm()
                             this.close()

@@ -51,9 +51,9 @@ class PersonController extends Controller
     {
 
         $records = Person::where($request->column, 'like', "%{$request->value}%")
-                            ->where('type', $type)
-                            ->whereFilterCustomerBySeller($type)
-                            ->orderBy('name');
+            ->where('type', $type)
+            ->whereFilterCustomerBySeller($type)
+            ->orderBy('name');
 
         return new PersonCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -71,7 +71,7 @@ class PersonController extends Controller
         $districts = District::whereActive()->orderByDescription()->get();
         $identity_document_types = IdentityDocumentType::whereActive()->get();
         $person_types = PersonType::get();
-        $locations = $this->getLocationCascade();
+        $locations = func_get_locations();
         $zones = Zone::all();
         $sellers = $this->getSellers();
         $discount_types = [
@@ -125,6 +125,14 @@ class PersonController extends Controller
         $data = $request->all();
         unset($data['optional_email'], $data['id']);
         $person->fill($data);
+
+        $location_id = $request->input('location_id');
+        if(count($location_id) === 3) {
+            $person->district_id = $location_id[2];
+            $person->province_id = $location_id[1];
+            $person->department_id = $location_id[0];
+        }
+
         $person->save();
 
         $person->addresses()->delete();

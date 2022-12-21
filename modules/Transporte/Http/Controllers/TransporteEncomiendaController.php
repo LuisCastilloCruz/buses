@@ -559,7 +559,8 @@ class TransporteEncomiendaController extends Controller
             $items->where('item_type_id','01')
                 ->where('name','LIKE', '%'.$search.'%')
                 ->orWhere('second_name', 'LIKE', '%'.$search.'%')
-                ->orWhere('description', 'LIKE', '%'.$search.'%');
+                ->orWhere('description', 'LIKE', '%'.$search.'%')
+                ->Limit(\Config('extra.number_items_at_start'));
 
 
             //return $items->toSql();

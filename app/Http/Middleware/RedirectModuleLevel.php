@@ -8,7 +8,7 @@
     use Illuminate\Http\RedirectResponse;
     use Illuminate\Http\Request;
     use Modules\LevelAccess\Models\ModuleLevel;
-    //use Modules\LevelAccess\Traits\SystemActivityTrait;
+    use Modules\LevelAccess\Traits\SystemActivityTrait;
 
     /**
      * Class RedirectModuleLevel
@@ -20,7 +20,7 @@
     class RedirectModuleLevel
     {
 
-        //use SystemActivityTrait;
+        use SystemActivityTrait;
 
         private $route_path;
 
@@ -150,7 +150,8 @@
                 } elseif (in_array($path[0], ["items", "brands", "item-sets"])) {
                     $group = "items";
                 } elseif (in_array($path[0], ["categories"])) {
-                    $group = "catalogs";
+                    // $group = "catalogs";
+                    $group = "items";
                 } elseif (in_array($path[0], ["summaries", "voided"])) {
                     $group = "summary_voided";
                 } elseif ($path[0] == "quotations") {

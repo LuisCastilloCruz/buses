@@ -82,6 +82,10 @@
                             ->name('tenant.reports.sales.records');
                        Route::get('/pdf-simple', 'ReportDocumentController@pdfSimple')
                             ->name('tenant.reports.sales.pdfSimple');
+                         Route::post('/email', 'ReportDocumentController@email')
+                            ->name('tenant.reports.sales.email');
+                         Route::post('/export', 'ReportDocumentController@export')
+                         ->name('tenant.reports.sales.email');
                    });
                    /**
                     * /reports/sale-notes
@@ -336,7 +340,7 @@
                               ->name('tenant.reports.commissions_detail.filter');
                          Route::get('/records', 'ReportCommissionDetailController@records')
                               ->name('tenant.reports.commissions_detail.records');
- 
+
                      });
 
 
@@ -373,7 +377,7 @@
                          Route::get('', 'DownloadTrayController@index')->name('tenant.reports.download-tray.index');
                          Route::get('records', 'DownloadTrayController@records');
                          Route::get('download/{id}', 'DownloadTrayController@download');
-                         
+
 
                      });
 
@@ -386,7 +390,7 @@
                          Route::get('records', 'ReportTipController@records');
 
                     });
-  
+
 
                 });
 
@@ -405,11 +409,11 @@
 
           Route::domain($app_url)->group(function () {
                Route::middleware('auth:admin')->group(function () {
-                    
+
                     Route::prefix('reports')->group(function () {
-                         
+
                          Route::get('list', 'System\ReportController@listReports')->name('system.list-reports');
-                         
+
                          Route::get('clients', 'System\ReportController@clients');
 
                          Route::prefix('report-login-lockout')->group(function () {
@@ -421,7 +425,7 @@
 
                          });
 
-                         
+
                          Route::prefix('user-not-change-password')->group(function () {
 
                               Route::get('', 'System\ReportUserNotChangePasswordController@index')->name('system.user_not_change_password.index');
@@ -435,4 +439,4 @@
                });
           });
      }
- 
+

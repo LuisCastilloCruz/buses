@@ -6,7 +6,7 @@
             :show-close="false"
             :title="titleDialog"
             :visible="showDialog"
-            width="30%"
+            width="60%"
             @open="create"
         >
             <div v-show="!showGenerate"

@@ -541,11 +541,11 @@
                                                         <!-- Crédito con cuotas -->
                                                         <div v-if="form.payment_condition_id === '03'"
                                                              class="table-responsive">
-                                                            <table v-if="form.fee.length>0"
+                                                            <table
                                                                    class="text-left table"
                                                                    width="100%">
                                                                 <thead>
-                                                                <tr>
+                                                                <tr v-if="form.fee.length > 0">
                                                                     <th class="text-left"
                                                                         style="width: 100px">Fecha
                                                                     </th>
@@ -933,11 +933,11 @@
                                             colspan="2">
                                             <!-- Crédito con cuotas -->
                                             <div v-if="form.payment_condition_id === '03'">
-                                                <table v-if="form.fee.length>0"
+                                                <table
                                                        class="text-left"
                                                        width="100%">
                                                     <thead>
-                                                    <tr>
+                                                    <tr v-if="form.fee.length > 0">
                                                         <th class="text-left"
                                                             style="width: 100px">Fecha
                                                         </th>
@@ -1481,6 +1481,13 @@
                                                        v-text="errors.plate_number[0]"></small>
                                             </div>
                                         </div>
+
+                                        <!-- propinas -->
+                                        <template v-if="config.enabled_tips_pos && !isUpdateDocument">
+                                            <set-tip class="full py-2 border-top mb-1 mt-2" @changeDataTip="changeDataTip"></set-tip>
+                                        </template>
+                                        <!-- propinas -->
+
                                         <div class="col-12 py-2 border-top">
                                             <span class="mr-3">Mostrar términos y condiciones.</span>
                                             <el-switch v-model="form.show_terms_condition"></el-switch>
@@ -1539,6 +1546,7 @@
             :currency-types="currency_types"
             :is-from-invoice="true"
             :percentage-igv="percentage_igv"
+            :isUpdateDocument="isUpdateDocument"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1631,6 +1639,7 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
 import StoreItemSeriesIndex from "../Store/ItemSeriesIndex";
 import DocumentReportCustomer from './partials/report_customer.vue'
+import SetTip from '@components/SetTip.vue'
 
 export default {
     props: [
@@ -1654,6 +1663,7 @@ export default {
         DocumentDetraction,
         DocumentTransportForm,
         DocumentReportCustomer,
+        SetTip,
     },
     mixins: [functions, exchangeRate, pointSystemFunctions],
     data() {
@@ -1746,10 +1756,15 @@ export default {
             error_global_discount: false,
             headers_token: headers_token,
             showDialogReportCustomer: false,
-            report_to_customer_id: null
+            report_to_customer_id: null,
+            retention_query_data: null,
         }
     },
     computed: {
+        isGeneratedFromExternal()
+        {
+            return (this.table != undefined && this.table) && (this.tableId != undefined && this.tableId)
+        },
         showLoadVoucher()
         {
             return this.configuration.show_load_voucher && !this.isUpdateDocument
@@ -1949,6 +1964,14 @@ export default {
 
     },
     methods: {
+        changeDataTip(tip)
+        {
+            if(tip)
+            {
+                this.form.worker_full_name_tips = tip.worker_full_name_tips
+                this.form.total_tips = tip.total_tips
+            }
+        },
         onSuccessUploadVoucher(response, file, fileList, index)
         {
             if (response.success)
@@ -2041,6 +2064,9 @@ export default {
                 has_retention: false,
                 retention: {},
                 quotation_id: null,
+
+                worker_full_name_tips: null, //propinas
+                total_tips: 0, //propinas
             }
 
             this.form_cash_document = {
@@ -2070,6 +2096,10 @@ export default {
 
             this.calculate_customer_accumulated_points = 0
             this.total_exchange_points = 0
+
+            this.retention_query_data = null
+
+            this.$eventHub.$emit('eventInitTip')
 
         },
         startConnectionQzTray() {
@@ -2333,6 +2363,7 @@ export default {
             this.form.fee = data.fee;
             this.form.retention = data.retention
 
+
             this.form.quotation_id = data.quotation_id;
 
             this.form.additional_information = this.onPrepareAdditionalInformation(data.additional_information);
@@ -2344,6 +2375,11 @@ export default {
 
             if (!data.guides) {
                 this.clickAddInitGuides();
+            }
+
+            if(this.isGeneratedFromExternal)
+            {
+                this.preparePaymentsFee(data)
             }
 
             await this.reloadDataCustomers(this.form.customer_id)
@@ -2358,6 +2394,25 @@ export default {
 
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+
+        },
+        preparePaymentsFee(data)
+        {
+            if(this.isCreditPaymentCondition)
+            {
+                // credito
+                if (this.form.payment_condition_id === '02')
+                {
+                    this.clickAddFeeNew()
+                    const index = 0
+                    this.readonly_date_of_due = true
+
+                    this.form.fee[index].payment_method_type_id = data.document_payment_method_type.id
+                    this.form.fee[index].amount = _.sumBy(data.data_payments_fee, 'payment')
+
+                    this.changePaymentMethodType(index)
+                }
+            }
         },
         prepareDataGlobalDiscount(data)
         {
@@ -2395,8 +2450,11 @@ export default {
 
             this.form.has_retention = !_.isEmpty(this.form.retention)
 
-            if (this.form.has_retention) {
+            if (this.form.has_retention)
+            {
                 this.setTotalPendingAmountRetention(this.form.retention.amount)
+
+                this.retention_query_data = { ...this.form.retention }
             }
 
         },
@@ -2996,6 +3054,7 @@ export default {
 
         },
         changeRetention() {
+
             if (this.form.has_retention) {
 
                 let base = this.form.total
@@ -3009,6 +3068,7 @@ export default {
                     amount_pen = _.round(amount * this.form.exchange_rate_sale, 2);
                 }
 
+
                 this.form.retention = {
                     base: base,
                     code: '62', //Código de Retención del IGV
@@ -3020,6 +3080,7 @@ export default {
                     amount_usd: amount_usd,
                 }
 
+                this.setDataVoucherRetention()
                 this.setTotalPendingAmountRetention(amount)
 
             } else {
@@ -3029,6 +3090,16 @@ export default {
                 this.calculateAmountToPayments()
             }
 
+        },
+        setDataVoucherRetention()
+        {
+            if(this.isUpdateDocument && this.retention_query_data)
+            {
+                this.form.retention.voucher_date_of_issue = this.retention_query_data.voucher_date_of_issue
+                this.form.retention.voucher_number = this.retention_query_data.voucher_number
+                this.form.retention.voucher_amount = this.retention_query_data.voucher_amount
+                this.form.retention.voucher_filename = this.retention_query_data.voucher_filename
+            }
         },
         setTotalPendingAmountRetention(amount) {
 

@@ -1676,6 +1676,79 @@ class Document extends ModelTenant
         return $qrCode->displayPNGBase64($text);
     }
 
+
+    /**
+     *
+     * @param  string $format
+     * @return string
+     */
+    public function getUrlPrintByFormat($format)
+    {
+        return url("print/document/{$this->external_id}/{$format}");
+    }
+
+
+    /**
+     *
+     * Filtrar registro para envio de mensajes por whatsapp
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public static function scopeFilterDataForSendMessage($query)
+    {
+        return $query->whereFilterWithOutRelations()
+                    ->select([
+                        'id',
+                        'external_id',
+                        'series',
+                        'number',
+                        'filename'
+                    ]);
+    }
+
+
+    /**
+     *
+     * Placa para reporte de ventas
+     *
+     * @return string
+     */
+    public function getPlateNumberSaleReport()
+    {
+        return $this->plate_number;
+    }
+
+
+    /**
+     *
+     * @return bool
+     */
+    public function isCreditNote()
+    {
+        return $this->document_type_id === DocumentType::CREDIT_NOTE_ID;
+    }
+
+
+    /**
+     *
+     * Determina si es nota credito tipo 13
+     *
+     * @return bool
+     */
+    public function isCreditNoteAndType13()
+    {
+        if($this->isCreditNote())
+        {
+            if($this->note)
+            {
+                return $this->note->isTypePaymentDateAdjustments();
+            }
+        }
+
+        return false;
+    }
+
     public function encomienda(){
         return $this->hasOne(TransporteEncomienda::class,'document_id','id');
     }
@@ -1684,4 +1757,5 @@ class Document extends ModelTenant
     {
         return $this->hasOne(TransportePasaje::class, 'document_id', 'id');
     }
+
 }

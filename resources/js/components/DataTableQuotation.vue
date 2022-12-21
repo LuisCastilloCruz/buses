@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-loading="loading">
         <div class="row ">
 
             <div class="col-md-12 col-lg-12 col-xl-12 ">
@@ -47,7 +47,7 @@
                                 <el-option key="between_dates" value="between_dates" label="Entre fechas"></el-option>
                             </el-select>
                         </div>
-                        
+
                         <template v-if="form.period === 'week'">
                             <div class="col-md-3">
                                 <label class="control-label">Semana</label>
@@ -79,7 +79,15 @@
                                                 value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="true"></el-date-picker>
                             </div>
                         </template>
- 
+
+                        <div class="col-md-3">
+                            <label class="control-label">Estado</label>
+
+                            <el-select v-model="form.state_type_id"  placeholder="Seleccionar" @change="changeStateType" clearable>
+                                <el-option v-for="(option, key) in stateTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                        </div>
+
                     </div>
 
                 </div>
@@ -126,7 +134,11 @@
                 type: Boolean,
                 default: true,
                 required: false
-            }
+            },
+            stateTypes: {
+                type: Array,
+                required: true
+            },
         },
         data () {
             return {
@@ -151,6 +163,7 @@
                         return this.form.month_start > time
                     }
                 },
+                loading: false,
             }
         },
         computed: {
@@ -172,6 +185,10 @@
 
         },
         methods: {
+            changeStateType()
+            {
+                this.getRecords()
+            },
             changeDisabledDates() {
 
                 if (this.form.date_end < this.form.date_start) {
@@ -179,21 +196,21 @@
                 }
 
                 this.selectDate()
-                
+
             },
             selectDate(){
 
                 this.form.date_start = null
                 this.form.date_end = null
-                
+
                 if(this.form.period === 'week' && this.form.week) {
                     this.form.date_start = moment(this.form.week).startOf('week').format('YYYY-MM-DD')
                     this.form.date_end = moment(this.form.week).endOf('week').format('YYYY-MM-DD')
-                
+
                 }else if(this.form.period === 'month' && this.form.month) {
                     this.form.date_start = moment(this.form.month).startOf('month').format('YYYY-MM-DD')
                     this.form.date_end = moment(this.form.month).endOf('month').format('YYYY-MM-DD')
-                
+
                 }else{
                     // console.log(this.form)
 
@@ -237,6 +254,7 @@
                     period: 'month',
                     date_start: null,
                     date_end: null,
+                    state_type_id: null,
                 }
 
             },
@@ -244,11 +262,18 @@
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },
             getRecords() {
+
+                this.loading = true;
+
                 this.search.form = JSON.stringify(this.form)
+
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.records = response.data.data
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
+                })
+                .then(() => {
+                    this.loading = false;
                 });
             },
             getQueryParameters() {

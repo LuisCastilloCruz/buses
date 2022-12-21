@@ -23,6 +23,10 @@
     use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
     use Modules\Inventory\Models\Warehouse;
     use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
+    use App\Models\Tenant\Catalogs\{
+        DocumentType
+    };
+    use Exception;
 
 
     /**
@@ -173,7 +177,7 @@
             //dispatcher
             if ($request->has('searchBy')) {
                 if ($request->searchBy == 'dispatches') {
-                    $identity_document_type_id = ['6', '4', '1'];
+                    $identity_document_type_id = ['6', '4', '1', '0'];
                 }
             }
             $customers = Person::where('number', 'like', "%{$request->input}%")
@@ -364,6 +368,35 @@ $string = var_export($header,true);
         public static function generalPdfResponseFileHeaders($filename)
         {
             return GeneralPdfHelper::pdfResponseFileHeaders($filename);
+        }
+
+
+        /**
+         *
+         * Verificar si es una factura o boleta
+         *
+         * @param  string $document_type_id
+         * @return bool
+         */
+        public function generalIsInvoiceDocument($document_type_id)
+        {
+            return in_array($document_type_id, ['01', '03'], true);
+        }
+
+
+        /**
+         *
+         * Descripcion del tipo de documento
+         *
+         * @return string
+         */
+        public function generalGetDocumentTypeDescription($document_type_id)
+        {
+            $document_type = DocumentType::filterOnlyDescription()->find($document_type_id);
+
+            if($document_type) return $document_type->description;
+
+            throw new Exception('El tipo de documento no existe');
         }
 
     }

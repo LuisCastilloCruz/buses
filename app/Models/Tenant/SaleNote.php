@@ -1640,6 +1640,38 @@
             return $query->where('currency_type_id', self::NATIONAL_CURRENCY_ID);
         }
 
+
+        /**
+         *
+         * Filtrar registro para envio de mensajes por whatsapp
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public static function scopeFilterDataForSendMessage($query)
+        {
+            return $query->whereFilterWithOutRelations()
+                        ->select([
+                            'id',
+                            'external_id',
+                            'series',
+                            'number',
+                            'filename'
+                        ]);
+        }
+
+
+        /**
+         *
+         * Placa para reporte de ventas
+         *
+         * @return string
+         */
+        public function getPlateNumberSaleReport()
+        {
+            return $this->license_plate;
+        }
+
         public function transporte_encomienda(){
             return $this->hasOne(TransporteEncomienda::class,'document_id','id');
         }

@@ -26,7 +26,7 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
     //calculate items
-    $allowed_items = 85 - (\App\Models\Tenant\BankAccount::all()->count())*3;
+    $allowed_items = 80 - (\App\Models\Tenant\BankAccount::all()->count())*3;
     $quantity_items = $document->items()->count();
     $cycle_items = $allowed_items - ($quantity_items * 3);
     $total_weight = 0;
@@ -268,11 +268,10 @@
 <table class="full-width mt-0 mb-0">
     <thead>
     <tr class="">
-        <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">CÓD.</th>
+        <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">CÓDIGO</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">U.M.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="40%">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">LOTE</th>
         <th class="border-top-bottom text-right py-1 desc" class="cell-solid" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="8%">DCTO.</th>
         <th class="border-top-bottom text-center py-1 desc" class="cell-solid" width="12%">TOTAL</th>
@@ -290,7 +289,7 @@
                 @endif
             </td>
             <td class="p-1 text-center align-top desc cell-solid-rl">{{ $row->item->unit_type_id }}</td>
-            <td class="p-1 text-left align-top desc text-upp cell-solid-rl" style="font-size: 9px">
+            <td class="p-1 text-left align-top desc text-upp cell-solid-rl">
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
@@ -321,11 +320,6 @@
                     {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
                 @endif
             </td>
-            <td class="text-center align-top borde-gris">
-                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
-
-            </td>
             <td class="p-1 text-right align-top desc cell-solid-rl">{{ number_format($row->unit_price, 2) }}</td>
             <td class="p-1 text-right align-top desc cell-solid-rl">
                 @if($row->discounts)
@@ -355,7 +349,6 @@
             <td class="p-1 text-right align-top desc cell-solid-rl">
             </td>
             <td class="p-1 text-right align-top desc cell-solid-rl"></td>
-            <td class="p-1 text-right align-top desc cell-solid-rl"></td>
         </tr>
     @endfor
 
@@ -372,7 +365,7 @@
                 @endif
             @endforeach
         </td>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
             OP. GRAVADA {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_taxed, 2) }}</td>
@@ -428,7 +421,7 @@
 
         </td>
 
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
             OP. INAFECTAS {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
@@ -436,33 +429,33 @@
 
 
     <tr>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
             OP. EXONERADAS {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
     </tr>
 
     <tr>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
             OP. GRATUITAS {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_free, 2) }}</td>
     </tr>
     <tr>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
             TOTAL DCTOS. {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount, 2) }}</td>
     </tr>
     <tr>
 
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
             I.G.V. {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_igv, 2) }}</td>
     </tr>
     <tr>
-        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="3">
+        <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="2">
             TOTAL A PAGAR. {{$document->currency_type->symbol}}
         </td>
         <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total, 2) }}</td>
@@ -493,5 +486,16 @@
         @endforeach
     </table>
 @endif
+@if ($document->terms_condition)
+        <br>
+        <table class="full-width">
+            <tr>
+                <td>
+                    <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                    {!! $document->terms_condition !!}
+                </td>
+            </tr>
+        </table>
+    @endif
 </body>
 </html>

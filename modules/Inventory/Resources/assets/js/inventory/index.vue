@@ -89,7 +89,7 @@
 
             <inventories-stock :showDialog.sync="showDialogStock"
                               :recordId="recordId"></inventories-stock>
-
+                            
             <StockGlobal :products="selectedItems" :show.sync="showHideStockMoveGlobal"></StockGlobal>
 
             <stock-import :showDialog.sync="showImportDialog"></stock-import>

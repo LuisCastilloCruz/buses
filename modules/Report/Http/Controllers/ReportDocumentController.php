@@ -16,11 +16,23 @@ use Modules\Report\Exports\DocumentExport;
 use Modules\Report\Http\Resources\DocumentCollection;
 use Modules\Report\Http\Resources\SaleNoteCollection;
 use Modules\Report\Traits\ReportTrait;
+use App\Http\Controllers\Tenant\EmailController;
+use Modules\Report\Mail\DocumentEmail;
+use Mpdf\Mpdf;
+use Modules\Report\Jobs\ProcessDocumentReport;
+use App\Models\Tenant\DownloadTray;
+use Hyn\Tenancy\Models\Hostname;
+use App\Models\System\Client;
+
+use Maatwebsite\Excel\Excel as BaseExcel;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Traits\JobReportTrait;
+use Modules\Report\Exports\DocumentExportStandard;
 
 
 class ReportDocumentController extends Controller
 {
-    use ReportTrait;
+    use ReportTrait, JobReportTrait;
 
 
 
@@ -77,8 +89,8 @@ class ReportDocumentController extends Controller
     }
 
 
-
-    public function pdf(Request $request) {
+    public function pdf(Request $request)
+    {
         set_time_limit (1800); // Maximo 30 minutos
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
@@ -97,13 +109,14 @@ class ReportDocumentController extends Controller
 
         $filters = $request->all();
 
-        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment", "filters"))
+        $pdf = PDF::loadView('report::documents.report_pdf_standard', compact("records", "company", "establishment", "filters"))
             ->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_Ventas_'.date('YmdHis');
 
         return $pdf->download($filename.'.pdf');
     }
+
 
     public function pdfSimple(Request $request) {
         set_time_limit (1800); // Maximo 30 minutos
@@ -134,7 +147,7 @@ class ReportDocumentController extends Controller
 
 
     public function excel(Request $request) {
-        
+
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 

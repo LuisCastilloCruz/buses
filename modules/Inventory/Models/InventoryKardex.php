@@ -233,10 +233,26 @@ class InventoryKardex extends ModelTenant
                 } else {
                     $output = ($transaction->type == 'output') ? $qty : "-";
                 }
+
                 $user = auth()->user();
                 $data['balance'] = $balance += $qty;
                 $data['type_transaction'] = $inventory_kardexable->description;
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $data['guide_id'] = null;
+
+                $guide = Guide::query()->where('id', $inventory_kardexable->guide_id)->first();
+                if($guide) {
+                    $data['number'] = $guide->series.'-'.$guide->number;
+                    $data['date_of_issue'] = $guide->date_of_issue->format('Y-m-d');
+                    $data['guide_id'] = $guide->id;
+                }
+
+                $inventory_transfer = InventoryTransfer::query()->where('id', $inventory_kardexable->inventories_transfer_id)->first();
+                if($inventory_transfer) {
+                    $data['number'] = $inventory_transfer->series.'-'.$inventory_transfer->number;
+                    $data['date_of_issue'] = $inventory_transfer->created_at->format('Y-m-d');
+                }
+
                 if ($inventory_kardexable->warehouse_destination_id === $user->establishment_id) {
                     $data['input'] = $output;
                     $data['output'] = $input;
@@ -270,7 +286,7 @@ class InventoryKardex extends ModelTenant
                 $data['doc_asoc'] = isset($inventory_kardexable->reference_document_id) ? $inventory_kardexable->reference_document->getNumberFullAttribute() : '-';
                 break;
             case $models[7]: // liquidacion de compra
-
+            
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
                 $data['type_transaction'] = ($qty < 0) ? "Anulación Liquidacion Compra" : "Liquidacion Compra";

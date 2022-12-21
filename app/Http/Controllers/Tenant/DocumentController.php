@@ -76,6 +76,9 @@ use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
+use Modules\Inventory\Models\{
+    InventoryConfiguration
+};
 
 class DocumentController extends Controller
 {
@@ -105,7 +108,7 @@ class DocumentController extends Controller
         $view_validator_cpe = config('tenant.validator_cpe');
 
         return view('tenant.documents.index',
-            compact('is_client','import_documents',
+            compact('is_client', 'import_documents',
                 'import_documents_second',
                 'document_import_excel',
                 'configuration',
@@ -341,6 +344,7 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
+        $validate_stock_add_item = InventoryConfiguration::getRecordIndividualColumn('validate_stock_add_item');
 
         $configuration = Configuration::first();
 
@@ -389,6 +393,7 @@ class DocumentController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
+            'validate_stock_add_item',
             'CatItemUnitsPerPackage');
     }
 
@@ -848,6 +853,26 @@ class DocumentController extends Controller
     public function show($documentId)
     {
         $document = Document::findOrFail($documentId);
+        foreach ($document->items as &$item) {
+            $discounts = [];
+            if($item->discounts) {
+                foreach ($item->discounts as $discount) {
+                    $discount_type = ChargeDiscountType::query()->find($discount->discount_type_id);
+                    $discounts[] = [
+                        'amount' => $discount->amount,
+                        'base' => $discount->base,
+                        'description' => $discount->description,
+                        'discount_type_id' => $discount->discount_type_id,
+                        'factor' => $discount->factor,
+                        'percentage' => $discount->factor * 100,
+                        'is_amount' => false,
+                        'discount_type' => $discount_type
+                    ];
+                }
+            }
+            $item->discounts = $discounts;
+        }
+
         return response()->json([
             'data' => $document,
             'success' => true,
@@ -1462,6 +1487,39 @@ class DocumentController extends Controller
         return [
             'document_types' => $document_types,
             'series' => $series,
+        ];
+    }
+
+    public function retention($document_id)
+    {
+        $document = Document::query()
+            ->select('id', 'series', 'number', 'retention')
+            ->where('id', $document_id)->first();
+
+        if ($document->retention) {
+            $retention = $document->retention;
+            $amount = $retention->amount;
+            if ($retention->currency_type_id === 'USD') {
+                $amount = $amount * $retention->exchange_rate;
+            }
+            $amount = round($amount, 0);
+            return [
+                'success' => true,
+                'form' => [
+                    'document_id' => $document_id,
+                    'document_number' => $document->number_full,
+                    'amount' => $amount,
+                    'voucher_date_of_issue' => $retention->voucher_date_of_issue ?: null,
+                    'voucher_number' => $retention->voucher_number ?: null,
+                    'voucher_amount' => $retention->voucher_amount ?: $amount,
+                    'voucher_filename' => $retention->voucher_filename ?: null,
+                ]
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => 'No existe retención'
         ];
     }
 

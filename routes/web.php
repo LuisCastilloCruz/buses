@@ -81,6 +81,11 @@ if ($hostname) {
             Route::post('companies/store-send-pse', 'Tenant\CompanyController@storeSendPse');
             Route::get('companies/record-send-pse', 'Tenant\CompanyController@recordSendPse');
 
+            //configuracion WhatsApp Api
+            Route::post('companies/store-whatsapp-api', 'Tenant\CompanyController@storeWhatsAppApi');
+            Route::get('companies/record-whatsapp-api', 'Tenant\CompanyController@recordWhatsAppApi');
+
+
             //Card Brands
             Route::get('card_brands/records', 'Tenant\CardBrandController@records');
             Route::get('card_brands/record/{card_brand}', 'Tenant\CardBrandController@record');
@@ -387,6 +392,8 @@ if ($hostname) {
                 Route::get('/data_table', 'Tenant\DispatchController@data_table');
                 Route::get('/search/customers', 'Tenant\DispatchController@searchCustomers');
                 Route::get('/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
+                Route::post('/status_ticket', 'Tenant\Api\DispatchController@statusTicket');
+                Route::get('create_new/{table}/{id}', 'Tenant\DispatchController@createNew');
             });
 
             Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');

@@ -170,7 +170,7 @@
 
         return compact( 'customers', 'document_types','series','establishments', 'state_types');
 
-    }
+        }
 
         public function edit($id)
         {

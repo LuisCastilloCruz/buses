@@ -39,6 +39,8 @@ class UserRequest extends FormRequest
             'type' => [
                 'required'
             ],
+            'password' => $password_rules,
+
             'establishment_id' => [
                 'required'
             ],

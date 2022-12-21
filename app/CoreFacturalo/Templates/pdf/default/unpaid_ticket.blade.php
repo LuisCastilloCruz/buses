@@ -86,7 +86,7 @@
                 @endforeach
         @endif
     </tr>
-
+    
     <tr>
         <td class="pt-3"><p class="desc">Documento por cobrar:</p></td>
         <td class="pt-3"><p class="desc"> {{ $tittle }}</p></td>
@@ -132,13 +132,11 @@
                 <br/>ICBPER : {{ $row->total_plastic_bag_taxes }}
             @endif
 
-            @if($row->additional_information)
-                @foreach($row->additional_information as $information)
-                    @if ($information)
-                        <br/>{{ $information }}
-                    @endif
-                @endforeach
-            @endif
+            @foreach($row->additional_information as $information)
+                @if ($information)
+                    <br/>{{ $information }}
+                @endif
+            @endforeach
 
             @if($row->attributes)
                 @foreach($row->attributes as $attr)

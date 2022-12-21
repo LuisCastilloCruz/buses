@@ -100,6 +100,16 @@ class Facturalo
         return $this->document;
     }
 
+    public function setXmlUnsigned($xmlUnsigned)
+    {
+        $this->xmlUnsigned = $xmlUnsigned;
+    }
+
+    public function getXmlSigned()
+    {
+        return $this->xmlSigned;
+    }
+
     public function setType($type)
     {
         $this->type = $type;
@@ -119,6 +129,7 @@ class Facturalo
             case 'debit':
             case 'credit':
                 $document = Document::create($inputs);
+                $document->note()->create($inputs['note']);
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
@@ -339,7 +350,13 @@ class Facturalo
         $format_pdf = ($format != null) ? $format : $format_pdf;
         $this->type = ($type != null) ? $type : $this->type;
 
-        // dd($this->document);
+        if(in_array($this->document->document_type_id, ['09', '31'])) {
+            if($this->document->qr_url) {
+                $qrCode = new QrCodeGenerate();
+                $this->document->qr = $qrCode->displayPNGBase64($this->document->qr_url);
+            }
+        }
+
         $base_pdf_template = Establishment::find($this->document->establishment_id)->template_pdf;
         if (($format_pdf === 'ticket') OR
             ($format_pdf === 'ticket_58') OR
@@ -434,11 +451,19 @@ class Facturalo
 
             //ajustes para footer amazonia
 
-            if($this->configuration->legend_footer AND $format_pdf === 'ticket') {
+            if($this->configuration->legend_footer
+                AND $format_pdf === 'ticket'
+                AND !in_array($base_pdf_template, ['ticket_c']))
+            {
                 $height_legend = 15;
-            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_58') {
+            } elseif($this->configuration->legend_footer
+                AND $format_pdf === 'ticket_58'
+                AND !in_array($base_pdf_template, ['ticket_c']))
+            {
                 $height_legend = 30;
-            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_50') {
+            } elseif($this->configuration->legend_footer
+                AND $format_pdf === 'ticket_50')
+            {
                 $height_legend = 10;
             } else {
                 $height_legend = 10;
@@ -448,6 +473,7 @@ class Facturalo
 
             if($this->type === 'dispatch')
             {
+                $append_height = 15;
                 $this->appendHeightFromDispatch($append_height, $format, $this->document);
             }
 

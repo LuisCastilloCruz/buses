@@ -540,6 +540,12 @@
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
 
+        <lots-group
+            :lots_group="form.lots_group"
+            :quantity="form.quantity"
+            :showDialog.sync="showDialogLots"
+            @addRowLotGroup="addRowLotGroup">
+        </lots-group>
 
         <warehouses-detail
             :isUpdateWarehouseId="isUpdateWarehouseId"
@@ -558,6 +564,7 @@
 <script>
 
 import itemForm from '../../items/form.vue'
+import LotsGroup from '../../documents/partials/lots_group'
 
 import {calculateRowItem} from '../../../../helpers/functions'
 import WarehousesDetail from './warehouses.vue'
@@ -584,7 +591,8 @@ export default {
     components: {
         itemForm,
         WarehousesDetail,
-        'vue-ckeditor': VueCkeditor.component
+        'vue-ckeditor': VueCkeditor.component,
+        LotsGroup
     },
     data() {
         return {
@@ -1136,7 +1144,7 @@ export default {
                     })
                 })
             }
-            // this.form.lots_group = this.form.item.lots_group
+            this.form.lots_group = this.form.item.lots_group
             if(this.form.item.name_product_pdf && this.config.item_name_pdf_description){
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }

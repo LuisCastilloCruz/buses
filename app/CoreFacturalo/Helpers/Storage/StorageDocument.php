@@ -48,6 +48,11 @@ trait StorageDocument
                 $filename = 'R-'.$filename;
                 $extension = 'zip';
                 break;
+            case 'cdr_xml':
+                $filename = 'R-'.$filename;
+                $extension = 'xml';
+                $file_type = 'cdr';
+                break;
             case 'purchase_quotation':
                 $extension = 'pdf';
                 break;

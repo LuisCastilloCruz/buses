@@ -1,5 +1,6 @@
 <?php
 
+    use App\Services\ItemLotsGroupService;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\ItemSet;
     use App\CoreFacturalo\Helpers\Template\TemplateHelper;
@@ -11,8 +12,8 @@
     } else {
         $observation = $data['additional_information']?$data['additional_information'][0]:'';
     }
-    
-    
+
+
     $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
@@ -55,7 +56,7 @@ if (!isset($qty)) {
     $category = $relation_item->category->name;
     $brand = $relation_item->brand->name;
 
-    
+
     // aplicar conversión si es que esta habilitada la configuracion
     if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
     {
@@ -117,6 +118,12 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
 
     $warehouse_description = \App\CoreFacturalo\Helpers\Template\ReportHelper::getWarehouseDescription($value, $document);
 
+
+    $item_lots_group_service = new ItemLotsGroupService();
+
+    $id_lote_selected = $value->item->IdLoteSelected ?? [];
+    $item_lots_groups_description = $item_lots_group_service->getItemLotGroupLineBreak($id_lote_selected);
+
 ?>
 <tr>
     <td class="celda">{{ $loop->iteration }}</td>
@@ -164,7 +171,7 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
     </td>
     <td class="celda">{{ $observation }} </td>
     <td class="celda">{{ $document->currency_type_id }} {{ $description_apply_conversion_to_pen ?? ''}}</td>
-    <td class="celda">{{ $document->exchange_rate_sale }}</td>
+    {{-- <td class="celda">{{ $document->exchange_rate_sale }}</td> --}}
     <td class="celda">
         @if($isSaleNote)
             {{ $item->unit_type_id }}
@@ -199,6 +206,11 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
         @endforeach
     </td>
     <td class="celda">{{ $series }}</td>
+
+    <td class="celda">
+        {!! $item_lots_groups_description !!}
+    </td>
+
     <td class="celda">{{ $model }}</td>
     <td class="celda">{{(!empty($purchase_unit_price)?$pack_price_prefix:'')}}{{ $purchase_unit_price }}</td>
     <td class="celda">{{ $unit_value }}</td>

@@ -41,10 +41,10 @@ class ReportGeneralItemController extends Controller
     }
 
 
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $apply_conversion_to_pen = $this->applyConversiontoPen($request);
-        
+
         return view('report::general_items.index', compact('apply_conversion_to_pen'));
     }
 
@@ -53,7 +53,7 @@ class ReportGeneralItemController extends Controller
     {
 
         $records = $this->getRecordsItems($request->all())->latest('id');
-        
+
         return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -104,7 +104,8 @@ class ReportGeneralItemController extends Controller
     {
         /* columna state_type_id */
         $documents_excluded = [
-            '11' // Documentos anulados
+            '11', // Documentos anulados
+            '09' // Documentos rechazados
         ];
         if( $document_type_id && $document_type_id == '80' ) {
             $relation = 'sale_note';
@@ -232,7 +233,7 @@ class ReportGeneralItemController extends Controller
             ->type($request->type)
             ->document_type_id($document_type_id)
             ->request_apply_conversion_to_pen($request_apply_conversion_to_pen);
-            
+
         return $generalItemExport->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
 
     }

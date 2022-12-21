@@ -1,5 +1,7 @@
 <?php
 
+Route::get('generate_token', 'Tenant\Api\MobileController@getSeries');
+
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 if ($hostname) {
     Route::domain($hostname->fqdn)->group(function () {
@@ -44,6 +46,8 @@ if ($hostname) {
             Route::post('services/consult_cdr_status', 'Tenant\Api\ServiceController@consultCdrStatus');
             Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
             Route::post('perceptions', 'Tenant\Api\PerceptionController@store');
+
+            Route::post('dispatches/status_ticket', 'Tenant\Api\DispatchController@statusTicket');
 
             Route::post('documents_server', 'Tenant\Api\DocumentController@storeServer');
             Route::get('document_check_server/{external_id}', 'Tenant\Api\DocumentController@documentCheckServer');

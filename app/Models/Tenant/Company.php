@@ -44,6 +44,15 @@ class Company extends ModelTenant
         'password_pse',
         'url_login_pse',
         'user_pse',
+
+        'ws_api_token',
+        'ws_api_phone_number_id',
+
+        'soap_sunat_username',
+        'soap_sunat_password',
+        'api_sunat_id',
+        'api_sunat_secret',
+
         'num_aut_manifiesto_pasajero'
 
     ];
@@ -160,6 +169,19 @@ class Company extends ModelTenant
         }
 
         return $app_logo;
+    }
+
+
+    /**
+     *
+     * Filtrar datos para whatsapp api
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeSelectDataWhatsAppApi($query)
+    {
+        return $query->select('ws_api_token', 'ws_api_phone_number_id');
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace App\CoreFacturalo;
 use Illuminate\Support\Facades\Log;
+
 class Template
 {
     public function pdf($base_template, $template, $company, $document, $format_pdf)

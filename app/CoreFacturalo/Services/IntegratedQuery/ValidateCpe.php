@@ -72,6 +72,7 @@ class ValidateCpe
         '40' => 'DEVUELTO'
     ];
 
+
     public function __construct($token, $company_number, $document_type_id, $series, $number, $date_of_issue, $total)
     {
         $this->company_number = $company_number;
