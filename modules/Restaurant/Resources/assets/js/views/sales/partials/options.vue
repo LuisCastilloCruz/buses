@@ -30,7 +30,7 @@
             </template>
 
         </div>
-        <br />
+
         <div class="row" v-show="!showGenerate">
             <div class="col-md-12">
                 <el-input v-model="customer_email">
@@ -39,7 +39,7 @@
                 <!--<small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
             </div>
         </div>
-        <br />
+
         <div class="row" v-if="typeUser == 'admin'">
             <div class="col-md-9" v-show="!showGenerate">
                 <div class="form-group">
@@ -243,7 +243,7 @@ export default {
     data() {
         return {
             customer_email: "",
-            titleDialog: null,
+            titleDialog: "Finalizando venta...",
             loading: false,
             resource: "order-notes",
             resource_documents: "documents",
@@ -445,7 +445,12 @@ export default {
                             this.showDialogDocumentOptions = true;
                         }
                         this.saveCashDocument();
-                        this.updatePedidoDocument(this.recordId,this.documentNewId)
+
+                        if(this.recordId>0){
+                            this.updatePedidoDocument(this.recordId,this.documentNewId)
+                            this.$emit('update:recordId',0);
+                            this.$emit('update:mesaIsActivo',false);
+                        }
 
                         this.autoPrintDocument()
 
@@ -453,9 +458,7 @@ export default {
                         this.initDocument()
                         this.$eventHub.$emit('onLimPiarDatos')
                         this.$emit('update:showDialogOptions',false);
-                        this.$emit('update:mesaIsActivo',false);
 
-                        this.$emit('update:recordId',0);
                         this.loading_submit = false;
                     } else {
                         console.log('ocurrió algun error en else')
@@ -598,10 +601,10 @@ export default {
                 })
             await this.getPercentageIgv2()
             //this.validateIdentityDocumentType()
-            if(this.recordId>0)
-            {
+            // if(this.recordId>0)
+            // {
                 this.prepararItems()
-            }
+            // }
             this.clickAddPayment()
             this.changeDateOfIssue()
 

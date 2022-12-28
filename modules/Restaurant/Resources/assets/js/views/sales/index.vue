@@ -18,8 +18,78 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div v-if="AqpTap.active==1" class="col-md-12">
-                        POS
+                    <div v-if="AqpTap.active==1" class="col-md-12 px-5">
+                        <div class="row">
+                            <div class="col-md-8 text-center">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3 class="font-weight-bold">Seleccione sus productos</h3>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div v-for="item in items" :key="item.id" class="el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item)">
+                                        <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%">
+                                        <div style="padding: 14px;">
+                                            <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
+                                            <div class="bottom clearfix">
+                                                <span class="font-medium font-weight-bold"> {{ item.description }}</span>
+                                                <!--<el-button type="text" class="button"><h5></h5>{{item.description}}</el-button>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-4 border-left">
+                                <div class="row text-center">
+                                    <div class="col-md-12 table-responsive px-0">
+                                        <h3><b style="color: #0A7CB5"> RESUMEN DEL PEDIDO</b></h3>
+                                        <h5>Clientes Varios</h5>
+                                        <div style="width: 100%" v-loading="loading"></div>
+                                        <table class="table">
+                                            <tbody>
+                                            <tr v-for="(item, index) in pedidos_detalles" :key="index">
+                                                <td class="py-2">
+                                                    <table class="table m-0 m-0" style="border:0px">
+                                                        <tr>
+                                                            <td style="border: 0px;margin: 0; padding: 0" class="text-left">
+                                                                <el-tooltip class="item" effect="dark" content="Disminuir" placement="top-start">
+                                                                    <el-button type="warning" icon="el-icon-remove-outline" @click="disminuirCantidad(item)"> </el-button>
+                                                                </el-tooltip>
+                                                                <el-tooltip class="item" effect="dark" content="Incrementar" placement="top-start">
+                                                                    <el-button type="success" icon="el-icon-plus" @click="incrementarCantidad(item)"> </el-button>
+                                                                </el-tooltip>
+                                                            </td>
+
+                                                            <td style="border: 0px;margin: 0; padding: 0" class="text-left">
+                                                                <p style="font-size: 1.5em">
+                                                                    <span class="text-blue">S/ {{ item.precio }}</span> x <span style="color:darkgreen">{{ item.cantidad }}</span>
+                                                                    {{ item.descripcion }}
+                                                                </p>
+                                                            </td>
+
+                                                            <td style="border: 0px;margin: 0; padding: 0" class="text-right">
+                                                                <el-tooltip class="item" effect="dark" content="Añadir Nota" placement="top-start">
+                                                                    <el-button type="primary" icon="el-icon-document"> </el-button>
+                                                                </el-tooltip>
+                                                                <el-tooltip class="item" effect="dark" content="Borrar item" placement="top-start">
+                                                                    <el-button type="danger" icon="el-icon-delete" @click="borrarItem(index,item)"> </el-button>
+                                                                </el-tooltip>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <p style="font-size: 2em"><b style="color:blue">TOTAL:</b> <b style="color:darkgreen">{{total}}</b></p>
+                                        <el-button type="primary" icon="el-icon-save" @click="finalizarVenta"> Finalizar Venta</el-button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div v-else-if="AqpTap.active==2" class="col-md-12">
                         <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -154,7 +224,8 @@ export default {
     components: {
         tenantRestaurantPedidosOptions,
         tenantRestaurantPrecios,
-        tenantRestaurantPedidos
+        tenantRestaurantPedidos,
+        // tenantRestaurantPos
     },
     props: {
         configuracionSocket:{
@@ -199,7 +270,8 @@ export default {
             resource: "restaurant",
             recordId: null,
             AqpTap:{
-                active:2 //mesas
+                active:1 //pos
+                //active:2 //mesas
                 //active:4 //precios
             },
             activeName: '',
@@ -358,9 +430,9 @@ export default {
             this.verificarEstadoMesa(mesa)
         },
         agregarItem(producto){
+            console.log("esto es temporal")
             console.log(producto)
             console.log(this.pedidos_detalles)
-
             let exist = this.checkIfExists(producto.id)
 
             if(this.pedidoId>0){
@@ -374,7 +446,8 @@ export default {
                         producto_id:producto.id,
                         descripcion:producto.description,
                         cantidad:1,
-                        precio:producto.sale_unit_price
+                        precio:producto.sale_unit_price,
+                        item:producto
                     }
                     this.insertarItem(this.pedidoId, data)
                 }
@@ -383,7 +456,7 @@ export default {
                 if(exist){
                     this.pedidos_detalles.find(item2 => item2.producto_id === producto.id).cantidad +=1
                 }else{
-                    this.pedidos_detalles.push({producto_id: producto.id, cantidad: 1, precio: producto.sale_unit_price , descripcion: producto.description});
+                    this.pedidos_detalles.push({producto_id: producto.id, cantidad: 1, precio: producto.sale_unit_price , descripcion: producto.description,item:producto});
                 }
             }
 
@@ -556,6 +629,9 @@ export default {
                 const { data } = await this.$http.get(`/restaurant/cash/sales/get-pedidos-detalles/${pedido_id}`);
                 this.loading = false;
                 this.pedidos_detalles = data.data;
+
+                console.log("esto es de base")
+                console.log(this.pedidos_detalles)
 
                 this.calculateTotal()
 
