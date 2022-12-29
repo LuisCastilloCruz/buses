@@ -240,7 +240,7 @@ $fondo=$configuracion[0]['fondo'];
                     <td><strong>Dni del conductor:</strong>: <?php echo e($document->driver->number); ?></td>
                 </tr>
                 <?php endif; ?>
-                <?php if($document->driver->license): ?>
+                <?php if($document->driver): ?>
                 <tr>
                     <td><strong>N° Licencia:</strong> <?php echo e($document->driver->license); ?></td>
                 </tr>
