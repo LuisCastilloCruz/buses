@@ -235,7 +235,7 @@ $fondo=$configuracion[0]['fondo'];
                 <td>Placa semirremolque: <?php echo e($document->secondary_license_plates->semitrailer); ?></td>
                 <?php endif; ?>
                 <?php endif; ?>
-                <?php if($document->driver->number): ?>
+                <?php if($document->driver): ?>
                 <tr>
                     <td><strong>Dni del conductor:</strong>: <?php echo e($document->driver->number); ?></td>
                 </tr>
