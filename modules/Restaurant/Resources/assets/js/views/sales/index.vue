@@ -1,6 +1,7 @@
 <template>
     <div style="width: 100%">
         <div class="card mb-0 page-header pr-0">
+        </div>
             <div class="card-body">
                 <div class="row">
                     <!-- piso -->
@@ -25,20 +26,61 @@
                                     <div class="col-md-12">
                                         <h3 class="font-weight-bold">Seleccione sus productos</h3>
                                     </div>
+
                                 </div>
-                                <div class="row">
-                                    <div v-for="item in items" :key="item.id" class="el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item)">
-                                        <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%">
-                                        <div style="padding: 14px;">
-                                            <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
-                                            <div class="bottom clearfix">
-                                                <span class="font-medium font-weight-bold"> {{ item.description }}</span>
-                                                <!--<el-button type="text" class="button"><h5></h5>{{item.description}}</el-button>-->
+                                <div class="row ">
+                                    <div class="col-md-12" style="height: 700px; overflow-y: scroll">
+ <!--                                       <el-table-->
+<!--                                            :height="650"-->
+<!--                                            :data="items.filter(data => !search || data.description.toLowerCase().includes(search.toLowerCase()))"-->
+<!--                                            style="width: 100%">-->
+<!--                                            <el-table-column-->
+<!--                                            style="display: block;float: left">-->
+<!--                                                <template slot-scope="scope">-->
+<!--                                                    <div @click="agregarItem(scope.row)" style="background: rgb(233 233 233);padding: 10px;border-radius: 8px;">-->
+<!--                                                        <img :src="'/storage/uploads/items/'+scope.row.image_small" class="image" width="150" height="150" style="max-width: 100%">-->
+<!--                                                        <p class="text-center pb-0 mb-0 mt-2" style="font-size: 2em">  S/ {{ scope.row.sale_unit_price }}</p>-->
+<!--                                                        <p class="text-center pb-0 mb-0" style="font-size: 1.2em"><b>{{scope.row.description}}</b></p>-->
+<!--                                                    </div>-->
+<!--                                                </template>-->
+<!--                                            </el-table-column>-->
+<!--                                            <el-table-column-->
+<!--                                                align="right">-->
+<!--                                                <template slot="header" slot-scope="scope">-->
+<!--                                                    <el-input-->
+<!--                                                        v-model="search"-->
+<!--                                                        size="mini"-->
+<!--                                                        placeholder="Escriba el nombre"/>-->
+<!--                                                </template>-->
+<!--                                            </el-table-column>-->
+<!--                                        </el-table>-->
+
+<!--                                        <el-divider></el-divider>-->
+
+<!--                                        <div style="text-align: center">-->
+<!--                                            <el-pagination-->
+<!--                                                background-->
+<!--                                                layout="prev, pager, next"-->
+<!--                                                @current-change="handleCurrentChange"-->
+<!--                                                :page-size="pageSize"-->
+<!--                                                :total="total_page">-->
+<!--                                            </el-pagination>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+
+
+                                        <div  v-for="item in items" :key="item.id" class="el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item)">
+                                            <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%">
+                                            <div style="padding: 14px;">
+                                                <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
+                                                <div class="bottom clearfix">
+                                                    <span class="font-medium font-weight-bold"> {{ item.description }}</span>
+                                                    <!--<el-button type="text" class="button"><h5></h5>{{item.description}}</el-button>-->
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                             <div class="col-md-4 border-left">
                                 <div class="row text-center">
@@ -210,7 +252,7 @@
                                :mesaIsActivo.sync="mesaIsActivo"
                                 @onLimPiarDatos="onLimPiarDatos"
                                :configuration="configuration"></tenant-restaurant-pedidos-options>
-        </div>
+
     </div>
 </template>
 <script>
@@ -262,6 +304,15 @@ export default {
             return false
 
         },
+        displayData() {
+            if(this.search == null) return this.pedidos_detalles;
+
+            this.filtered = this.pedidos_detalles.filter(data => !this.search || data.name.toLowerCase().includes(this.search.toLowerCase()));
+
+            this.total_page = this.filtered.length;
+
+            return this.filtered.slice(this.pageSize * this.page - this.pageSize, this.pageSize * this.page);
+        }
     },
     data() {
         return {
@@ -289,10 +340,16 @@ export default {
                 // }
             ],
             total:0,
-            pedidoId:0
+            pedidoId:0,
+            filtered: [],
+            search: '',
+            page: 1,
+            pageSize: 4,
+            total_page: 5
         };
     },
     created() {
+        console.log(this.items)
         this.handleClick()
         this.vistaMesas = true
 
@@ -727,7 +784,10 @@ export default {
         },
         enviar_comanda(){
             alert("comanda")
-        }
+        },
+        handleCurrentChange(val) {
+            this.page = val;
+        },
     }
 }
 </script>
