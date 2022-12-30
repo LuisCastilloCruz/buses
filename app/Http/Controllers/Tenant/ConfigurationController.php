@@ -621,6 +621,60 @@ class ConfigurationController extends Controller
         ];
     }
 
+
+    /**
+     *
+     * Consulta de imagenes footer
+     *
+     * @return array
+     */
+    public function getPdfFooterImages()
+    {
+        return Configuration::first()->getDataPdfFooterImages();
+    }
+
+
+    /**
+     *
+     * Cargar imagenes para pdf footer
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function pdfFooterImages(Request $request)
+    {
+        $images = $request->images;
+        $data = [];
+        $configuration = Configuration::first();
+        $folder = 'pdf_footer_images';
+
+        foreach ($images as $index => $image)
+        {
+            $temp_path = $image['temp_path'] ?? null;
+
+            if($temp_path)
+            {
+                $old_filename = $image['filename'];
+                UploadFileHelper::checkIfValidFile($old_filename, $temp_path, true);
+                $first_old_filename = explode('.', $old_filename)[0];
+                $filename = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $temp_path, "{$first_old_filename}_{$index}_", true);
+            }
+            else
+            {
+                $filename = $image['name'];
+            }
+
+            $data [] = [
+                'filename' => $filename,
+            ];
+
+        }
+
+        $configuration->pdf_footer_images = $data;
+        $configuration->update();
+
+        return $this->generalResponse(true, 'Proceso realizado correctamente.');
+    }
     public function changeColor1(Request $request){
         $format = Configuration::first();
         $format->color1=$request->dato;
@@ -651,4 +705,5 @@ class ConfigurationController extends Controller
             'message' => 'Configuración actualizada'
         ];
     }
+
 }

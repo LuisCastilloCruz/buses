@@ -32,6 +32,14 @@ if($current_hostname) {
 
             });
 
+
+            Route::prefix('cash-reports')->group(function() {
+
+                Route::get('summary-daily-operations/{cash_id}', 'CashReportController@reportSummaryDailyOperations');
+                Route::get('payments-associated-cash/{cash_id}', 'CashReportController@reportPaymentsAssociatedCash');
+
+            });
+
             Route::prefix('transportes/cash')->group(function() {
 
                 Route::get('report-a4/{cash}', 'CashController@reportA4');

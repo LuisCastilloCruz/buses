@@ -105,6 +105,12 @@ export default {
       this.$http
         .post(`/${this.resource}/stock-multilple`, data)
         .then((response) => {
+
+          if(response.data.success)
+          {
+            this.$eventHub.$emit('reloadData')
+          }
+
           this.$message({
             message: response.data.message,
             type: "success",
@@ -118,7 +124,7 @@ export default {
       this.$emit("update:show", false);
     },
     create() {
-      
+
       const params = {
         ids: this.products.map((p) => p.id),
       };

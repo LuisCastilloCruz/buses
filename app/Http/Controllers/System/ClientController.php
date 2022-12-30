@@ -434,6 +434,7 @@ use Carbon\Carbon;
                     'smtp_password' => $client->smtp_password,
                     'smtp_encryption' => $client->smtp_encryption,
                 ];
+                if (empty($client->smtp_password)) unset($clientData['smtp_password']);
 
                 $oldConfiguration = json_decode($client->configuracion_socket, true);
                 $cliente = $client;

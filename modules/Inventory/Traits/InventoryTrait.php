@@ -635,13 +635,13 @@ trait InventoryTrait
 
 
     /**
-     * 
+     *
      * Verifica si el producto ha tenido lotes en venta
      *
      * Usado en:
      * InventoryKardexServiceProvider - purchase_item_delete
      * InventoryKardexServiceProvider - purchase_item_settlement_delete
-     * 
+     *
      * @param PurchaseItem $purchase_item
      *
      * @throws Exception
@@ -689,7 +689,7 @@ trait InventoryTrait
      * Usado en:
      * InventoryKardexServiceProvider - purchase_item_delete
      * InventoryKardexServiceProvider - purchase_item_settlement_delete
-     * 
+     *
      * @param PurchaseItem $purchase_item
      * @throws Exception
      */
@@ -713,7 +713,7 @@ trait InventoryTrait
         if($lot_enabled) {
         //if(array_key_exists('lots_enabled', $purchase_item->item)) {
             if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
-                
+
                 /*
                 $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
                 */
@@ -816,6 +816,17 @@ trait InventoryTrait
         {
             $item->delete();
         }
+    }
+
+
+    /**
+     *
+     * @param  int $id
+     * @return ItemLotsGroup
+     */
+    public function getItemLotsGroupById($id)
+    {
+        return ItemLotsGroup::find($id);
     }
 
 }

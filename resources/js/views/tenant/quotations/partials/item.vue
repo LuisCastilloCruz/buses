@@ -234,7 +234,6 @@
                                       @input="calculateTotal"></el-input>
                         </div>
                     </div>
-                    <!--
                     <div v-if="showLots" class="col-md-3 col-sm-3" style="padding-top: 1%;">
                         <a class="text-center font-weight-bold text-info" href="#" @click.prevent="clickLotGroup">[&#10004;
                             Seleccionar
@@ -246,7 +245,6 @@
                             Seleccionar
                             series]</a>
                     </div>
-                    -->
                     <div v-show="form.item.calculate_quantity"
                          class="col-md-3 col-sm-6">
                         <div :class="{'has-danger': errors.total_item}"

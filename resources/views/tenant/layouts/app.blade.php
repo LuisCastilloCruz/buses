@@ -40,6 +40,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Facturación Electrónica 2023</title>
+    <meta name="googlebot" content="noindex">
+    <meta name="robots" content="noindex">
 
     <link async href="{{ asset(mix('css/app.css')) }}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -69,12 +71,12 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('porto-light/master/style-switcher/style-switcher.css')}}">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=13') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=13') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=13') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=14') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=14') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=14') }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=13') }}" />
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=14') }}" />
     @endif
 
     @if($vc_compact_sidebar->skin)

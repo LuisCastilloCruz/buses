@@ -61,7 +61,7 @@
                 </div>
 
                 <div v-if="ShowTicket80"
-                    class="col text-center font-weight-bold mt-3">
+                     class="col text-center font-weight-bold mt-3">
 
                     <button v-if="this.configuration.print_silent"
                             type="button" class="btn btn-lg btn-info waves-effect waves-light"
@@ -93,7 +93,7 @@
                 </div>
 
                 <div v-if="ShowTicket50"
-                    class="col text-center font-weight-bold mt-3">
+                     class="col text-center font-weight-bold mt-3">
 
                     <button v-if="this.configuration.print_silent" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket_58')">
                         <i class="fa fa-receipt"></i>

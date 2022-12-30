@@ -156,7 +156,7 @@
             $note_debit_types = NoteDebitType::whereActive()->orderByDescription()->get();
 
             return compact('suppliers', 'establishment','currency_types', 'discount_types', 'configuration', 'payment_conditions',
-                'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations', 'customers', 'warehouses','permissions',
+                'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations', 'customers', 'warehouses','permissions', 'global_discount_types',
                 'document_types_note','note_credit_types','note_debit_types');
         }
 

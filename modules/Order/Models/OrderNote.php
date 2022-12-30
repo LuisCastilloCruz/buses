@@ -167,6 +167,7 @@
             'quotation_id',
             'observation',
             'total_igv_free',
+            'additional_data',
 
         ];
 
@@ -296,6 +297,16 @@
         public function setLegendsAttribute($value)
         {
             $this->attributes['legends'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        public function getAdditionalDataAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setAdditionalDataAttribute($value)
+        {
+            $this->attributes['additional_data'] = (is_null($value)) ? null : json_encode($value);
         }
 
         public function getIdentifierAttribute()

@@ -10,14 +10,20 @@ use Modules\Inventory\Models\{
     ItemWarehouse,
     InventoryConfiguration
 };
+use Modules\Inventory\Imports\{
+    ItemLotsGroupImport,
+    ItemLotsImport
+};
+use Exception;
+use Maatwebsite\Excel\Excel;
 
 
 class ItemController extends Controller
 {
 
-        
+
     /**
-     * 
+     *
      * Búsqueda avanzada de items para reporte kardex
      *
      * @param  Request $request
@@ -49,9 +55,9 @@ class ItemController extends Controller
 
     }
 
-        
+
     /**
-     * 
+     *
      * Validar stock en la venta
      *
      * @param  Request $request
@@ -73,18 +79,18 @@ class ItemController extends Controller
 
             if($item->checkIsSet())
             {
-                foreach ($item->sets as $set) 
+                foreach ($item->sets as $set)
                 {
                     $individual_item = $set->individual_item()->whereFilterWithOutRelations()->first();
 
                     if($individual_item->checkIsNotService())
                     {
                         $calculate_quantity = $quantity * $set->quantity;
-    
+
                         $error_message =  "El producto {$individual_item->description} registrado en el conjunto {$item->description} no tiene suficiente stock.";
 
                         $check_individual_item_stock = $this->checkIndividualItemStock($individual_item, $warehouse_id, $calculate_quantity, $error_message);
-    
+
                         if(!$check_individual_item_stock['success']) return $check_individual_item_stock;
                     }
                 }
@@ -102,9 +108,9 @@ class ItemController extends Controller
         return $this->generalResponse(true, '');
     }
 
-    
+
     /**
-     * 
+     *
      * Proceso para validar stock
      *
      * @param  Item $item
@@ -113,12 +119,12 @@ class ItemController extends Controller
      * @param  float $presentation_quantity
      * @param  string $message_not_stock
      * @return array
-     * 
+     *
      */
     public function checkIndividualItemStock($item, $warehouse_id, $calculate_quantity, $message_not_stock = null)
     {
         $item_warehouse = $this->getDataItemWarehouse($item->id, $warehouse_id);
-                
+
         if(!$item_warehouse) return $this->generalResponse(false, 'El producto no está disponible en su almacén.');
 
         $error_message = $message_not_stock ?? "El producto {$item->description} no tiene suficiente stock.";
@@ -127,7 +133,7 @@ class ItemController extends Controller
 
         return $this->generalResponse(true, '');
     }
-    
+
 
     /**
      *
@@ -140,5 +146,78 @@ class ItemController extends Controller
         return ItemWarehouse::getItemStockData($item_id, $warehouse_id)->first();
     }
 
+
+    /**
+     *
+     * Importar lotes
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function importItemLotsGroup(Request $request)
+    {
+        if ($request->hasFile('file'))
+        {
+            try
+            {
+                $import = new ItemLotsGroupImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' => __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            }
+            catch (Exception $e)
+            {
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' => __('app.actions.upload.error'),
+        ];
+    }
+
+
+    /**
+     *
+     * Importar series
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function importItemLots(Request $request)
+    {
+        if ($request->hasFile('file'))
+        {
+            try
+            {
+                $import = new ItemLotsImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' => __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            }
+            catch (Exception $e)
+            {
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' => __('app.actions.upload.error'),
+        ];
+    }
 
 }

@@ -428,6 +428,7 @@
 </template>
 
 <script>
+
 import DocumentOptions from "@views/documents/partials/options.vue";
 import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import {calculateRowItem} from "../../../helpers/functions";

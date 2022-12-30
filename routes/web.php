@@ -125,6 +125,10 @@ if ($hostname) {
             Route::get('configurations/templates/ticket/records', 'Tenant\ConfigurationController@getTicketFormats');
             Route::post('configurations/templates/ticket/update', 'Tenant\ConfigurationController@changeTicketFormat');
             Route::get('configurations/apiruc', 'Tenant\ConfigurationController@apiruc');
+
+            Route::post('configurations/pdf-footer-images', 'Tenant\ConfigurationController@pdfFooterImages');
+            Route::get('configurations/get-pdf-footer-images', 'Tenant\ConfigurationController@getPdfFooterImages');
+
             Route::post('configurations/changeColor1', 'Tenant\ConfigurationController@changeColor1');
             Route::post('configurations/changeColor2', 'Tenant\ConfigurationController@changeColor2');
 

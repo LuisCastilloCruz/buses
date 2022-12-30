@@ -496,7 +496,6 @@
          */
         public function getCollectionData($withFullAddress = false, $childrens = false, $servers=false)
         {
-
             $addresses = $this->addresses;
             if ($withFullAddress == true) {
                 $addresses = collect($addresses)->transform(function ($row) {

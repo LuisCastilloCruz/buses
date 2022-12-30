@@ -474,7 +474,7 @@
                                     <tr v-for="(row, index) in form.items" :key="index">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{
-                                                row.item.description
+                                                setDescriptionOfItem(row.item)
                                             }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                         <td class="text-left">{{ getWarehouseDescription(row) }}</td>
                                         <!-- <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td> -->
@@ -599,7 +599,7 @@ import PurchaseFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import PurchaseOptions from './partials/options.vue'
 import {functions, exchangeRate, fnPaymentsFee} from '../../../mixins/functions'
-import {calculateRowItem} from '../../../helpers/functions'
+import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 
 export default {
     props: {
@@ -659,22 +659,22 @@ export default {
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
 
-                    this.document_types = response.data.document_types_invoice
-                    this.currency_types = response.data.currency_types
-                    this.establishment = response.data.establishment
-                    this.all_suppliers = response.data.suppliers
-                    this.discount_types = response.data.discount_types
-                    this.payment_method_types = response.data.payment_method_types
-                    this.payment_destinations = response.data.payment_destinations
-                    this.all_customers = response.data.customers
+                this.document_types = response.data.document_types_invoice
+                this.currency_types = response.data.currency_types
+                this.establishment = response.data.establishment
+                this.all_suppliers = response.data.suppliers
+                this.discount_types = response.data.discount_types
+                this.payment_method_types = response.data.payment_method_types
+                this.payment_destinations = response.data.payment_destinations
+                this.all_customers = response.data.customers
 
-                    this.note_credit_types = response.data.note_credit_types
-                    this.note_debit_types = response.data.note_debit_types
+                this.note_credit_types = response.data.note_credit_types
+                this.note_debit_types = response.data.note_debit_types
 
-                    this.charges_types = response.data.charges_types
-                    this.configuration = response.data.configuration
-                    this.payment_conditions = response.data.payment_conditions
-                    this.warehouses = response.data.warehouses
+                this.charges_types = response.data.charges_types
+                this.configuration = response.data.configuration
+                this.payment_conditions = response.data.payment_conditions
+                this.warehouses = response.data.warehouses
 
                 this.charges_types = response.data.charges_types
                 this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
@@ -713,6 +713,10 @@ export default {
         },
     },
     methods: {
+        setDescriptionOfItem(item)
+        {
+            return showNamePdfOfDescription(item, this.configuration.show_pdf_name)
+        },
         getWarehouse(id) {
             return _.find(this.warehouses, {id: id})
         },
