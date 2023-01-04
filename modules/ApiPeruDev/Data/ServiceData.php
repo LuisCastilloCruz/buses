@@ -221,14 +221,14 @@ class ServiceData
         ];
 
         $this->parameters['form_params'] = $form_params;
-        $res = $this->client->request('GET', '/api/tipo-cambio-dia/'.$date, $this->parameters); // APIS AQPFACT
+        $res = $this->client->request('POST', '/api/tipo_de_cambio', $this->parameters);
         $response = json_decode($res->getBody()->getContents(), true);
 
         if ($response['success']) {
             $data = $response['data'];
             ExchangeRate::query()->create([
-                'date' => $data['fecha'],
-                'date_original' => $data['fecha'],
+                'date' => $data['fecha_busqueda'],
+                'date_original' => $data['fecha_sunat'],
                 'sale_original' => $data['venta'],
                 'sale' => $data['venta'],
                 'purchase_original' => $data['compra'],
