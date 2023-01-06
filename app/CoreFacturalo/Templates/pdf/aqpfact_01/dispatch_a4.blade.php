@@ -7,7 +7,7 @@
     // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
 
 
-    $allowed_items = 90;
+    $allowed_items = 80;
     $quantity_items = $document->items()->count();
     $cycle_items = $allowed_items - ($quantity_items * 5);
     $total_weight = 0;
@@ -264,67 +264,54 @@
         <th class="text-center py-1 desc text-white"   width="8%" style="background: <?php echo e($color2); ?>">PESO</th>
     </tr>
     </thead>
-    <tbody class="">
-    <?php $__currentLoopData = $document->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-    <?php
-    $total_weight_line = 0;
-    ?>
-    <tr>
-        <td class="p-1 text-center align-top desc cell-solid-rl"><?php echo e($loop->iteration); ?></td>
-        <td class="p-1 text-center align-top desc cell-solid-rl"><?php echo e($row->item->internal_id); ?></td>
-        <td class="p-1 text-center align-top desc cell-solid-rl">
-            <?php if(((int)$row->quantity != $row->quantity)): ?>
-                    <?php echo e($row->quantity); ?>
+    <tbody>
+    @foreach($document->items as $row)
+        <tr>
+            <td class="text-center cell-solid-rl">{{ $loop->iteration }}</td>
+            <td class="text-center cell-solid-rl">{{ $row->item->internal_id }}</td>
+            <td class="text-left cell-solid-rl">
+                @if($row->name_product_pdf)
+                    {!!$row->name_product_pdf!!}
+                @else
+                    {!!$row->item->description!!}
+                @endif
 
-                <?php else: ?>
-                    <?php echo e(number_format($row->quantity, 0)); ?>
+                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
-                <?php endif; ?>
+                @if($row->attributes)
+                    @foreach($row->attributes as $attr)
+                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                    @endforeach
+                @endif
+                @if($row->discounts)
+                    @foreach($row->discounts as $dtos)
+                        <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
+                    @endforeach
+                @endif
+                @if($row->relation_item->is_set == 1)
+                    <br>
+                    @inject('itemSet', 'App\Services\ItemSetService')
+                    @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                        {{$item}}<br>
+                    @endforeach
+                @endif
 
-        </td>
-        <td class="p-1 text-center align-top desc cell-solid-rl"><?php echo e($row->item->unit_type_id); ?></td>
-        <td class="p-1 text-left align-top desc text-upp cell-solid-rl">
-            <?php if($row->name_product_pdf): ?>
-                    <?php echo $row->name_product_pdf; ?>
-
-                <?php else: ?>
-                    <?php echo $row->item->description; ?>
-
-                <?php endif; ?>
-
-            <?php if(!empty($row->item->presentation)): ?> <?php echo $row->item->presentation->description; ?> <?php endif; ?>
-
-            <?php if($row->attributes): ?>
-            <?php $__currentLoopData = $row->attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attr): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <br/><span style="font-size: 9px"><?php echo $attr->description; ?> : <?php echo e($attr->value); ?></span>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            <?php endif; ?>
-            <?php if($row->discounts): ?>
-            <?php $__currentLoopData = $row->discounts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dtos): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <br/><span style="font-size: 9px"><?php echo e($dtos->factor * 100); ?>% <?php echo e($dtos->description); ?></span>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            <?php endif; ?>
-            <?php if($row->relation_item->is_set == 1): ?>
-            <br>
-            <?php $itemSet = app('App\Services\ItemSetService'); ?>
-            <?php $__currentLoopData = $itemSet->getItemsSet($row->item_id); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <?php echo e($item); ?><br>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            <?php endif; ?>
-
-            <?php if($document->has_prepayment): ?>
-            <br>
-            *** Pago Anticipado ***
-            <?php endif; ?>
-        </td>
-        <td class="p-1 text-center align-top desc cell-solid-rl">
-            <?php echo e($total_weight_line); ?>
-
-        </td>
-    </tr>
-
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
+                @if($document->has_prepayment)
+                    <br>
+                    *** Pago Anticipado ***
+                @endif
+            </td>
+            <td class="text-left cell-solid-rl">{{ $row->item->model ?? '' }}</td>
+            <td class="text-center cell-solid-rl">{{ $row->item->unit_type_id }}</td>
+            <td class="text-right cell-solid-rl">
+                @if(((int)$row->quantity != $row->quantity))
+                    {{ $row->quantity }}
+                @else
+                    {{ number_format($row->quantity, 0) }}
+                @endif
+            </td>
+        </tr>
+    @endforeach
     <?php for($i = 0; $i < $cycle_items; $i++): ?>
     <tr>
         <td class="p-1 text-center align-top desc cell-solid-rl"></td>
@@ -368,10 +355,10 @@
             </table>
         </td>
 
-        <td width="25%" class="pl-3">
+        <td width="25%" class="pl-3 text-right">
             <table class="full-width">
                 <tr>
-                    <td ><strong>PESO TOTAL:</strong> <?php echo e($document->total_weight); ?>  <?php echo e($document->unit_type_id); ?></td>
+                    <td><strong>PESO TOTAL:</strong> <?php echo e($document->total_weight); ?>  <?php echo e($document->unit_type_id); ?></td>
                 </tr>
             </table>
         </td>
@@ -395,11 +382,15 @@
         <td width="3%"></td>
 
         <td width="47%" class="">
-            <table class="full-width">
-                <tr>
-                    <td rowspan="2"><strong>Representación impresa de la Guía de Remisión</strong></td>
-                </tr>
-            </table>
+            @if($document->qr)
+                <table class="full-width">
+                    <tr>
+                        <td class="text-left">
+                            <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;"/>
+                        </td>
+                    </tr>
+                </table>
+            @endif
         </td>
 
     </tr>
@@ -465,15 +456,6 @@
             </tr>
         @endif
     </table>
-@endif
-@if($document->qr)
-<table class="full-width">
-    <tr>
-        <td class="text-left">
-            <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;"/>
-        </td>
-    </tr>
-</table>
 @endif
 @if ($document->terms_condition)
     <br>
