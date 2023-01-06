@@ -253,23 +253,31 @@
 </table>
 
 
-<table class="full-width mt-0 mb-0" >
+<table class="full-width mt-0 mb-0">
     <thead >
     <tr class="">
         <th class="text-center py-1 desc text-white"  width="3%" style="background: <?php echo e($color1); ?>">ITEM</th>
         <th class="text-center py-1 desc text-white"  width="10%" style="background: <?php echo e($color1); ?>">CÓDIGO</th>
-        <th class="text-center py-1 desc text-white"  width="8%" style="background: <?php echo e($color1); ?>">CANTIDAD</th>
-        <th class="text-center py-1 desc text-white"  width="8%" style="background: <?php echo e($color2); ?>">U.M.</th>
-        <th class="text-center py-1 desc text-white"  width="44%" style="background: <?php echo e($color2); ?>">DESCRIPCIÓN</th>
+        <th class="text-center py-1 desc text-white"  width="4%" style="background: <?php echo e($color1); ?>">CANT.</th>
+        <th class="text-center py-1 desc text-white"  width="2%" style="background: <?php echo e($color2); ?>">U.M.</th>
+        <th class="text-center py-1 desc text-white"  width="46%" style="background: <?php echo e($color2); ?>">DESCRIPCIÓN</th>
         <th class="text-center py-1 desc text-white"   width="8%" style="background: <?php echo e($color2); ?>">PESO</th>
     </tr>
     </thead>
     <tbody>
     @foreach($document->items as $row)
         <tr>
-            <td class="text-center cell-solid-rl">{{ $loop->iteration }}</td>
-            <td class="text-center cell-solid-rl">{{ $row->item->internal_id }}</td>
-            <td class="text-left cell-solid-rl">
+            <td class="text-center cell-solid-rl" style="font-size:0.8em">{{ $loop->iteration }}</td>
+            <td class="text-center cell-solid-rl" style="font-size:0.8em">{{ $row->item->internal_id }}</td>
+            <td class="text-center cell-solid-rl" style="font-size:0.8em">
+                @if(((int)$row->quantity != $row->quantity))
+                    {{ $row->quantity }}
+                @else
+                    {{ number_format($row->quantity, 0) }}
+                @endif
+            </td>
+            <td class="text-center cell-solid-rl" style="font-size:0.8em">{{ $row->item->unit_type_id }}</td>
+            <td class="text-left cell-solid-rl" style="font-size:0.8em">
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
@@ -301,15 +309,7 @@
                     *** Pago Anticipado ***
                 @endif
             </td>
-            <td class="text-left cell-solid-rl">{{ $row->item->model ?? '' }}</td>
-            <td class="text-center cell-solid-rl">{{ $row->item->unit_type_id }}</td>
-            <td class="text-right cell-solid-rl">
-                @if(((int)$row->quantity != $row->quantity))
-                    {{ $row->quantity }}
-                @else
-                    {{ number_format($row->quantity, 0) }}
-                @endif
-            </td>
+            <td class="text-left cell-solid-rl" style="font-size:0.8em">{{ $row->item->model ?? '' }}</td>
         </tr>
     @endforeach
     <?php for($i = 0; $i < $cycle_items; $i++): ?>
