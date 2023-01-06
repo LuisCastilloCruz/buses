@@ -1,31 +1,28 @@
-<?php
-$establishment = $document->establishment;
-$customer = $document->customer;
-//$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
+@php
+    $establishment = $document->establishment;
+    $customer = $document->customer;
+    //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 
-$document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-// $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
-$document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
-
-$allowed_items = 90;
-$quantity_items = $document->items()->count();
-$cycle_items = $allowed_items - ($quantity_items * 5);
-$total_weight = 0;
-
-$configuracion = \App\Models\Tenant\Configuration::get();
-
-$color1= $configuracion[0]['color1'];
-$color2= $configuracion[0]['color2'];
-$formato=$configuracion[0]['formats'];
-$fondo=$configuracion[0]['fondo'];
+    $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+    // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
 
 
+    $allowed_items = 90;
+    $quantity_items = $document->items()->count();
+    $cycle_items = $allowed_items - ($quantity_items * 5);
+    $total_weight = 0;
 
-?>
+    $configuracion = \App\Models\Tenant\Configuration::get();
+
+    $color1= $configuracion[0]['color1'];
+    $color2= $configuracion[0]['color2'];
+    $formato=$configuracion[0]['formats'];
+    $fondo=$configuracion[0]['fondo'];
+@endphp
 <html>
 <head>
-
-
+    {{--<title>{{ $document_number }}</title>--}}
+    {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
 <table class="full-width">
@@ -207,12 +204,17 @@ $fondo=$configuracion[0]['fondo'];
                 <tr>
                     <td colspan="2"><strong style="font-size: 11px">EMPRESA DE TRANSPORTE</strong></td>
                 </tr>
-                <tr>
-                    <td><strong>Transportista:</strong> <span style="font-size: 10px"><?php echo e($document->dispatcher->name); ?></span></td>
-                </tr>
-                <tr>
-                    <td><strong><?php echo e($document_type_dispatcher->description); ?>:</strong> <?php echo e($document->dispatcher->number); ?></td>
-                </tr>
+                @if($document->transport_mode_type_id === '01')
+                    @php
+                        $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+                    @endphp
+                    <tr>
+                        <td><strong>Transportista:</strong> <span style="font-size: 10px"><?php echo e($document->dispatcher->name); ?></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{$document_type_dispatcher->description}}:</strong> {{$document->dispatcher->number}}</td>
+                    </tr>
+                @endif
                 <tr>
                     <td></td>
 
@@ -225,26 +227,26 @@ $fondo=$configuracion[0]['fondo'];
                 <tr>
                     <td colspan="2"><strong style="font-size: 11px">UNIDAD DE TRANSPORTE - CONDUCTOR</strong></td>
                 </tr>
-                <?php if($document->license_plate): ?>
-                <tr>
-                    <td><strong style="font-size: 9px">Placa del vehículo:</strong> <?php echo e($document->license_plate); ?></td>
-                </tr>
-                <?php endif; ?>
-                <?php if($document->secondary_license_plates): ?>
-                <?php if($document->secondary_license_plates->semitrailer): ?>
-                <td>Placa semirremolque: <?php echo e($document->secondary_license_plates->semitrailer); ?></td>
-                <?php endif; ?>
-                <?php endif; ?>
-                <?php if($document->driver): ?>
-                <tr>
-                    <td><strong>Dni del conductor:</strong>: <?php echo e($document->driver->number); ?></td>
-                </tr>
-                <?php endif; ?>
-                <?php if($document->driver): ?>
-                <tr>
-                    <td><strong>N° Licencia:</strong> <?php echo e($document->driver->license); ?></td>
-                </tr>
-                <?php endif; ?>
+                @if($document->transport_mode_type_id === '02')
+                    <tr>
+                        @if($document->license_plate)
+                            <td>Número de placa del vehículo: {{ $document->license_plate }}</td>
+                        @endif
+                        @if($document->driver->number)
+                            <td>Conductor: {{ $document->driver->number }}</td>
+                        @endif
+                    </tr>
+                    <tr>
+                        @if($document->secondary_license_plates)
+                            @if($document->secondary_license_plates->semitrailer)
+                                <td>Número de placa semirremolque: {{ $document->secondary_license_plates->semitrailer }}</td>
+                            @endif
+                        @endif
+                        @if($document->driver->license)
+                            <td>Licencia del conductor: {{ $document->driver->license }}</td>
+                        @endif
+                    </tr>
+                @endif
             </table>
         </td>
     </tr>
@@ -402,67 +404,88 @@ $fondo=$configuracion[0]['fondo'];
 
     </tr>
 </table>
-<?php if($document->data_affected_document): ?>
-<?php
-$document_data_affected_document = $document->data_affected_document;
+@if ($document->data_affected_document)
+    @php
+        $document_data_affected_document = $document->data_affected_document;
 
-$number = (property_exists($document_data_affected_document,'number'))?$document_data_affected_document->number:null;
-$series = (property_exists($document_data_affected_document,'series'))?$document_data_affected_document->series:null;
-$document_type_id = (property_exists($document_data_affected_document,'document_type_id'))?$document_data_affected_document->document_type_id:null;
+    $number = (property_exists($document_data_affected_document,'number'))?$document_data_affected_document->number:null;
+    $series = (property_exists($document_data_affected_document,'series'))?$document_data_affected_document->series:null;
+    $document_type_id = (property_exists($document_data_affected_document,'document_type_id'))?$document_data_affected_document->document_type_id:null;
 
-?>
-<?php if($number !== null && $series !== null && $document_type_id !== null): ?>
+    @endphp
+    @if($number !== null && $series !== null && $document_type_id !== null)
 
-<?php
-$documentType  = App\Models\Tenant\Catalogs\DocumentType::find($document_type_id);
-$textDocumentType = $documentType->getDescription();
-?>
-<table class="full-width border-box">
+        @php
+            $documentType  = App\Models\Tenant\Catalogs\DocumentType::find($document_type_id);
+            $textDocumentType = $documentType->getDescription();
+        @endphp
+        <table class="full-width border-box">
+            <tr>
+                <td class="text-bold border-bottom font-bold">{{$textDocumentType}}</td>
+            </tr>
+            <tr>
+                <td>{{$series }}-{{$number}}</td>
+            </tr>
+        </table>
+    @endif
+@endif
+@if ($document->reference_order_form_id)
+    <table class="full-width border-box">
+        @if($document->order_form)
+            <tr>
+                <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
+            </tr>
+            <tr>
+                <td>{{ ($document->order_form) ? $document->order_form->number_full : "" }}</td>
+            </tr>
+        @endif
+    </table>
+
+@elseif ($document->order_form_external)
+    <table class="full-width border-box">
+        <tr>
+            <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
+        </tr>
+        <tr>
+            <td>{{ $document->order_form_external }}</td>
+        </tr>
+    </table>
+
+@endif
+
+
+@if ($document->reference_sale_note_id)
+    <table class="full-width border-box">
+        @if($document->sale_note)
+            <tr>
+                <td class="text-bold border-bottom font-bold">NOTA DE VENTA</td>
+            </tr>
+            <tr>
+                <td>{{ ($document->sale_note) ? $document->sale_note->number_full : "" }}</td>
+            </tr>
+        @endif
+    </table>
+@endif
+@if($document->qr)
+<table class="full-width">
     <tr>
-        <td class="text-bold border-bottom font-bold"><?php echo e($textDocumentType); ?></td>
-    </tr>
-    <tr>
-        <td><?php echo e($series); ?>-<?php echo e($number); ?></td>
+        <td class="text-left">
+            <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;"/>
+        </td>
     </tr>
 </table>
-<?php endif; ?>
-<?php endif; ?>
-<?php if($document->reference_order_form_id): ?>
-<table class="full-width border-box">
-    <?php if($document->order_form): ?>
-    <tr>
-        <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
-    </tr>
-    <tr>
-        <td><?php echo e(($document->order_form) ? $document->order_form->number_full : ""); ?></td>
-    </tr>
-    <?php endif; ?>
-</table>
+@endif
+@if ($document->terms_condition)
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    </table>
+@endif
 
-<?php elseif($document->order_form_external): ?>
-<table class="full-width border-box">
-    <tr>
-        <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
-    </tr>
-    <tr>
-        <td><?php echo e($document->order_form_external); ?></td>
-    </tr>
-</table>
-
-<?php endif; ?>
-
-
-<?php if($document->reference_sale_note_id): ?>
-<table class="full-width border-box">
-    <?php if($document->sale_note): ?>
-    <tr>
-        <td class="text-bold border-bottom font-bold">NOTA DE VENTA</td>
-    </tr>
-    <tr>
-        <td><?php echo e(($document->sale_note) ? $document->sale_note->number_full : ""); ?></td>
-    </tr>
-    <?php endif; ?>
-</table>
-<?php endif; ?>
 </body>
 </html>
