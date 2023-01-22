@@ -56,6 +56,14 @@
                                         <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket', '58')">PDF Ticket 58</a>
                                         <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporte(row.id, 'excel')">Excel</a>
                                         <a  class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportTransporteDestino(row.id, 'ticket')">Encomiendas pago en destino</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickReportSummaryDailyOperations(row.id)">Resumen de Operaciones Diarias</a>
+
+                                        <el-tooltip class="item"
+                                                    content="Reporte general de caja asociado a los pagos al contado con destino caja"
+                                                    effect="dark"
+                                                    placement="right-end">
+                                            <a class="dropdown-item text-1" href="#" @click.prevent="clickReportCashWithPayments(row.id)">Reporte general caja V2</a>
+                                        </el-tooltip>
                                     </div>
                                 </div>
                                 <div class="btn-group flex-wrap">
@@ -86,10 +94,20 @@
                                         <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'a4')">PDF A4</a>
                                         <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket')">PDF Ticket</a>
                                         <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'ticket', '58')">PDF Ticket 58</a>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'simple_a4')">Simple A4</a>
                                         <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'excel')">Excel</a>
                                         <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a> -->
-                                    </div>
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickReportSummaryDailyOperations(row.id)">Resumen de Operaciones Diarias</a>
+
+                                    <el-tooltip class="item"
+                                                content="Reporte general de caja asociado a los pagos al contado con destino caja"
+                                                effect="dark"
+                                                placement="right-end">
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickReportCashWithPayments(row.id)">Reporte general caja V2</a>
+                                    </el-tooltip>
+
                                 </div>
+                            </div>
 
                             <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadProducts(row.id)">Reporte Productos</button> -->
 
@@ -129,7 +147,6 @@
                             </template>
 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">C. Electrónico</button>
-
                             </div>
                         </td>
                     </tr>
@@ -329,6 +346,10 @@
             {
                 window.open(`/cash-reports/payments-associated-cash/${id}`, '_blank');
             },
+            clickReportCashWithPayments(id)
+            {
+                window.open(`/cash-reports/general-with-payments/${id}`, '_blank');
+            }
         }
     }
 </script>

@@ -421,7 +421,6 @@
         <sale-note-options
             :recordId="documentNewId"
             :showClose="true"
-            :configuration="configuration"
             :showDialog.sync="showDialogSaleNoteOptions"
         ></sale-note-options>
     </div>

@@ -10,7 +10,7 @@ use App\Models\Tenant\{
     PaymentCondition,
     Series,
     PaymentMethodType,
-    Person,
+    Person
 };
 use App\Http\Resources\Tenant\DocumentCollection;
 use App\Models\Tenant\StateType;
@@ -27,9 +27,9 @@ use Modules\Document\Helpers\DocumentHelper;
 
 class DocumentController extends Controller
 {
-      
+
     use FinanceTrait;
-    
+
     /**
      *
      * @return array
@@ -39,7 +39,7 @@ class DocumentController extends Controller
         return new DocumentResource(Document::findOrFail($id));
     }
 
-    
+
     /**
      *
      * @return array
@@ -50,12 +50,12 @@ class DocumentController extends Controller
 
         return compact('state_types');
     }
-    
+
 
     /**
      *
      * Modo POS App
-     * 
+     *
      * @return array
      */
     public function getTablesSaleDetail()
@@ -69,7 +69,7 @@ class DocumentController extends Controller
         return compact('affectation_igv_types', 'document_types', 'item_discount_types');
     }
 
-    
+
     /**
      * Tablas individuales
      *
@@ -80,22 +80,22 @@ class DocumentController extends Controller
     {
         $data = [];
 
-        switch ($table) 
+        switch ($table)
         {
             case 'document_types':
                 $data = DocumentType::onlySaleDocuments()->get();
                 break;
-            
+
         }
 
         return $data;
     }
 
-    
+
     /**
      *
      * Modo POS App
-     * 
+     *
      * @return array
      */
     public function getTablesSalePayment()
@@ -115,17 +115,17 @@ class DocumentController extends Controller
                         });
 
         return compact(
-            'series', 
-            'payment_conditions', 
+            'series',
+            'payment_conditions',
             'payment_method_types',
-            'payment_destinations', 
+            'payment_destinations',
             'customers'
         );
     }
 
-    
+
     /**
-     * 
+     *
      * Listado de documentos
      *
      * @param  Request $request
@@ -139,9 +139,9 @@ class DocumentController extends Controller
     }
 
     /**
-     * 
+     *
      * Obtener notificaciones
-     * 
+     *
      * Comprobantes enviados/por enviar
      * Comprobantes pendientes de rectificación
      *
@@ -149,7 +149,7 @@ class DocumentController extends Controller
      */
     public function getNotifications()
     {
-        
+
         $documents_not_sent = Document::whereNotSent()->count();
         $documents_regularize_shipping = Document::whereRegularizeShipping()->count();
 
@@ -162,10 +162,10 @@ class DocumentController extends Controller
         ];
     }
 
-    
+
     /**
-     * 
-     * Enviar comprobante directo a Whatsapp (Texto/Archivo pdf) 
+     *
+     * Enviar comprobante directo a Whatsapp (Texto/Archivo pdf)
      *
      * @param  SendDocumentWhatsappRequest $request
      * @return array
@@ -173,7 +173,7 @@ class DocumentController extends Controller
     public function sendDocumentToWhatsapp(SendDocumentWhatsappRequest $request)
     {
         $document_helper = new DocumentHelper();
-        
+
         $model = $document_helper->getModelByDocumentType($request->document_type_id);
         $document = $document_helper->getDocumentDataForSendMessage($model, $request->id);
         $params = $document_helper->getParamsForAppSendMessage($request->phone_number, $request->format, $document);
@@ -191,7 +191,7 @@ class DocumentController extends Controller
     }
 
 
-    
+
 
 
 }

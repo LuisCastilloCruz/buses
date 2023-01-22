@@ -12,9 +12,9 @@
                     <div class="summary row">
                         <div class="col-md-6">
                             <h4 class="title">Venta exitosa : comprobante {{form.number}}</h4>
-                            <button  v-if="this.activeName== 'first' && configuration.print_silent==1" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket')">
-                            <i class="fa fa-receipt"></i> IMPRIMIR
-                            </button>
+<!--                            <button  v-if="this.activeName== 'first' && configuration.print_silent==1" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket')">-->
+<!--                            <i class="fa fa-receipt"></i> IMPRIMIR-->
+<!--                            </button>-->
                         </div>
                         <div class="col-md-6">
                             <h4 class="title">Estado de comprobante: {{ (statusDocument.sent) ? 'Enviado a Sunat':'No enviado a Sunat'}}</h4>

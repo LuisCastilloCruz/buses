@@ -23,7 +23,6 @@
     use Modules\Expense\Exports\ExpenseExport;
     use Modules\Expense\Http\Requests\BankLoanRequest;
     use Modules\Expense\Http\Resources\BankLoanCollection;
-    use Modules\Expense\Http\Resources\ExpenseCollection;
     use Modules\Expense\Http\Resources\BankLoanResource;
     use Modules\Expense\Models\BankLoan;
     use Modules\Expense\Models\BankLoanReason;

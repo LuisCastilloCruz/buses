@@ -148,7 +148,7 @@
          */
         public function scopeOnlyAvaibleDocuments($query)
         {
-            return $query->OnlyActive()->wherein('id', ['01', '03', '07', '08', '09', '20', '40', '80','04','U2', 'U3', 'U4','100','33']);
+            return $query->OnlyActive()->wherein('id', ['01', '03', '07', '08', '09', '20', '40', '80','04','U2', 'U3', 'U4','31','100','33']);
         }
 
         /**

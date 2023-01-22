@@ -36,7 +36,6 @@ class DispatchResource extends JsonResource
                 }
 
             }
-
         }
 
         $has_cdr = false;
@@ -48,9 +47,10 @@ class DispatchResource extends JsonResource
         return [
             'id' => $this->id,
             'external_id' => $this->external_id,
+            'document_type_id' => $this->document_type_id,
             'number' => $this->number_full,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
-            'customer_email' => $this->customer->email,
+            'customer_email' => optional($this->customer)->email,
             'download_external_pdf' => $this->download_external_pdf,
             'customer_telephone' => optional($this->person)->telephone,
             'response_message' => in_array($this->state_type_id, ['07', '09']) ? ($code ? "{$code} - " : '')."{$response_message}" : $response_message,

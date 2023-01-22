@@ -1,12 +1,11 @@
 <template>
-    <div class="card mb-0 pt-2 pt-md-0 negrita">
+    <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
             <h3 class="my-0">Nueva Guía de Remisión 1</h3>
         </div>
         <div class="card-body">
             <form autocomplete="off" @submit.prevent="submit">
                 <div class="form-body">
-                    <h4><b>DATOS DE REMITENTE</b></h4>
                     <div class="row">
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.establishment}" class="form-group">
@@ -56,10 +55,10 @@
                                     Cliente
                                     <!--<a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>-->
                                     <span class="text-danger"> *</span></label>
-
-                                    <el-input v-model="document.customer.name"
-                                              type="text" disabled></el-input>
-
+                                <el-select v-model="form.customer_id">
+                                    <el-option v-for="option in customers" :key="option.id" :label="option.description"
+                                               :value="option.id"></el-option>
+                                </el-select>
                                 <small v-if="errors.customer" class="form-control-feedback"
                                        v-text="errors.customer[0]"></small>
                             </div>
@@ -200,9 +199,9 @@
                         </div>
 
                     </div>
-                    <hr  class="mt-4" style="background: #0088cc">
-                    <h4><b>DATOS DE ENVÍO</b></h4>
-                    <h6><b>Dirección partida</b></h6>
+                    <hr>
+                    <h4>Datos envío</h4>
+                    <h6>Dirección partida2</h6>
                     <div class="row">
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.origin}" class="form-group">
@@ -234,7 +233,7 @@
                             </div>
                         </div>
                     </div>
-                    <h6><b>Dirección llegada</b></h6>
+                    <h6>Dirección llegada</h6>
                     <div class="row">
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.delivery}" class="form-group">
@@ -266,8 +265,8 @@
                             </div>
                         </div>
                     </div>
-                    <hr  class="mt-4" style="background: #0088cc">
-                    <h4><b>DATOS DE EMPRESA DE TRANSPORTE</b></h4>
+                    <hr>
+                    <h4>Datos transportista</h4>
                     <div class="row">
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.dispacher}" class="form-group">
@@ -319,8 +318,9 @@
                             </div>
                         </div>
                     </div>
-                    <h4 class="ml-5" v-if="this.form.transport_mode_type_id=='02'"><b>Datos conductor</b></h4>
-                    <div class="row ml-5" v-if="this.form.transport_mode_type_id=='02'">
+                    <h4>Datos conductor</h4>
+                    <div class="row">
+
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.driver}" class="form-group">
                                 <label class="control-label">Selección rápida de conductor</label>
@@ -383,7 +383,7 @@
                         </div>
                     </div>
                 </div>
-                <hr  class="mt-4" style="background: #0088cc">
+                <hr>
                 <div class="col-md-12">
                     <div class="table-responsive">
                         <table class="table">
@@ -499,15 +499,8 @@ export default {
             resource: 'dispatches',
             establishment_id: null,
             loading_submit: false,
-            provincesDelivery: [],
-            districtsDelivery: [],
-            provincesOrigin: [],
-            districtsOrigin: [],
             related_document_types: [],
             establishments: [],
-            districtsAll: [],
-            provincesAll: [],
-            departments: [],
             drivers: [],
             driver: null,
             dispachers: [],
@@ -551,11 +544,8 @@ export default {
             this.transferReasonTypes = response.data.transferReasonTypes;
             this.transportModeTypes = response.data.transportModeTypes;
             this.establishments = response.data.establishments;
-            this.departments = response.data.departments;
-            this.provincesAll = response.data.provinces;
-            this.districtsAll = response.data.districts;
             this.unitTypes = response.data.unitTypes;
-            //this.customers = response.data.customers;
+            this.customers = response.data.customers;
             this.countries = response.data.countries;
             this.locations = response.data.locations;
             this.all_series = response.data.series;
@@ -568,9 +558,9 @@ export default {
             this.form.date_of_shipping = this.form.date_of_issue
             this.form.customer_id = this.document.customer_id
             this.form.transfer_reason_type_id = '01'
-            this.form.transport_mode_type_id = '01'  //01=publico  02=privado
+            this.form.transport_mode_type_id = '02'
             this.form.items = this.document.items
-            if(this.documentItems !== undefined){
+            if (this.documentItems !== undefined) {
                 this.form.items = this.documentItems
             }
             this.form.origin.country_id = this.document.establishment.country_id
@@ -665,7 +655,7 @@ export default {
                 container_number: null,
                 license_plate: null,
                 dispatcher: {
-                    identity_document_type_id: '6'
+                    identity_document_type_id: null
                 },
                 driver: {
                     identity_document_type_id: null,

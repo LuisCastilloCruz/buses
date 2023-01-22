@@ -1,3 +1,4 @@
+{!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
 <DespatchAdvice xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                 xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
@@ -160,7 +161,7 @@
                     <cac:TransportEquipment>
                         <!-- VEHICULO PRINCIPAL -->
                         <!-- PLACA - VEHICULO PRINCIPAL -->
-                        <cbc:ID>{{ $document['license_plate'] }}</cbc:ID>
+                        <cbc:ID>{{ $document['transport_plate_number'] }}</cbc:ID>
                     </cac:TransportEquipment>
                 </cac:TransportHandlingUnit>
 {{--            @endif--}}

@@ -16,7 +16,6 @@ use App\Models\Tenant\Catalogs\{
     AffectationIgvType,
     ChargeDiscountType
 };
-use GuzzleHttp\Client;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Mpdf\Config\ConfigVariables;
@@ -321,14 +320,17 @@ class ConfigurationController extends Controller
 
     public function store(ConfigurationRequest $request)
     {
+        $cp = Company::query()
+            ->select('id', 'number')
+            ->first();
+
         $id = $request->input('id');
         $configuration = Configuration::find($id);
         $configuration->fill($request->all());
         $configuration->save();
 
-        Cache::forget('token_sunat');
+        Cache::forget("{$cp->number}_token_sunat");
 
-        Log::error('Cache toke_sunat eliminado');
         return [
             'success' => true,
             'configuration' => $configuration->getCollectionData(),

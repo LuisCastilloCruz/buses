@@ -40,11 +40,11 @@
                 <div v-if="ShowTicket80"
                     class="col text-center font-weight-bold mt-3">
 
-                    <button v-if="this.configuration.print_silent"
-                            type="button" class="btn btn-lg btn-info waves-effect waves-light"
-                            @click="clickPrintSilent('ticket')">
-                        <i class="fa fa-receipt"></i>
-                    </button>
+<!--                    <button v-if="this.configuration.print_silent"-->
+<!--                            type="button" class="btn btn-lg btn-info waves-effect waves-light"-->
+<!--                            @click="clickPrintSilent('ticket')">-->
+<!--                        <i class="fa fa-receipt"></i>-->
+<!--                    </button>-->
 
                     <button class="btn btn-lg btn-info waves-effect waves-light"
                             type="button"
@@ -56,11 +56,11 @@
 
                 <div v-if="ShowTicket58"
                      class="col text-center font-weight-bold mt-3">
-                    <button v-if="this.configuration.print_silent"
-                            type="button" class="btn btn-lg btn-info waves-effect waves-light"
-                            @click="clickPrintSilent('ticket_58')">
-                        <i class="fa fa-receipt"></i>
-                    </button>
+<!--                    <button v-if="this.configuration.print_silent"-->
+<!--                            type="button" class="btn btn-lg btn-info waves-effect waves-light"-->
+<!--                            @click="clickPrintSilent('ticket_58')">-->
+<!--                        <i class="fa fa-receipt"></i>-->
+<!--                    </button>-->
                     <button class="btn btn-lg btn-info waves-effect waves-light"
                             type="button"
                             @click="clickPrint('ticket_58')">
@@ -72,9 +72,9 @@
                 <div v-if="ShowTicket50"
                     class="col text-center font-weight-bold mt-3">
 
-                    <button v-if="this.configuration.print_silent" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket_58')">
-                        <i class="fa fa-receipt"></i>
-                    </button>
+<!--                    <button v-if="this.configuration.print_silent" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket_58')">-->
+<!--                        <i class="fa fa-receipt"></i>-->
+<!--                    </button>-->
 
                     <el-popover
                         placement="top-start"

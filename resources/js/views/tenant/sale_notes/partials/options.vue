@@ -8,9 +8,9 @@
 
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 container-tabs">
-                    <button  v-if="(activeName=== 'fourth' &&  configuration.print_silent===true)" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket')">
-                        <i class="fa fa-receipt"></i> IMPRIMIR
-                    </button>
+<!--                    <button  v-if="(activeName=== 'fourth' &&  configuration.print_silent===true)" type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrintSilent('ticket')">-->
+<!--                        <i class="fa fa-receipt"></i> IMPRIMIR-->
+<!--                    </button>-->
                     <el-tabs v-model="activeName">
                         <el-tab-pane label="Imprimir A4" name="first">
                             <iframe :src="form.print_a4" type="application/pdf" width="100%" height="400px"/>
@@ -136,6 +136,7 @@ export default {
     },
     created() {
         this.initForm()
+        console.log(this.configuration);
     },
     mounted() {
         if(navigator.userAgent.indexOf("Safari") != -1) {
