@@ -71,7 +71,7 @@ class DispatchController extends Controller
 
     public function index()
     {
-        $configuration = Configuration::firts();
+        $configuration = Configuration::getPublicConfig();
         return view('tenant.dispatches.index', compact('configuration'));
     }
 
