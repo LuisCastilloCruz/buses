@@ -22,6 +22,10 @@
                                             <el-radio-group class="pt-2" v-model="form.theme_color" @change="changeThemePrimary()">
                                                 <div class="row">
                                                     <div class="col-sm-6 col-lg-3">
+                                                        <el-radio label="green">Verde</el-radio>
+                                                        <div style="width: 40px; height: 40px; background-color: #94c83d;"></div>
+                                                    </div>
+                                                    <div class="col-sm-6 col-lg-3">
                                                         <el-radio label="blue">Azul</el-radio>
                                                         <div style="width: 40px; height: 40px; background-color: #4A2CB3;"></div>
                                                     </div>
@@ -301,7 +305,7 @@
             initForm(){
 
                 this.form = {
-                    theme_color: 'blue',
+                    theme_color: 'green',
                     card_color: 'multicolored',
                     header_waves: false,
                     app_mode: 'default',
@@ -322,17 +326,25 @@
                 let doc = iframe.contentDocument
 
                 switch (this.form.theme_color) {
+                    case 'green':
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-dark.css"]').forEach(el => el.remove())
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-red.css"]').forEach(el => el.remove())
+                        doc.head.innerHTML = doc.head.innerHTML + '<link href="' + this.domain + '/liveapp/assets/skin-green.css" rel="stylesheet">'
+                        break
                     case 'red':
                         doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-dark.css"]').forEach(el => el.remove())
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-green.css"]').forEach(el => el.remove())
                         doc.head.innerHTML = doc.head.innerHTML + '<link href="' + this.domain + '/liveapp/assets/skin-red.css" rel="stylesheet">'
                         break
                     case 'dark':
                         doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-red.css"]').forEach(el => el.remove())
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-green.css"]').forEach(el => el.remove())
                         doc.head.innerHTML = doc.head.innerHTML + '<link href="' + this.domain + '/liveapp/assets/skin-dark.css" rel="stylesheet">'
                         break
                     default:
                         doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-dark.css"]').forEach(el => el.remove())
                         doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-red.css"]').forEach(el => el.remove())
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-green.css"]').forEach(el => el.remove())
                         break
                 }
 
