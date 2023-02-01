@@ -25,7 +25,7 @@
                         </h2>
                     </div>
                 </div>
-                <div class="row" v-if="search_item_by_barcode">
+                <div class="row d-lg-none" v-if="search_item_by_barcode">
                     <div class="col-md-12">
                         <el-checkbox class="mt-1 font-weight-bold" v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
                     </div>
