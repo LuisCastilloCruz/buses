@@ -14,13 +14,41 @@
             <!-- F4 -->
 
             <div class="col-md-4">
-                <h2>
+                <h2 style="border: none">
                     <el-switch
                         v-model="search_item_by_barcode"
                         active-text="Buscar con escaner de código de barras"
                         @change="changeSearchItemBarcode"
                     ></el-switch>
                 </h2>
+
+                <div class="row" v-if="search_item_by_barcode">
+                    <div class="col-md-12">
+                        <el-checkbox class="mt-1 font-weight-bold" v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
+                    </div>
+                    <div class="col-md-12">
+
+                        <el-checkbox class="mt-1 mb-1 font-weight-bold" v-model="electronic_scale_barcode">Balanza electrónica</el-checkbox>
+
+                        <el-tooltip class="item" effect="dark" placement="top-start">
+
+                            <div slot="content">
+                                <b>El código de barras generado por la balanza debe tener 16 caracteres:</b><br/><br/>
+                                - Los 5 primeros caracteres representan el código de barras del producto.<br/>
+                                - Los 5 siguientes caracteres representan el peso, los 2 primeros son el valor entero y los 3 siguientes son decimales.<br/>
+                                - Los 6 siguientes caracteres representan el total, los 4 primeros son el valor entero y los 2 siguientes son decimales.<br/> <br/>
+
+                                <b>Ejemplo: Para el código 1000314964299280</b> <br/><br/>
+                                <b>10003</b>  = Código de barras del producto  <br/>
+                                <b>14964</b>  = Peso = 14.964  <br/>
+                                <b>299280</b> = Total = 2992.80
+                            </div>
+                            <i class="fa fa-info-circle"></i>
+
+                        </el-tooltip>
+                    </div>
+                </div>
+
             </div>
             <div class="col-md-4">
                 <h2>
@@ -833,7 +861,9 @@ export default {
             place: "cat",
             showDialogItemUnitTypes: false,
             history_item_id: null,
-            search_item_by_barcode: false,
+            search_item_by_barcode: true,
+            search_item_by_barcode_presentation: false,
+            electronic_scale_barcode: false,
             warehousesDetail: [],
             unittypeDetail: [],
             input_person: {},
@@ -891,6 +921,7 @@ export default {
         this.form.establishment_id = this.establishment.id;
 
         this.enabledSearchItemByBarcode()
+        this.enabledCategoriesProductsView()
 
     },
 
@@ -943,6 +974,10 @@ export default {
                 return this.configuration.allow_edit_unit_price_to_seller;
             }
             return false;
+        },
+        changeValuesElectronicScale()
+        {
+            return this.electronic_scale_barcode && this.electronic_scale_data.pass_validations
         }
     },
     methods: {
@@ -951,6 +986,13 @@ export default {
             if (this.configuration.search_item_by_barcode)
             {
                 this.search_item_by_barcode = true
+            }
+        },
+        enabledCategoriesProductsView()
+        {
+            if (this.configuration.enable_categories_products_view)
+            {
+                this.setView('cat2')
             }
         },
         isExoneratedIgv(affectation_igv_type_id)
@@ -992,6 +1034,12 @@ export default {
             }
         },
         ...mapActions(['loadConfiguration']),
+        setFocusInInputSearch()
+        {
+            this.$nextTick(() => {
+                this.initFocus()
+            })
+        },
         keyupEnterQuantity() {
             this.initFocus();
         },
@@ -1084,7 +1132,7 @@ export default {
         },
         getQueryParameters() {
             return queryString.stringify({
-                garage:1,
+                garage:0,
                 page: this.pagination.current_page
                     ? this.pagination.current_page
                     : 1,
@@ -1465,6 +1513,23 @@ export default {
             this.changeDateOfIssue();
             this.initInputPerson();
         },
+        initElectronicScaleData()
+        {
+            this.electronic_scale_data = {
+                barcode: '',
+                parse_weight: '',
+                parse_total: '',
+
+                integer_weight: 0,
+                decimal_weight: 0,
+                weight: 0,
+
+                integer_total: 0,
+                decimal_total: 0,
+                total: 0,
+                pass_validations: false,
+            }
+        },
         initInputPerson() {
             this.input_person = {
                 number: "",
@@ -1528,20 +1593,46 @@ export default {
             this.setLocalStorageIndex("customer", null);
             this.setFormPosLocalStorage();
         },
+        setScaleQuantityIfNotExistItem()
+        {
+            if(this.changeValuesElectronicScale)
+            {
+                this.form_item.item.aux_quantity = this.getQuantityFromElectronicScale()
+                this.form_item.quantity = this.getQuantityFromElectronicScale()
+                this.form_item.aux_quantity = this.getQuantityFromElectronicScale()
+            }
+        },
         async clickAddItem(item, index, input = false) {
+            this.form.exist_stock=true;
+            this.form.recent_item=item.description;
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
+            let presentation = item.presentation
 
-            // console.log(item.unit_type_id)
-            // console.log(exist_item)
-            // console.log(item)
+            let exist_item = false;
+            if(presentation === undefined) {
+                exist_item = _.find(this.form.items, {
+                    item_id: item.item_id,
+                    unit_type_id: item.unit_type_id
+                });
+            }else{
+                // Se evalua si existe presentation de item
+                exist_item = _.find(this.form.items, {
+                    item_id: item.item_id,
+                    presentation: presentation,
+                    unit_type_id: item.unit_type_id
+                });
+            }
 
-            let exist_item = _.find(this.form.items, {
-                item_id: item.item_id,
-                unit_type_id: item.unit_type_id
-            });
+            /*
+            console.log(exist_item)
+            console.log(item.unit_type_id)
+            console.log(exist_item)
+            console.log(item)
+            console.log(presentation)
+            console.log(presentation)
+            */
 
-            // console.log(exist_item)
 
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
@@ -1557,10 +1648,13 @@ export default {
                     if (!response.success) {
                         item.item.aux_quantity = item.quantity;
                         this.loading = false;
+                        this.form.exist_stock=false;
                         return this.$message.error(response.message);
                     }
 
                     exist_item.quantity = exist_item.item.aux_quantity;
+                    exist_item.item.aux_sale_unit_price = exist_item.item.aux_sale_unit_price;
+                    exist_item.item.sale_unit_price=exist_item.item.aux_sale_unit_price
                 } else {
 
                     response = await this.getStatusStock(
@@ -1569,11 +1663,23 @@ export default {
                     );
                     if (!response.success) {
                         this.loading = false;
+                        this.form.exist_stock=false;
                         return this.$message.error(response.message);
                     }
 
-                    exist_item.quantity++;
-                    exist_item.item.aux_quantity++;
+                    // balanza
+                    if(this.changeValuesElectronicScale)
+                    {
+                        exist_item.quantity += this.getQuantityFromElectronicScale()
+                        exist_item.item.aux_quantity += this.getQuantityFromElectronicScale()
+                    }
+                    // balanza
+                    else
+                    {
+                        exist_item.quantity++;
+                        exist_item.item.aux_quantity++;
+                    }
+
                 }
 
                 // console.log(exist_item)
@@ -1591,9 +1697,23 @@ export default {
                     ? exist_item.item.sale_unit_price
                     : exist_item.item.sale_unit_price * (1 + this.percentage_igv);
                 // exist_item.unit_price = unit_price
+
+                // balanza
+                if(this.changeValuesElectronicScale)
+                {
+                    unit_price = this.getUnitPriceFromElectronicScale()
+                }
+                // balanza
+
                 exist_item.item.unit_price = unit_price;
 
                 exist_item.has_plastic_bag_taxes = exist_item.item.has_plastic_bag_taxes;
+
+
+                //asignar variables isc
+                exist_item.has_isc = exist_item.item.has_isc
+                exist_item.percentage_isc = exist_item.item.percentage_isc
+                exist_item.system_isc_type_id = exist_item.item.system_isc_type_id
 
                 this.row = calculateRowItem(
                     exist_item,
@@ -1606,16 +1726,18 @@ export default {
                 this.row["unit_type_id"] = item.unit_type_id;
 
                 this.form.items[pos] = this.row;
-            } else {
-
+            }
+            else
+            {
                 response = await this.getStatusStock(
                     item.item_id,
-                    item.presentation
-                        ? parseInt(item.presentation.quantity_unit)
+                    presentation
+                        ? parseInt(presentation.quantity_unit)
                         : 1
                 );
                 if (!response.success) {
                     this.loading = false;
+                    this.form.exist_stock=false;
                     return this.$message.error(response.message);
                 }
 
@@ -1633,10 +1755,19 @@ export default {
                     ? this.form_item.unit_price_value
                     : this.form_item.unit_price_value * (1 + this.percentage_igv);
 
+                // balanza
+                this.setScaleQuantityIfNotExistItem()
+
+                if(this.changeValuesElectronicScale)
+                {
+                    unit_price = this.getUnitPriceFromElectronicScale()
+                }
+                // balanza
+
                 this.form_item.unit_price = unit_price;
                 this.form_item.item.unit_price = unit_price;
-                this.form_item.item.presentation = item.presentation
-                    ? item.presentation
+                this.form_item.presentation = presentation
+                    ? presentation
                     : null;
 
                 this.form_item.charges = [];
@@ -1646,6 +1777,15 @@ export default {
                     this.affectation_igv_types,
                     {id: this.form_item.affectation_igv_type_id}
                 );
+
+                //asignar variables isc
+                this.form_item.has_isc = this.form_item.item.has_isc
+                this.form_item.percentage_isc = this.form_item.item.percentage_isc
+                this.form_item.system_isc_type_id = this.form_item.item.system_isc_type_id
+
+                if(this.search_item_by_barcode_presentation){
+                    this.form_item.item.description = item.presentation.description
+                }
 
                 // console.log(this.form_item)
                 this.row = calculateRowItem(
@@ -1658,10 +1798,12 @@ export default {
 
                 // this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : 'NIU';
 
-                this.row["unit_type_id"] = item.presentation
-                    ? item.presentation.unit_type_id
+                this.row["unit_type_id"] = presentation
+                    ? presentation.unit_type_id
                     : this.form_item.item.unit_type_id;
 
+                // Se añade la presentation directamente al item para filtrarlo posteriormente
+                this.row.presentation = presentation;
                 this.form.items.unshift(this.row);
                 item.aux_quantity = 1;
             }
@@ -1688,8 +1830,8 @@ export default {
 
             await this.setFormPosLocalStorage();
 
-            await this.setDefaultDataPriceSelected(item)
-
+            // balanza
+            this.initElectronicScaleData()
         },
         setDefaultDataPriceSelected(item)
         {
@@ -1854,7 +1996,7 @@ export default {
         async searchItems() {
             if (this.input_item.length > 0) {
                 this.loading = true;
-                let parameters = `input_item=${this.input_item}&cat=${this.category_selected}&garage=1`;
+                let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;
 
                 await this.$http
                     .get(`/${this.resource}/search_items_cat?${parameters}`)
@@ -1881,17 +2023,89 @@ export default {
                 this.filterItems();
             }
         },
-        async searchItemsBarcode() {
-            // console.log(query)
-            // console.log("in:" + this.input_item)
-            if (this.input_item.length > 1) {
+        getResponseValidate(success, message)
+        {
+            return {
+                success: success,
+                message: message
+            }
+        },
+        setDataToElectronicScaleData()
+        {
+            const start = 0
+            const end_barcode = 5
+            const end_parse_weight = 10
+            const str_input_item = this.input_item.trim()
+
+            if(str_input_item.length !== 16) return this.getResponseValidate(false, 'El código de barras ingresado no cumple el formato establecido.')
+
+            // obtener valores del codigo de barras de la balanza
+            this.electronic_scale_data.barcode = str_input_item.substring(start, end_barcode)
+            this.electronic_scale_data.parse_weight = str_input_item.substring(end_barcode, end_parse_weight)
+            this.electronic_scale_data.parse_total = str_input_item.substring(end_parse_weight)
+
+            // obtener el peso del codigo
+            const end_weight = this.electronic_scale_data.parse_weight.length - 3
+            this.electronic_scale_data.integer_weight = this.electronic_scale_data.parse_weight.substring(start, end_weight)
+            this.electronic_scale_data.decimal_weight = this.electronic_scale_data.parse_weight.substring(end_weight)
+            this.electronic_scale_data.weight = parseFloat(`${this.electronic_scale_data.integer_weight}.${this.electronic_scale_data.decimal_weight}`)
+
+            if(isNaN(this.electronic_scale_data.weight)) return this.getResponseValidate(false, 'El peso no cumple con el formato establecido, no se pudo obtener un valor numérico correcto.')
+
+            // obtener el total del codigo
+            const end_total = this.electronic_scale_data.parse_total.length - 2
+            this.electronic_scale_data.integer_total = this.electronic_scale_data.parse_total.substring(start, end_total)
+            this.electronic_scale_data.decimal_total = this.electronic_scale_data.parse_total.substring(end_total)
+            this.electronic_scale_data.total = parseFloat(`${this.electronic_scale_data.integer_total}.${this.electronic_scale_data.decimal_total}`)
+
+            if(isNaN(this.electronic_scale_data.total)) return this.getResponseValidate(false, 'El total no cumple con el formato establecido, no se pudo obtener un valor numérico correcto.')
+
+            this.electronic_scale_data.pass_validations = true
+
+            // console.log("*******************************")
+            // console.log("barcode", this.electronic_scale_data.barcode)
+            // console.log("weight", this.electronic_scale_data.weight)
+            // console.log("total", this.electronic_scale_data.total)
+
+            // console.log("parse_weight", this.electronic_scale_data.parse_weight)
+            // console.log("parse_total", this.electronic_scale_data.parse_total)
+
+            // console.log("*******************************")
+            // console.log("integer_weight", this.electronic_scale_data.integer_weight)
+            // console.log("decimal_weight", this.electronic_scale_data.decimal_weight)
+            // console.log("*******************************")
+            // console.log("integer_total", this.electronic_scale_data.integer_total)
+            // console.log("decimal_total", this.electronic_scale_data.decimal_total)
+
+            return {
+                success: true
+            }
+
+        },
+        async searchItemsBarcode()
+        {
+            if (this.input_item.length > 1)
+            {
                 this.loading = true;
-                let parameters = `input_item=${this.input_item}`;
+                let parameters = `input_item=${this.input_item}&search_item_by_barcode_presentation=${this.search_item_by_barcode_presentation}`;
+
+                if(this.electronic_scale_barcode)
+                {
+                    const check_electronic_scale_data = this.setDataToElectronicScaleData()
+
+                    if(!check_electronic_scale_data.success)
+                    {
+                        this.loading = false
+                        return this.$message.error(check_electronic_scale_data.message)
+                    }
+
+                    parameters = `input_item=${this.electronic_scale_data.barcode}&search_item_by_barcode_presentation=${this.search_item_by_barcode_presentation}`
+                }
 
                 await this.$http
                     .get(`/${this.resource}/search_items?${parameters}`)
                     .then(response => {
-                        console.log("buah");
+                        // console.log("buah");
                         this.items = response.data.items;
                         this.enabledSearchItemsBarcode();
                         this.loading = false;
@@ -1921,11 +2135,32 @@ export default {
             this.all_items =this.items;
         },
         enabledSearchItemsBarcode() {
-            if (this.search_item_by_barcode) {
-                if (this.items.length == 1) {
-                    // console.log(this.items)
-                    this.clickAddItem(this.items[0], 0);
-                    this.filterItems();
+            if (this.search_item_by_barcode)
+            {
+                //busqueda por presentacion
+                if(this.search_item_by_barcode_presentation)
+                {
+                    if (this.items.length == 1)
+                    {
+                        if(this.items[0].unit_type.length === 1 && this.items[0].search_item_by_barcode_presentation)
+                        {
+                            this.selectItemUnitType(this.items[0].unit_type[0])
+                        }
+                        else
+                        {
+                            this.items = []
+                            this.filterItems()
+                        }
+                    }
+                }
+                //busqueda comun
+                else
+                {
+                    if (this.items.length == 1) {
+                        // console.log(this.items)
+                        this.clickAddItem(this.items[0], 0);
+                        this.filterItems();
+                    }
                 }
 
                 this.cleanInput();
@@ -2012,6 +2247,7 @@ export default {
                 await this.getRecords();
                 this.$refs.table_items.reset();
             }
+            this.setFocusInInputSearch()
         },
         nameSets(id) {
             let row = this.items.find(x => x.item_id == id);

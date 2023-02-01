@@ -390,8 +390,8 @@ export default {
             this.enter_amount = this.form.total
             // this.form.payments = this.payments
             // this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
-            await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].focus()
-            await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].select()
+            //await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].focus()
+            //await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].select()
             // console.log(this.$refs.enter_amount.$el.getElementsByTagName('input')[0])
         },
         changeEnabledDiscount() {
