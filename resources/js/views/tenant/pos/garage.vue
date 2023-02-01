@@ -13,15 +13,18 @@
                 @success="handleFn115"/>
             <!-- F4 -->
 
-            <div class="col-md-4">
-                <h2 style="border: none">
-                    <el-switch
-                        v-model="search_item_by_barcode"
-                        active-text="Buscar con escaner de código de barras"
-                        @change="changeSearchItemBarcode"
-                    ></el-switch>
-                </h2>
-
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 style="border: none">
+                            <el-switch
+                                v-model="search_item_by_barcode"
+                                active-text="Buscar con escaner de código de barras"
+                                @change="changeSearchItemBarcode"
+                            ></el-switch>
+                        </h2>
+                    </div>
+                </div>
                 <div class="row" v-if="search_item_by_barcode">
                     <div class="col-md-12">
                         <el-checkbox class="mt-1 font-weight-bold" v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
@@ -50,7 +53,7 @@
                 </div>
 
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <h2>
                     <el-tooltip
                         class="item"
