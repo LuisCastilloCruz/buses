@@ -17,14 +17,6 @@ class ValidateCpeSunat
 
     protected $client;
 
-    protected $document_state_code = [
-        '-' => '-',
-        '0' => '00',
-        '1' => '01',
-        '2' => '02',
-        '3' => '03',
-        '4' => '04'
-    ];
     protected $document_state = [
         '-' => '-',
         '0' => 'NO EXISTE',
@@ -132,13 +124,11 @@ class ValidateCpeSunat
             if($response->getStatusCode() == 200) {
                 $text =  $response->getBody()->getContents();
                 $datos = json_decode($text,true);
-                Log::info("AQPPPP");
-                Log::info($datos);
                 return [
                     'success' => true,
                     'response' => "Ok ".$response->getBody()->getContents(),
                     'data' => [
-                        'comprobante_estado_codigo' => $this->document_state_code[$datos['data']['estadoCp']],
+                        'comprobante_estado_codigo' => $datos['data']['estadoCp'],
                         'comprobante_estado_descripcion' => $this->document_state[$datos['data']['estadoCp']],
                         // 'empresa_estado_codigo' => $response->data->estadoRuc,
                         // 'empresa_estado_description' => $this->company_state[$response->data->estadoRuc],
@@ -155,7 +145,7 @@ class ValidateCpeSunat
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage(). 'min= '.$min .' fecha :'. $date_of_issue
+                'message' => $e->getMessage()
             ];
         }
     }
