@@ -130,6 +130,8 @@ class ValidateCpeSunat
                     'data' => [
                         'comprobante_estado_codigo' => $datos['data']['estadoCp'],
                         'comprobante_estado_descripcion' => $this->document_state[$datos['data']['estadoCp']],
+                        'state_type_id'=> $datos['data']['estadoCp'],
+                        'message'=> $this->document_state[$datos['data']['estadoCp']],
                         // 'empresa_estado_codigo' => $response->data->estadoRuc,
                         // 'empresa_estado_description' => $this->company_state[$response->data->estadoRuc],
                         // 'empresa_condicion_codigo' => $response->data->condDomiRuc,
