@@ -15,6 +15,7 @@
     use App\Models\Tenant\Catalogs\District;
     use App\Models\Tenant\Catalogs\Province;
     use App\Models\Tenant\Document;
+    use Carbon\Carbon;
     use Exception;
     use Illuminate\Http\Request;
     use Modules\ApiPeruDev\Data\ServiceData;
@@ -205,7 +206,7 @@
             $document_type_id = $request->codigo_tipo_documento;
             $series = $request->serie_documento;
             $number = $request->numero_documento;
-            $date_of_issue = $request->fecha_de_emision;
+            $date_of_issue=Carbon::parse($request->fecha_de_emision)->format('d/m/Y');
             $total = $request->total;
 
             $validate_cpe = new ValidateCpeSunat();
