@@ -197,9 +197,9 @@
 
         public function validateCpeSunat(Request $request)
         {
-            $auth_api = (new AuthApi())->getToken();
-            if(!$auth_api['success']) return $auth_api;
-            $this->access_token = $auth_api['data']['access_token'];
+//            $auth_api = (new AuthApi())->getToken();
+//            if(!$auth_api['success']) return $auth_api;
+//            $this->access_token = $auth_api['data']['access_token'];
 
             $company_number = $request->numero_ruc_emisor;
             $document_type_id = $request->codigo_tipo_documento;
