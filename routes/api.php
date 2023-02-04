@@ -7,7 +7,7 @@ if ($hostname) {
     Route::domain($hostname->fqdn)->group(function () {
 
         Route::post('login', 'Tenant\Api\MobileController@login');
-        Route::post('login-guia-facil', 'Tenant\Api\MobileGuiafacilController@login');
+        Route::post('login-guia-facil', 'Tenant\Api\MobileGuiaFacilController@login');
 
         Route::middleware(['auth:api', 'locked.tenant'])->group(function () {
             //MOBILE
