@@ -112,6 +112,8 @@ if ($hostname) {
                 Route::get('create_new/{table}/{id}', 'Tenant\DispatchController@createNew');
                 Route::get('/get_origin_addresses/{establishment_id}', 'Tenant\DispatchController@getOriginAddresses');
                 Route::get('/get_delivery_addresses/{person_id}', 'Tenant\DispatchController@getDeliveryAddresses');
+
+                Route::get('/conductores', 'Tenant\Api\MobileGuiaFacilController@conductores');
             });
 
             Route::prefix('dispatch_carrier')->group(function () {

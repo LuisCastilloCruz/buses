@@ -20,6 +20,7 @@ use App\Models\Tenant\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\Tenant\PersonRequest;
+use Modules\Dispatch\Http\Controllers\DriverController;
 use Modules\Item\Http\Requests\ItemRequest;
 use Modules\Dashboard\Helpers\DashboardData;
 use Modules\Finance\Helpers\UploadFileHelper;
@@ -97,6 +98,13 @@ class MobileGuiaFacilController extends Controller
         return optional(AppConfiguration::first())->getRowResource();
     }
 
+    public function conductores(){
+        $conductores = (new DriverController())->getOptions();
+        return [
+            'success' => true,
+            'data_conductor' =>$conductores
+        ];
+    }
 
     public function customers()
     {
