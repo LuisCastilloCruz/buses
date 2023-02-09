@@ -251,6 +251,51 @@
 <!--                        <el-button  type="primary" @click="generarManifiesto">Traspasar</el-button>-->
 <!--                    </div>-->
                 </div>
+
+                <div class="row card-body no-gutters">
+                    <div class="col-md-12" v-if="selectProgramacion.id>0">
+                        <h3>Listado de pasajeros vendidos</h3>
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>ASIENTO</th>
+                                    <th>RUTA</th>
+                                    <th>DNI</th>
+                                    <th>NOMBRES</th>
+                                    <th>TIPO</th>
+                                    <th>CELULAR</th>
+                                    <th>PRECIO</th>
+                                    <th>VENDEDOR</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <template v-if="listPasajeros.length > 0">
+                                    <tr v-for="pasaje in listPasajeros" :key="pasaje.id" :class="{'border-left border-info': (pasaje.nombre_pasajero),'text-success border-left border-success': (pasaje.document)}">
+                                        <td><b>{{ pasaje.numero_asiento }}</b></td>
+                                        <td>{{ pasaje.origen.nombre + ' - ' + pasaje.destino.nombre }}</td>
+                                        <td>{{ (pasaje.document)? pasaje.document.customer.number : '' }}</td>
+                                        <td>{{ (pasaje.document)? pasaje.document.customer.name : pasaje.nombre_pasajero }}</td>
+                                        <td>{{ (pasaje.nombre_pasajero) ? "RESERVA" : "VENTA" }}</td>
+                                        <td>{{ (pasaje.document)? pasaje.document.customer.telephone : '' }}</td>
+                                        <td>{{ pasaje.precio }}</td>
+                                        <td>{{ pasaje.user_name }}</td>
+                                    </tr>
+                                </template>
+                                <template v-else>
+                                    <tr>
+                                        <td colspan="9">
+                                            <el-alert type="info" title="No hay pasajes"  center/>
+                                        </td>
+                                    </tr>
+                                </template>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -539,7 +584,9 @@ export default {
             loadAsientosOcupados:false,
             modalManifiestoVisible:false,
             existe_manifiesto:false,
-            id_manifiesto:null
+            id_manifiesto:null,
+
+            listPasajeros:[]
         });
     },
     computed:{
@@ -752,6 +799,8 @@ export default {
                 const { data:programaciones } = await this.$http.post(`/transportes/sales/programaciones-disponibles`,data);
                 this.loadingProgramaciones = false;
                 this.programaciones = programaciones.programaciones;
+
+                this.listadoPasajeros()
             }
 
         },
@@ -805,8 +854,6 @@ export default {
             })
         },
         async seleccionar(programacion){
-            console.log("select programacion")
-            console.log(programacion)
             this.visibleAsientoLibre = false;
             this.selectProgramacion = programacion;
 
@@ -974,6 +1021,20 @@ export default {
                 }
 
             }, 1000);
+        },
+
+        async listadoPasajeros(){
+            let data = {
+                origen_id:this.terminalId,
+                destino_id:this.destino.id,
+                fecha_salida:this.fecha_salida,
+                programacion_id : this.selectProgramacion.id
+            }
+
+            const { data:pasajeros } = await this.$http.post(`/transportes/sales/listado_pasajeros`,data);
+
+            console.log(pasajeros.data)
+            this.listPasajeros = pasajeros.data;
         }
     }
 }

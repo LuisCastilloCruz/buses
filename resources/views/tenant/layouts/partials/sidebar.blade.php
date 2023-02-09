@@ -1639,8 +1639,26 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                 <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'pasajes' || $secondLevel === 'sales')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/pasajes') }}">Pasajes</a>
                                 </li>
-                                <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'encomiendas')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ url('transportes/encomiendas') }}">Encomiendas</a>
+
+                                <li class="nav-parent
+                                {{ ( $firstLevel ==='transportes' && $secondLevel == 'encomiendas') || ( $firstLevel ==='transportes' && $secondLevel == 'entregar-encomiendas') ?'nav-active nav-expanded':'' }}">
+                                    <a class="nav-link"
+                                       href="#">
+                                        ENCOMIENDAS
+                                    </a>
+                                    <ul class="nav nav-children">
+                                        <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'encomiendas')) ? 'nav-active' : '' }}">
+                                            <a class="nav-link" href="{{ url('transportes/encomiendas') }}">
+                                                Encomiendas
+                                            </a>
+                                        </li>
+                                        <li class="{{ ( $firstLevel === 'transportes' && $secondLevel == 'entregar-encomiendas')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{url('transportes/entregar-encomiendas')}}">
+                                                Entregar encomiendas
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'manifiestos')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/manifiestos') }}">Manifiestos</a>

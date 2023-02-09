@@ -55,12 +55,6 @@ class TransporteEncomiendaController extends Controller
 
         $user=$user_terminal->user;
 
-        // if(is_null($user_terminal)){
-        //     //redirigirlo
-        //     Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
-        //     return redirect()->back();
-        // }
-
         $terminal = $user_terminal->terminal;
         $persons = Person::where('type','customers')->get();
 
@@ -94,6 +88,49 @@ class TransporteEncomiendaController extends Controller
         ));
     }
 
+    public function entregarEncomiendasIndex(Request $request) {
+        $estadosPagos = TransporteEstadoPagoEncomienda::all();
+        $user_terminal = TransporteUserTerminal::where('user_id',auth()->user()->id)->first();
+
+        if(is_null($user_terminal)){
+            //redirigirlo
+            Session::flash('message','No se pudó acceder. No tiene una terminal asignada');
+            return redirect()->back();
+        }
+
+        $user=$user_terminal->user;
+        $persons = Person::where('type','customers')->get();
+        $estadosEnvios = TransporteEstadoEnvio::all();
+
+        $document_type_03_filter = config('tenant.document_type_03_filter');
+
+
+        $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id', $establishment->id)->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
+        $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
+        $configuration = Configuration::first();
+
+        $isCashOpen =  !is_null(Cash::where([['user_id',$request->user()->id],['state',true]])->first());
+        return view('transporte::encomiendas.entregar_encomienda_index', compact(
+            'estadosPagos',
+            'estadosEnvios',
+            'establishment',
+            'series',
+            'document_types_invoice',
+            'payment_method_types',
+            'payment_destinations',
+            'user_terminal',
+            'configuration',
+            'document_type_03_filter',
+            'isCashOpen',
+            'persons',
+            'user'
+        ));
+
+    }
+
     /**
      * Show the form for creating a new resource.
      * @return Response
@@ -109,6 +146,7 @@ class TransporteEncomiendaController extends Controller
         try{
             extract($request->only(['page','limit']));
 
+            $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
             $encomiendas = TransporteEncomienda::with([
                 'document.items',
                 'document',
@@ -126,6 +164,9 @@ class TransporteEncomiendaController extends Controller
                 'terminal',
                 'destino'
             ])
+            ->whereHas('document', function($q) use($establishment){
+                $q->where('establishment_id', $establishment->id);
+            })
             ->whereNotNull('document_id')
             ->orderBy('id', 'DESC')
             ->take($limit)->skip($limit * ($page - 1) );
@@ -144,10 +185,105 @@ class TransporteEncomiendaController extends Controller
 
 
     }
+
+
+    public function buscarEncomienda(Request $request){
+
+        try{
+
+            $numero_dni = $request->numero_dni;
+
+            $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
+            $encomiendas = TransporteEncomienda::with([
+                'document.items',
+                'document',
+                'programacion' => function($progamacion){
+                    return $progamacion->with([
+                        'vehiculo:id,placa',
+                        'origen:id,nombre',
+                        'destino:id,nombre',
+                    ]);
+                },
+                'remitente:id,name',
+                'destinatario:id,name,number',
+                'estadoPago',
+                'estadoEnvio',
+                'terminal',
+                'destino'
+            ])
+                ->whereHas('destinatario', function($q) use($numero_dni){
+                    $q->where('number', $numero_dni);
+                })
+                ->where('estado_envio_id',1)
+                ->whereNotNull('document_id')
+                ->orderBy('id', 'DESC')
+                ->take(10);
+
+            return response()->json([
+                'count' => $encomiendas->count(),
+                'data' => $encomiendas->get()
+            ],200);
+
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Lo sentimos ocurrio un error en su petición' . $e
+            ],500);
+        }
+
+
+
+    }
+    public function buscarEncomiendaNota(Request $request){
+
+        try{
+
+            $numero_dni = $request->numero_dni;
+
+            $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
+            $encomiendas = TransporteEncomienda::with([
+                'saleNote.items',
+                'saleNote',
+                'programacion' => function($progamacion){
+                    return $progamacion->with([
+                        'vehiculo:id,placa',
+                        'origen:id,nombre',
+                        'destino:id,nombre',
+                    ]);
+                },
+                'remitente:id,name',
+                'destinatario:id,name,number',
+                'estadoPago',
+                'estadoEnvio',
+                'terminal',
+                'destino'
+            ])
+                ->whereHas('destinatario', function($q) use($numero_dni){
+                    $q->where('number', $numero_dni);
+                })
+                ->where('estado_envio_id',1)
+                ->whereNotNull('note_id')
+                ->orderBy('id', 'DESC')
+                ->take(10);
+
+            return response()->json([
+                'count' => $encomiendas->count(),
+                'data' => $encomiendas->get()
+            ],200);
+
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Lo sentimos ocurrio un error en su petición' . $e
+            ],500);
+        }
+
+
+
+    }
     public function getEncomiendasNotes(){
 
         try{
 
+            $establishment =  Establishment::where('id', auth()->user()->establishment_id)->first();
             $encomiendas = TransporteEncomienda::with([
                 'saleNote.items',
                 'saleNote',
@@ -165,6 +301,9 @@ class TransporteEncomiendaController extends Controller
                 'terminal',
                 'destino'
             ])
+            ->whereHas('saleNote', function($q) use($establishment){
+                $q->where('establishment_id', $establishment->id);
+            })
             ->whereNotNull('note_id')
             ->orderBy('transporte_encomiendas.id', 'DESC')
             ->get();

@@ -22,6 +22,7 @@ if ($hostname) {
 				Route::put('sales/{pasaje}/actualizar-boleto', 'TransporteSalesController@updateVenta');
 				Route::put('sales/{pasaje}/venta-boleto-reservado', 'TransporteSalesController@ventaReservado');
                 Route::get('sales/borrar-reserva/{id}','TransporteSalesController@eliminarReserva');
+                Route::post('sales/listado_pasajeros', 'TransporteSalesController@listadoPasajeros');
 
 				// Vehiculos
 				Route::get('vehiculos', 'TransporteVehiculoController@index');
@@ -57,6 +58,9 @@ if ($hostname) {
 				Route::delete('encomiendas/{encomienda}/delete','TransporteEncomiendaController@destroy');
 				Route::get('encomiendas/get-productos','TransporteEncomiendaController@getProductos');
                 Route::get('encomiendas/get-pasajero/{type?}/{number?}','TransporteEncomiendaController@getPasajero');
+                Route::get('entregar-encomiendas','TransporteEncomiendaController@entregarEncomiendasIndex');
+                Route::get('encomiendas/buscar/{numero_dni}', 'TransporteEncomiendaController@buscarEncomienda');
+                Route::get('encomiendas/buscar-nota/{numero_dni}', 'TransporteEncomiendaController@buscarEncomiendaNota');
 
 				//terminales
 				Route::get('terminales','TransporteTerminalesController@index');

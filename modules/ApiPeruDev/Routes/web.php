@@ -11,6 +11,7 @@ if($current_hostname) {
                 Route::get('massive_validate_cpe/tables', 'MassiveValidateController@tables');
                 Route::post('massive_validate_cpe', 'MassiveValidateController@validate');
                 Route::post('massive_validate_cpe_2', 'MassiveValidateV2Controller@validate');
+                Route::get('massive_validate_cpe_2/tables', 'MassiveValidateController@tables');
             });
             //ruta distinta a la version actual
             Route::prefix('service')->group(function () {

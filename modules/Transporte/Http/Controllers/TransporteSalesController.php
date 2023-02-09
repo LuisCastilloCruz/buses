@@ -524,6 +524,31 @@ class TransporteSalesController extends Controller
 
     }
 
+    public function listadoPasajeros(Request $request){
+        try {
+
+            $pasajeros = TransportePasaje::with('document','origen','destino')
+                ->where("origen_id",$request->origen_id)
+                ->where("destino_id",$request->destino_id)
+                ->orderBy('numero_asiento','ASC')
+                ->get();
+
+
+            return response()->json([
+                'success' => true,
+                'data'=>$pasajeros,
+                'message' => 'Éxito!!'
+            ],200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al procesar su petición',
+                'error' => $th->getMessage()
+            ],500);
+        }
+    }
+
 
 
 }
