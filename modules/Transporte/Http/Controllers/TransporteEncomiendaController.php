@@ -523,7 +523,8 @@ class TransporteEncomiendaController extends Controller
                 'estado_pago_id',
                 'estado_envio_id',
                 'destino_id',
-                'destinatario_nombre'
+                'destinatario_nombre',
+                'clave'
             );
 
             $data = array_merge($data,['terminal_id' => $request->user()->terminal->id,'soap_type_id'=>$soap_type_id]);
@@ -644,6 +645,8 @@ class TransporteEncomiendaController extends Controller
             $encomienda->estadoEnvio;
             $encomienda->estadoPago;
             $encomienda->document;
+            $encomienda->terminal;
+            $encomienda->destino;
 
             return response()->json([
                 'success' => true,

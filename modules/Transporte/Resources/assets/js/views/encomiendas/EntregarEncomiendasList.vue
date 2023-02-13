@@ -9,13 +9,13 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <div class="btn-group flex-wrap">
-                    <button
-                        type="button"
-                        class="btn btn-custom btn-sm mt-2 mr-2"
-                        @click="onCreate"
-                    >
-                        <i class="fa fa-plus-circle"></i> Nuevo
-                    </button>
+<!--                    <button-->
+<!--                        type="button"-->
+<!--                        class="btn btn-custom btn-sm mt-2 mr-2"-->
+<!--                        @click="onCreate"-->
+<!--                    >-->
+<!--                        <i class="fa fa-plus-circle"></i> Nuevo-->
+<!--                    </button>-->
                 </div>
             </div>
         </div>
@@ -73,16 +73,16 @@
                                                     <td>
                                                         <p>
                                                                 <span  class="badge bg-secondary text-white bg-success">
-                                                                {{ invoice.terminal.nombre }}
+                                                                 {{ (invoice.terminal) ? invoice.terminal.nombre :'' }}
                                                             </span>
                                                             ->
 
                                                             <span v-if="invoice.programacion_id >0" class="badge bg-secondary text-white bg-success">
-                                                                {{ invoice.destino.nombre }}
+                                                                {{ (invoice.destino) ? invoice.destino.nombre :'' }}
                                                             </span>
 
                                                             <span v-else class="badge bg-secondary text-white bg-info">
-                                                                {{ invoice.destino.nombre }}
+                                                                {{ (invoice.destino) ? invoice.destino.nombre :''  }}
                                                             </span>
                                                         </p>
 
@@ -133,7 +133,7 @@
                                                     <td class="text-center" colspan="8">
                                                         <el-alert
                                                             center
-                                                            title="No hay manifiestos registrados"
+                                                            title="No hay facturas o boletas registrados"
                                                             type="info"
                                                             :closable="false">
                                                         </el-alert>
@@ -165,16 +165,16 @@
                                                     <td>
                                                         <p>
                                                                 <span  class="badge bg-secondary text-white bg-success">
-                                                                {{ note.terminal.nombre }}
+                                                                {{ (note.terminal) ? note.terminal.nombre :'' }}
                                                             </span>
                                                             ->
 
                                                             <span v-if="note.programacion_id >0" class="badge bg-secondary text-white bg-success">
-                                                                {{ note.destino.nombre }}
+                                                                {{ (note.destino)? note.destino.nombre :'' }}
                                                             </span>
 
                                                             <span v-else class="badge bg-secondary text-white bg-info">
-                                                                {{ note.destino.nombre }}
+                                                                {{ (note.destino)? note.destino.nombre :'' }}
                                                             </span>
                                                         </p>
 
@@ -211,7 +211,7 @@
                                                     <td class="text-center" colspan="8">
                                                         <el-alert
                                                             center
-                                                            title="No hay comprobantes registrados"
+                                                            title="No hay notas de venta registrados"
                                                             type="info"
                                                             :closable="false">
                                                         </el-alert>
@@ -449,8 +449,6 @@ export default {
                 this.loading = true;
                 const { data } = await this.$http.get('/transportes/encomiendas/get-encomiendas-notes');
                 this.listNotes = data;
-
-                console.log(this.listNotes)
                 this.loading = false;
             }catch(error){
                 this.loading = false;
@@ -507,7 +505,6 @@ export default {
             this.openModalAddEdit = true;
         },
         onUpdateItem(encomienda) {
-            console.log(encomienda)
             //this.getEncomiendas();
 
             this.listInvoices = this.listInvoices.map((i) => {

@@ -121,6 +121,13 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-4 offset-4 mt-3">
+                        <p class="text-center text-blue font-bold">CLAVE
+                            <input type="text" class="form-control font-large font-bold text-center text-blue" v-model="encomienda.clave" maxlength="4"></input>
+                        </p>
+                    </div>
+                </div>
                 <div class="row mt-3">
                     <div class="col-4">
                         <div class="form-group">
@@ -555,7 +562,8 @@ export default {
                 programacion_id:null,
                 fecha_salida:moment().format("YYYY-MM-DD"),
                 origen_id:null,
-                destino_id:null
+                destino_id:null,
+                clave:''
             },
             payment:{},
             document_types: [],
@@ -1014,7 +1022,8 @@ export default {
                     estado_pago_id:1,
                     estado_envio_id:1,
                     programacion_id:null,
-                    fecha_salida:moment().format("YYYY-MM-DD")
+                    fecha_salida:moment().format("YYYY-MM-DD"),
+                    clave :''
                 }
                 this.initDocument();
                 this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;

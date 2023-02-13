@@ -6,7 +6,7 @@
                 <div class="col-lg-12 col-md-12 table-responsive">
                     <div class="form-group">
                         <label for="">Ingrese la contraseña <span class="text-danger">*</span></label>
-                        <el-input type="password" v-model="password" placeholder="****"></el-input>
+                        <el-input type="password" v-model="password" placeholder="****" maxlength="4"></el-input>
                     </div>
                 </div>
 
@@ -30,11 +30,10 @@ export default {
             loading: false,
             errors: {},
             form: {},
-            password:"1234"
+            password:""
         }
     },
     async created() {
-
     },
     methods: {
 
@@ -45,35 +44,36 @@ export default {
         },
         create(){
             this.initForm()
-            //console.log(this.form)
         },
         async submit(){
-            if(this.password!="1234"){
-                this.$message.error("Ingrese la contraseña de entrega");
-                return false
+            if(this.password==this.encomienda.clave){
+                this.$http
+                    .put(`/transportes/encomiendas/entregar`, this.form)
+                    .then(async (response) => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message);
+                            this.$emit('onUpdateItem',response.data.encomienda);
+                            this.$emit("update:showDialogEntrega", false);
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response) {
+                            this.$message.error(error.response.data.message);
+                        }
+                    })
+                    .finally(() => {
+                        this.loading = false;
+                    });
             }
-            this.$http
-                .put(`/transportes/encomiendas/entregar`, this.form)
-                .then(async (response) => {
-                    if (response.data.success) {
-                        this.$message.success(response.data.message);
-                        this.$emit('onUpdateItem',response.data.encomienda);
-                        this.$emit("update:showDialogEntrega", false);
-                    } else {
-                        this.$message.error(response.data.message);
-                    }
-                })
-                .catch((error) => {
-                    if (error.response) {
-                        this.$message.error(error.response.data.message);
-                    }
-                })
-                .finally(() => {
-                    this.loading = false;
-                });
+            else {
+                this.$message.error("Ingrese la contraseña correcta");
+            }
+
         },
         close() {
-            this.password="1234";
+            this.password="";
             this.$emit('update:showDialogEntrega', false)
 
         },
