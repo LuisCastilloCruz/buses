@@ -799,8 +799,6 @@ export default {
                 const { data:programaciones } = await this.$http.post(`/transportes/sales/programaciones-disponibles`,data);
                 this.loadingProgramaciones = false;
                 this.programaciones = programaciones.programaciones;
-
-                this.listadoPasajeros()
             }
 
         },
