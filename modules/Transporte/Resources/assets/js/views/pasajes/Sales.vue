@@ -17,138 +17,138 @@
             </div>
 
             <div class="col-xl-3 col-md-3 col-12 card card-transparent card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="" class="control-label">Tipo de venta</label>
+                            <el-select v-model="tipoVenta"
+                                       id="tipo-venta"
+                                       popper-class="el-select-customers"
+                                       placeholder="Tipo de venta"
+                                       :disabled="pasajero ? true : false"
+                            >
+                                <el-option :value="1" label="Venta Libre">
+                                </el-option>
+                                <el-option  :value="2" label="Venta Normal">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="" class="control-label">Origen</label>
+                            <el-select v-model="terminalId" filterable remote  popper-class="el-select-customers"
+                                       placeholder="Buscar origen"
+                                       :remote-method="searchTerminales"
+                                       :loading="loadingTerminales"
+                                       @change="searchDestinos"
+                            >
+                                <el-option v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :label="terminal.nombre">
+                                </el-option>
+                            </el-select>
 
-                <div class="row card-body d-flex align-items-start no-gutters">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="" class="control-label">Tipo de venta</label>
-                                <el-select v-model="tipoVenta"
-                                           id="tipo-venta"
-                                           popper-class="el-select-customers"
-                                           placeholder="Tipo de venta"
-                                           :disabled="pasajero ? true : false"
-                                >
-                                    <el-option :value="1" label="Venta Libre">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="" class="control-label">Destino</label>
+                            <el-select v-model="destino"
+                                       value-key="id"
+                                       :loading="loadingDestinos"
+                                       popper-class="el-select-customers"
+                                       placeholder="Destino"
+                                       @change="getProgramaciones"
+                            >
+                                <template v-for="destino in terminales">
+                                    <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
+                                    <el-option v-if="destino.id != terminalId"  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
                                     </el-option>
-                                    <el-option  :value="2" label="Venta Normal">
-                                    </el-option>
-                                </el-select>
+                                </template>
+
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div v-if="destino" class="col-md-12">
+                        <div  class="form-group">
+                            <label for="" class="control-label">Fecha salida</label>
+                            <el-date-picker
+                                v-model="fecha_salida"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                placeholder="Fecha salida"
+                                @change="getProgramaciones">
+                            </el-date-picker>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div v-loading="loadingProgramaciones" v-if="destino && tipoVenta == 2" class="col-md-12">
+                        <div v-if="programaciones.length > 0" class="row mt-2">
+                            <div class="col-md-12 px-0">
+                                <table class="table table-striped table-border responsive">
+                                    <thead>
+                                    <tr>
+                                        <th>Terminal</th>
+                                        <th>Vehiculo</th>
+                                        <th>Hora salida</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="programacion in programaciones" :key="programacion.id">
+                                        <td>{{ programacion.destino.nombre }}</td>
+                                        <td>{{ programacion.vehiculo.placa }}</td>
+                                        <td>{{ programacion.hora_salida.substring(0,5) }}</td>
+                                        <td>
+                                            <template v-if="!selectProgramacion">
+                                                <el-button type="success" size="mini" @click="seleccionar(programacion)">
+                                                    <i class="fa fa-check"></i>
+                                                </el-button>
+                                            </template>
+                                            <template v-else>
+                                                <el-button v-if="selectProgramacion.id == programacion.id" type="danger" size="mini" @click="quitar">
+                                                    <i class="fa fa-minus-circle"></i>
+                                                </el-button>
+                                                <el-button v-else type="success" size="mini" @click="seleccionar(programacion)">
+                                                    <i class="fa fa-check"></i>
+                                                </el-button>
+                                            </template>
+
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
                             </div>
                         </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="" class="control-label">Origen</label>
-                                <el-select v-model="terminalId" filterable remote  popper-class="el-select-customers"
-                                           placeholder="Buscar origen"
-                                           :remote-method="searchTerminales"
-                                           :loading="loadingTerminales"
-                                           @change="searchDestinos"
-                                >
-                                    <el-option v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :label="terminal.nombre">
-                                    </el-option>
-                                </el-select>
-
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label for="" class="control-label">Destino</label>
-                                <el-select v-model="destino"
-                                           value-key="id"
-                                           :loading="loadingDestinos"
-                                           popper-class="el-select-customers"
-                                           placeholder="Destino"
-                                           @change="getProgramaciones"
-                                >
-                                    <template v-for="destino in terminales">
-                                        <!--<el-option  :key="destino.terminal_destino_id" :value="destino.destino.id" :label="`${destino.destino.nombre}`">-->
-                                        <el-option v-if="destino.id != terminalId"  :key="destino.id" :value="destino" :label="`${destino.nombre}`">
-                                        </el-option>
-                                    </template>
-
-                                </el-select>
-                            </div>
-                        </div>
-
-                        <div v-if="destino" class="col-md-12">
-                            <div  class="form-group">
-                                <label for="" class="control-label">Fecha salida</label>
-                                <el-date-picker
-                                    v-model="fecha_salida"
-                                    type="date"
-                                    value-format="yyyy-MM-dd"
-                                    placeholder="Fecha salida"
-                                    @change="getProgramaciones">
-                                </el-date-picker>
-                            </div>
-                        </div>
-
-
-                        <div v-loading="loadingProgramaciones" v-if="destino && tipoVenta == 2" class="col-md-12">
-                            <div v-if="programaciones.length > 0" class="row mt-2">
-                                <div class="col-md-12 px-0">
-                                    <table class="table table-striped table-border responsive">
-                                        <thead>
-                                        <tr>
-                                            <th>Terminal</th>
-                                            <th>Vehiculo</th>
-                                            <th>Hora salida</th>
-                                            <th></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr v-for="programacion in programaciones" :key="programacion.id">
-                                            <td>{{ programacion.destino.nombre }}</td>
-                                            <td>{{ programacion.vehiculo.placa }}</td>
-                                            <td>{{ programacion.hora_salida.substring(0,5) }}</td>
-                                            <td>
-                                                <template v-if="!selectProgramacion">
-                                                    <el-button type="success" size="mini" @click="seleccionar(programacion)">
-                                                        <i class="fa fa-check"></i>
-                                                    </el-button>
-                                                </template>
-                                                <template v-else>
-                                                    <el-button v-if="selectProgramacion.id == programacion.id" type="danger" size="mini" @click="quitar">
-                                                        <i class="fa fa-minus-circle"></i>
-                                                    </el-button>
-                                                    <el-button v-else type="success" size="mini" @click="seleccionar(programacion)">
-                                                        <i class="fa fa-check"></i>
-                                                    </el-button>
-                                                </template>
-
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-
-                                </div>
-                            </div>
-                            <div v-else class="row mt-2">
-                                <div class="col-12">
-                                    <el-alert
-                                        title="No hay programaciones"
-                                        center
-                                        type="info"
-                                        :closable="false">
-                                    </el-alert>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-if="destino && tipoVenta == 1" class="col-md-4">
-                            <div class="from-group">
-                                <label for="" class="control-label">Hora salida</label>
-                                <el-input type="time" v-model="horaSalida" id="hora-salida"></el-input>
-                            </div>
-                        </div>
-
-                        <div v-if="destino && tipoVenta == 1" class="col-md-4">
-                            <div class="from-group" :style="{marginTop:'1.85rem'}">
-                                <el-button type="primary" @click="openModal = true" >Realizar venta</el-button>
+                        <div v-else class="row mt-2">
+                            <div class="col-12">
+                                <el-alert
+                                    title="No hay programaciones"
+                                    center
+                                    type="info"
+                                    :closable="false">
+                                </el-alert>
                             </div>
                         </div>
                     </div>
+                    <div v-if="destino && tipoVenta == 1" class="col-md-6">
+                        <div class="from-group">
+                            <label for="" class="control-label">Hora salida</label>
+                            <el-input type="time" v-model="horaSalida" id="hora-salida"></el-input>
+                        </div>
+                    </div>
+
+                    <div v-if="destino && tipoVenta == 1" class="col-md-6">
+                        <div class="from-group" :style="{marginTop:'1.85rem'}">
+                            <el-button type="primary" @click="openModal = true" >Realizar venta</el-button>
+                        </div>
+                    </div>
+                </div>
 
             </div>
             <div class="col-xl-9 col-md-9 col-12 pl-1 pr-0">
@@ -250,9 +250,7 @@
 <!--                        <p><b>Traspaso</b></p>-->
 <!--                        <el-button  type="primary" @click="generarManifiesto">Traspasar</el-button>-->
 <!--                    </div>-->
-                </div>
 
-                <div class="row card-body no-gutters">
                     <div class="col-md-12" v-if="selectProgramacion.id>0">
                         <h3>Listado de pasajeros vendidos</h3>
 
@@ -271,14 +269,14 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <template v-if="listPasajeros.length > 0">
-                                    <tr v-for="pasaje in listPasajeros" :key="pasaje.id" :class="{'border-left border-info': (pasaje.nombre_pasajero),'text-success border-left border-success': (pasaje.document)}">
+                                <template v-if="asientosOcupados.length > 0">
+                                    <tr v-for="pasaje in asientosOcupados" :key="pasaje.id" :class="{'border-left border-info': (pasaje.nombre_pasajero),'text-success border-left border-success': (pasaje.document)}">
                                         <td><b>{{ pasaje.numero_asiento }}</b></td>
                                         <td>{{ pasaje.origen.nombre + ' - ' + pasaje.destino.nombre }}</td>
-                                        <td>{{ (pasaje.document)? pasaje.document.customer.number : '' }}</td>
-                                        <td>{{ (pasaje.document)? pasaje.document.customer.name : pasaje.nombre_pasajero }}</td>
+                                        <td>{{ (pasaje.pasajero)? pasaje.pasajero.number : '' }}</td>
+                                        <td>{{ (pasaje.pasajero)? pasaje.pasajero.name : pasaje.nombre_pasajero }}</td>
                                         <td>{{ (pasaje.nombre_pasajero) ? "RESERVA" : "VENTA" }}</td>
-                                        <td>{{ (pasaje.document)? pasaje.document.customer.telephone : '' }}</td>
+                                        <td>{{ (pasaje.document)? pasaje.pasajero.telephone : '' }}</td>
                                         <td>{{ pasaje.precio }}</td>
                                         <td>{{ pasaje.user_name }}</td>
                                     </tr>
@@ -584,9 +582,7 @@ export default {
             loadAsientosOcupados:false,
             modalManifiestoVisible:false,
             existe_manifiesto:false,
-            id_manifiesto:null,
-
-            listPasajeros:[]
+            id_manifiesto:null
         });
     },
     computed:{
@@ -852,8 +848,6 @@ export default {
             })
         },
         async seleccionar(programacion){
-            console.log('dunal')
-            console.log(programacion)
             this.visibleAsientoLibre = false;
             this.selectProgramacion = programacion;
 
@@ -870,9 +864,6 @@ export default {
 
                 this.$nextTick(() => this.$forceUpdate());
             }
-
-            this.listadoPasajeros(programacion.hora_salida)
-
         },
 
         async verificarManifiesto(programacion){
@@ -1023,27 +1014,6 @@ export default {
                 }
 
             }, 1000);
-        },
-
-        async listadoPasajeros(hora_salida){
-            let form = {
-                origen_id:this.terminalId,
-                destino_id:this.destino.id,
-                fecha_salida:this.fecha_salida,
-                hora_salida:hora_salida,
-                programacion_id : this.selectProgramacion.id
-            }
-
-            try{
-                const { data } = await this.$http.post('/transportes/sales/listado_pasajeros',form);
-
-                if(data.success){
-                    this.listPasajeros = data.data;
-                }
-
-            }catch(error){
-                return null;
-            }
         }
     }
 }
