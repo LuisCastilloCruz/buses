@@ -852,6 +852,8 @@ export default {
             })
         },
         async seleccionar(programacion){
+            console.log('dunal')
+            console.log(programacion)
             this.visibleAsientoLibre = false;
             this.selectProgramacion = programacion;
 
@@ -869,7 +871,7 @@ export default {
                 this.$nextTick(() => this.$forceUpdate());
             }
 
-            this.listadoPasajeros()
+            this.listadoPasajeros(programacion.hora_salida)
 
         },
 
@@ -1023,11 +1025,12 @@ export default {
             }, 1000);
         },
 
-        async listadoPasajeros(){
+        async listadoPasajeros(hora_salida){
             let form = {
                 origen_id:this.terminalId,
                 destino_id:this.destino.id,
                 fecha_salida:this.fecha_salida,
+                hora_salida:hora_salida,
                 programacion_id : this.selectProgramacion.id
             }
 

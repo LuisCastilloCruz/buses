@@ -526,11 +526,21 @@ class TransporteSalesController extends Controller
 
     public function listadoPasajeros(Request $request){
         try {
+            $user = auth()->user();
+
+            $viaje = TransporteViajes::where('terminal_origen_id', $request->origen_id)
+                ->where('terminal_destino_id', $request->destino_id)
+                ->whereDate('fecha_salida', $request->fecha_salida)
+                ->whereTime('hora_salida', $request->hora_salida)
+                ->where('programacion_id', $request->programacion_id)
+                ->first();
+
 
             $pasajeros = TransportePasaje::with('document','origen','destino')
                 ->where("origen_id",$request->origen_id)
                 ->where("destino_id",$request->destino_id)
                 ->where('fecha_salida',$request->fecha_salida)
+                ->where('viaje_id',$viaje->id)
                 ->orderBy('numero_asiento','ASC')
                 ->get();
 
