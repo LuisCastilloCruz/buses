@@ -1024,17 +1024,23 @@ export default {
         },
 
         async listadoPasajeros(){
-            let data = {
+            let form = {
                 origen_id:this.terminalId,
                 destino_id:this.destino.id,
                 fecha_salida:this.fecha_salida,
                 programacion_id : this.selectProgramacion.id
             }
 
-            const { data:pasajeros } = await this.$http.post(`/transportes/sales/listado_pasajeros`,data);
+            try{
+                const { data } = await this.$http.post('/transportes/sales/listado_pasajeros',form);
 
-            console.log(pasajeros.data)
-            this.listPasajeros = pasajeros.data;
+                if(data.success){
+                    this.listPasajeros = data.data;
+                }
+
+            }catch(error){
+                return null;
+            }
         }
     }
 }

@@ -530,6 +530,7 @@ class TransporteSalesController extends Controller
             $pasajeros = TransportePasaje::with('document','origen','destino')
                 ->where("origen_id",$request->origen_id)
                 ->where("destino_id",$request->destino_id)
+                ->where('fecha_salida',$request->fecha_salida)
                 ->orderBy('numero_asiento','ASC')
                 ->get();
 
