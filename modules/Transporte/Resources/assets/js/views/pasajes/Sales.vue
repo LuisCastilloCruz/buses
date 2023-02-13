@@ -276,7 +276,7 @@
                                         <td>{{ (pasaje.pasajero)? pasaje.pasajero.number : '' }}</td>
                                         <td>{{ (pasaje.pasajero)? pasaje.pasajero.name : pasaje.nombre_pasajero }}</td>
                                         <td>{{ (pasaje.nombre_pasajero) ? "RESERVA" : "VENTA" }}</td>
-                                        <td>{{ (pasaje.document)? pasaje.pasajero.telephone : '' }}</td>
+                                        <td>{{ (pasaje.pasajero)? pasaje.pasajero.telephone : pasaje.telefono }}</td>
                                         <td>{{ pasaje.precio }}</td>
                                         <td>{{ pasaje.user_name }}</td>
                                     </tr>
@@ -854,6 +854,8 @@ export default {
             if(this.tipoVenta == 2){
                 this.loadAsientosOcupados = true;
                 this.asientosOcupados = await this.getAsientosOcupados(programacion, this.fecha_salida)
+                console.log('dunal')
+                console.log(this.asientosOcupados)
                 this.vehiculo = programacion.vehiculo;
 
                 this.asientos = programacion.vehiculo.seats;
