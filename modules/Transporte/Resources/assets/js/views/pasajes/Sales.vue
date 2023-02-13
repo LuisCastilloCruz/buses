@@ -871,6 +871,8 @@ export default {
                 this.$nextTick(() => this.$forceUpdate());
             }
 
+            this.listadoPasajeros()
+
         },
 
         async verificarManifiesto(programacion){
