@@ -357,6 +357,11 @@
             </td>
         </tr>
     @endif
+
+    <tr>
+        <td width="" class="pt-3"><p class="desc text-right"><b>CLAVE ENTREGA: </b></p></td>
+        <td width="" class="pt-3"><h3 class="text-center"><b>*****{{ $encomienda->clave}}*****</b></h3></td>
+    </tr>
 </table>
 @endif
 

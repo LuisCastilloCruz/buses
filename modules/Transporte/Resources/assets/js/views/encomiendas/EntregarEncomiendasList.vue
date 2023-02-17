@@ -193,7 +193,7 @@
                                                         <el-button type="primary" @click="verNota(note)">
                                                             <i class="fa fa-file-alt"></i>
                                                         </el-button>
-                                                        <el-button type="primary" @click="entregarEncomienda(note.sale_note, note.id)">
+                                                        <el-button type="primary" @click="entregarEncomienda(note, note.id)">
                                                             <i class="fa fa-file-file"></i>
                                                             Entregar
                                                         </el-button>
