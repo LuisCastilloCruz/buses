@@ -21,7 +21,7 @@
                             <tr v-for="(row, index) in warehouses"
                                 :key="index">
                                 <th>{{ row.warehouse_description }}</th>
-                                <th class="text-right">{{ row.stock }}</th>
+                                <th class="text-right">{{ dos_decimales(row.stock) }}</th>
                             </tr>
                             </tbody>
                         </table>
@@ -86,6 +86,11 @@ export default {
         close() {
             this.$emit('update:showDialog', false)
         },
+
+        dos_decimales(number){
+            var numero =Number(number)
+            return  numero.toFixed(2)
+        }
     }
 }
 </script>
