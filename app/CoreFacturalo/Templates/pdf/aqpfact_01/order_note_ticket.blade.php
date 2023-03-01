@@ -212,34 +212,34 @@
         </tr>
     @endforeach
         @if($document->total_exportation > 0)
-            <tr>
-                <td colspan="4" class="text-right font-bold desc">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold desc">{{ number_format($document->total_exportation, 2) }}</td>
-            </tr>
+{{--            <tr>--}}
+{{--                <td colspan="4" class="text-right font-bold desc">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>--}}
+{{--                <td class="text-right font-bold desc">{{ number_format($document->total_exportation, 2) }}</td>--}}
+{{--            </tr>--}}
         @endif
         @if($document->total_free > 0)
-            <tr>
-                <td colspan="4" class="text-right font-bold desc">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold desc">{{ number_format($document->total_free, 2) }}</td>
-            </tr>
+{{--            <tr>--}}
+{{--                <td colspan="4" class="text-right font-bold desc">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>--}}
+{{--                <td class="text-right font-bold desc">{{ number_format($document->total_free, 2) }}</td>--}}
+{{--            </tr>--}}
         @endif
         @if($document->total_unaffected > 0)
-            <tr>
-                <td colspan="4" class="text-right font-bold desc">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold desc">{{ number_format($document->total_unaffected, 2) }}</td>
-            </tr>
+{{--            <tr>--}}
+{{--                <td colspan="4" class="text-right font-bold desc">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>--}}
+{{--                <td class="text-right font-bold desc">{{ number_format($document->total_unaffected, 2) }}</td>--}}
+{{--            </tr>--}}
         @endif
         @if($document->total_exonerated > 0)
-            <tr>
-                <td colspan="4" class="text-right font-bold desc">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold desc">{{ number_format($document->total_exonerated, 2) }}</td>
-            </tr>
+{{--            <tr>--}}
+{{--                <td colspan="4" class="text-right font-bold desc">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>--}}
+{{--                <td class="text-right font-bold desc">{{ number_format($document->total_exonerated, 2) }}</td>--}}
+{{--            </tr>--}}
         @endif
         @if($document->total_taxed > 0)
-            <tr>
-                <td colspan="4" class="text-right font-bold desc">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold desc">{{ number_format($document->total_taxed, 2) }}</td>
-            </tr>
+{{--            <tr>--}}
+{{--                <td colspan="4" class="text-right font-bold desc">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>--}}
+{{--                <td class="text-right font-bold desc">{{ number_format($document->total_taxed, 2) }}</td>--}}
+{{--            </tr>--}}
         @endif
         @if($document->total_discount > 0)
             <tr>
@@ -247,10 +247,10 @@
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
-        <tr>
-            <td colspan="4" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold desc">{{ number_format($document->total_igv, 2) }}</td>
-        </tr>
+{{--        <tr>--}}
+{{--            <td colspan="4" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>--}}
+{{--            <td class="text-right font-bold desc">{{ number_format($document->total_igv, 2) }}</td>--}}
+{{--        </tr>--}}
         <tr>
             <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
