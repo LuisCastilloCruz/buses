@@ -994,6 +994,8 @@ export default {
             await this.getItems()
 
             this.form.item = _.find(this.items, {'id': this.form.item_id});
+            console.log("hola");
+            console.log( this.form.item);
             this.form.unit_price = this.form.item.sale_unit_price;
             this.form.unit_price_value = this.form.item.sale_unit_price;
             this.lots = this.form.item.lots;
