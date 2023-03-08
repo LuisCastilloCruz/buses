@@ -331,7 +331,11 @@ import {mapActions, mapState} from 'vuex'
                     }).then(()=>{
                         this.disableGuideBtn = !this.disableGuideBtn;
                 })
-            }
+            },
+            isDateWarning(date_due) {
+                let today = Date.now()
+                return moment(date_due).isBefore(today)
+            },
         }
     }
 </script>

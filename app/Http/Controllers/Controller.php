@@ -18,7 +18,7 @@
     use Carbon\Carbon;
     use App\Models\Tenant\{
         Company,
-        Establishment
+        Establishment,
     };
     use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
     use Modules\Inventory\Models\Warehouse;
@@ -397,6 +397,17 @@ $string = var_export($header,true);
             if($document_type) return $document_type->description;
 
             throw new Exception('El tipo de documento no existe');
+        }
+
+
+        /**
+         *
+         * @param  Exception $exception
+         * @return void
+         */
+        public function generalWriteErrorLog($exception, $message = null)
+        {
+            Log::error(($message ?? '')."Line: {$exception->getLine()} - Message: {$exception->getMessage()} - File: {$exception->getFile()}");
         }
 
     }

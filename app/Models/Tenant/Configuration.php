@@ -114,6 +114,7 @@
      * @property string|null $token_apiruc
      * @property bool        $use_login_global
      * @property bool|false  $show_terms_condition_pos
+     * @property bool        $order_node_advanced
      * @package App\Models\Tenant
      * @mixin ModelTenant
      * @method static Builder|Configuration newModelQuery()
@@ -285,7 +286,12 @@
             'enable_discount_by_customer',
             'show_price_barcode_ticket',
             'price_selected_add_product',
+            'locked_create_establishments',
+            'restrict_sales_limit',
             'pdf_footer_images',
+            'restrict_sale_items_cpe',
+            'show_convert_cpe_pos',
+            'order_node_advanced',
             'color1',
             'color2',
             'PrinterNombre1',
@@ -413,6 +419,11 @@
             'enable_discount_by_customer' => 'boolean',
             'show_price_barcode_ticket' => 'boolean',
             'price_selected_add_product'=>'bool',
+            'locked_create_establishments' => 'boolean',
+            'restrict_sales_limit' => 'boolean',
+            'restrict_sale_items_cpe'=>'bool',
+            'show_convert_cpe_pos'=>'bool',
+            'order_node_advanced' => 'boolean',
         ];
 
         protected $hidden = [
@@ -651,6 +662,9 @@
                 'enable_discount_by_customer' => $this->enable_discount_by_customer,
                 'show_price_barcode_ticket' => $this->show_price_barcode_ticket,
                 'price_selected_add_product' => $this->price_selected_add_product,
+                'restrict_sale_items_cpe' => $this->restrict_sale_items_cpe,
+                'show_convert_cpe_pos' => $this->show_convert_cpe_pos,
+                'order_node_advanced' => (bool)$this->order_node_advanced,
                 'color1'=>$this->color1,
                 'color2'=>$this->color2,
                 'PrinterNombre1'=>$this->PrinterNombre1,
@@ -2475,6 +2489,24 @@
         public function isShowPriceBarcodeTicket(): ?bool
         {
             return (bool)$this->show_price_barcode_ticket;
+        }
+
+
+        /**
+         * @return bool
+         */
+        public function isLockedCreateEstablishments()
+        {
+            return $this->locked_create_establishments;
+        }
+
+
+        /**
+         * @return bool
+         */
+        public function isRestrictSalesLimit()
+        {
+            return $this->restrict_sales_limit;
         }
 
     }

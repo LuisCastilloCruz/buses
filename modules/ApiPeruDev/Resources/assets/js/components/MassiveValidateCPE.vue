@@ -6,7 +6,7 @@
                    class="dialog-import" width="80%">
             <div class="row" v-loading="loading_submit">
                 <div class="col-md-12">
-                    <label class="control-label">Periodo 20</label>
+                    <label class="control-label">Periodo</label>
                     <el-select v-model="form.period" @change="changePeriod">
                         <el-option key="month" value="month" label="Por mes"></el-option>
                         <el-option key="between_months" value="between_months" label="Entre meses"></el-option>

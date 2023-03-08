@@ -136,7 +136,6 @@ export default {
     },
     created() {
         this.initForm()
-        console.log(this.configuration);
     },
     mounted() {
         if(navigator.userAgent.indexOf("Safari") != -1) {

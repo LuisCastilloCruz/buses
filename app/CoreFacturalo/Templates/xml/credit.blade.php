@@ -283,7 +283,7 @@
     @foreach($document->items as $row)
     <cac:CreditNoteLine>
         <cbc:ID>{{ $loop->iteration }}</cbc:ID>
-        <cbc:CreditedQuantity unitCode="{{ ($row->item->unit_type_id=='ZZ') ?'ZZ': 'NIU' }}">{{ $row->quantity }}</cbc:CreditedQuantity>
+        <cbc:CreditedQuantity unitCode="{{ $row->item->unit_type_id }}">{{ $row->quantity }}</cbc:CreditedQuantity>
         {{-- @if($note->note_credit_type_id === '13' && $document->payment_condition_id === '02') --}}
         @if( ($note->note_credit_type_id === '13' && $document->payment_condition_id === '02') || $note->note_credit_type_id === '03' )
             @if($row->total_value >= 0)

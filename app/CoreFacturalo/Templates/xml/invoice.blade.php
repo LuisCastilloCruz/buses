@@ -437,7 +437,7 @@
     @foreach($document->items as $row)
     <cac:InvoiceLine>
         <cbc:ID>{{ $loop->iteration }}</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="{{ ($row->item->unit_type_id=='ZZ') ?'ZZ': 'NIU' }}">{{ $row->quantity }}</cbc:InvoicedQuantity>
+        <cbc:InvoicedQuantity unitCode="{{ $row->item->unit_type_id }}">{{ $row->quantity }}</cbc:InvoicedQuantity>
         <cbc:LineExtensionAmount currencyID="{{ $document->currency_type_id }}">{{ $row->total_value }}</cbc:LineExtensionAmount>
         <cac:PricingReference>
             <cac:AlternativeConditionPrice>
@@ -569,14 +569,10 @@
             @endif
         </cac:TaxTotal>
         <cac:Item>
-            @if($row->name_product_pdf)
-                <cbc:Description>
-                <![CDATA[{!!strip_tags($row->name_product_pdf)!!}]]>
-                </cbc:Description>
+            @if($row->name_product_xml)
+            <cbc:Description><![CDATA[{{ $row->name_product_xml }}]]></cbc:Description>
             @else
-                <cbc:Description>
-                <![CDATA[{{ $row->item->description }}]]>
-                </cbc:Description>
+            <cbc:Description><![CDATA[{{ $row->item->description }}]]></cbc:Description>
             @endif
             @if($row->item->internal_id)
             <cac:SellersItemIdentification>

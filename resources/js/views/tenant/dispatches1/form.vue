@@ -141,7 +141,7 @@
                     <h4>Datos envío</h4>
                     <h6>Dirección partida</h6>
                     <div class="row">
-   ns                     <div class="col-lg-2">
+                        <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.origin}">
                                 <label class="control-label">País</label>
                                 <el-select v-model="form.origin.country_id" filterable>

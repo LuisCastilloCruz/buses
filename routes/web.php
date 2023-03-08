@@ -626,6 +626,14 @@ if ($hostname) {
             Route::post('sale-notes/items-by-ids', 'Tenant\SaleNoteController@getItemsByIds');
             Route::post('sale-notes/delete-relation-invoice', 'Tenant\SaleNoteController@deleteRelationInvoice');
 
+            // Route::get('sale-notes/record-generate-document/{salenote}', 'Tenant\SaleNoteController@recordGenerateDocument');
+
+            Route::get('sale-notes/dispatch/{id}', 'Tenant\SaleNoteController@recordsDispatch');
+            Route::post('sale-notes/dispatch', 'Tenant\SaleNoteController@recordDispatch');
+            Route::post('sale-notes/dispatch/statusUpdate', 'Tenant\SaleNoteController@statusUpdate');
+            Route::delete('sale-notes/dispatch/delete/{id}', 'Tenant\SaleNoteController@destroyStatus');
+            Route::get('sale-notes/dispatch_note/{id}', 'Tenant\SaleNoteController@recordsDispatchNote');
+
             //POS
             Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
             Route::get('pos_full', 'Tenant\PosController@index_full')->name('tenant.pos_full.index');
@@ -807,6 +815,7 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
 
             Route::post('clients/set_billing_cycle', 'System\ClientController@startBillingCycle');
 
+            Route::post('clients/locked-by-column', 'System\ClientController@lockedByColumn');
 
             Route::post('clients/upload', 'System\ClientController@upload');
 
@@ -844,6 +853,8 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
             Route::post('configurations/login', 'System\ConfigurationController@storeLoginSettings');
             Route::post('configurations/bg', 'System\ConfigurationController@storeBgLogin');
             Route::post('configurations/other-configuration', 'System\ConfigurationController@storeOtherConfiguration');
+            Route::get('configurations/get-other-configuration', 'System\ConfigurationController@getOtherConfiguration');
+            Route::post('configurations/upload-tenant-ads', 'System\ConfigurationController@uploadTenantAds');
 
             Route::get('companies/record', 'System\CompanyController@record');
             Route::post('companies', 'System\CompanyController@store');

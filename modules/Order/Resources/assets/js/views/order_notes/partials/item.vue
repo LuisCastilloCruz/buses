@@ -530,6 +530,7 @@ export default {
                 classic: ClassicEditor
             },
             loading_dialog: false,
+            readonly_total: 0,
         }
     },
 
@@ -708,7 +709,6 @@ export default {
 
             this.calculateTotal()
         },
-
         changeValidateQuantity(event) {
             this.calculateTotal()
         },
@@ -718,7 +718,6 @@ export default {
         setMinQuantity() {
             this.form.quantity = this.getMinQuantity()
         },
-
         clickDecrease() {
 
             this.form.quantity = parseInt(this.form.quantity - 1)
@@ -852,7 +851,8 @@ export default {
                 lots_group: [],
                 IdLoteSelected: null,
                 document_item_id: null,
-                name_product_pdf: ''
+                name_product_pdf: '',
+                calculate_quantity: false,
             };
 
             this.activePanel = 0;
@@ -995,22 +995,18 @@ export default {
 
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.unit_price = this.form.item.sale_unit_price;
-
-            this.lots = this.form.item.lots
-
+            this.form.unit_price_value = this.form.item.sale_unit_price;
+            this.lots = this.form.item.lots;
             this.form.has_igv = this.form.item.has_igv;
-
             this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
             this.form.quantity = 1;
             this.item_unit_types = this.form.item.item_unit_types;
-
             (this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
-
             this.form.lots_group = this.form.item.lots_group
 
-            this.setDefaultAttributes()
-
+            this.setDefaultAttributes();
             this.cleanTotalItem();
+            this.calculateTotal();
         },
         setDefaultAttributes()
         {
@@ -1059,6 +1055,7 @@ export default {
             if (this.form.item.calculate_quantity) {
                 this.form.quantity = _.round((this.total_item / this.form.unit_price), 4)
             }
+            this.calculateTotal()
         },
         cleanTotalItem() {
             this.total_item = null;

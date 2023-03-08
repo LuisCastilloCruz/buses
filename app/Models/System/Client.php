@@ -62,6 +62,7 @@ class Client extends Model
     use UsesSystemConnection;
 
     protected $with = ['hostname','plan'];
+
     protected $fillable = [
         'hostname_id',
         'number',
@@ -79,8 +80,19 @@ class Client extends Model
         'smtp_user',
         'smtp_password',
         'smtp_encryption',
+        'locked_create_establishments',
+        'restrict_sales_limit',
         'configuracion_socket'
     ];
+
+
+    protected $casts = [
+        'start_billing_cycle' => 'date',
+        'smtp_port' => 'int',
+        'locked_create_establishments' => 'boolean',
+        'restrict_sales_limit' => 'boolean',
+    ];
+
 
     /**
      * @return mixed
@@ -178,11 +190,6 @@ class Client extends Model
         return $this;
     }
 
-    protected $casts = [
-        'start_billing_cycle' => 'date',
-        'smtp_port' => 'int',
-    ];
-
     public function hostname()
     {
         return $this->belongsTo(Hostname::class)->with(['website']);
@@ -197,5 +204,19 @@ class Client extends Model
     {
         return $this->hasMany(ClientPayment::class);
     }
+
+
+    /**
+     *
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['hostname','plan']);
+    }
+
 
 }

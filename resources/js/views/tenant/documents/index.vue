@@ -162,7 +162,9 @@
                             v-if="columns.date_payment.visible">{{ row.date_of_payment }}
                         </td>
                         <td class="text-center"
-                            v-if="columns.date_of_due.visible">{{ row.date_of_due }}
+                            :class="{'text-danger': (row.balance > 0 && isDateWarning(row.date_of_due))}"
+                            v-if="columns.date_of_due.visible">
+                            {{ row.date_of_due }}
                         </td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.number }}<br/>
@@ -293,7 +295,15 @@
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right" v-if="columns.total.visible">{{ row.total }}</td>
-                        <td class="text-right" v-if="columns.balance.visible">{{ row.balance }}</td>
+                        <td class="text-right"
+                            v-if="columns.balance.visible"
+                            :class="{
+                                'text-warning': (row.balance > 0),
+                                'text-success': (row.balance == 0),
+                                }"
+                        >
+                            {{ row.balance }}
+                        </td>
                         <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}</td>
                         <td class="text-center">
                             <button type="button"
@@ -548,6 +558,7 @@ import DocumentValidate from './partials/validate.vue';
 import MassiveValidateCpe from '../../../../../modules/ApiPeruDev/Resources/assets/js/components/MassiveValidateCPE';
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import DocumentRetention from './partials/retention'
+import moment from 'moment'
 
 
 export default {
@@ -848,7 +859,11 @@ export default {
         clickRetention(recordId) {
             this.recordId = recordId;
             this.showDialogRetention = true
-        }
+        },
+        isDateWarning(date_due) {
+            let today = Date.now()
+            return moment(date_due).isBefore(today)
+        },
     }
 }
 </script>

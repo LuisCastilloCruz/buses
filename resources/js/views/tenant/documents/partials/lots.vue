@@ -96,6 +96,7 @@
 </template>
 
 <script>
+import queryString from "query-string";
 
 export default {
     props: ['showDialog',
@@ -160,9 +161,13 @@ export default {
                 this.records = this.lotsAll;
             } else {
                 this.loading = true
-                await this.$http.post(`/${this.resource}/item_lots`, this.search)
+                await this.$http.post(`/${this.resource}/item_lots?${this.getQueryParameters()}`, this.search)
                     .then((response) => {
                         this.records = response.data.data
+                        this.pagination = response.data.meta;
+                        this.pagination.per_page = parseInt(
+                            response.data.meta.per_page
+                        );
                     })
                     .catch(error => {
                     })
@@ -171,6 +176,11 @@ export default {
                     })
             }
             await this.checkedLot();
+        },
+        getQueryParameters() {
+            return queryString.stringify({
+                page: this.pagination.current_page
+            });
         },
         changeSearchSeriesBarcode() {
             this.cleanInput()
@@ -205,7 +215,11 @@ export default {
             }
         },
         customIndex(index) {
-            return index + 1;
+            return (
+                this.pagination.per_page * (this.pagination.current_page - 1) +
+                index +
+                1
+            );
         },
         checkedLot() {
             _.forEach(this.lotsSelected, row => {

@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\Models\Tenant\{
     Configuration,
     Document,
-    SaleNote
+    SaleNote,
 };
 use Hyn\Tenancy\Environment;
 use App\Models\System\Client;

@@ -71,12 +71,12 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('porto-light/master/style-switcher/style-switcher.css')}}">
 
-    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=14') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=14') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=14') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css?id=15') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css?id=15') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/aqpfact.css?id=15') }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=14') }}" />
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css?id=15') }}" />
     @endif
 
     @if($vc_compact_sidebar->skin)
