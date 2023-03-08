@@ -1313,6 +1313,9 @@ export default {
             this.clearExtraInfoItem()
 
             this.form.item = _.find(this.items, {'id': this.form.item_id});
+
+            console.log("hola");
+            console.log( this.form.item);
             this.form.item = this.setExtraFieldOfitem(this.form.item)
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.form.unit_price_value = this.form.item.sale_unit_price;
