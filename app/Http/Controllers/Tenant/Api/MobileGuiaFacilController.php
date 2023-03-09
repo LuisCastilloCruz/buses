@@ -36,6 +36,7 @@ use Modules\Item\Models\{
     Category
 };
 use App\Http\Controllers\Tenant\ItemController as ItemWebController;
+use Modules\Dispatch\Http\Requests\DriverRequest;
 
 
 class MobileGuiaFacilController extends Controller
@@ -96,14 +97,6 @@ class MobileGuiaFacilController extends Controller
     public function getAppConfiguration()
     {
         return optional(AppConfiguration::first())->getRowResource();
-    }
-
-    public function conductores(){
-        $conductores = (new DriverController())->getOptions();
-        return [
-            'success' => true,
-            'data_conductor' =>$conductores
-        ];
     }
 
     public function customers()
@@ -630,6 +623,20 @@ class MobileGuiaFacilController extends Controller
         ];
     }
 
+
+    //modificaciones
+    public function conductores(){
+        $conductores = (new DriverController())->getOptions();
+        return [
+            'success' => true,
+            'data_conductor' =>$conductores
+        ];
+    }
+
+    public function guardarConductor(DriverRequest $request){
+        $row = (new DriverController())->store($request);
+        return $row;
+    }
 
 }
 

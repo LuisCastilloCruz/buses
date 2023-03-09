@@ -113,7 +113,12 @@ if ($hostname) {
                 Route::get('/get_origin_addresses/{establishment_id}', 'Tenant\DispatchController@getOriginAddresses');
                 Route::get('/get_delivery_addresses/{person_id}', 'Tenant\DispatchController@getDeliveryAddresses');
 
-                Route::post('/conductores', 'Tenant\Api\MobileGuiaFacilController@conductores');
+
+            });
+
+            Route::prefix('conductores')->group(function () {
+                Route::post('/listar', 'Tenant\Api\MobileGuiaFacilController@conductores');
+                Route::post('/guardar', 'Tenant\Api\MobileGuiaFacilController@guardarConductor');
             });
 
             Route::prefix('dispatch_carrier')->group(function () {
