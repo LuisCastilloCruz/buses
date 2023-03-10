@@ -119,6 +119,7 @@ if ($hostname) {
             Route::prefix('conductores')->group(function () {
                 Route::post('/listar', 'Tenant\Api\MobileGuiaFacilController@conductores');
                 Route::post('/guardar', 'Tenant\Api\MobileGuiaFacilController@guardarConductor');
+                Route::post('/actualizar', 'Tenant\Api\MobileGuiaFacilController@guardarConductor');
             });
 
             Route::prefix('dispatch_carrier')->group(function () {
