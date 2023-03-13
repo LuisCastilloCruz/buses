@@ -216,7 +216,7 @@
                         <td class="celda">{{$customer->person_type->description}}</td>
                         <td class="celda">{{$value->customer->name}}</td>
                         <td class="celda">{{$value->customer->number}}</td>
-                        <td class="celda">{{$value->state_type->description}}</td>
+                        <td class="celda">{{($value->state_type) ? $value->state_type->description : ""}}</td>
 
                         @php
                             $signal = $document_type->id;
