@@ -638,5 +638,10 @@ class MobileGuiaFacilController extends Controller
         return $row;
     }
 
+    public function eliminarConductor(Request $request){
+        $row = (new DriverController())->destroy($request->id);
+        return $row;
+    }
+
 }
 

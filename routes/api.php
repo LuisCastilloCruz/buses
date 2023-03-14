@@ -120,6 +120,7 @@ if ($hostname) {
                 Route::post('/listar', 'Tenant\Api\MobileGuiaFacilController@conductores');
                 Route::post('/guardar', 'Tenant\Api\MobileGuiaFacilController@guardarConductor');
                 Route::post('/actualizar', 'Tenant\Api\MobileGuiaFacilController@guardarConductor');
+                Route::delete('/eliminar/{id}', 'Tenant\Api\MobileGuiaFacilController@eliminarConductor');
             });
 
             Route::prefix('dispatch_carrier')->group(function () {
