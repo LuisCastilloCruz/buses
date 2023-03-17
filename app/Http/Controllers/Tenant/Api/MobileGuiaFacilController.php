@@ -20,6 +20,7 @@ use App\Models\Tenant\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\Tenant\PersonRequest;
+use Modules\Dispatch\Http\Controllers\DispatcherController;
 use Modules\Item\Http\Requests\ItemRequest;
 use Modules\Dashboard\Helpers\DashboardData;
 use Modules\Finance\Helpers\UploadFileHelper;
@@ -629,7 +630,7 @@ class MobileGuiaFacilController extends Controller
 
     //===========================modificaciones============================================
 
-    //Conductores
+    //================CONDUCTORES
     public function conductores(){
         $conductores = (new DriverController())->getOptions();
         return [
@@ -648,7 +649,7 @@ class MobileGuiaFacilController extends Controller
         return $row;
     }
 
-    //Vehiculos
+    //==================VEHICULOS
     public function vehiculos(){
         $vehiculos = (new TransportController())->getOptions();
         return [
@@ -664,6 +665,25 @@ class MobileGuiaFacilController extends Controller
 
     public function eliminarVehiculo(Request $request){
         $row = (new TransportController())->destroy($request->id);
+        return $row;
+    }
+
+    //==================TRANSPORTISTAS
+    public function transportistas(){
+        $vehiculos = (new DispatcherController())->getOptions();
+        return [
+            'success' => true,
+            'data_vehiculo' =>$vehiculos
+        ];
+    }
+
+    public function guardarTransportista(TransportRequest $request){
+        $row = (new DispatcherController())->store($request);
+        return $row;
+    }
+
+    public function eliminarTransportista(Request $request){
+        $row = (new DispatcherController())->destroy($request->id);
         return $row;
     }
 
