@@ -20,7 +20,6 @@ use App\Models\Tenant\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\Tenant\PersonRequest;
-use Modules\Dispatch\Http\Controllers\DriverController;
 use Modules\Item\Http\Requests\ItemRequest;
 use Modules\Dashboard\Helpers\DashboardData;
 use Modules\Finance\Helpers\UploadFileHelper;
@@ -37,6 +36,10 @@ use Modules\Item\Models\{
 };
 use App\Http\Controllers\Tenant\ItemController as ItemWebController;
 use Modules\Dispatch\Http\Requests\DriverRequest;
+use Modules\Dispatch\Http\Controllers\DriverController;
+use Modules\Dispatch\Http\Controllers\TransportController;
+use Modules\Dispatch\Http\Requests\TransportRequest;
+
 
 
 class MobileGuiaFacilController extends Controller
@@ -624,7 +627,9 @@ class MobileGuiaFacilController extends Controller
     }
 
 
-    //modificaciones
+    //===========================modificaciones============================================
+
+    //Conductores
     public function conductores(){
         $conductores = (new DriverController())->getOptions();
         return [
@@ -640,6 +645,25 @@ class MobileGuiaFacilController extends Controller
 
     public function eliminarConductor(Request $request){
         $row = (new DriverController())->destroy($request->id);
+        return $row;
+    }
+
+    //Vehiculos
+    public function vehiculos(){
+        $vehiculos = (new TransportController())->getOptions();
+        return [
+            'success' => true,
+            'data_vehiculo' =>$vehiculos
+        ];
+    }
+
+    public function guardarVehiculo(TransportRequest $request){
+        $row = (new TransportController())->store($request);
+        return $row;
+    }
+
+    public function eliminarVehiculo(Request $request){
+        $row = (new TransportController())->destroy($request->id);
         return $row;
     }
 
