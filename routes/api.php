@@ -130,6 +130,13 @@ if ($hostname) {
                 Route::delete('/eliminar/{id}', 'Tenant\Api\MobileGuiaFacilController@eliminarVehiculo');
             });
 
+            Route::prefix('transportistas')->group(function () {
+                Route::post('/listar', 'Tenant\Api\MobileGuiaFacilController@transportistas');
+                Route::post('/guardar', 'Tenant\Api\MobileGuiaFacilController@guardarTransportista');
+                Route::post('/actualizar', 'Tenant\Api\MobileGuiaFacilController@guardarTransportista');
+                Route::delete('/eliminar/{id}', 'Tenant\Api\MobileGuiaFacilController@eliminarTransportista');
+            });
+
             Route::prefix('dispatch_carrier')->group(function () {
                 Route::get('', 'Tenant\DispatchCarrierController@index')->name('tenant.dispatch_carrier.index');
                 Route::get('/columns', 'Tenant\DispatchCarrierController@columns');

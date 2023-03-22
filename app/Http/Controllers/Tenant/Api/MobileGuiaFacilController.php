@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\Tenant\PersonRequest;
 use Modules\Dispatch\Http\Controllers\DispatcherController;
+use Modules\Dispatch\Http\Requests\DispatcherRequest;
 use Modules\Item\Http\Requests\ItemRequest;
 use Modules\Dashboard\Helpers\DashboardData;
 use Modules\Finance\Helpers\UploadFileHelper;
@@ -670,14 +671,14 @@ class MobileGuiaFacilController extends Controller
 
     //==================TRANSPORTISTAS
     public function transportistas(){
-        $vehiculos = (new DispatcherController())->getOptions();
+        $transportistas = (new DispatcherController())->getOptions();
         return [
             'success' => true,
-            'data_vehiculo' =>$vehiculos
+            'data_transportista' =>$transportistas
         ];
     }
 
-    public function guardarTransportista(TransportRequest $request){
+    public function guardarTransportista(DispatcherRequest $request){
         $row = (new DispatcherController())->store($request);
         return $row;
     }
