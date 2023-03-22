@@ -22,5 +22,6 @@ class ConfigurationVisualViewComposer
         $configuration = Configuration::first();
         $record = new ConfigurationResource($configuration);
         $view->visual = $record->visual;
+        $view->soporte = $configuration->phone_whatsapp;
     }
 }

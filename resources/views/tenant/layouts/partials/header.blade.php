@@ -12,9 +12,10 @@
 
     </div>
     <div class="header-right">
-        <a href="https://youtube.com/playlist?list=PLRfWQIWTl4WQnUwpMDBs8iAlcti3s_UNY" target="_blank" class="youtube">
-            <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="Video Tutoriales en Youtube">
-                <img src="{{asset("/logo/youtube.png")}}" alt="">
+
+        <a href="https://wa.me/{{$soporte}}" target="_blank" class="youtube">
+            <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="Soporte solo Whatsapp">
+                <button type="button" class="mb-1 mt-1 me-1 btn btn-success"><i class="fab fa-whatsapp" aria-hidden="true"></i> Soporte</button>
             </div>
         </a>
         <span class="separator youtube"></span>
