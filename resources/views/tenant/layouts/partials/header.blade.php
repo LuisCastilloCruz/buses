@@ -14,7 +14,7 @@
     <div class="header-right">
 
         <a href="https://wa.me/{{$soporte}}" target="_blank" class="youtube">
-            <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="Soporte solo Whatsapp">
+            <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="Soporte solo Whatsapp {{$soporte}}">
                 <button type="button" class="mb-1 mt-1 me-1 btn btn-success"><i class="fab fa-whatsapp" aria-hidden="true"></i> Soporte</button>
             </div>
         </a>
