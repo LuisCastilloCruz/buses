@@ -210,7 +210,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($document->items as $row
+    @foreach($document->items as $row)
         <tr>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
