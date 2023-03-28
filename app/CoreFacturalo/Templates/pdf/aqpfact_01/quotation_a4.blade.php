@@ -210,15 +210,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($document->items as $row)
-        @php
-        $brand = (!empty($row->item) &&
-                 !empty($row->item->brand) &&
-                 !empty($row->item->brand->name)
-                 ) ?
-            $row->item->brand->name :
-                '';
-        @endphp
+    @foreach($document->items as $row
         <tr>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
@@ -260,7 +252,7 @@
                 @endif
 
             </td>
-            <td class="text-left">{{ $brand }}</td>
+            <td class="text-left">{{ $row->item->brand }}</td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">
