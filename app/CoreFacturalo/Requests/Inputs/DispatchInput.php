@@ -6,6 +6,8 @@ use App\CoreFacturalo\Requests\Inputs\Common\ActionInput;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\Models\Tenant\Catalogs\Department;
+use App\Models\Tenant\Catalogs\Province;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Item;
@@ -19,6 +21,7 @@ use Modules\Dispatch\Models\ReceiverAddress;
 use Modules\Dispatch\Models\Sender;
 use Modules\Dispatch\Models\SenderAddress;
 use Modules\Dispatch\Models\Transport;
+use Modules\Transporte\Models\District;
 
 class DispatchInput
 {
@@ -248,11 +251,13 @@ class DispatchInput
                 $plate_number = $transport['plate_number'];
                 $model = $transport['model'];
                 $brand = $transport['brand'];
+                $hab_veh = $transport['hab_veh'];
 
                 return [
                     'plate_number' => $plate_number,
                     'model' => $model,
                     'brand' => $brand,
+                    'hab_veh'=> $hab_veh,
                 ];
             }
         }
@@ -268,11 +273,13 @@ class DispatchInput
                 $plate_number = $transport['plate_number'];
                 $model = $transport['model'];
                 $brand = $transport['brand'];
+                $hab_veh = $transport['hab_veh'];
 
                 return [
                     'plate_number' => $plate_number,
                     'model' => $model,
                     'brand' => $brand,
+                    'hab_veh'=> $hab_veh,
                 ];
             }
         }
@@ -330,8 +337,6 @@ class DispatchInput
             if (array_key_exists('receiver_address_data', $inputs)) {
                 $address = $inputs['receiver_address_data'];
                 $location_id = $address['location_id'][2];
-                $address = $address['address'];
-
                 return [
                     'location_id' => $location_id,
                     'address' => $address
@@ -349,7 +354,6 @@ class DispatchInput
                 $address = $inputs['sender_address_data'];
                 $location_id = $address['location_id'][2];
                 $address = $address['address'];
-
                 return [
                     'location_id' => $location_id,
                     'address' => $address

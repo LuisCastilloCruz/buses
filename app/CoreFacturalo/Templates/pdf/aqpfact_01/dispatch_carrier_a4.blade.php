@@ -178,14 +178,14 @@
                 <td>
                     <b>PRINCIPAL:</b>
                     <p><b>N° de placa:</b> {{ $document->transport_data['plate_number'] }} <br></p>
-                    <p><b>N° de TUCE o Cert. de Habilitación Vehicular:</b> {{ $document->transport_data['model'] }} <br></p>
+                    <p><b>N° de TUCE o Cert. de Hab. Vehicular:</b> {{ $document->transport_data['hab_veh'] }} <br></p>
 
                 </td>
                 @if($document->transport2_data)
                     <td>
                         <b>SECUNDARIO:</b>
-                        <p><b>N° de placa:</b> {{ $document->transport2_data['plate_number'] }} <br></p>
-                        <p><b>N° de TUCE o Cert. de Habilitación Vehicular:</b> {{ $document->transport2_data['model'] }} <br></p>
+                        <p><b>N° de placa aqui:</b> {{ $document->transport2_data['plate_number'] }} <br></p>
+                        <p><b>N° de TUCE o Cert. de Hab. Vehicular:</b> {{ $document->transport2_data['hab_veh'] }} <br></p>
                     </td>
                 @endif
             </tr>
@@ -202,14 +202,22 @@
         </tr>
         </thead>
         <tbody>
-        @if($document->driver->number)
+
+        @if($document->driver)
             <tr>
-                <td><b>Conductor:</b> {{ $document->driver->number }}</td>
-            </tr>
-        @endif
-        @if($document->driver->license)
-            <tr>
-                <td><b>Licencia del conductor:</b> {{ $document->driver->license }}</td>
+                <td>
+                    <b>PRINCIPAL:</b>
+                    <p><b>Conductor:</b> {{ $document->driver->number }} <br></p>
+                    <p><b>Licencia del conductor:</b> {{ $document->driver->license }} <br></p>
+
+                </td>
+                @if($document->driver2_data)
+                    <td>
+                        <b>SECUNDARIO:</b>
+                        <p><b>Conductor:</b> {{ $document->driver2_data['number'] }} <br></p>
+                        <p><b>Licencia del conductor:</b> {{ $document->driver2_data['license'] }} <br></p>
+                    </td>
+                @endif
             </tr>
         @endif
         </tbody>
