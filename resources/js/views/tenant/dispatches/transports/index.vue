@@ -22,6 +22,7 @@
                         <th class="text-left">Nro. de Placa</th>
                         <th class="text-left">Modelo</th>
                         <th class="text-left">Marca</th>
+                        <th class="text-left">Habilitación Vehicular</th>
                         <th class="text-center">Predeterminado</th>
                         <th class="text-right">Acciones</th>
                     <tr>
@@ -30,6 +31,7 @@
                         <td class="text-left">{{ row.plate_number }}</td>
                         <td class="text-left">{{ row.model }}</td>
                         <td class="text-left">{{ row.brand }}</td>
+                        <td class="text-left">{{ row.hab_veh}}</td>
                         <td class="text-center">{{ row.is_default }}</td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"

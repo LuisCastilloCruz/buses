@@ -85,6 +85,7 @@
             <cac:TransitPeriod>
                 <cbc:StartDate>{{ $document['date_of_shipping'] }}</cbc:StartDate>
             </cac:TransitPeriod>
+            {{--TRANSPORTE PUBLICO--}}
             @if($document['transport_mode_type_id'] === '01')
                 <cac:CarrierParty>
                     <cac:PartyIdentification>
@@ -101,7 +102,19 @@
                     </cac:PartyLegalEntity>
                 </cac:CarrierParty>
             @endif
+
+            {{--TRANSPORTE PRIVADO--}}
             @if($document['transport_mode_type_id'] === '02')
+                <!-- DATOS DEL TRANSPORTISTA -->
+                @if($document['company_number_mtc'])
+                    <cac:CarrierParty>
+                        <!-- AUTORIZACIONES ESPECIALES -->
+                        <cac:PartyLegalEntity>
+                            <!-- NUMERO DE REGISTRO DEL MTC -->
+                            <cbc:CompanyID>{{ $document['company_number_mtc'] }}</cbc:CompanyID>
+                        </cac:PartyLegalEntity>
+                    </cac:CarrierParty>
+                @endif
             <!-- CONDUCTOR PRINCIPAL -->
                 <cac:DriverPerson>
                     <!-- TIPO Y NUMERO DE DOCUMENTO DE IDENTIDAD -->

@@ -53,6 +53,7 @@ class CompanyResource extends JsonResource
             'client_id_pse' => $this->client_id_pse,
             'app_logo' => $this->app_logo,
             'num_aut_manifiesto_pasajero' => $this->num_aut_manifiesto_pasajero,
+            'number_mtc' => $this->number_mtc,
 
             'soap_sunat_username' => $this->soap_sunat_username,
             'soap_sunat_password' => $this->soap_sunat_password,

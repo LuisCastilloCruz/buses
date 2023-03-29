@@ -218,6 +218,7 @@ class DispatchCarrierController extends Controller
                 'transport_id' => $document->transport_id,
                 'origin_address_id' => $document->origin_address_id,
                 'delivery_address_id' => $document->delivery_address_id,
+                'transport2_id' => $document->transport2_id, //DONAL
             ];
         } else {
             $data = [

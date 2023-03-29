@@ -22,6 +22,7 @@ class TransportController extends Controller
             'plate_number' => 'Nro. de Placa',
             'model' => 'Modelo',
             'brand' => 'Marca',
+            'hab_veh'=>'Habilitación Vehicular'
         ];
     }
 
@@ -82,7 +83,8 @@ class TransportController extends Controller
                     'plate_number' => $row->plate_number,
                     'model' => $row->model,
                     'brand' => $row->brand,
-                    'is_default' => $row->is_default
+                    'is_default' => $row->is_default,
+                    'hab_veh'=>$row->hab_veh
                 ];
             });
     }

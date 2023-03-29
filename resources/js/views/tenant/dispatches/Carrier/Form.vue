@@ -242,10 +242,10 @@
                     </div>
                     <hr>
                     <div class="row">
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-3">
                             <div :class="{'has-danger': errors.transport_id}"
                                  class="form-group">
-                                <label class="control-label">Datos del vehículo
+                                <label class="control-label">Datos del vehículo principal
                                     <a v-if="can_add_new_product"
                                        href="#"
                                        @click.prevent="showDialogTransportForm = true">[+ Nuevo]</a>
@@ -264,7 +264,29 @@
                                        v-text="errors.transport_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-12 col-md-8">
+                        <div class="col-12 col-md-3">
+                            <div :class="{'has-danger': errors.transport_id}"
+                                 class="form-group">
+                                <label class="control-label">Datos del vehículo secundario
+                                    <a v-if="can_add_new_product"
+                                       href="#"
+                                       @click.prevent="showDialogTransportForm2 = true">[+ Nuevo]</a>
+                                </label>
+                                <el-select v-model="form.transport2_id"
+                                           clearable
+                                           placeholder="Seleccionar vehículo">
+                                    <el-option
+                                        v-for="option in transports2"
+                                        :key="option.id"
+                                        :label="option.plate_number +' - '+ option.model+' - '+ option.brand"
+                                        :value="option.id"></el-option>
+                                </el-select>
+                                <small v-if="errors.transport2_id"
+                                       class="form-control-feedback"
+                                       v-text="errors.transport2_id[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
                             <label class="control-label">
                                 Datos del conductor
                                 <a v-if="can_add_new_product"
@@ -283,9 +305,33 @@
                                         :label="option.number +' - '+ option.name+' - '+ option.license"
                                         :value="option.id"></el-option>
                                 </el-select>
-                                <small v-if="errors.dispacher"
+                                <small v-if="errors.driver_id"
                                        class="form-control-feedback"
-                                       v-text="errors.dispacher[0]"></small>
+                                       v-text="errors.driver_id[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="control-label">
+                                Datos del conductor secundario
+                                <a v-if="can_add_new_product"
+                                   href="#"
+                                   @click.prevent="showDialogDriverForm2 = true">[+ Nuevo]</a>
+                            </label>
+                            <span class="text-danger"> *</span>
+                            <div :class="{'has-danger': errors.driver2_id}"
+                                 class="form-group">
+                                <el-select v-model="form.driver2_id"
+                                           clearable
+                                           placeholder="Seleccionar conductor">
+                                    <el-option
+                                        v-for="option in drivers2"
+                                        :key="option.id"
+                                        :label="option.number +' - '+ option.name+' - '+ option.license"
+                                        :value="option.id"></el-option>
+                                </el-select>
+                                <small v-if="errors.driver2_id"
+                                       class="form-control-feedback"
+                                       v-text="errors.driver2_id[0]"></small>
                             </div>
                         </div>
                     </div>
@@ -462,8 +508,14 @@
         <driver-form :showDialog.sync="showDialogDriverForm"
                      @success="successDriver"></driver-form>
 
+        <driver-form :showDialog.sync="showDialogDriverForm2"
+                     @success="successDriver2"></driver-form>
+
         <transport-form :showDialog.sync="showDialogTransportForm"
                         @success="successTransport"></transport-form>
+
+        <transport-form :showDialog.sync="showDialogTransportForm2"
+                        @success="successTransport2"></transport-form>
 
         <items
             :dialogVisible.sync="showDialogAddItems"
@@ -552,7 +604,9 @@ export default {
             showDialogSenderAddressForm: false,
             showDialogReceiverAddressForm: false,
             showDialogDriverForm: false,
+            showDialogDriverForm2: false,//DONAL
             showDialogTransportForm: false,
+            showDialogTransportForm2: false,//DONAL
             IdLoteSelected: false,
             showDialogLots: false,
             min_qty: 0.0001,
@@ -563,6 +617,7 @@ export default {
             loading_submit: false,
             establishments: [],
             drivers: [],
+            drivers2: [], //DONAL
             driver: null,
             countries: [],
             seriesAll: [],
@@ -584,6 +639,7 @@ export default {
             showWarehousesDetail: false,
             warehousesDetail: [],
             transports: [],
+            transports2: [],
             send_sunat: false,
             senders: [],
             sender_addresses: [],
@@ -615,7 +671,9 @@ export default {
             this.locations = response.data.locations;
             this.seriesAll = response.data.series;
             this.drivers = response.data.drivers;
+            this.drivers2 = response.data.drivers;
             this.transports = response.data.transports;
+            this.transports2 = response.data.transports;
             // this.senders = response.data.senders;
             // this.receivers = response.data.receivers;
             if (itemsFromSummary) {
@@ -697,6 +755,11 @@ export default {
                 receiver_data: {},
                 receiver_address_id: null,
                 receiver_address_data: {},
+                transport2_id: null,// DONAL
+                transport2: {}, // DONAL
+
+                driver2_id: null,// DONAL
+                driver2: {}, // DONAL
             }
         },
         setDefaults() {
@@ -949,7 +1012,9 @@ export default {
             }
 
             this.form.driver = _.find(this.drivers, {'id': this.form.driver_id});
+            this.form.driver2 = _.find(this.drivers2, {'id': this.form.driver2_id});
             this.form.transport = _.find(this.transports, {'id': this.form.transport_id});
+            this.form.transport2 = _.find(this.transports2, {'id': this.form.transport2_id}); //DONAL
             this.form.sender_data = _.find(this.senders, {'id': this.form.sender_id});
             this.form.receiver_data = _.find(this.receivers, {'id': this.form.receiver_id});
             this.form.sender_address_data = _.find(this.sender_addresses, {'id': this.form.sender_address_id});
@@ -1020,11 +1085,25 @@ export default {
                     this.drivers = response.data;
                 });
         },
+        async successDriver2(id) {
+            this.form.driver_id = id;
+            await this.$http.get(`/drivers/get_options`)
+                .then(response => {
+                    this.drivers2 = response.data;
+                });
+        },
         async successTransport(id) {
             this.form.transport_id = id;
             await this.$http.get(`/transports/get_options`)
                 .then(response => {
                     this.transports = response.data;
+                });
+        },
+        async successTransport2(id) { //DONAL
+            this.form.transport2_id = id;
+            await this.$http.get(`/transports/get_options`)
+                .then(response => {
+                    this.transports2 = response.data;
                 });
         },
         async reloadDataSenders(customer_id) {

@@ -53,7 +53,8 @@ class Company extends ModelTenant
         'api_sunat_id',
         'api_sunat_secret',
 
-        'num_aut_manifiesto_pasajero'
+        'num_aut_manifiesto_pasajero',
+        'number_mtc',
 
     ];
 

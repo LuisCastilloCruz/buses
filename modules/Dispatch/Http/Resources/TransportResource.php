@@ -19,6 +19,7 @@ class TransportResource extends JsonResource
             'plate_number' => $this->plate_number,
             'model' => $this->model,
             'brand' => $this->brand,
+            'hab_veh' => $this->hab_veh,
             'is_default' => $this->is_default,
             'is_active' => $this->is_active,
         ];

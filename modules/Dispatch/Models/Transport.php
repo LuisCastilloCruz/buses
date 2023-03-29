@@ -10,6 +10,7 @@ class Transport extends ModelTenant
         'model',
         'brand',
         'plate_number',
+        'hab_veh',
         'is_default',
         'is_active'
     ];

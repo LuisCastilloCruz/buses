@@ -150,6 +150,11 @@ class Dispatch extends ModelTenant
 
         'receiver_address_id',
         'receiver_address_data',
+        'transport2_id',
+        'transport2_data',
+
+        'driver2_id',
+        'driver2_data',
     ];
 
     protected $casts = [
@@ -160,7 +165,9 @@ class Dispatch extends ModelTenant
         'receiver_data' => 'array',
         'sender_data' => 'array',
         'sender_address_data' => 'array',
-        'receiver_address_data' => 'array'
+        'receiver_address_data' => 'array',
+        'transport2_data' => 'array',
+        'driver2_data'=> 'array',
     ];
 
     public function getAdditionalDataAttribute($value)

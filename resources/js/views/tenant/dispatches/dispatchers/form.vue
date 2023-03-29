@@ -69,7 +69,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.number_mtc}">
-                            <label class="control-label">MTC</label>
+                            <label class="control-label">MTC (CNG) <a href="https://www.mtc.gob.pe/tramitesenlinea/tweb_tLinea/tw_consultadgtt/Frm_rep_intra_mercancia.aspx" target="_blank">Buscar</a> <span class="text-danger">*</span></label>
                             <el-input v-model="form.number_mtc" maxlength="12"></el-input>
                             <small class="form-control-feedback" v-if="errors.number_mtc"
                                    v-text="errors.number_mtc[0]"></small>

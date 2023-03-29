@@ -30,6 +30,9 @@ class DispatcherRequest extends FormRequest
             ],
             'address' => [
                 'required'
+            ],
+            'number_mtc' => [
+                'required'
             ]
         ];
     }

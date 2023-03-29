@@ -92,24 +92,35 @@
             <cac:TransitPeriod>
                 <cbc:StartDate>{{ $document['date_of_shipping'] }}</cbc:StartDate>
             </cac:TransitPeriod>
+
+            <!-- DATOS DEL TRANSPORTISTA -->
+            @if($document['company_number_mtc'])
+            <cac:CarrierParty>
+                <!-- AUTORIZACIONES ESPECIALES -->
+                <cac:PartyLegalEntity>
+                    <!-- NUMERO DE REGISTRO DEL MTC -->
+                    <cbc:CompanyID>{{ $document['company_number_mtc'] }}</cbc:CompanyID>
+                </cac:PartyLegalEntity>
+            </cac:CarrierParty>
+            @endif
             <!-- CONDUCTOR PRINCIPAL -->
-                <cac:DriverPerson>
-                    <!-- TIPO Y NUMERO DE DOCUMENTO DE IDENTIDAD -->
-                    <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"
-                            schemeAgencyName="PE:SUNAT"
-                            schemeName="Documento de Identidad"
-                            schemeID="{{ $document['driver_identity_document_type_id'] }}">{{ $document['driver_number'] }}</cbc:ID>
-                    <!-- NOMBRES -->
-                    <cbc:FirstName>{{ $document['driver_names'] }}</cbc:FirstName>
-                    <!-- APELLIDOS -->
-                    <cbc:FamilyName>{{ $document['driver_lastnames'] }}</cbc:FamilyName>
-                    <!-- TIPO DE CONDUCTOR: PRINCIPAL -->
-                    <cbc:JobTitle>Principal</cbc:JobTitle>
-                    <cac:IdentityDocumentReference>
-                        <!-- LICENCIA DE CONDUCIR -->
-                        <cbc:ID>{{ $document['driver_license'] }}</cbc:ID>
-                    </cac:IdentityDocumentReference>
-                </cac:DriverPerson>
+            <cac:DriverPerson>
+                <!-- TIPO Y NUMERO DE DOCUMENTO DE IDENTIDAD -->
+                <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"
+                        schemeAgencyName="PE:SUNAT"
+                        schemeName="Documento de Identidad"
+                        schemeID="{{ $document['driver_identity_document_type_id'] }}">{{ $document['driver_number'] }}</cbc:ID>
+                <!-- NOMBRES -->
+                <cbc:FirstName>{{ $document['driver_names'] }}</cbc:FirstName>
+                <!-- APELLIDOS -->
+                <cbc:FamilyName>{{ $document['driver_lastnames'] }}</cbc:FamilyName>
+                <!-- TIPO DE CONDUCTOR: PRINCIPAL -->
+                <cbc:JobTitle>Principal</cbc:JobTitle>
+                <cac:IdentityDocumentReference>
+                    <!-- LICENCIA DE CONDUCIR -->
+                    <cbc:ID>{{ $document['driver_license'] }}</cbc:ID>
+                </cac:IdentityDocumentReference>
+            </cac:DriverPerson>
         </cac:ShipmentStage>
         <cac:Delivery>
             <!-- DIRECCION DEL PUNTO DE LLEGADA -->
@@ -153,6 +164,20 @@
                 <!-- VEHICULO PRINCIPAL -->
                 <!-- PLACA - VEHICULO PRINCIPAL -->
                 <cbc:ID>{{ $document['transport_plate_number'] }}</cbc:ID>
+
+                <!-- VEHICULO SECUNDARIO -->
+                @if($document['transport2_plate_number'])
+                <cac:AttachedTransportEquipment>
+                    <!-- PLACA - VEHICULO SECUNDARIO  -->
+                    <cbc:ID>{{ $document['transport2_plate_number'] }}</cbc:ID>
+
+                    <!-- TARJETA UNICA CIRCULACION / CERTIFICADO HABILITACION VEHICULAR - SECUNDARIO  -->
+                    <cac:ApplicableTransportMeans>
+                        <cbc:RegistrationNationalityID>151314006</cbc:RegistrationNationalityID>
+                    </cac:ApplicableTransportMeans>
+
+                </cac:AttachedTransportEquipment>
+                @endif
             </cac:TransportEquipment>
         </cac:TransportHandlingUnit>
     </cac:Shipment>

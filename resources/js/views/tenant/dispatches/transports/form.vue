@@ -40,6 +40,16 @@
                      v-text="errors.brand[0]"></small>
             </div>
           </div>
+            <div class="col-md-6">
+                <div :class="{'has-danger': errors.hab_veh}"
+                     class="form-group">
+                    <label class="control-label">N° Habilitación Vehicular</label>
+                    <el-input v-model="form.hab_veh"></el-input>
+                    <small v-if="errors.hab_veh"
+                           class="form-control-feedback"
+                           v-text="errors.hab_veh[0]"></small>
+                </div>
+            </div>
           <div class="col-md-6">
             <div class="form-group" style="margin-top: 32px;">
               <el-switch v-model="form.is_default"
@@ -85,6 +95,7 @@ export default {
         plate_number: null,
         model: null,
         brand: null,
+        hab_veh: null,
         is_default: false,
         is_active: true,
       }

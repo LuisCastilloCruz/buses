@@ -69,6 +69,9 @@
                                     @click.prevent="clickOptions(row.id)" v-if="row.btn_options">Opciones
                             </button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptions(row.id)">Opciones
+                            </button>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="sendSunat(row.external_id)" v-if="row.btn_send">Enviar a Sunat
                             </button>
 <!--                            <a :href="`/dispatches/create_new/dispatch/${row.id}`"-->

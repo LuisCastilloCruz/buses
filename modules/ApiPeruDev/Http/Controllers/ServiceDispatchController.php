@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\ApiPeruDev\Helpers\CdrRead;
 use Modules\ApiPeruDev\Helpers\ServiceDispatch;
 use Modules\Store\Helpers\StorageHelper;
+use Modules\Dispatch\Models\Dispatcher;
 
 class ServiceDispatchController extends Controller
 {
@@ -202,6 +203,7 @@ class ServiceDispatchController extends Controller
                 'quantity' => $it->quantity,
             ];
         }
+
         return [
             'company_name' => $company->name,
             'company_number' => $company->number,
@@ -233,7 +235,13 @@ class ServiceDispatchController extends Controller
             'driver_names' => optional($record->driver)->name,
             'driver_lastnames' => optional($record->driver)->name,
             'driver_license' => optional($record->driver)->license,
+            'driver2_identity_document_type_id' => optional($record->driver)->identity_document_type_id,
+            'driver2_number' => optional($record->driver)->number,
+            'driver2_names' => optional($record->driver)->name,
+            'driver2_lastnames' => optional($record->driver)->name,
+            'driver2_license' => optional($record->driver)->license,
             'transport_plate_number' => $record->transport_data ? $record->transport_data['plate_number'] : null,
+            'transport2_plate_number' => $record->transport2_data ? $record->transport2_data['plate_number'] : null, //DONAL
             'dispatcher_identity_document_type_id' => optional($record->dispatcher)->identity_document_type_id,
             'dispatcher_number' => optional($record->dispatcher)->number,
             'dispatcher_name' => optional($record->dispatcher)->name,
@@ -252,6 +260,7 @@ class ServiceDispatchController extends Controller
 
             'receiver_address_location_id' => $record->receiver_address_data ? $record->receiver_address_data['location_id'] : null,
             'receiver_address_address' => $record->receiver_address_data ? $record->receiver_address_data['address'] : null,
+            'company_number_mtc' => $company->number_mtc ? $company->number_mtc : "",
 
             'items' => $items,
         ];
@@ -309,7 +318,7 @@ class ServiceDispatchController extends Controller
 //            'dispatcher_identity_document_type_id' => optional($record->dispatcher)->identity_document_type_id,
 //            'dispatcher_number' => optional($record->dispatcher)->number,
 //            'dispatcher_name' => optional($record->dispatcher)->name,
-//            'dispatcher_number_mtc' => optional($record->dispatcher)->number_mtc,
+            'dispatcher_number_mtc' => optional($record->dispatcher)->number_mtc,
             'items' => $items,
         ];
     }

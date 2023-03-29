@@ -176,10 +176,17 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group" :class="{'has-danger': errors.certificate_due}">
+                                <div class="form-group" :class="{'has-danger': errors.num_aut_manifiesto_pasajero}">
                                     <label class="control-label">Numero de autorización impr. Manifiesto de pasajeros</label>
                                     <el-input v-model="form.num_aut_manifiesto_pasajero"></el-input>
                                     <small class="form-control-feedback" v-if="errors.num_aut_manifiesto_pasajero" v-text="errors.num_aut_manifiesto_pasajero[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.number_mtc}">
+                                    <label class="control-label">Numero de autorización MTC CNG</label>
+                                    <el-input v-model="form.number_mtc"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.number_mtc" v-text="errors.number_mtc[0]"></small>
                                 </div>
                             </div>
                             <div v-show="false"
@@ -534,6 +541,8 @@ export default {
                 soap_sunat_password: null,
                 api_sunat_id: null,
                 api_sunat_secret: null,
+                num_aut_manifiesto_pasajero:null,
+                number_mtc:null
             }
         },
         submit() {

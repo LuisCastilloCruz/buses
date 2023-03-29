@@ -20,6 +20,7 @@ class TransportCollection extends ResourceCollection
                 'plate_number' => $row->plate_number,
                 'model' => $row->model,
                 'brand' => $row->brand,
+                'hab_veh' => $row->hab_veh,
                 'is_default' => $row->is_default?'SI':'',
                 'is_active' => $row->is_active,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
