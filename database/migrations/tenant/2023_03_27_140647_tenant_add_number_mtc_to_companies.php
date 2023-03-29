@@ -14,7 +14,7 @@ class TenantAddNumberMtcToCompanies extends Migration
     public function up()
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->text('number_mtc')->nullable();
+            $table->string('number_mtc')->nullable();
         });
     }
 

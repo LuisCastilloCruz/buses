@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TenantAddHabVehToTransports extends Migration
+class TenantChangeNumberMtcToCompanies extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class TenantAddHabVehToTransports extends Migration
      */
     public function up()
     {
-        Schema::table('transports', function (Blueprint $table) {
-            $table->string('hab_veh')->after('brand')->nullable();
+        Schema::table('companies', function (Blueprint $table) {
+            $table->string('number_mtc', 50)->change();
         });
     }
 
@@ -25,8 +25,8 @@ class TenantAddHabVehToTransports extends Migration
      */
     public function down()
     {
-        Schema::table('transports', function (Blueprint $table) {
-            $table->dropColumn('hab_veh');
+        Schema::table('companies', function (Blueprint $table) {
+            //
         });
     }
 }
