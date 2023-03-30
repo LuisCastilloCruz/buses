@@ -121,6 +121,22 @@
                     <cbc:ID>{{ $document['driver_license'] }}</cbc:ID>
                 </cac:IdentityDocumentReference>
             </cac:DriverPerson>
+
+            <!--  CONDUCTOR SECUNDARIO  -->
+            <cac:DriverPerson>
+                <!--  TIPO Y NUMERO DE DOCUMENTO DE IDENTIDAD  -->
+                <cbc:ID schemeID="{{ $document['driver2_identity_document_type_id'] }}" schemeName="Documento de Identidad" schemeAgencyName="PE:SUNAT" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">{{ $document['driver2_number'] }}</cbc:ID>
+                <!--  NOMBRES  -->
+                <cbc:FirstName>{{ $document['driver2_names'] }}</cbc:FirstName>
+                <!--  APELLIDOS  -->
+                <cbc:FirstName>{{ $document['driver2_lastnames'] }}</cbc:FirstName>
+                <!--  TIPO DE CONDUCTOR: SECUNDARIO  -->
+                <cbc:JobTitle>Secundario</cbc:JobTitle>
+                <cac:IdentityDocumentReference>
+                    <!--  LICENCIA DE CONDUCIR  -->
+                    <cbc:ID>{{ $document['driver2_license'] }}</cbc:ID>
+                </cac:IdentityDocumentReference>
+            </cac:DriverPerson>
         </cac:ShipmentStage>
         <cac:Delivery>
             <!-- DIRECCION DEL PUNTO DE LLEGADA -->
@@ -164,16 +180,19 @@
                 <!-- VEHICULO PRINCIPAL -->
                 <!-- PLACA - VEHICULO PRINCIPAL -->
                 <cbc:ID>{{ $document['transport_plate_number'] }}</cbc:ID>
+                <!-- TARJETA UNICA CIRCULACION / CERTIFICADO HABILITACION VEHICULAR - SECUNDARIO  -->
+                <cac:ApplicableTransportMeans>
+                    <cbc:RegistrationNationalityID>{{ $document['transport_hab_veh'] }}</cbc:RegistrationNationalityID>
+                </cac:ApplicableTransportMeans>
 
                 <!-- VEHICULO SECUNDARIO -->
                 @if($document['transport2_plate_number'])
                 <cac:AttachedTransportEquipment>
                     <!-- PLACA - VEHICULO SECUNDARIO  -->
                     <cbc:ID>{{ $document['transport2_plate_number'] }}</cbc:ID>
-
                     <!-- TARJETA UNICA CIRCULACION / CERTIFICADO HABILITACION VEHICULAR - SECUNDARIO  -->
                     <cac:ApplicableTransportMeans>
-                        <cbc:RegistrationNationalityID>151314006</cbc:RegistrationNationalityID>
+                        <cbc:RegistrationNationalityID>{{ $document['transport2_hab_veh'] }}</cbc:RegistrationNationalityID>
                     </cac:ApplicableTransportMeans>
 
                 </cac:AttachedTransportEquipment>

@@ -235,11 +235,11 @@ class ServiceDispatchController extends Controller
             'driver_names' => optional($record->driver)->name,
             'driver_lastnames' => optional($record->driver)->name,
             'driver_license' => optional($record->driver)->license,
-            'driver2_identity_document_type_id' => optional($record->driver)->identity_document_type_id,
-            'driver2_number' => optional($record->driver)->number,
-            'driver2_names' => optional($record->driver)->name,
-            'driver2_lastnames' => optional($record->driver)->name,
-            'driver2_license' => optional($record->driver)->license,
+            'driver2_identity_document_type_id' => optional($record->driver2_data)['identity_document_type_id'],
+            'driver2_number' => optional($record->driver2_data)['number'],
+            'driver2_names' => optional($record->driver2_data)['name'],
+            'driver2_lastnames' => optional($record->driver2_data)['name'],
+            'driver2_license' => optional($record->driver2_data)['license'],
             'transport_plate_number' => $record->transport_data ? $record->transport_data['plate_number'] : null,
             'transport2_plate_number' => $record->transport2_data ? $record->transport2_data['plate_number'] : null, //DONAL
             'transport_hab_veh' => $record->transport_data ? $record->transport_data['hab_veh'] : null,//DONAL

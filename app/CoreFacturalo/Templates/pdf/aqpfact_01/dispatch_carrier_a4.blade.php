@@ -102,7 +102,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <p style="font-size: 10px">{{ $document->receiver_address_data['location_id'] }} - {{ $document->receiver_address_data['address'] }}</p>
+                        {{ $document->receiver_address_data['location_id'] }} - {{ $document->receiver_address_data['address'] }}
                     </td>
                 </tr>
             </table>
