@@ -345,7 +345,8 @@ export default {
             search: '',
             page: 1,
             pageSize: 4,
-            total_page: 5
+            total_page: 5,
+            socketClient:null,
         };
     },
     created() {
@@ -449,6 +450,8 @@ export default {
             if(this.socketClient) this.socketClient.emit('mesa-ocupada',true);
         },
         async onUpdateItem(){
+
+            this.handleClick()
             console.log("socket jugando")
 
         },
@@ -463,7 +466,7 @@ export default {
             this.cargarNiveles(tab)
 
         },
-        async cargarNiveles(tab){
+        async cargarNiveles(tab){ //esto carga mesas y sus estados
             try{
                 this.loading = true;
                 const { data } = await this.$http.get(`/restaurant/niveles/records`);
@@ -487,9 +490,6 @@ export default {
             this.verificarEstadoMesa(mesa)
         },
         agregarItem(producto){
-            console.log("esto es temporal")
-            console.log(producto)
-            console.log(this.pedidos_detalles)
             let exist = this.checkIfExists(producto.id)
 
             if(this.pedidoId>0){
@@ -674,6 +674,9 @@ export default {
                 .catch((error) => {
                     this.axiosError(error);
                 });
+
+            if(this.socketClient) this.socketClient.emit('mesa-ocupada',true);//recarga estado mesas
+
         },
         onLimPiarDatos(){
             //this.pedidoId=null
