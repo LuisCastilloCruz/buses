@@ -12,7 +12,7 @@
           <div class="col-md-6">
             <div :class="{'has-danger': errors.plate_number}"
                  class="form-group">
-              <label class="control-label">Nro. de Placa <span class="text-danger">*</span></label>
+              <label class="control-label">Nro. de Placa <span class="text-danger">* sin guion</span></label>
               <el-input v-model="form.plate_number"
                         dusk="name"></el-input>
               <small v-if="errors.plate_number"
@@ -43,8 +43,8 @@
             <div class="col-md-6">
                 <div :class="{'has-danger': errors.hab_veh}"
                      class="form-group">
-                    <label class="control-label">N° Habilitación Vehicular</label>
-                    <el-input v-model="form.hab_veh"></el-input>
+                    <label class="control-label">N° Habilitación Vehicular <span class="text-danger">* 10 caracteres</span></label>
+                    <el-input v-model="form.hab_veh" :minlength="10"></el-input>
                     <small v-if="errors.hab_veh"
                            class="form-control-feedback"
                            v-text="errors.hab_veh[0]"></small>

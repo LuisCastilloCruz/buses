@@ -28,6 +28,9 @@ class TransportRequest extends FormRequest
             'model' => [
                 'required',
             ],
+            'hab_veh' => [
+                'required|min:10',
+            ],
 
         ];
     }
