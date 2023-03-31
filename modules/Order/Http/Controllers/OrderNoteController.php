@@ -194,7 +194,10 @@
         {
             $records = $this->getRecords($request);
 
-            return new OrderNoteCollection($records->paginate(config('tenant.items_per_page')));
+            // $collect = new OrderNoteCollection($records->paginate(config('tenant.items_per_page')));
+            $collect = new OrderNoteCollection($records->paginate(5));
+
+            return $collect;
         }
 
         private function getRecords($request)
@@ -639,6 +642,7 @@
                     }
                 }
                 $legends = $document->legends != '' ? '10' : '0';
+                $payments_quantity = count($document->getCollectPrepayments());
 
                 $pdf = new Mpdf([
                     'mode' => 'utf-8',
@@ -646,6 +650,7 @@
                         $width,
                         120 +
                         ($quantity_rows * 8) +
+                        ($payments_quantity * 8) +
                         ($discount_global * 3) +
                         $company_name +
                         $company_address +

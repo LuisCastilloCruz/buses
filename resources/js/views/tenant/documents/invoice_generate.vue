@@ -1647,6 +1647,8 @@ import StoreItemSeriesIndex from "../Store/ItemSeriesIndex";
 import DocumentReportCustomer from './partials/report_customer.vue'
 import SetTip from '@components/SetTip.vue'
 
+import LotsForm from './partials/lots.vue'
+
 export default {
     props: [
         'idUser',
@@ -1670,6 +1672,7 @@ export default {
         DocumentTransportForm,
         DocumentReportCustomer,
         SetTip,
+        LotsForm,
     },
     mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe],
     data() {

@@ -44,11 +44,6 @@ class UserRequest extends FormRequest
             'establishment_id' => [
                 'required'
             ],
-            'password' => [
-                'min:6',
-                'confirmed',
-            ],
-
 
             'personal_email' => [
                 'nullable',

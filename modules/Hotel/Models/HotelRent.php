@@ -173,4 +173,17 @@
             }
         }
 
+
+        /**
+         * Retorna moneda nacional por defecto
+         *
+         * @TODO considerar registro de moneda al rentar habitacion
+         *
+         * @return string
+         */
+        public function getDefaultCurrency()
+        {
+            return self::NATIONAL_CURRENCY_ID;
+        }
+
     }

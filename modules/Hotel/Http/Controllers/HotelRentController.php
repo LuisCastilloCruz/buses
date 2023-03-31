@@ -6,6 +6,7 @@ use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Modules\Hotel\Models\HotelRent;
 use Modules\Hotel\Models\HotelRoom;
 use App\Models\Tenant\Configuration;

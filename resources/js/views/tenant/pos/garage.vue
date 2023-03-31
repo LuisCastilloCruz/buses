@@ -1833,6 +1833,7 @@ export default {
 
             await this.setFormPosLocalStorage();
 
+            await this.setDefaultDataPriceSelected(item)
             // balanza
             this.initElectronicScaleData()
         },

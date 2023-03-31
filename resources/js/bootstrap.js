@@ -27,8 +27,6 @@ if (token) {
 
 Vue.prototype.$http = axios;
 
-
-
 Vue.prototype.$setStorage =   function(name,obj){
     localStorage.setItem(name, JSON.stringify(obj));
 };

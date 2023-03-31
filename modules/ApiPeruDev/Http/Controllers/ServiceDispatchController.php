@@ -203,7 +203,6 @@ class ServiceDispatchController extends Controller
                 'quantity' => $it->quantity,
             ];
         }
-
         return [
             'company_name' => $company->name,
             'company_number' => $company->number,

@@ -421,10 +421,10 @@ const SOCKET = io(url, {
 
 //connect()  no nos sirve, porque queremos control total del servidor de socket, utilizar modulo restaurante, donde si se implementa socket en el propio servidor, pedir manual
 
- function connect(username = 'usuario') {
-    SOCKET.auth = { username }
-    SOCKET.connect()
- }
+//  function connect(username = 'usuario') {
+//     SOCKET.auth = { username }
+//     SOCKET.connect()
+//  }
 
 export default {
     mixins: [deletable],

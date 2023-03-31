@@ -11,6 +11,8 @@
         $logo = "{$establishment->logo}";
     }
 
+    $prepayments = $document->getPrepaymentsForPdf();
+
 @endphp
 <html>
 <head>

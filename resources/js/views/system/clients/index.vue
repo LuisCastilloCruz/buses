@@ -253,7 +253,9 @@
                             <th class="text-center">Consultas <br>API Peru <br>(mes)</th>
 
                             <th class="text-center">Cant.Notas de venta</th>
-                            <th class="text-center">Total<br>(Comprobantes <br>y <br>notas de venta)</th>
+                            <th class="text-center">Total<br><small>(Comprobantes por mes)</small></th>
+                            <th class="text-center">Total<br><small>(Comprobantes a PSE-GIOR)</small></th>
+                            <th class="text-center">Total<br><small>(Comprobantes <br>notas de venta)</small></th>
 
                             <th class="text-center">Bloquear cuenta</th>
 
@@ -273,9 +275,9 @@
 
 
                             <th class="text-right">Acciones</th>
-                            <th class="text-right">Pagos</th>
+                            <!-- <th class="text-right">Pagos</th>
                             <th class="text-right">E. Cuenta</th>
-                            <th class="text-right">Editar</th>
+                            <th class="text-right">Editar</th> -->
                         </tr>
                         </thead>
                         <tbody>
@@ -357,9 +359,16 @@
                                     ></el-date-picker>
                                 </template>
                             </td>
+
                             <td class="text-center">
                                 <strong>
+                                    <template v-if="row.sale_notes_quantity_if_include > 0">
+                                        {{ row.count_doc_month ? (row.count_doc_month + row.sale_notes_quantity_if_include) : 0 }} /
+                                    </template>
+                                    <template v-else>
                                     {{ row.count_doc_month ? row.count_doc_month : 0 }} /
+                                    </template>
+
                                     <template v-if="row.max_documents == 0">
                                         <i class="fas fa-infinity"></i>
                                     </template>
@@ -427,6 +436,8 @@
                             <td>{{ row.queries_to_apiperu }}</td>
 
                             <td class="text-center"><strong>{{ row.count_sales_notes }}</strong></td>
+                            <td class="text-center"><strong>{{ row.current_count_doc_month }}</strong></td>
+                            <td class="text-center"><strong>{{ row.count_doc_pse }}</strong></td>
                             <td class="text-center"><strong>{{ row.count_doc_month + row.count_sales_notes_month }}</strong></td>
 
                             <td class="text-center">
@@ -479,14 +490,14 @@
                             </td>
 
                             <td class="text-right">
-                                <template v-if="!row.locked">
+                                <!-- <template v-if="!row.locked">
                                     <el-tooltip content="Se ingresa con el RUC"
                                                 placement="top">
                                         <button
                                             class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                             type="button"
                                             @click.prevent="clickPassword(row.id)"
-                                        >Resetear clave
+                                        >Restablecer contraseña
                                         </button>
                                     </el-tooltip>
                                     <button
@@ -494,11 +505,48 @@
                                         class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                         type="button"
                                         @click.prevent="clickDelete(row)"
-                                    >Eliminar
+                                    >Eliminar Cliente
                                     </button>
-                                </template>
+                                </template> -->
+                                <div class="dropdown">
+                                    <button class="btn btn-default btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <template v-if="!row.locked">
+                                            <a class="dropdown-item"
+                                                href="#"
+                                                @click.prevent="clickPassword(row.id)">
+                                                Restablecer contraseña
+                                            </a>
+                                            <a class="dropdown-item"
+                                                href="#"
+                                                @click.prevent="clickDelete(row)"
+                                                v-if="deletePermission == true">
+                                                Eliminar Cliente
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                        </template>
+                                        <a class="dropdown-item"
+                                            href="#"
+                                            @click.prevent="clickEdit(row.id)">
+                                            Editar
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item"
+                                            href="#"
+                                            @click.prevent="clickPayments(row.id)">
+                                            Pagos
+                                        </a>
+                                        <a class="dropdown-item"
+                                            href="#"
+                                            @click.prevent="clickAccountStatus(row.id)">
+                                            Estado de cuenta
+                                        </a>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="text-right">
+                            <!-- <td class="text-right">
                                 <button
                                     class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
                                     type="button"
@@ -521,7 +569,8 @@
                                     @click.prevent="clickEdit(row.id)"
                                 >Editar
                                 </button>
-                            </td>
+                            </td> -->
+
 
 
                         </tr>

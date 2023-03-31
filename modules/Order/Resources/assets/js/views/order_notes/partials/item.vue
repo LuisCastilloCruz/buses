@@ -1325,14 +1325,38 @@ export default {
                 this.total_item = this.form.unit_price_value
             }
         },
+
+        async reloadDataItems(item_id) {
+
+            if (!item_id) {
+
+                await this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                    this.items = response.data
+                    this.form.item_id = item_id
+                    // if(item_id) this.changeItem()
+                    // this.filterItems()
+                })
+
+            } else {
+
+                await this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
+
+                    this.items = response.data.items
+                    this.form.item_id = item_id
+                    this.changeItem()
+
+                })
+            }
+        },
+
+        calculateTotal() {
+            this.readonly_total = _.round((this.form.quantity * this.form.item.sale_unit_price), 4)
+        },
         calculateQuantity() {
             if (this.form.item.calculate_quantity) {
                 this.form.quantity = _.round((this.total_item / this.form.item.sale_unit_price), 4)
             }
             this.calculateTotal()
-        },
-        calculateTotal() {
-            this.readonly_total = _.round((this.form.quantity * this.form.item.sale_unit_price), 4)
         },
         cleanTotalItem() {
             this.total_item = null
@@ -1419,6 +1443,7 @@ export default {
 
             this.form.unit_price = unit_price;
             this.form.item.unit_price = unit_price;
+
             this.form.item.presentation = this.item_unit_type;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': affectation_igv_type_id});
 
@@ -1488,29 +1513,6 @@ export default {
             }
 
             return this.errors
-        },
-        async reloadDataItems(item_id) {
-
-            if (!item_id) {
-
-                await this.$http.get(`/${this.resource}/table/items`).then((response) => {
-                    this.items = response.data
-                    this.form.item_id = item_id
-                    // if(item_id) this.changeItem()
-                    // this.filterItems()
-                })
-
-            } else {
-
-                await this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
-
-                    this.items = response.data.items
-                    this.form.item_id = item_id
-                    this.changeItem()
-
-                })
-            }
-
         },
         changePresentation() {
             let price = 0;

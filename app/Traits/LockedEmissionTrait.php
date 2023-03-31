@@ -9,7 +9,8 @@ use App\Models\System\{
     Plan
 };
 use App\Models\Tenant\{
-    Configuration
+    Configuration,
+    SaleNote
 };
 use Exception;
 use Modules\Document\Helpers\DocumentHelper;
@@ -20,9 +21,9 @@ trait LockedEmissionTrait
 {
 
     /**
-     * 
+     *
      * Obtener registro asociado al tenant desde la tabla hostname de system
-     * 
+     *
      * @return Hostname
      */
     public function getTenantHostname()
@@ -41,7 +42,7 @@ trait LockedEmissionTrait
         return Configuration::getRecordIndividualColumn($column);
     }
 
-        
+
     /**
      *
      * @param  int $hostname_id
@@ -59,7 +60,7 @@ trait LockedEmissionTrait
                     ->first();
     }
 
-    
+
     /**
      *
      * @param  array $columns
@@ -70,10 +71,10 @@ trait LockedEmissionTrait
     {
         return Plan::select($columns)->find($plan_id);
     }
-    
-    
+
+
     /**
-     * 
+     *
      * Buscar cliente y obtener plan
      *
      * @param  array $columns
@@ -87,7 +88,7 @@ trait LockedEmissionTrait
         return $this->getPlan($columns, $client->plan_id);
     }
 
-    
+
     /**
      *
      * @param  string $model
@@ -98,7 +99,7 @@ trait LockedEmissionTrait
         return $model::count();
     }
 
-    
+
     /**
      *
      * @param  string $message
@@ -109,9 +110,9 @@ trait LockedEmissionTrait
         throw new Exception($message);
     }
 
-    
+
     /**
-     * 
+     *
      * Validar el limite de ventas mensual, cpe y nv
      *
      * @return array
@@ -120,7 +121,7 @@ trait LockedEmissionTrait
     {
         //fecha de inicio del ciclo de facturacion
         $start_billing_cycle = DocumentHelper::getStartBillingCycleFromSystem();
-        
+
         if($start_billing_cycle)
         {
             $plan = $this->getClientPlan(['id', 'name', 'sales_limit', 'sales_unlimited', 'include_sale_notes_sales_limit']);
@@ -133,10 +134,10 @@ trait LockedEmissionTrait
                     $start_end_date = DocumentHelper::getStartEndDateForFilterDocument($start_billing_cycle);
                     $start_date = $start_end_date['start_date']->format('Y-m-d');
                     $end_date = $start_end_date['end_date']->format('Y-m-d');
-    
+
                     //obtener totales
                     $totals = $this->getTotalsDocumentSaleNote($start_date, $end_date, $plan->includeSaleNotesSalesLimit());
-    
+
                     if($totals['total'] > $plan->sales_limit)
                     {
                         return $this->getResponse(true, 'Ha superado el límite de ventas permitido.');
@@ -148,7 +149,7 @@ trait LockedEmissionTrait
         return $this->getResponse(false);
     }
 
-    
+
     /**
      *
      * @param  string $start_date
@@ -159,7 +160,7 @@ trait LockedEmissionTrait
     public function getTotalsDocumentSaleNote($start_date, $end_date, $include_sale_notes = false)
     {
         $dashboard_data = new DashboardData();
-                
+
         //total cpe
         $document_totals = $dashboard_data->document_totals_globals($start_date, $end_date);
 
@@ -178,6 +179,24 @@ trait LockedEmissionTrait
             'document_totals' => $document_totals,
             'total' => $total,
         ];
+    }
+
+
+    /**
+     *
+     * Obtener cantidad de notas de venta
+     *
+     * Usado en:
+     * App\Http\Controllers\System\ClientController - Lista de clientes
+     * Modules\Document\Helpers\DocumentHelper
+     *
+     * @param  string $start_date
+     * @param  string $end_date
+     * @return int
+     */
+    public function getQuantitySaleNotesByDates($start_date, $end_date)
+    {
+        return SaleNote::whereBetween('date_of_issue', [$start_date, $end_date])->count();
     }
 
 

@@ -518,6 +518,7 @@ export default {
             this.document.total_other_taxes = q.total_other_taxes;
             this.document.total_taxes = q.total_taxes;
             this.document.total_value = q.total_value;
+            this.document.subtotal = q.subtotal
             this.document.total = q.total;
             this.document.operation_type_id = "0101";
             // this.document.date_of_due = q.date_of_issue

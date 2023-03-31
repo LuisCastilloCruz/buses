@@ -7,14 +7,15 @@
     {
 
         /**
-         * 
+         *
          * Filtros para obtener pagos al contado
          * Se determina contado por is_credit = false, en payment_method_types
-         * 
+         *
          * Usado en:
          * Models\Tenant\DocumentPayment
          * Models\Tenant\SaleNotePayment
          * Models\Tenant\QuotationPayment
+         * Modules\Hotel\Models\HotelRentItemPayment
          *
          * @param  Builder $query
          * @return Builder

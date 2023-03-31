@@ -266,7 +266,7 @@
                         </div>
                     </div>
                     <hr>
-                    <h4>Datos transportista 66</h4>
+                    <h4>Datos transportista</h4>
                     <div class="row">
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.dispacher}" class="form-group">

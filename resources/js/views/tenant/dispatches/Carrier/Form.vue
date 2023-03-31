@@ -305,9 +305,9 @@
                                         :label="option.number +' - '+ option.name+' - '+ option.license"
                                         :value="option.id"></el-option>
                                 </el-select>
-                                <small v-if="errors.driver_id"
+                                <small v-if="errors.dispacher"
                                        class="form-control-feedback"
-                                       v-text="errors.driver_id[0]"></small>
+                                       v-text="errors.dispacher[0]"></small>
                             </div>
                         </div>
                         <div class="col-12 col-md-3">

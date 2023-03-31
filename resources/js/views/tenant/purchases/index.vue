@@ -55,12 +55,15 @@
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
-                    <td class="text-center">{{ row.date_periodo}}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
-                        <td v-if="columns.date_of_due.visible" class="text-center">{{ row.date_of_due }}</td>
+                        <td v-if="columns.date_of_due.visible"
+                            class="text-center"
+                            :class="{'text-danger': (row.state_type_payment_description != 'Pagado' && isDateWarning(row.date_of_due))}">
+                            {{ row.date_of_due }}
+                        </td>
                         <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td>
                         <td>{{row.state_type_description}}</td>
-                        <td>{{row.state_type_payment_description}}</td>
+                        <td :class="row.state_type_payment_description == 'Pagado' ? 'text-success': 'text-warning'">{{row.state_type_payment_description}}</td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                         </td>

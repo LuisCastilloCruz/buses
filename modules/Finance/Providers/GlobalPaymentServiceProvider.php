@@ -6,15 +6,16 @@ use App\Models\Tenant\{
     SaleNotePayment,
     DocumentPayment,
     PurchasePayment,
-};  
+};
 use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\ContractPayment;
 use Modules\Sale\Models\TechnicalServicePayment;
 use Modules\Expense\Models\ExpensePayment;
 use Modules\Finance\Models\IncomePayment;
 use Modules\Pos\Models\CashTransaction;
-
 use Illuminate\Support\ServiceProvider;
+use Modules\Hotel\Models\HotelRentItemPayment;
+
 
 class GlobalPaymentServiceProvider extends ServiceProvider
 {
@@ -22,7 +23,7 @@ class GlobalPaymentServiceProvider extends ServiceProvider
     public function register()
     {
     }
-    
+
     public function boot()
     {
 
@@ -35,8 +36,9 @@ class GlobalPaymentServiceProvider extends ServiceProvider
         $this->deletingPayment(IncomePayment::class);
         $this->deletingPayment(CashTransaction::class);
         $this->deletingPayment(TechnicalServicePayment::class);
+        $this->deletingPayment(HotelRentItemPayment::class);
 
-        $this->paymentsPurchases(); 
+        $this->paymentsPurchases();
 
     }
 
@@ -44,7 +46,7 @@ class GlobalPaymentServiceProvider extends ServiceProvider
     {
 
         $model::deleting(function ($record) {
-            
+
             if($record->global_payment){
                 $record->global_payment()->delete();
             }
@@ -65,7 +67,7 @@ class GlobalPaymentServiceProvider extends ServiceProvider
         });
 
     }
- 
+
 
     private function paymentsPurchases()
     {
@@ -73,13 +75,13 @@ class GlobalPaymentServiceProvider extends ServiceProvider
         PurchasePayment::created(function ($purchase_payment) {
             $this->transaction_payment($purchase_payment);
         });
- 
+
         PurchasePayment::deleted(function ($purchase_payment) {
             $this->transaction_payment($purchase_payment);
         });
-        
+
     }
- 
+
     private function transaction_payment($purchase_payment){
 
         $purchase = $purchase_payment->purchase;
@@ -93,11 +95,11 @@ class GlobalPaymentServiceProvider extends ServiceProvider
             $purchase->update();
 
         }else{
-            
+
             $purchase->total_canceled = false;
             $purchase->update();
         }
 
     }
- 
+
 }

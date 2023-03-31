@@ -58,7 +58,7 @@
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
-                <h6>{{ ($establishment->email !== '-')? $establishment->email : '' }}</h6>
+                <h6>{{ ($establishment->email && $establishment->email !== '-')? $establishment->email : '' }}</h6>
                 <h6>{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</h6>
             </div>
         </td>
@@ -242,7 +242,7 @@
     </tbody>
     <tfoot style="border-top: 1px solid #333;">
 
-        
+
     @if ($document->payment_condition_id === '02' && $document->isCreditNoteAndType13())
         @foreach($document->fee as $key => $quote)
             <tr>

@@ -499,6 +499,9 @@ class SaleNoteController extends Controller
         if($request->license_plate) {
             $records->where('license_plate', $request->license_plate);
         }
+        if($request->observations) {
+            $records->where('observation', 'like', '%' . $request->observations . '%');
+        }
         return $records;
     }
 
