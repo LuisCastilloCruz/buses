@@ -129,7 +129,7 @@
                 <!--  NOMBRES  -->
                 <cbc:FirstName>{{ $document['driver2_names'] }}</cbc:FirstName>
                 <!--  APELLIDOS  -->
-                <cbc:FirstName>{{ $document['driver2_lastnames'] }}</cbc:FirstName>
+                <cbc:FamilyName>{{ $document['driver2_lastnames'] }}</cbc:FamilyName>
                 <!--  TIPO DE CONDUCTOR: SECUNDARIO  -->
                 <cbc:JobTitle>Secundario</cbc:JobTitle>
                 <cac:IdentityDocumentReference>
