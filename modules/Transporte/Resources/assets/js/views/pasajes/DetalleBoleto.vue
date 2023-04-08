@@ -353,6 +353,8 @@ export default {
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
 
+        this.onCreate()
+
     },
     watch:{
         precio:function(newVal){
@@ -444,9 +446,11 @@ export default {
             this.clienteId= null;
             this.estadoAsiento = null;
             this.precio = null;
-            this.transportePasaje.id=null;
+            //this.transportePasaje.id=null;
             this.documentId=null;
             //this.sale_note_id=null;
+
+            this.changeDocumentType();
         },
         async searchPasajero(input=''){
             this.loadingPasajero = true;

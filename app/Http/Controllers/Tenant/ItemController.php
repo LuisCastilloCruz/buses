@@ -1354,6 +1354,43 @@ class ItemController extends Controller
 
     }
 
+    public function printBarCodeXAqp58(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+        $id = $request->input('id');
+        $format = $request->input('format');
+
+        $record = Item::find($id);
+    
+        $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()
+            ->establishment->warehouse->id]])->first();
+
+        if(!$item_warehouse){
+            return [
+                'success' => false,
+                'message' => "El producto seleccionado no esta disponible en su almacen!"
+            ];
+        }
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    58,
+                    25
+                    ],
+                'margin_top' => 0,
+                'margin_right' => 0,
+                'margin_bottom' => 0,
+                'margin_left' => 0
+            ]);
+        $html = view('tenant.items.exports.items-barcode-aqp1x1-58mm', compact('record','format'))->render();
+
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_barcode-aqp1x1-58mm'.$format.'_'.now()->format('Y_m_d').'.pdf', 'I');
+
+    }
     public function itemLast()
     {
         $record = Item::latest()->first();

@@ -302,7 +302,7 @@
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                                 <div aria-labelledby="dropdownMenuButton"
-                                     class="dropdown-menu">
+                                     class="dropdown-menu" style="z-index:90000">
 
                                     <template v-if="typeUser === 'admin'">
                                         <button
@@ -350,6 +350,12 @@
                                             Etiquetas
                                         </button>
                                         <div class="dropdown-divider"></div>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickPrintBarcodeAqp58(row, 1)"
+                                        >
+                                            Etiquetas 1x1 58mm
+                                        </button>
                                         <button
                                             class="dropdown-item"
                                             @click.prevent="clickPrintBarcodeX(row, 1)"
@@ -688,6 +694,19 @@ export default {
             if (!row.barcode) {
                 return this.$message.error(
                     "Para generar el código de barras debe registrar el código de barras."
+                );
+            }
+
+            window.open(`/${this.resource}/export/barcode/print_x?format=${x}&id=${row.id}`);
+        },
+        clickPrintBarcodeAqp58(row, x) {
+            if (row.barcode || row.internal_id) {
+
+                window.open(`/${this.resource}/export/barcode/print_xaqp58?format=${x}&id=${row.id}`);
+            }
+            else{
+                return this.$message.error(
+                    "Para generar el código de barras debe registrar el código de barras o código interno,"
                 );
             }
 

@@ -139,7 +139,7 @@ Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suR
 ### Descargar APK - Android <br><br>
 * AqpFact App <br>
  Unico App con impresión directra mediante blueto<br>
- La app solo funciona con la modificación de AQPFACT, si no lo tiene, contactar a los números de cel. +51947474096
+ La app solo funciona con la modificación de AQPFACT, si no lo tiene, contactar a los números de cel. +51950360472
 * Aqpfact_app vs 3.0 Google Play [Descargar](https://play.google.com/store/apps/details?id=com.azetasoft.aqpfact&hl=es&gl=es "Clic")
 
 
@@ -147,5 +147,5 @@ Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suR
 
 Proyecto final<br>
 soporte<br>
-WatsApp: +51947474096<br>
+WatsApp: +51950360472<br>
  Sugerencias y/o cambios contactar
