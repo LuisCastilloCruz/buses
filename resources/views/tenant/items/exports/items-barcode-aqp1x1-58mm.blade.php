@@ -61,7 +61,7 @@
                                                         echo '<img style="width:180px; max-height: 40px;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($codigo, $generator::TYPE_CODE_128, 2, 80, $colour)) . '">';
                                                     @endphp
                                                 </p>
-                                                <p>{{$record->barcode}}</p>
+                                                <p>{{$codigo}}</p>
                                             </td>
                                         </tr>
                                     </td>
