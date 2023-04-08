@@ -421,8 +421,11 @@
             <p style="font-size: 40px;font-weight: bold">{{ $pasaje->numero_asiento }}</p>
         </td>
     </tr>
+@php
+$ninios = json_decode($pasaje->ninios,true);
 
-    @if($pasaje->ninios)
+@endphp
+    @if($ninios[0]['dni'] !=null)
             <tr>
                 <td class="desc text-right pr-3">
                     <h5 style="font-size: 11px" ><b>Niños que viajan con el padre</b></h5>
@@ -847,6 +850,7 @@
 </table>
 @if(!is_null($pasaje))
 
+<pagebreak>
     <table class="full-width">
         <tr>
             <td class="text-center pt-4" colspan="2"><h5><b>Control REF: {{$document_number}}</b></h5></td>

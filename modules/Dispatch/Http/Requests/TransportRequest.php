@@ -30,7 +30,7 @@ class TransportRequest extends FormRequest
             ],
             'hab_veh' => [
                 'required',
-                'min:10',
+                'min:12',
             ],
 
         ];
