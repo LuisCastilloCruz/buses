@@ -45,7 +45,7 @@
                                     <td class="celda" width="100%" style="text-align: center; padding: 0px; vertical-align: top; width: 100%;">
                                         <tr>
                                             <td style="text-align: center;font-size: 10px">
-                                                <p style="width:150px">{{ \Illuminate\Support\Str::limit($record->description,45)}} dgtr hhtytytytjytj fgfgffgfg fghhghghgh fghghgghhgfhgf fggffghhgf</p>
+                                                <p style="width:150px">{{ \Illuminate\Support\Str::limit($record->description,45)}}</p>
                                             </td>
                 
                                         </tr>
@@ -54,9 +54,11 @@
                                             <td style="text-align: center;font-size:14px">
                                                 <p>
                                                     @php
+                                                    $codigo = ($record->barcode) ? $record->barcode : $record->internal_id;
+
                                                         $colour = [0,0,0];
                                                         $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-                                                        echo '<img style="width:180px; max-height: 40px;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($record->barcode, $generator::TYPE_CODE_128, 2, 80, $colour)) . '">';
+                                                        echo '<img style="width:180px; max-height: 40px;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($codigo, $generator::TYPE_CODE_128, 2, 80, $colour)) . '">';
                                                     @endphp
                                                 </p>
                                                 <p>{{$record->barcode}}</p>
