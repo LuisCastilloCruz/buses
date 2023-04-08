@@ -218,6 +218,7 @@ if ($hostname) {
             Route::get('items/export/barcode_full', 'Tenant\ItemController@exportBarCodeFull');
             Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');
             Route::get('items/export/barcode/print_x', 'Tenant\ItemController@printBarCodeX')->name('tenant.items.export.barcode.print.x');
+            Route::get('items/export/barcode/print_xaqp58', 'Tenant\ItemController@printBarCodeXAqp58')->name('tenant.items.export.barcode.print.xaqp58');
             Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
             Route::post('get-items', 'Tenant\ItemController@getAllItems');
 
