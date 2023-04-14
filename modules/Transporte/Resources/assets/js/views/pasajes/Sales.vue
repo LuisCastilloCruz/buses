@@ -246,10 +246,10 @@
                         <el-button v-if="existe_manifiesto"  type="primary" @click="imprimirManifiesto(id_manifiesto)">Imprimir</el-button>
                         <el-button v-else type="primary" @click="generarManifiesto">Generar</el-button>
                     </div>
-<!--                    <div class="col-md-2 text-left">-->
-<!--                        <p><b>Traspaso</b></p>-->
-<!--                        <el-button  type="primary" @click="generarManifiesto">Traspasar</el-button>-->
-<!--                    </div>-->
+                    <div class="col-md-2 text-left">
+                        <p><b>Traspaso</b></p>
+                        <el-button  type="primary" @click="traspasarPasajeros">Traspasar</el-button>
+                    </div>
 
                     <div class="col-md-12" v-if="selectProgramacion.id>0">
                         <h3>Listado de pasajeros vendidos</h3>
@@ -374,6 +374,16 @@
             :destino="destino"
             :existe_manifiesto.sync="existe_manifiesto"
         />
+        <generar-traspaso
+            :visible.sync="modalTraspasoVisible"
+            :series="series"
+            :fecha="fecha_salida"
+            :programacion="selectProgramacion"
+            :choferes="choferes"
+            :origen="origen"
+            :destino="destino"
+            :asientos_ocupados="asientosOcupados"
+        />
 
     </div>
     </div>
@@ -418,6 +428,7 @@ import DocumentOptions from "@views/documents/partials/options.vue";
 import DocumentsVoided from '@views/documents/partials/voided.vue';
 import DetalleBoleto from './DetalleBoleto.vue';
 import GenerarManifiesto from './../manifiestos/GenerarManifiestoSimple.vue';
+import GenerarTraspaso from './../manifiestos/GenerarTraspasoSimple.vue';
 import SocketClient from '@mixins/socket.js'
 
 import moment from 'moment';
@@ -492,7 +503,8 @@ export default {
         DocumentOptions,
         DocumentsVoided,
         DetalleBoleto,
-        GenerarManifiesto
+        GenerarManifiesto,
+        GenerarTraspaso
     },
     watch:{
         terminalId(newVal){
@@ -582,7 +594,8 @@ export default {
             loadAsientosOcupados:false,
             modalManifiestoVisible:false,
             existe_manifiesto:false,
-            id_manifiesto:null
+            id_manifiesto:null,
+            modalTraspasoVisible:false
         });
     },
     computed:{
@@ -854,8 +867,7 @@ export default {
             if(this.tipoVenta == 2){
                 this.loadAsientosOcupados = true;
                 this.asientosOcupados = await this.getAsientosOcupados(programacion, this.fecha_salida)
-                console.log('dunal')
-                console.log(this.asientosOcupados)
+
                 this.vehiculo = programacion.vehiculo;
 
                 this.asientos = programacion.vehiculo.seats;
@@ -931,6 +943,18 @@ export default {
                 });
             }
 
+        },
+
+        traspasarPasajeros(){
+            if(this.selectProgramacion.id){
+                this.tipo = 2;
+                this.modalTraspasoVisible = true;
+            }else {
+                this.$message({
+                    type: 'warning',
+                    message: 'Seleccione una programación.'
+                });
+            }
         },
 
         anularBoleto(pasaje){

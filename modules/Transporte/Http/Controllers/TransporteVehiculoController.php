@@ -247,4 +247,14 @@ class TransporteVehiculoController extends Controller
             ],500);
         }
     }
+
+    public function getAllVehiculos(){
+        $data = TransporteVehiculo::all();
+        return $data;
+    }
+
+    public function getAsientos($id){
+        $data = TransporteAsiento::where('vehiculo_id',$id)->get();
+        return $data;
+    }
 }

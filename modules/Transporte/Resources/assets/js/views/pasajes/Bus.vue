@@ -191,6 +191,8 @@ export default {
     },
     created(){
         this.asientos = this.seats;
+        console.log("desde adentro del carro")
+        console.log(this.asientos)
     },
     watch:{
         seats(newVal){

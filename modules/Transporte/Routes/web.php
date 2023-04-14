@@ -31,6 +31,8 @@ if ($hostname) {
 				Route::delete('vehiculos/{id}/delete', 'TransporteVehiculoController@destroy');
 				Route::post('vehiculos/{vehiculo}/guardar-asientos','TransporteVehiculoController@guardarAsientos');
 				Route::delete('vehiculos/{asiento}/eliminar','TransporteVehiculoController@eliminarAsiento');
+                Route::post('vehiculos/get-all', 'TransporteVehiculoController@getAllVehiculos');
+                Route::get('vehiculos/{id}/get-asientos', 'TransporteVehiculoController@getAsientos');
 				// Choferes
 				Route::get('choferes', 'TransporteChoferController@index');
 				Route::post('choferes/store', 'TransporteChoferController@store');
