@@ -464,19 +464,20 @@ class DispatchInput
         if (($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '02') || $inputs['document_type_id'] === '31') {
             if (key_exists('driver2_id', $inputs)) {
                 return $inputs['driver2_id'];
-            }
-            $driver = $inputs['driver2'];
-            $record = Driver::query()
-                ->firstOrCreate([
-                    'identity_document_type_id' => $driver['identity_document_type_id'],
-                    'number' => $driver['number']
-                ], [
-                    'name' => $driver['name'],
-                    'license' => $driver['license'],
-                    'telephone' => $driver['telephone']
-                ]);
 
-            return $record->id;
+                $driver = $inputs['driver2'];
+                $record = Driver::query()
+                    ->firstOrCreate([
+                        'identity_document_type_id' => $driver['identity_document_type_id'],
+                        'number' => $driver['number']
+                    ], [
+                        'name' => $driver['name'],
+                        'license' => $driver['license'],
+                        'telephone' => $driver['telephone']
+                    ]);
+
+                return $record->id;
+            }
         }
         return null;
     }
@@ -506,17 +507,19 @@ class DispatchInput
         if (($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '02')  || $inputs['document_type_id'] === '31') {
             if (key_exists('transport2_id', $inputs)) {
                 return $inputs['transport2_id'];
-            }
-            $transport = $inputs['transport2'];
-            $record = Transport::query()
-                ->firstOrCreate([
-                    'plate_number' => $transport['plate_number']
-                ], [
-                    'model' => $transport['model'],
-                    'brand' => $transport['brand']
-                ]);
 
-            return $record->id;
+                $transport = $inputs['transport2'];
+                $record = Transport::query()
+                    ->firstOrCreate([
+                        'plate_number' => $transport['plate_number']
+                    ], [
+                        'model' => $transport['model'],
+                        'brand' => $transport['brand']
+                    ]);
+
+                return $record->id;
+            }
+
         }
         return null;
     }
