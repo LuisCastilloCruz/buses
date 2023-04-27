@@ -4,6 +4,7 @@ namespace Modules\ApiPeruDev\Http\Controllers;
 
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Helpers\Xml\XmlFormat;
+use App\Models\Tenant\Person;
 use App\CoreFacturalo\Template;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Dispatch;
@@ -262,9 +263,24 @@ class ServiceDispatchController extends Controller
             'receiver_address_location_id' => $record->receiver_address_data ? $record->receiver_address_data['location_id'] : null,
             'receiver_address_address' => $record->receiver_address_data ? $record->receiver_address_data['address'] : null,
             'company_number_mtc' => $company->number_mtc ? $company->number_mtc : "",
+            'originator_customer_party'=>optional($this->getOriginatorCustomerParty($record->originator_customer_party_id)),
+            'dispatch_number'=>$record->dispatch_number,
 
             'items' => $items,
         ];
+    }
+
+    public function getOriginatorCustomerParty($id){
+
+        //dd($id);
+        $record = Person::findOrFail($id);
+
+        return [
+            'number' => $record->number,
+            'name' => $record->name,
+            'document_type_id' => $record->identity_document_type_id,
+        ];
+
     }
 
     public function getDataCarrier($id)

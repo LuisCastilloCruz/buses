@@ -68,19 +68,19 @@
         </cac:Party>
     </cac:DeliveryCustomerParty>
     <!-- DATOS DE QUIEN PAGA EL SERVICIO -->
-{{--    <cac:OriginatorCustomerParty>--}}
-{{--        <cac:Party>--}}
-{{--            <cac:PartyIdentification>--}}
-{{--                <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"--}}
-{{--                        schemeAgencyName="PE:SUNAT"--}}
-{{--                        schemeName="Documento de Identidad"--}}
-{{--                        schemeID="6">10417844398</cbc:ID>--}}
-{{--            </cac:PartyIdentification>--}}
-{{--            <cac:PartyLegalEntity>--}}
-{{--                <cbc:RegistrationName>ERIQUE GASPAR CARLOS ALFREDO</cbc:RegistrationName>--}}
-{{--            </cac:PartyLegalEntity>--}}
-{{--        </cac:Party>--}}
-{{--    </cac:OriginatorCustomerParty>--}}
+    <cac:OriginatorCustomerParty>
+        <cac:Party>
+            <cac:PartyIdentification>
+                <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"
+                        schemeAgencyName="PE:SUNAT"
+                        schemeName="Documento de Identidad"
+                        schemeID="{{$document['originator_customer_party']['document_type_id']}}">{{$document['originator_customer_party']['number']}}</cbc:ID>
+            </cac:PartyIdentification>
+            <cac:PartyLegalEntity>
+                <cbc:RegistrationName>{{$document['originator_customer_party']['name']}}</cbc:RegistrationName>
+            </cac:PartyLegalEntity>
+        </cac:Party>
+    </cac:OriginatorCustomerParty>
     <cac:Shipment>
         <!-- ID OBLIGATORIO POR UBL -->
         <cbc:ID>1</cbc:ID>

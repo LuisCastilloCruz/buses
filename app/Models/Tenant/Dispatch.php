@@ -155,6 +155,8 @@ class Dispatch extends ModelTenant
 
         'driver2_id',
         'driver2_data',
+        'originator_customer_party_id',
+        'dispatch_number'
     ];
 
     protected $casts = [
@@ -628,6 +630,7 @@ class Dispatch extends ModelTenant
             'documents' => $documents,
             'order_form_description' => $this->getOrderFormDescription(),
             'btn_status_ticket' => $btn_status_ticket,
+            'OriginatorCustomerParty_id'=>$this->OriginatorCustomerParty_id,
             'btn_send' => $btn_send,
             'btn_pdf' => $btn_pdf,
             'btn_options' => $btn_options,

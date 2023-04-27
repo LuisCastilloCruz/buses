@@ -83,6 +83,9 @@ class DispatchRequest extends FormRequest
             'related.document_type_id'=> [
                 'required_if:transfer_reason_type_id, "09"',
             ],
+//            'originator_customer_party_id'=>[
+//                'required'
+//            ]
         ];
     }
 

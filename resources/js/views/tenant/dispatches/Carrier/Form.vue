@@ -128,6 +128,22 @@
                                        v-text="errors.observations[0]"></small>
                             </div>
                         </div>
+
+                        <div class="col-lg-6">
+                            <div :class="{'has-danger': errors.observations}"
+                                 class="form-group">
+                                <label class="control-label">GUÍA DE REMISIÓN</label>
+                                <el-input v-model="form.dispatch_number"
+                                          :rows="3"
+                                          maxlength="50"
+                                          placeholder="T001-00034..."
+                                          type="text"></el-input>
+                                <small v-if="errors.dispatch_number"
+                                       class="form-control-feedback"
+                                       v-text="errors.dispatch_number[0]"></small>
+                            </div>
+                        </div>
+
 <!--                        <div class="col-lg-2" v-if="!order_form_id">-->
 <!--                            <div :class="{'has-danger': errors.order_form_external}"-->
 <!--                                 class="form-group">-->
@@ -154,6 +170,11 @@
                                     Remitente<span class="text-danger"> *</span>
                                     <a href="#"
                                        @click.prevent="showDialogSenderForm = true">[+ Nuevo]</a>
+
+
+                                    <el-checkbox class="checkbox mt-4" v-model="checket_sender" @change="checketSenderOriginatorCustomerParty" >Pagador del flete?
+                                    </el-checkbox> <span class="text-danger"> *</span>
+
                                 </label>
                                 <el-select v-model="form.sender_id"
                                            :loading="loading_search"
@@ -201,6 +222,9 @@
                                     Destinatario<span class="text-danger"> *</span>
                                     <a href="#"
                                        @click.prevent="showDialogReceiverForm = true">[+ Nuevo]</a>
+
+                                    <el-checkbox class="checkbox mt-4" v-model="checket_receiver" @change="checketReceiverOriginatorCustomerParty">Pagador del flete?
+                                    </el-checkbox> <span class="text-danger"> *</span>
                                 </label>
                                 <el-select v-model="form.receiver_id"
                                            :loading="loading_search"
@@ -645,6 +669,8 @@ export default {
             sender_addresses: [],
             receivers: [],
             receiver_addresses: [],
+            checket_sender:false,
+            checket_receiver:false
         }
     },
     created() {
@@ -760,6 +786,8 @@ export default {
 
                 driver2_id: null,// DONAL
                 driver2: {}, // DONAL
+                originator_customer_party_id:null //DONAL
+                dispatch_number:null  //DONAL
             }
         },
         setDefaults() {
@@ -1130,6 +1158,15 @@ export default {
             if (this.receiver_addresses.length > 0) {
                 this.form.receiver_address_id = _.head(this.receiver_addresses).id;
             }
+        },
+
+        checketSenderOriginatorCustomerParty(){
+            this.form.originator_customer_party_id = this.form.sender_id
+            this.checket_receiver=false
+        },
+        checketReceiverOriginatorCustomerParty(){
+            this.form.originator_customer_party_id = this.form.receiver_id
+            this.checket_sender=false
         },
         async successSender(data) {
             this.form.sender_id = data['person_id'];

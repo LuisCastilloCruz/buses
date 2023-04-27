@@ -54,7 +54,8 @@ class DispatchCollection extends ResourceCollection
                 'reference_document_id' => $row->reference_document_id,
 				'created_at'            => $row->created_at->format('Y-m-d H:i:s'),
 				'updated_at'            => $row->updated_at->format('Y-m-d H:i:s'),
-				'document_id'           => $row->document_id
+				'document_id'           => $row->document_id,
+                'originator_customer_party_id'=>$row->originator_customer_party_id
 			];
 		});
 	}
