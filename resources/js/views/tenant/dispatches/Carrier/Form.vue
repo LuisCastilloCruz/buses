@@ -786,7 +786,7 @@ export default {
 
                 driver2_id: null,// DONAL
                 driver2: {}, // DONAL
-                originator_customer_party_id:null //DONAL
+                originator_customer_party_id:null, //DONAL
                 dispatch_number:null  //DONAL
             }
         },
