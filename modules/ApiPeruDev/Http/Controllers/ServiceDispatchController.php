@@ -272,14 +272,18 @@ class ServiceDispatchController extends Controller
 
     public function getOriginatorCustomerParty($id){
 
-        //dd($id);
-        $record = Person::findOrFail($id);
+        if($id>0){
+            $record = Person::findOrFail($id);
 
-        return [
-            'number' => $record->number,
-            'name' => $record->name,
-            'document_type_id' => $record->identity_document_type_id,
-        ];
+            return [
+                'number' => $record->number,
+                'name' => $record->name,
+                'document_type_id' => $record->identity_document_type_id,
+            ];
+        }else{
+            return null;
+        }
+
 
     }
 

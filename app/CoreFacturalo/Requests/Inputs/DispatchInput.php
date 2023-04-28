@@ -105,8 +105,8 @@ class DispatchInput
             'receiver_data' => self::receiverData($inputs),
             'sender_address_data' => self::senderAddressData($inputs),
             'receiver_address_data' => self::receiverAddressData($inputs),
-            'originator_customer_party_id' =>optional($inputs['originator_customer_party_id']),
-            'dispatch_number'=>$inputs['dispatch_number']
+            'originator_customer_party_id' =>array_key_exists('originator_customer_party_id', $inputs) ? $inputs['originator_customer_party_id']: null,
+            'dispatch_number'=> array_key_exists('dispatch_number', $inputs) ? $inputs['dispatch_number'] : null
         ];
 
         if (isset($inputs['data_affected_document'])) {
