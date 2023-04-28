@@ -105,7 +105,7 @@ class DispatchInput
             'receiver_data' => self::receiverData($inputs),
             'sender_address_data' => self::senderAddressData($inputs),
             'receiver_address_data' => self::receiverAddressData($inputs),
-            'originator_customer_party_id' => $inputs['originator_customer_party_id'],
+            'originator_customer_party_id' =>optional($inputs['originator_customer_party_id']),
             'dispatch_number'=>$inputs['dispatch_number']
         ];
 
