@@ -72,11 +72,11 @@
                                         <div class="row">
                                             <div v-for="(item , index ) in items" :key="item.id" class="col-lg-2 col-md-3  col-sm-4 col-xs-6 mb-2">
                                                 <div :class="{active: activeList[index]}" class="t1 el-card box-card is-always-shadow float-left" @click="agregarItem(item,index)">
-                                                    <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%;max-height: 100%;">
-                                                    <div style="padding: 10px;" class="p-md-2 p-sm-0">
+                                                    <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%;">
+                                                    <div class="mt-2 p-md-2 p-sm-0">
                                                         <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
                                                         <div class="bottom clearfix">
-                                                            <span class="font-medium font-weight-bold"> {{ item.description }}</span>
+                                                            <span style="width: 150px;display:block" class="font-medium font-weight-bold"> {{ item.description }}</span>
                                                             <!--<el-button type="text" class="button"><h5></h5>{{item.description}}</el-button>-->
                                                         </div>
                                                     </div>
@@ -160,10 +160,10 @@
                                         <div class="row">
                                             <div :class="{active: activeList[index]}" v-for="(item, index) in items" :key="item.id" class="t1 el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item, index)">
                                                 <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%">
-                                                <div style="padding: 14px;">
-                                                    <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
+                                                <div>
+                                                    <span class="mt-2 font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
                                                     <div class="bottom clearfix">
-                                                        <span class="font-medium font-weight-bold"> {{ item.description }}</span>
+                                                        <span class="font-medium font-weight-bold" style="width: 150px; display:block"> {{ item.description }}</span>
 <!--                                                        <el-button type="text" class="button"><h5></h5>{{item.description}}</el-button>-->
                                                     </div>
                                                 </div>
@@ -235,6 +235,14 @@
 
 
                         </el-tabs>
+
+                        <button
+                            type="button"
+                            class="btn btn-custom btn-sm mt-2 mr-2"
+                            @click.prevent="clickRefresh()"
+                        >
+                            <i class="fa fa-plus-circle"></i> Recargar
+                        </button>
                     </div>
                     <div v-else-if="AqpTap.active==3" class="col-md-12">
                         <tenant-restaurant-pedidos></tenant-restaurant-pedidos>
@@ -818,6 +826,11 @@ export default {
         handleCurrentChange(val) {
             this.page = val;
         },
+
+        clickRefresh(){
+            this.handleClick()
+            console.log("recargando...")
+        }
     }
 }
 </script>
