@@ -7,19 +7,19 @@
                     <!-- piso -->
                     <div class="col-md-12 col-sm-12 pb-2 text-center">
                         <el-button-group>
-                            <a href="#" class="btn btn-success px-4 py-2 mr-1" size="medium" :class="AqpTap.active==1 ? 'btn-warning': '' " @click="cargarTap(1)">POS</a>
+                            <a href="#" class="btn btn-success px-4 py-2 mr-1 mb-2" size="medium" :class="AqpTap.active==1 ? 'btn-warning': '' " @click="cargarTap(1)">POS</a>
 
-                            <a href="#" class="btn btn-success px-4 py-2" size="medium" :class="AqpTap.active==2 ? 'btn-warning': '' " @click="cargarTap(2)">MESAS</a>
+                            <a href="#" class="btn btn-success px-4 py-2 mb-2" size="medium" :class="AqpTap.active==2 ? 'btn-warning': '' " @click="cargarTap(2)">MESAS</a>
 
-                            <a href="#" class="btn btn-success px-4 py-2 ml-1" size="medium" :class="AqpTap.active==3 ? 'btn-warning': '' " @click="cargarTap(3)">PEDIDOS</a>
+                            <a href="#" class="btn btn-success px-4 py-2 ml-1 mb-2" size="medium" :class="AqpTap.active==3 ? 'btn-warning': '' " @click="cargarTap(3)">PEDIDOS</a>
 
-                            <a href="#" class="btn btn-success px-4 py-2 ml-1" :class="AqpTap.active==4 ? 'btn-warning': '' " @click="cargarTap(4)">PRECIOS</a>
+                            <a href="#" class="btn btn-success px-4 py-2 ml-1 mb-2" :class="AqpTap.active==4 ? 'btn-warning': '' " @click="cargarTap(4)">PRECIOS</a>
 
                         </el-button-group>
                     </div>
                 </div>
                 <div class="row">
-                    <div v-if="AqpTap.active==1" class="col-md-12 px-5">
+                    <div v-if="AqpTap.active==1" class="col-md-12 m-auto">
                         <div class="row">
                             <div class="col-md-8 text-center">
                                 <div class="row">
@@ -69,15 +69,20 @@
 <!--                                    </div>-->
 
 
-                                        <div  v-for="item in items" :key="item.id" class="el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item)">
-                                            <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%">
-                                            <div style="padding: 14px;">
-                                                <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
-                                                <div class="bottom clearfix">
-                                                    <span class="font-medium font-weight-bold"> {{ item.description }}</span>
-                                                    <!--<el-button type="text" class="button"><h5></h5>{{item.description}}</el-button>-->
+                                        <div class="row">
+                                            <div v-for="(item , index ) in items" :key="item.id" class="col-lg-2 col-md-3  col-sm-4 col-xs-6 mb-2">
+                                                <div :class="{active: activeList[index]}" class="t1 el-card box-card is-always-shadow float-left" @click="agregarItem(item,index)">
+                                                    <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%;max-height: 100%;">
+                                                    <div style="padding: 10px;" class="p-md-2 p-sm-0">
+                                                        <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
+                                                        <div class="bottom clearfix">
+                                                            <span class="font-medium font-weight-bold"> {{ item.description }}</span>
+                                                            <!--<el-button type="text" class="button"><h5></h5>{{item.description}}</el-button>-->
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -96,10 +101,10 @@
                                                         <tr>
                                                             <td style="border: 0px;margin: 0; padding: 0" class="text-left">
                                                                 <el-tooltip class="item" effect="dark" content="Disminuir" placement="top-start">
-                                                                    <el-button type="warning" icon="el-icon-remove-outline" @click="disminuirCantidad(item)"> </el-button>
+                                                                    <el-button type="warning" class="ml-0 mb-2" icon="el-icon-remove-outline" @click="disminuirCantidad(item)"> </el-button>
                                                                 </el-tooltip>
                                                                 <el-tooltip class="item" effect="dark" content="Incrementar" placement="top-start">
-                                                                    <el-button type="success" icon="el-icon-plus" @click="incrementarCantidad(item)"> </el-button>
+                                                                    <el-button type="success" class="ml-0 mb-2" icon="el-icon-plus" @click="incrementarCantidad(item)"> </el-button>
                                                                 </el-tooltip>
                                                             </td>
 
@@ -138,9 +143,9 @@
 
                             <el-tab-pane  v-for="nivel in niveles" :key="nivel.id" :label="nivel.nombre" :name="nivel.nombre">
 
-                                <div class="row px-5">
-                                    <div v-if="vistaMesas" class="col-md-8 text-center">
-                                        <div :style="{background:controlarEstadosMesas(mesa)}"  v-for="mesa in nivel.mesas" :key="mesa.id" class="el-card box-card is-always-shadow m-4" style="width: 100px; float: left" v-on:click="seleccionaMesa(mesa)">
+                                <div class="row">
+                                    <div v-if="vistaMesas" class="col-md-8 text-center px-md-5 px-sm-0">
+                                        <div :style="{background:controlarEstadosMesas(mesa)}"  v-for="mesa in nivel.mesas" :key="mesa.id" class="el-card box-card is-always-shadow m-1" style="width: 80px; float: left" v-on:click="seleccionaMesa(mesa)">
                                             <div  class="text item">
                                                 <h3 class="text-white"><b>{{ mesa.numero }}</b></h3>
                                             </div>
@@ -153,7 +158,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div v-for="item in items" :key="item.id" class="el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item)">
+                                            <div :class="{active: activeList[index]}" v-for="(item, index) in items" :key="item.id" class="t1 el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item, index)">
                                                 <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%">
                                                 <div style="padding: 14px;">
                                                     <span class="font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
@@ -180,10 +185,10 @@
                                                                     <tr>
                                                                         <td style="border: 0px;margin: 0; padding: 0" class="text-left">
                                                                             <el-tooltip class="item" effect="dark" content="Disminuir" placement="top-start">
-                                                                                <el-button type="warning" icon="el-icon-remove-outline" @click="disminuirCantidad(item)"> </el-button>
+                                                                                <el-button class="ml-0 mb-2" type="warning" icon="el-icon-remove-outline" @click="disminuirCantidad(item)"> </el-button>
                                                                             </el-tooltip>
                                                                             <el-tooltip class="item" effect="dark" content="Incrementar" placement="top-start">
-                                                                                <el-button type="success" icon="el-icon-plus" @click="incrementarCantidad(item)"> </el-button>
+                                                                                <el-button class="ml-0 mb-2" type="success" icon="el-icon-plus" @click="incrementarCantidad(item)"> </el-button>
                                                                             </el-tooltip>
                                                                         </td>
 
@@ -314,6 +319,9 @@ export default {
             return this.filtered.slice(this.pageSize * this.page - this.pageSize, this.pageSize * this.page);
         }
     },
+    mounted() {
+        this.activeList = new Array(this.items.length).fill(false)
+    },
     data() {
         return {
             showDialogOptions:false,
@@ -347,6 +355,7 @@ export default {
             pageSize: 4,
             total_page: 5,
             socketClient:null,
+            activeList: []
         };
     },
     created() {
@@ -489,7 +498,10 @@ export default {
 
             this.verificarEstadoMesa(mesa)
         },
-        agregarItem(producto){
+        agregarItem(producto,index){
+            this.activeList = this.activeList.map(() => false)
+            this.activeList[index] = true
+
             let exist = this.checkIfExists(producto.id)
 
             if(this.pedidoId>0){
@@ -512,8 +524,21 @@ export default {
             else{
                 if(exist){
                     this.pedidos_detalles.find(item2 => item2.producto_id === producto.id).cantidad +=1
+
+                    this.$notify({
+                        title: '',
+                        message: producto.description + ' se incrementó en 1',
+                        type: 'success'
+                    })
+
                 }else{
                     this.pedidos_detalles.push({producto_id: producto.id, cantidad: 1, precio: producto.sale_unit_price , descripcion: producto.description,item:producto});
+
+                    this.$notify({
+                        title: '',
+                        message: producto.description + ' agregado',
+                        type: 'success'
+                    })
                 }
             }
 
@@ -689,11 +714,13 @@ export default {
                 const { data } = await this.$http.get(`/restaurant/cash/sales/get-pedidos-detalles/${pedido_id}`);
                 this.loading = false;
                 this.pedidos_detalles = data.data;
-
-                console.log("esto es de base")
-                console.log(this.pedidos_detalles)
-
                 this.calculateTotal()
+
+                this.$notify({
+                    title: '',
+                    message: 'Producto agregado... 5',
+                    type: 'success'
+                })
 
             }catch(error){
                 this.loading = false;
@@ -794,3 +821,12 @@ export default {
     }
 }
 </script>
+<style>
+.t1{
+    border: 2px solid #e7e5e5;
+}
+.t1.active{
+    border: 2px solid #47a447
+}
+
+</style>
