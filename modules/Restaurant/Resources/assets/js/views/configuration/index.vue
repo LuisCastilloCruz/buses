@@ -390,6 +390,41 @@
               <span slot="label">Notas</span>
                 <Notas/>
             </el-tab-pane>
+
+              <el-tab-pane class="mb-3"  name="five">
+                  <span slot="label">Impresoras</span>
+                  <div class="row">
+                      <div class="col-md-3">
+                          <div class="form-group" :class="{'has-danger': errors.impresora_cocina}">
+                              <label class="control-label">Impresora Cocina</label>
+                              <el-input v-model="impresora_cocina"></el-input>
+                              <small class="form-control-feedback" v-if="errors.impresora_cocina" v-text="errors.impresora_cocina[0]"></small>
+                          </div>
+                      </div>
+
+                      <div class="col-md-3">
+                          <div class="form-group" :class="{'has-danger': errors.impresora_barra}">
+                              <label class="control-label">Impresora Barra</label>
+                              <el-input v-model="impresora_barra"></el-input>
+                              <small class="form-control-feedback" v-if="errors.impresora_barra" v-text="errors.impresora_barra[0]"></small>
+                          </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group" :class="{'has-danger': errors.impresora_precuenta}">
+                              <label class="control-label">Impresora Precuenta</label>
+                              <el-input v-model="impresora_precuenta"></el-input>
+                              <small class="form-control-feedback" v-if="errors.impresora_precuenta" v-text="errors.impresora_precuenta[0]"></small>
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <p class="text-center">
+                              <button class="btn waves-effect waves-light btn-xs btn-danger" type="button" @click.prevent="clickSavePrinters">
+                              <i class="fa fa-save"></i>
+                              </button>
+                          </p>
+                      </div>
+                  </div>
+              </el-tab-pane>
           </el-tabs>
         </form>
       </template>
@@ -471,6 +506,10 @@ export default {
         permission_mozo: ['POS', 'Mesas', 'Comandas'],
         permission_kitbar: ['Comandas'],
 
+        impresora_cocina:null,
+        impresora_barra:null,
+        impresora_precuenta: null
+
 
       }
     },
@@ -483,6 +522,10 @@ export default {
       this.getRecords();
       this.getUsers();
       this.getWaiters();
+
+      this.impresora_cocina = localStorage.impresora_cocina
+      this.impresora_barra = localStorage.impresora_barra
+      this.impresora_precuenta = localStorage.impresora_precuenta
 
     },
     mounted() {
@@ -612,6 +655,17 @@ export default {
           user: this.info.userEmail
         }
         SOCKET.emit('data-company', data)
+      },
+      clickSavePrinters(){
+          localStorage.impresora_cocina     = this.impresora_cocina
+          localStorage.impresora_barra      = this.impresora_barra
+          localStorage.impresora_precuenta  = this.impresora_precuenta
+
+          this.$notify({
+              title: '',
+              message: 'Se guardó la configuración de las impresoras...',
+              type: 'success'
+          })
       }
     }
 }

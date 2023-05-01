@@ -410,7 +410,7 @@ export default {
 
             if (!qz.websocket.isActive() && this.isAutoPrint)
             {
-                startConnection({host: "192.168.1.200"});
+                startConnection({host: localStorage.impresora_cocina});
             }
 
         },
