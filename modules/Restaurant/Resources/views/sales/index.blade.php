@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <tenant-restaurant-sales-index  :id_user2='@json($id_user2)' :type_user='@json($type_user)' :configuration='@json($configuration)' :items='@json($items)'></tenant-restaurant-sales-index>
+    <tenant-restaurant-sales-index  :id_user2='@json($id_user2)' :type_user='@json($type_user)' :configuration='@json($configuration)' :items='@json($items)' :categorias='@json($categorias)'></tenant-restaurant-sales-index>
 
 @endsection
 @push('scripts')

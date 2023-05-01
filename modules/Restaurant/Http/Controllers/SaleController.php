@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Catalogs\DocumentType;
+use Modules\Item\Models\Category;
 use Modules\Restaurante\Models\Mesa;
 use Modules\Restaurante\Models\Pedido;
 use Modules\Restaurante\Models\PedidoDetalle;
@@ -33,13 +34,14 @@ class SaleController extends Controller
     public function index()
     {
         $items = Item::where('apply_restaurant',true)->get();
+        $categorias = Category::all();
         $configuration= Configuration::first();
 
         $user = auth()->user();
         $type_user = $user->type;
         $id_user2=$user;
 
-        return view('restaurant::sales.index',compact('items','configuration','id_user2','type_user'));
+        return view('restaurant::sales.index',compact('items','configuration','id_user2','type_user','categorias'));
     }
 
     public function columns()

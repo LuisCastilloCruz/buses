@@ -4,6 +4,16 @@
         </div>
             <div class="card-body">
                 <div class="row">
+
+                    <div class="recargar" style="position: absolute; left:40px">
+                        <button
+                            type="button"
+                            class="btn btn-custom btn-sm mt-2 mr-2"
+                            @click.prevent="clickRefresh()"
+                        >
+                            <i class="fa fa-plus-circle"></i> Recargar
+                        </button>
+                    </div>
                     <!-- piso -->
                     <div class="col-md-12 col-sm-12 pb-2 text-center">
                         <el-button-group>
@@ -28,9 +38,9 @@
                                     </div>
 
                                 </div>
-                                <div class="row ">
-                                    <div class="col-md-12" style="height: 700px; overflow-y: scroll">
- <!--                                       <el-table-->
+<!--                                <div class="row ">-->
+<!--                                    <div class="col-md-12" style="height: 700px; overflow-y: scroll">-->
+<!--                                        <el-table-->
 <!--                                            :height="650"-->
 <!--                                            :data="items.filter(data => !search || data.description.toLowerCase().includes(search.toLowerCase()))"-->
 <!--                                            style="width: 100%">-->
@@ -67,10 +77,20 @@
 <!--                                            </el-pagination>-->
 <!--                                        </div>-->
 <!--                                    </div>-->
+<!--                                </div>-->
 
 
-                                        <div class="row">
-                                            <div v-for="(item , index ) in items" :key="item.id" class="col-lg-2 col-md-3  col-sm-4 col-xs-6 mb-2">
+
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <div class="form-group" style="width:300px; margin:0 auto; margin-bottom:20px">
+                                            <label class="control-label">CATEGORIAS</label>
+                                            <el-select v-model="categoria_id" @change="filterResults">
+                                                <el-option v-for="option in categorias" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                            <div v-for="(item , index ) in filtrarCategorias" :key="item.id" class="col-lg-2 col-md-3  col-sm-4 col-xs-6 mb-2">
                                                 <div :class="{active: activeList[index]}" class="t1 el-card box-card is-always-shadow float-left" @click="agregarItem(item,index)">
                                                     <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%;">
                                                     <div class="mt-2 p-md-2 p-sm-0">
@@ -84,8 +104,7 @@
                                             </div>
 
                                         </div>
-                                    </div>
-                                </div>
+
                             </div>
                             <div class="col-md-4 border-left">
                                 <div class="row text-center">
@@ -156,9 +175,17 @@
                                             <div class="col-md-12">
                                                 <h3 class="font-weight-bold">Estás haciendo pedido para la mesa: <b style="color: #0A7CB5">{{ mesaActivo.numero}}</b></h3>
                                             </div>
+                                            <div class="col-md-12 text-center">
+                                                <div class="form-group" style="width:300px; margin:0 auto; margin-bottom:20px">
+                                                    <label class="control-label">CATEGORIAS</label>
+                                                    <el-select v-model="categoria_id" @change="filterResults">
+                                                        <el-option v-for="option in categorias" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="row">
-                                            <div :class="{active: activeList[index]}" v-for="(item, index) in items" :key="item.id" class="t1 el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item, index)">
+                                            <div :class="{active: activeList[index]}" v-for="(item, index) in filtrarCategorias" :key="item.id" class="t1 el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item, index)">
                                                 <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%">
                                                 <div>
                                                     <span class="mt-2 font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
@@ -235,14 +262,6 @@
 
 
                         </el-tabs>
-
-                        <button
-                            type="button"
-                            class="btn btn-custom btn-sm mt-2 mr-2"
-                            @click.prevent="clickRefresh()"
-                        >
-                            <i class="fa fa-plus-circle"></i> Recargar
-                        </button>
                     </div>
                     <div v-else-if="AqpTap.active==3" class="col-md-12">
                         <tenant-restaurant-pedidos></tenant-restaurant-pedidos>
@@ -304,6 +323,10 @@ export default {
             type: String,
             required: true,
         },
+        categorias: {
+            type: Array,
+            required: true,
+        },
 
     }, //'typeUser'
     computed:{
@@ -325,7 +348,23 @@ export default {
             this.total_page = this.filtered.length;
 
             return this.filtered.slice(this.pageSize * this.page - this.pageSize, this.pageSize * this.page);
-        }
+        },
+
+        // filtrarCategorias() {
+        //     console.log(this.categoria_id)
+        //
+        //     let tempRecipes = this.items_filtrado
+        //
+        //
+        //     tempRecipes = tempRecipes.filter((item) => {
+        //
+        //         return (item.category_id === this.categoria_id)
+        //     })
+        //
+        //     console.log(tempRecipes)
+        //
+        //     return new Array(tempRecipes)
+        // },
     },
     mounted() {
         this.activeList = new Array(this.items.length).fill(false)
@@ -363,19 +402,29 @@ export default {
             pageSize: 4,
             total_page: 5,
             socketClient:null,
-            activeList: []
+            activeList: [],
+            categoria_id: null,
+            filtrarCategorias: []
         };
     },
     created() {
-        console.log(this.items)
         this.handleClick()
         this.vistaMesas = true
 
         //console.log(this.items)
         this.initSocket();
         this.startConnectionQzTray()
+
+        this.filtrarCategorias = this.items
     },
     methods: {
+        filterResults ( ) {
+            if(this.categoria_id){
+                this.filtrarCategorias = this.items.filter(item => item.category_id == this.categoria_id);
+                console.log(this.filtrarCategorias);
+            }
+
+        },
         initSocket(){
 
             if(!this.configuracionSocket) return
@@ -724,12 +773,6 @@ export default {
                 this.pedidos_detalles = data.data;
                 this.calculateTotal()
 
-                this.$notify({
-                    title: '',
-                    message: 'Producto agregado... 5',
-                    type: 'success'
-                })
-
             }catch(error){
                 this.loading = false;
                 if(error.response) this.axiosError(error);
@@ -783,6 +826,7 @@ export default {
                 this.showDialogOptions = true
             }
 
+           this.clickRefresh()
 
        },
         generateHtml() {
@@ -798,18 +842,18 @@ export default {
             }
 
             return `
-            <table border="0" width="99%" style="font-size:11px; font-family: Sans-serif, Arial;width: 250px;margin-bottom: 20px;">
-              <tr><th colspan="4" style="text-align:center;">Mesa ${this.mesaActivo.numero} </th></tr>
+            <table border="0" width="99%" style="font-size:15px; font-family: Sans-serif, Arial;width: 250px;margin-bottom: 20px;">
+              <tr><th colspan="4" style="text-align:center;"> <b>Mesa ${this.mesaActivo.numero}</b> </th></tr>
               <tr>
-                <th>CANT.</th>
-                <th>DESCRIPCI\xD3N</th>
-                <th>P.UNIT</th>
-                <th style="text-align:right;">TOTAL</th>
+                <th><b>CANT.</b></th>
+                <th><b>DESCRIPCI\xD3N</b></th>
+                <th><b>P.UNIT</b></th>
+                <th style="text-align:right;"><b>TOTAL</b></th>
               </tr>
               ${productsHtml}
               <tr>
-              <td colspan="3" style="text-align:right;">TOTAL</td>
-              <td style="text-align:right;">${this.total}</td>
+              <td colspan="3" style="text-align:right;"><b>TOTAL</b></td>
+              <td style="text-align:right;"> <b> ${this.total}</b></td>
               </tr>
             </table>
             <br/>`;
@@ -819,6 +863,8 @@ export default {
             alert("precuenta")
             // this.startPrint()
             this.printTicket(this.generateHtml())
+
+            this.clickRefresh()
         },
         enviar_comanda(){
             alert("comanda")
