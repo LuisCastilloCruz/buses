@@ -77,7 +77,7 @@
     </tr>
 </table>
 
-<table style="width: 100%;font-size:11px;margin-top:10px">
+<table style="width: 100%;font-size:11px;margin-top:5px">
     <tr>
         <td style="width: 100%">
             <table style="width: 100%">
@@ -121,7 +121,7 @@
 
 <?php $chofer = $manifiesto->chofer; ?>
 <?php $copiloto = $manifiesto->copiloto; ?>
-<table style="width: 100%;font-size:11px;margin-top:10px">
+<table style="width: 100%;font-size:11px;margin-top:5px">
 
     <tr>
 
@@ -158,7 +158,7 @@
 
 </table>
 
-<table style="width: 100%;font-size:9px;margin-top:10px">
+<table style="width: 100%;font-size:9px;margin-top:5px">
     <tr>
         <td style="width: 115px">Cantidad Max de Asientos: </td>
         <td style="border: 1px solid black;width:30px;text-align:center">
@@ -179,7 +179,7 @@
     </tr>
 </table>
 
-<table class="bordered" style="width: 100%;font-size:7px;margin-top:10px;text-align:center">
+<table class="bordered" style="width: 100%;font-size:8px;margin-top:5px;text-align:center">
     <tr>
         <td><strong>ITEM</strong></td>
         <td style="text-align: left;padding-left: 3mm"> <strong>NOMBRES Y APELLIDOS</strong> </td>
@@ -223,6 +223,19 @@
             </tr>
         @endif
     @endforeach
+
+    @for ($i = 0; $i <  62; $i++)
+        <tr>
+            <td>{{$i}}</td>
+            <td>rtytyughj</td>
+            <td>gjhgjghjhj</td>
+            <td>gfjghfjgfhj</td>
+            <td>fgjhfjfhjj</td>
+            <td>fjhhjhjj</td>
+            <td>fjhj</td>
+            <td>789789798</td>
+        </tr>
+    @endfor
 </table>
 
 

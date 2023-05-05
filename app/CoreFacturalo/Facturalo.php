@@ -367,7 +367,7 @@ class Facturalo
         }
 
         $pdf_margin_top = 15;
-        $pdf_margin_right = 15;
+        $pdf_margin_right = 10;
         $pdf_margin_bottom = 15;
         $pdf_margin_left = 15;
 

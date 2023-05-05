@@ -132,10 +132,10 @@ class TransporteManifiestosController extends Controller
 
         $pdf = new Mpdf([
             'mode' => 'utf-8',
-            'margin_top' => 2,
-            'margin_right' => 5,
+            'margin_top' => 0,
+            'margin_right' => 2,
             'margin_bottom' => 0,
-            'margin_left' => 15
+            'margin_left' => 12
         ]);
 
         $company = $this->company;
@@ -169,7 +169,8 @@ class TransporteManifiestosController extends Controller
     private function documentEncomiendas(Request $request,TransporteManifiesto $manifiesto){
         $pdf = new Mpdf([
             'mode' => 'utf-8',
-            'margin_top' => 2,
+            'format' => 'A4',
+            'margin_top' => 1,
             'margin_right' => 2,
             'margin_bottom' => 0,
             'margin_left' => 2

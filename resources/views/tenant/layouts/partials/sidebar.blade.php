@@ -322,6 +322,12 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                     <span>POS</span>
                                 </a>
                                 <ul class="nav nav-children">
+                                    @if(in_array('cash', $vc_module_levels))
+                                        <li class="{{ ($firstLevel === 'cash')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.cash.index')}}">Caja</a>
+                                        </li>
+                                    @endif
                                     @if(in_array('pos', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'pos' && !$secondLevel )?'nav-active':'' }}">
                                             <a class="nav-link"
@@ -333,12 +339,6 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                             <a class="nav-link"
                                                href="{{route('tenant.pos.garage')}}">Venta rápida <span
                                                     style="font-size:.65rem;">(Grifos y Markets)</span></a>
-                                        </li>
-                                    @endif
-                                    @if(in_array('cash', $vc_module_levels))
-                                        <li class="{{ ($firstLevel === 'cash')?'nav-active':'' }}">
-                                            <a class="nav-link"
-                                               href="{{route('tenant.cash.index')}}">Caja chica POS</a>
                                         </li>
                                     @endif
                                 </ul>
