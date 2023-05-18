@@ -23,6 +23,6 @@ class TenantModifyTextDescriptionToExpenseMethodTypes extends Migration
      */
     public function down()
     {
-        DB::table('expense_method_types')->where('id', '1')->update(['description' => 'Caja chica']);
+        DB::table('expense_method_types')->where('id', '1')->update(['description' => 'Caja']);
     }
 }

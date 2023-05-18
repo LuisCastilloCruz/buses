@@ -19,9 +19,9 @@ use App\Http\Requests\Tenant\CashRequest;
 class CashController extends Controller
 {
 
-    
+
     /**
-     * 
+     *
      * Obtener caja
      *
      * @param  int $id
@@ -32,27 +32,27 @@ class CashController extends Controller
         return app(CashControllerWeb::class)->record($id);
     }
 
-    
+
     /**
-     * 
+     *
      * Registrar/Actualizar caja
      *
      * @param  CashRequest $request
      * @return array
      */
-    public function store(CashRequest $request) 
+    public function store(CashRequest $request)
     {
         if(!$request['user_id'])
         {
             $request['user_id'] = auth()->id();
         }
-        
+
         return app(CashControllerWeb::class)->store($request);
     }
 
 
     /**
-     * 
+     *
      * Validar si el usuario tiene caja aperturada
      *
      * @return array
@@ -61,14 +61,14 @@ class CashController extends Controller
     {
         $data = app(CashControllerWeb::class)->opening_cash_check(auth()->id());
 
-        if($data['cash']) return $this->generalResponse(true, 'No puede crear caja chica, por favor cierre caja chica para el usuario definido');
+        if($data['cash']) return $this->generalResponse(true, 'No puede crear caja, por favor cierre caja para el usuario definido');
 
         return $this->generalResponse(false);
     }
 
 
     /**
-     * 
+     *
      * Obtener registros paginados
      *
      * @param  Request $request
@@ -81,9 +81,9 @@ class CashController extends Controller
 		return new CashCollection($records->paginate(config('tenant.items_per_page')));
 	}
 
-	
+
     /**
-     * 
+     *
      * Cerrar caja, usa método del proceso por web
      *
      * @param  int $id
@@ -96,7 +96,7 @@ class CashController extends Controller
 
 
     /**
-     * 
+     *
      * Eliminar registro, usa método del proceso por web
      *
      * @param  int $id
@@ -107,15 +107,15 @@ class CashController extends Controller
         return app(CashControllerWeb::class)->destroy($id);
     }
 
-        
+
     /**
-     * 
+     *
      * Envio de email
      *
      * @param  Request $request
      * @return array
      */
-    public function email(Request $request) 
+    public function email(Request $request)
     {
         $request->validate(
             ['email' => 'required']
@@ -124,9 +124,9 @@ class CashController extends Controller
         return app(CashControllerWebPos::class)->email($request);
     }
 
-    
+
     /**
-     * 
+     *
      * Reporte general de caja, usa método del proceso por web
      *
      * @param  int $id
@@ -135,7 +135,7 @@ class CashController extends Controller
      */
     public function generalReport($id, $format = 'a4')
     {
-        
+
         if($format == 'ticket')
         {
             return app(CashControllerWebPos::class)->reportTicket($id, 80);
@@ -146,7 +146,7 @@ class CashController extends Controller
 
 
     /**
-     * 
+     *
      * Reporte de productos
      *
      * @param  int $id
@@ -157,9 +157,9 @@ class CashController extends Controller
         return app(CashControllerWeb::class)->report_products($id);
     }
 
-    
+
     /**
-     * 
+     *
      * Reporte de ingresos y egresos en efectivo con destino caja
      *
      * @param  int $id
@@ -172,8 +172,8 @@ class CashController extends Controller
 
 
     /**
-     * 
-     * Reporte de ingresos 
+     *
+     * Reporte de ingresos
      *
      * @param  int $id
      * @return mixed
@@ -182,10 +182,10 @@ class CashController extends Controller
     {
         return app(ReportIncomeSummaryController::class)->pdf($id);
     }
-    
+
 
     /**
-     * 
+     *
      * Asociar documento a caja
      *
      * @param  Request $request
@@ -203,5 +203,5 @@ class CashController extends Controller
 
     }
 
-    
+
 }

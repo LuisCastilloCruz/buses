@@ -112,7 +112,7 @@ class Cash extends ModelTenant
     {
 
         if($this->cash_transaction){
-            return "{$this->cash_transaction->description} - Caja chica POS".($this->reference_number ? ' N° '.$this->reference_number:'');
+            return "{$this->cash_transaction->description} - Caja".($this->reference_number ? ' N° '.$this->reference_number:'');
         }
 
         return '-';

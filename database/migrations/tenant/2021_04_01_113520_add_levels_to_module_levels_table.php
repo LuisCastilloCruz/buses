@@ -15,7 +15,7 @@ class AddLevelsToModuleLevelsTable extends Migration
 		$data = [
 			// $pos = [
 			['id' => 15, 'module_id' => 6, 'value' => 'pos', 'description' => 'Punto de venta'],
-			['id' => 16, 'module_id' => 6, 'value' => 'cash', 'description' => 'Caja chica POS'],
+			['id' => 16, 'module_id' => 6, 'value' => 'cash', 'description' => 'Caja'],
 			// $ecommerce = [
 			['id' => 17, 'module_id' => 10, 'value' => 'ecommerce', 'description' => 'Ir a la tienda'],
 			['id' => 18, 'module_id' => 10, 'value' => 'ecommerce_orders', 'description' => 'Pedidos'],

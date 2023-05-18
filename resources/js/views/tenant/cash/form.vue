@@ -2,7 +2,7 @@
     <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
-                 
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group"  >
@@ -28,7 +28,7 @@
                             <small class="form-control-feedback" v-if="errors.reference_number" v-text="errors.reference_number[0]"></small>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -81,7 +81,7 @@
             }
         },
         methods: {
-            
+
             initForm() {
                 this.errors = {}
                 this.form = {
@@ -94,19 +94,19 @@
                     time_closed: null,
                     beginning_balance: 0,
                     final_balance: 0,
-                    income: 0, 
+                    income: 0,
                     state: true,
                     reference_number: null
                 }
             },
             create() {
-                this.titleDialog = (this.recordId)? 'Editar Caja chica POS':'Aperturar Caja chica POS'
+                this.titleDialog = (this.recordId)? 'Editar caja':'Aperturar Caja'
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
-                            this.form = response.data.data 
+                            this.form = response.data.data
                         })
-                }else{                    
+                }else{
                     this.form.user_id = this.user.id //sesion
                     //this.form.user = this.user.name
                 }
@@ -115,8 +115,8 @@
             {
                 let response =  await this.$http.get(`/${this.resource}/opening_cash_check/${this.form.user_id}`)
                     .then(response => {
-                        let cash = response.data.cash 
-                        return (cash) ? true : false                   
+                        let cash = response.data.cash
+                        return (cash) ? true : false
                     })
                 return response
             },
@@ -127,7 +127,7 @@
                     if(await this.openingCashCkeck())
                     {
                         this.$message({
-                            message: 'No puede crear caja chica, porfavor cierre caja chica para el usuario definido',
+                            message: 'No puede crear caja, porfavor cierre caja para el usuario definido',
                             type: 'warning',
                             duration: 5000
                         });
@@ -136,13 +136,13 @@
                     }
                 }
 
-              
+
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
-                            if(this.form.user_id === this.user.id) this.$eventHub.$emit('openCash')   
-                            this.$eventHub.$emit('reloadData')                                                      
+                            if(this.form.user_id === this.user.id) this.$eventHub.$emit('openCash')
+                            this.$eventHub.$emit('reloadData')
                             // window.open('/pos/init')
                             this.close()
                         } else {
@@ -163,7 +163,7 @@
             close() {
                 this.$emit('update:showDialog', false)
                 this.initForm()
-            } 
+            }
         }
     }
 </script>

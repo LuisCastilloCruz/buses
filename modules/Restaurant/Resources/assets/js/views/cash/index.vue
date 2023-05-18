@@ -146,7 +146,7 @@
                 this.recordId = recordId
                 const h = this.$createElement;
                 this.$msgbox({
-                    title: 'Cerrar caja chica POS',
+                    title: 'Cerrar caja',
                     type: 'warning',
                     message: h('p', null, [
                         h('p', { style: 'text-align: justify; font-size:15px' }, '¿Está seguro de cerrar la caja?'),

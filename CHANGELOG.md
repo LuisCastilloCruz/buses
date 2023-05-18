@@ -173,7 +173,7 @@
 
 ### fixed
 2022-05-23 : fixed | #1688 | Validar propiedad prepayments no disponible en notas sin external id<br>
-2022-05-20 : fixed | #1684 | Ajustes en querys para error en reporte productos - caja chica<br>
+2022-05-20 : fixed | #1684 | Ajustes en querys para error en reporte productos - caja <br>
 2022-05-19 : fixed | #1663 | Se agrega descripcion para configuracion prod de una ubicacion<br>
 2022-05-19 : fixed | #1670 | se elimina clg<br>
 2022-05-19 : fixed | #1670 | Se agrupa totales por producto y tipo de unidad para ventas individuales y por presentaciones - Consolidado de items, ajuste al genera guia, suma de cantidad<br>

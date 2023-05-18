@@ -1473,7 +1473,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                         <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.restaurant.cash.filter-pos')}}">
-                                                Caja Chica
+                                                Caja
                                             </a>
                                         </li>
                                         <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'sales')?'nav-active':'' }}">
@@ -1494,7 +1494,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                         <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == '')?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.restaurant.cash.index')}}">
-                                                Caja Chica
+                                                Caja
                                             </a>
                                         </li>
                                         <li class="{{ ($secondLevel != null && $secondLevel == 'niveles' && $thridLevel == '')?'nav-active':'' }}">
@@ -1621,7 +1621,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         </a>
                             <ul class="nav nav-children">
                                 <li class="{{ ($firstLevel === 'transportes' && ($secondLevel === 'cash') )?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('tenant.transportes.cash.index')}}">Caja chica</a>
+                                    <a class="nav-link" href="{{route('tenant.transportes.cash.index')}}">Caja</a>
                                 </li>
                                 <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'choferes')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('transportes/choferes') }}">Conductores</a>
