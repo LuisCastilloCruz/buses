@@ -223,19 +223,6 @@
             </tr>
         @endif
     @endforeach
-
-    @for ($i = 0; $i <  62; $i++)
-        <tr>
-            <td>{{$i}}</td>
-            <td>rtytyughj</td>
-            <td>gjhgjghjhj</td>
-            <td>gfjghfjgfhj</td>
-            <td>fgjhfjfhjj</td>
-            <td>fjhhjhjj</td>
-            <td>fjhj</td>
-            <td>789789798</td>
-        </tr>
-    @endfor
 </table>
 
 

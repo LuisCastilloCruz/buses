@@ -59,7 +59,7 @@
             <table class="bordered" style="width: 100%">
                 <tr>
                     <td style="width: 100%;text-align:center">
-                    <h1>RUC: {{ $company->number }}</h3>
+                    <h3>RUC: {{ $company->number }}</h3>
                     </td>
                 </tr>
                 <tr style="background-color: #0088cc;">
