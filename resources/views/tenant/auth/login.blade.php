@@ -38,6 +38,11 @@
                 @endif
             </div>
             <button type="submit" class="btn btn-signin btn-block">INICIAR SESIÓN</button>
+
+            <div class="d-flex justify-content-between text-center mt-4">
+                <a href="https://www.youtube.com/watch?v=o_ghjJ7MHRE&list=PLRfWQIWTl4WQnUwpMDBs8iAlcti3s_UNY" target="_blank" data-toggle="tooltip" title="Ver videos para descubrir el funcionamiento del software, como realizar facturas, exportar reportes...">¿Cómo funciona el sistema?</a>
+            </div>
+
             @include('tenant.auth.partials.socials')
         </form>
     </article>
