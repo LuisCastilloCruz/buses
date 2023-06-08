@@ -53,9 +53,9 @@
 <table class="full-width datos-empresa">
     <tr>
         @if($company->logo)
-            <td width="25%">
+            <td width="30%">
                 <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
+                    <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 250px;">
                 </div>
             </td>
         @else
@@ -63,7 +63,7 @@
                 {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
            </td>
        @endif
-       <td width="48%" class="pl-3" style="text-align:center;">
+       <td width="42%" class="pl-3" style="text-align:center;">
            <div class="text-center empresa-datos">
                <h4><b>{{ $company->name }}</b></h4>
                <h5>{{ 'RUC '.$company->number }}</h5>
@@ -91,7 +91,7 @@
                @endisset
            </div>
        </td>
-       <td width="27%" class="px-2 text-center" style="border: 2px solid {{$color1}}">
+       <td width="28%" class="px-2 text-center" style="border: 2px solid {{$color1}}">
            <h3 class="text-center">{{ 'RUC: '.$company->number }}</h3>
            <h5 class="text-center" style="background: {{$color1}};color:#fff;"><b>{{ $document->document_type->description }}</b></h5>
            <h3 class="text-center"><b>{{ $document_number }}</b></h3>
