@@ -1,11 +1,22 @@
-function startConnection(config) {
+function startConnection(config,printer_name) {
     if (!qz.websocket.isActive()) {
         console.log('Waiting, default');
+        console.log(printer_name);
 
         qz.websocket.connect(config).then(function() {
             console.log('Active, success');
             findVersion();
-            findDefaultPrinter(true);
+
+            if(printer_name===""){
+                findDefaultPrinter(true);
+                console.log("indefinidooooooo")
+            }else{
+                setPrinter(printer_name)
+                console.log("personalizado printer nameeeeeee")
+            }
+
+
+
         }).catch(handleConnectionError);
     } else {
         displayError('An active connection with QZ already exists.', 'alert-warning');

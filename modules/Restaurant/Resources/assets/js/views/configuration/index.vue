@@ -10,245 +10,119 @@
       <template>
         <form autocomplete="off">
           <el-tabs v-model="activeName" type="border-card" class="rounded">
-            <el-tab-pane class="mb-3"  name="first">
-              <span slot="label">Ambientes</span>
-              <div class="row">
-                <!--<div class="col-sm-6 col-md-4 mt-4">
-                  <label class="control-label">
-                    Habilitar menú POS
-                  </label>
-                  <div :class="{'has-danger': errors.menu_pos}"
-                        class="form-group">
-                    <el-switch v-model="form.menu_pos"
-                                active-text="Si"
-                                inactive-text="No"
-                                @change="submit"></el-switch>
-                    <small v-if="errors.menu_pos"
-                            class="form-control-feedback"
-                            v-text="errors.menu_pos[0]"></small>
-                  </div>
-                </div>
-                <div class="col-sm-6 col-md-4 mt-4">
-                  <label class="control-label">
-                    Habilitar menú Mesas
-                  </label>
-                  <div :class="{'has-danger': errors.menu_tables}"
-                        class="form-group">
-                    <el-switch v-model="form.menu_tables"
-                                active-text="Si"
-                                inactive-text="No"
-                                @change="submit"></el-switch>
-                    <small v-if="errors.menu_tables"
-                            class="form-control-feedback"
-                            v-text="errors.menu_tables[0]"></small>
-                  </div>
-                </div>
-                <div class="col-sm-6 col-md-4 mt-4">
-                  <label class="control-label">
-                    Habilitar menú Pedidos
-                  </label>
-                  <div :class="{'has-danger': errors.menu_order}"
-                        class="form-group">
-                    <el-switch v-model="form.menu_order"
-                               active-text="Si"
-                               inactive-text="No"
-                               @change="submit"></el-switch>
-                    <small v-if="errors.menu_order"
-                           class="form-control-feedback"
-                           v-text="errors.menu_order[0]"></small>
-                  </div>
-                </div>
-                <div class="col-sm-6 col-md-4 mt-4">
-                  <label class="control-label">
-                    Habilitar Comanda/Bar
-                  </label>
-                  <div :class="{'has-danger': errors.menu_bar}"
-                        class="form-group">
-                    <el-switch v-model="form.menu_bar"
-                                active-text="Si"
-                                inactive-text="No"
-                                @change="submit"></el-switch>
-                    <small v-if="errors.menu_bar"
-                            class="form-control-feedback"
-                            v-text="errors.menu_bar[0]"></small>
-                  </div>
-                </div>
-                <div class="col-sm-6 col-md-4 mt-4">
-                  <label class="control-label">
-                    Habilitar Comanda/Cocina
-                  </label>
-                  <div :class="{'has-danger': errors.menu_kitchen}"
-                        class="form-group">
-                    <el-switch v-model="form.menu_kitchen"
-                                active-text="Si"
-                                inactive-text="No"
-                                @change="submit"></el-switch>
-                    <small v-if="errors.menu_kitchen"
-                            class="form-control-feedback"
-                            v-text="errors.menu_kitchen[0]"></small>
-                  </div>
-                </div>
-                <div class="col-sm-6 col-md-4 mt-4">
-                  <label class="control-label">
-                    Habilitar Editar Precios
-                  </label>
-                  <div :class="{'has-danger': errors.items_maintenance}"
-                        class="form-group">
-                    <el-switch v-model="form.items_maintenance"
-                                active-text="Si"
-                                inactive-text="No"
-                                @change="submit"></el-switch>
-                    <small v-if="errors.items_maintenance"
-                            class="form-control-feedback"
-                            v-text="errors.items_maintenance[0]"></small>
-                  </div>
-                </div>
-                <div class="col-sm-5 col-md-5 mt-4">
-                  <div :class="{'has-danger': errors.first_menu}"
-                        class="form-group">
-                    <label class="control-label">Menu inicial
-                    </label>
-                    <el-select v-model="form.first_menu"
-                                filterable
-                                @change="submit">
-                      <el-option v-for="option in menu_list"
-                                  :key="option.id"
-                                  :label="option.description"
-                                  :value="option.name"></el-option>
-                    </el-select>
-                    <small v-if="errors.first_menu"
-                            class="form-control-feedback"
-                            v-text="errors.first_menu[0]"></small>
-                  </div>
-                </div>-->
-                <!--<div class="col-sm-6 col-md-6 mt-4">
-                  <div :class="{'has-danger': errors.tables_quantity}"
-                        class="form-group">
-                    <label class="control-label">Cantidad de mesas
-                    </label>
-                    <el-slider
-                      v-model="form.tables_quantity"
-                      :step="1"
-                      :min="5"
-                      :max="50"
-                      show-stops
-                      @change="submit">
-                    </el-slider>
-                    <small v-if="errors.tables_quantity"
-                            class="form-control-feedback"
-                            v-text="errors.tables_quantity[0]"></small>
-                  </div>
-                </div>-->
-                <div class="col-md-12">
-                  <div class="row mt-4">
-                    <div class="col-md-4">
-                    <label class="control-label">
-                      Habilitar Ambiente 1
-                    </label>
-                    <div :class="{'has-danger': errors.enabled_environment_1}"
-                          class="form-group">
-                      <el-switch v-model="form.enabled_environment_1"
-                                  active-text="Si"
-                                  inactive-text="No"
-                                  @change="submit"></el-switch>
-                      <small v-if="errors.enabled_environment_1"
-                              class="form-control-feedback"
-                              v-text="errors.enabled_environment_1[0]"></small>
-                      <br>
-                      <label class="control-label">Cantidad de mesas</label>
-                      <el-slider
-                        :disabled="!form.enabled_environment_1"
-                        v-model="form.tables_quantity"
-                        :step="1"
-                        :min="5"
-                        :max="50"
-                        show-stops
-                        @change="submit">
-                      </el-slider>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <label class="control-label">
-                      Habilitar Ambiente 2
-                    </label>
-                    <div :class="{'has-danger': errors.enabled_environment_2}"
-                          class="form-group">
-                      <el-switch v-model="form.enabled_environment_2"
-                                  active-text="Si"
-                                  inactive-text="No"
-                                  @change="submit"></el-switch>
-                      <small v-if="errors.enabled_environment_2"
-                              class="form-control-feedback"
-                              v-text="errors.enabled_environment_2[0]"></small>
-                      <br>
-                      <label class="control-label">Cantidad de mesas</label>
-                      <el-slider
-                        :disabled="!form.enabled_environment_2"
-                        v-model="form.tables_quantity_environment_2"
-                        :step="1"
-                        :min="5"
-                        :max="50"
-                        show-stops
-                        @change="submit">
-                      </el-slider>
-                    </div>
-                  </div>
-                    <div class="col-md-4">
-                      <label class="control-label">
-                        Habilitar Ambiente 3
-                      </label>
-                      <div :class="{'has-danger': errors.enabled_environment_3}"
-                            class="form-group">
-                        <el-switch v-model="form.enabled_environment_3"
-                                    active-text="Si"
-                                    inactive-text="No"
-                                    @change="submit"></el-switch>
-                        <small v-if="errors.enabled_environment_3"
-                                class="form-control-feedback"
-                                v-text="errors.enabled_environment_3[0]"></small>
-                        <br>
-                        <label class="control-label">Cantidad de mesas</label>
-                        <el-slider
-                          :disabled="!form.enabled_environment_3"
-                          v-model="form.tables_quantity_environment_3"
-                          :step="1"
-                          :min="5"
-                          :max="50"
-                          show-stops
-                          @change="submit">
-                        </el-slider>
-                      </div>
-                    </div>
-                    <div class="col-md-4">
-                      <label class="control-label">
-                        Habilitar Ambiente 4
-                      </label>
-                      <div :class="{'has-danger': errors.enabled_environment_4}"
-                            class="form-group">
-                        <el-switch v-model="form.enabled_environment_4"
-                                    active-text="Si"
-                                    inactive-text="No"
-                                    @change="submit"></el-switch>
-                        <small v-if="errors.enabled_environment_4"
-                                class="form-control-feedback"
-                                v-text="errors.enabled_environment_4[0]"></small>
-                        <br>
-                        <label class="control-label">Cantidad de mesas</label>
-                        <el-slider
-                          :disabled="!form.enabled_environment_4"
-                          v-model="form.tables_quantity_environment_4"
-                          :step="1"
-                          :min="5"
-                          :max="50"
-                          show-stops
-                          @change="submit">
-                        </el-slider>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </el-tab-pane>
+<!--            <el-tab-pane class="mb-3"  name="first">-->
+<!--              <span slot="label">Ambientes</span>-->
+<!--              <div class="row">-->
+<!--                <div class="col-md-12">-->
+<!--                  <div class="row mt-4">-->
+<!--                    <div class="col-md-4">-->
+<!--                    <label class="control-label">-->
+<!--                      Habilitar Ambiente 1-->
+<!--                    </label>-->
+<!--                    <div :class="{'has-danger': errors.enabled_environment_1}"-->
+<!--                          class="form-group">-->
+<!--                      <el-switch v-model="form.enabled_environment_1"-->
+<!--                                  active-text="Si"-->
+<!--                                  inactive-text="No"-->
+<!--                                  @change="submit"></el-switch>-->
+<!--                      <small v-if="errors.enabled_environment_1"-->
+<!--                              class="form-control-feedback"-->
+<!--                              v-text="errors.enabled_environment_1[0]"></small>-->
+<!--                      <br>-->
+<!--                      <label class="control-label">Cantidad de mesas</label>-->
+<!--                      <el-slider-->
+<!--                        :disabled="!form.enabled_environment_1"-->
+<!--                        v-model="form.tables_quantity"-->
+<!--                        :step="1"-->
+<!--                        :min="5"-->
+<!--                        :max="50"-->
+<!--                        show-stops-->
+<!--                        @change="submit">-->
+<!--                      </el-slider>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  <div class="col-md-4">-->
+<!--                    <label class="control-label">-->
+<!--                      Habilitar Ambiente 2-->
+<!--                    </label>-->
+<!--                    <div :class="{'has-danger': errors.enabled_environment_2}"-->
+<!--                          class="form-group">-->
+<!--                      <el-switch v-model="form.enabled_environment_2"-->
+<!--                                  active-text="Si"-->
+<!--                                  inactive-text="No"-->
+<!--                                  @change="submit"></el-switch>-->
+<!--                      <small v-if="errors.enabled_environment_2"-->
+<!--                              class="form-control-feedback"-->
+<!--                              v-text="errors.enabled_environment_2[0]"></small>-->
+<!--                      <br>-->
+<!--                      <label class="control-label">Cantidad de mesas</label>-->
+<!--                      <el-slider-->
+<!--                        :disabled="!form.enabled_environment_2"-->
+<!--                        v-model="form.tables_quantity_environment_2"-->
+<!--                        :step="1"-->
+<!--                        :min="5"-->
+<!--                        :max="50"-->
+<!--                        show-stops-->
+<!--                        @change="submit">-->
+<!--                      </el-slider>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                      <label class="control-label">-->
+<!--                        Habilitar Ambiente 3-->
+<!--                      </label>-->
+<!--                      <div :class="{'has-danger': errors.enabled_environment_3}"-->
+<!--                            class="form-group">-->
+<!--                        <el-switch v-model="form.enabled_environment_3"-->
+<!--                                    active-text="Si"-->
+<!--                                    inactive-text="No"-->
+<!--                                    @change="submit"></el-switch>-->
+<!--                        <small v-if="errors.enabled_environment_3"-->
+<!--                                class="form-control-feedback"-->
+<!--                                v-text="errors.enabled_environment_3[0]"></small>-->
+<!--                        <br>-->
+<!--                        <label class="control-label">Cantidad de mesas</label>-->
+<!--                        <el-slider-->
+<!--                          :disabled="!form.enabled_environment_3"-->
+<!--                          v-model="form.tables_quantity_environment_3"-->
+<!--                          :step="1"-->
+<!--                          :min="5"-->
+<!--                          :max="50"-->
+<!--                          show-stops-->
+<!--                          @change="submit">-->
+<!--                        </el-slider>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                      <label class="control-label">-->
+<!--                        Habilitar Ambiente 4-->
+<!--                      </label>-->
+<!--                      <div :class="{'has-danger': errors.enabled_environment_4}"-->
+<!--                            class="form-group">-->
+<!--                        <el-switch v-model="form.enabled_environment_4"-->
+<!--                                    active-text="Si"-->
+<!--                                    inactive-text="No"-->
+<!--                                    @change="submit"></el-switch>-->
+<!--                        <small v-if="errors.enabled_environment_4"-->
+<!--                                class="form-control-feedback"-->
+<!--                                v-text="errors.enabled_environment_4[0]"></small>-->
+<!--                        <br>-->
+<!--                        <label class="control-label">Cantidad de mesas</label>-->
+<!--                        <el-slider-->
+<!--                          :disabled="!form.enabled_environment_4"-->
+<!--                          v-model="form.tables_quantity_environment_4"-->
+<!--                          :step="1"-->
+<!--                          :min="5"-->
+<!--                          :max="50"-->
+<!--                          show-stops-->
+<!--                          @change="submit">-->
+<!--                        </el-slider>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </el-tab-pane>-->
             <el-tab-pane class="mb-3"  name="second">
               <span slot="label">Usuarios</span>
               <div class="row d-flex align-items-end">
@@ -395,26 +269,37 @@
                   <span slot="label">Impresoras</span>
                   <div class="row">
                       <div class="col-md-3">
-                          <div class="form-group" :class="{'has-danger': errors.impresora_cocina}">
+                          <div class="form-group">
                               <label class="control-label">Impresora Cocina</label>
-                              <el-input v-model="impresora_cocina"></el-input>
-                              <small class="form-control-feedback" v-if="errors.impresora_cocina" v-text="errors.impresora_cocina[0]"></small>
+                              <el-input v-model="ip_impresora_cocina"></el-input>
+
+                              <label class="control-label">Nombre Impresora</label>
+                              <el-input v-model="nombre_impresora_cocina"></el-input>
                           </div>
                       </div>
 
                       <div class="col-md-3">
-                          <div class="form-group" :class="{'has-danger': errors.impresora_barra}">
+                          <div class="form-group">
                               <label class="control-label">Impresora Barra</label>
-                              <el-input v-model="impresora_barra"></el-input>
-                              <small class="form-control-feedback" v-if="errors.impresora_barra" v-text="errors.impresora_barra[0]"></small>
+                              <el-input v-model="ip_impresora_barra"></el-input>
+
+                              <label class="control-label">Nombre Impresora</label>
+                              <el-input v-model="nombre_impresora_barra"></el-input>
                           </div>
                       </div>
                       <div class="col-md-3">
-                          <div class="form-group" :class="{'has-danger': errors.impresora_precuenta}">
+                          <div class="form-group">
                               <label class="control-label">Impresora Precuenta</label>
-                              <el-input v-model="impresora_precuenta"></el-input>
-                              <small class="form-control-feedback" v-if="errors.impresora_precuenta" v-text="errors.impresora_precuenta[0]"></small>
+                              <el-input v-model="ip_impresora_precuenta"></el-input>
+
+                              <label class="control-label">Nombre Impresora</label>
+                              <el-input v-model="nombre_impresora_precuenta"></el-input>
+
                           </div>
+
+                              <label class="control-label">VER PDF?</label>
+                              <el-checkbox v-model="impresora_precuenta_is_pdf" @change="test" :checked="(impresora_precuenta_is_pdf)=='true'"></el-checkbox>
+
                       </div>
                       <div class="col-md-12">
                           <p class="text-center">
@@ -477,7 +362,7 @@ export default {
           first_menu: 'POS',
           tables_quantity: 15
         },
-        activeName: 'first',
+        activeName: 'second',
         menu_list: [
           {id: 1, description: 'POS', name: 'POS'},
           {id: 2, description: 'Mesas', name: 'TABLES'},
@@ -506,11 +391,13 @@ export default {
         permission_mozo: ['POS', 'Mesas', 'Comandas'],
         permission_kitbar: ['Comandas'],
 
-        impresora_cocina:null,
-        impresora_barra:null,
-        impresora_precuenta: null
-
-
+        ip_impresora_cocina:null,
+        ip_impresora_barra:null,
+        ip_impresora_precuenta: null,
+        nombre_impresora_cocina: null,
+        nombre_impresora_barra: null,
+        nombre_impresora_precuenta: null,
+        impresora_precuenta_is_pdf: null,
       }
     },
     computed: {
@@ -523,9 +410,16 @@ export default {
       this.getUsers();
       this.getWaiters();
 
-      this.impresora_cocina = localStorage.impresora_cocina
-      this.impresora_barra = localStorage.impresora_barra
-      this.impresora_precuenta = localStorage.impresora_precuenta
+      this.ip_impresora_cocina          = localStorage.ip_impresora_cocina
+      this.ip_impresora_barra           = localStorage.ip_impresora_barra
+      this.ip_impresora_precuenta       = localStorage.ip_impresora_precuenta
+      this.nombre_impresora_cocina      = localStorage.nombre_impresora_cocina
+      this.nombre_impresora_barra       = localStorage.nombre_impresora_barra
+      this.nombre_impresora_precuenta   = localStorage.nombre_impresora_precuenta
+
+      this.impresora_precuenta_is_pdf   = localStorage.impresora_precuenta_is_pdf
+
+        console.log(this.impresora_precuenta_is_pdf)
 
     },
     mounted() {
@@ -657,9 +551,14 @@ export default {
         SOCKET.emit('data-company', data)
       },
       clickSavePrinters(){
-          localStorage.impresora_cocina     = this.impresora_cocina
-          localStorage.impresora_barra      = this.impresora_barra
-          localStorage.impresora_precuenta  = this.impresora_precuenta
+          localStorage.ip_impresora_cocina            = this.ip_impresora_cocina
+          localStorage.ip_impresora_barra             = this.ip_impresora_barra
+          localStorage.ip_impresora_precuenta         = this.ip_impresora_precuenta
+          localStorage.nombre_impresora_cocina            = this.nombre_impresora_cocina
+          localStorage.nombre_impresora_barra             = this.nombre_impresora_barra
+          localStorage.nombre_impresora_precuenta         = this.nombre_impresora_precuenta
+
+          localStorage.impresora_precuenta_is_pdf  = this.impresora_precuenta_is_pdf
 
           this.$notify({
               title: '',

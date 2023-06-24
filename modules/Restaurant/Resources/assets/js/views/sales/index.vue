@@ -4,16 +4,6 @@
         </div>
             <div class="card-body">
                 <div class="row">
-
-                    <div class="recargar" style="position: absolute; left:40px">
-                        <button
-                            type="button"
-                            class="btn btn-custom btn-sm mt-2 mr-2"
-                            @click.prevent="clickRefresh()"
-                        >
-                            <i class="fa fa-plus-circle"></i> Recargar
-                        </button>
-                    </div>
                     <!-- piso -->
                     <div class="col-md-12 col-sm-12 pb-2 text-center">
                         <el-button-group>
@@ -156,9 +146,9 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div v-else-if="AqpTap.active==2" class="col-md-12">
-                        <el-tabs v-model="activeName" @tab-click="handleClick">
+                    </div> <!-- SECCION POS LIBRE -->
+                    <div v-else-if="AqpTap.active==2" class="col-md-12"> <!-- SECCION MESAS -->
+                        <el-tabs v-model="activeName" @tab-click="handleClickNivel">
 
                             <el-tab-pane  v-for="nivel in niveles" :key="nivel.id" :label="nivel.nombre" :name="nivel.nombre">
 
@@ -186,7 +176,7 @@
                                         </div>
                                         <div class="row">
                                             <div :class="{active: activeList[index]}" v-for="(item, index) in filtrarCategorias" :key="item.id" class="t1 el-card box-card is-always-shadow m-4 float-left" @click="agregarItem(item, index)">
-                                                <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="150" height="150" style="max-width: 100%">
+                                                <img :src="'/storage/uploads/items/'+item.image_small" class="image" width="100%" height="150" style="max-width: 100%">
                                                 <div>
                                                     <span class="mt-2 font-large font-18 font-weight-bold">  S/ {{ item.sale_unit_price }}</span>
                                                     <div class="bottom clearfix">
@@ -262,13 +252,13 @@
 
 
                         </el-tabs>
-                    </div>
+                    </div><!-- SECCION MESAS -->
                     <div v-else-if="AqpTap.active==3" class="col-md-12">
                         <tenant-restaurant-pedidos></tenant-restaurant-pedidos>
-                    </div>
+                    </div> <!-- SECCION PEDIDOS -->
                     <div v-else-if="AqpTap.active==4" class="col-md-12">
                         <tenant-restaurant-precios></tenant-restaurant-precios>
-                    </div>
+                    </div> <!-- SECCION EDICION PRECIOS-->
 
                 </div>
             </div>
@@ -376,8 +366,8 @@ export default {
             resource: "restaurant",
             recordId: null,
             AqpTap:{
-                active:1 //pos
-                //active:2 //mesas
+                //active:1 //pos
+                active:2 //mesas
                 //active:4 //precios
             },
             activeName: '',
@@ -404,18 +394,31 @@ export default {
             socketClient:null,
             activeList: [],
             categoria_id: null,
-            filtrarCategorias: []
+            filtrarCategorias: [],
+
+            ip_impresora_cocina:null,
+            ip_impresora_barra:null,
+            ip_impresora_precuenta:null,
+            nombre_impresora_cocina:null,
+            nombre_impresora_barra:null,
+            nombre_impresora_precuenta:null,
+            impresora_precuenta_is_pdf:null
         };
     },
     created() {
-        this.handleClick()
+        this.handleClickNivel()
         this.vistaMesas = true
-
-        //console.log(this.items)
         this.initSocket();
-        this.startConnectionQzTray()
 
         this.filtrarCategorias = this.items
+
+        this.ip_impresora_cocina          = localStorage.ip_impresora_cocina
+        this.ip_impresora_barra           = localStorage.ip_impresora_barra
+        this.ip_impresora_precuenta       = localStorage.ip_impresora_precuenta
+        this.nombre_impresora_cocina      = localStorage.nombre_impresora_cocina
+        this.nombre_impresora_barra       = localStorage.nombre_impresora_barra
+        this.nombre_impresora_precuenta   = localStorage.nombre_impresora_precuenta
+        this.impresora_precuenta_is_pdf   = localStorage.impresora_precuenta_is_pdf
     },
     methods: {
         filterResults ( ) {
@@ -455,60 +458,11 @@ export default {
             }
 
         },
-        startConnectionQzTray(){
+        startConnectionQzTray(ip_impresora,impresora_name){
 
             if (!qz.websocket.isActive() && this.isAutoPrint)
             {
-                startConnection({host: localStorage.impresora_cocina, usingSecure: false});
-            }
-
-        },
-        autoPrintDocument(){
-
-            if(this.isAutoPrint)
-            {
-                var route = `/printticket/document/${this.documentNewId}/ticket`;
-                if(this.resource_documents!=='documents'){
-                    route = `/sale-notes/ticket/${this.documentNewId}/ticket`;
-                }
-
-                this.$http.get(route)
-                    .then(response => {
-                        this.printTicket(response.data)
-                    })
-                    .catch(error => {
-                        console.log(error)
-                    })
-            }
-
-        },
-        printTicket(html_pdf){
-
-            if (html_pdf.length > 0)
-            {
-                const config = getUpdatedConfig()
-                const opts = getUpdatedConfig()
-
-                const printData = [
-                    {
-                        type: 'html',
-                        format: 'plain',
-                        data: html_pdf,
-                        options: opts
-                    }
-                ]
-
-                qz.print(config, printData)
-                    .then(()=>{
-
-                        this.$notify({
-                            title: '',
-                            message: 'Impresión en proceso...',
-                            type: 'success'
-                        })
-
-                    })
-                    .catch(displayError)
+                startConnection({host: ip_impresora, usingSecure: false},impresora_name);
             }
 
         },
@@ -517,7 +471,7 @@ export default {
         },
         async onUpdateItem(){
 
-            this.handleClick()
+            this.handleClickNivel()
             console.log("socket jugando")
 
         },
@@ -525,20 +479,25 @@ export default {
             this.AqpTap.active=id
             this.vistaMesas=true
             this.onLimPiarDatos()
+            if(id==2){ // si es vista mesas
+                this.handleClickNivel()
+            }
         },
-        handleClick(tab, event) {
+        handleClickNivel(tab, event) { // se activa al dar click en el tap de mesas, en sus niveles
             //console.log(tab, event);
             this.onLimPiarDatos()
-            this.cargarNiveles(tab)
+            this.cargarNivelesMesas(tab)
 
         },
-        async cargarNiveles(tab){ //esto carga mesas y sus estados
+        async cargarNivelesMesas(tab){ //esto carga mesas y sus estados
+
+            console.log("ESTADO DE MESAS ACTUALIZADO");
             try{
                 this.loading = true;
                 const { data } = await this.$http.get(`/restaurant/niveles/records`);
                 this.loading = false;
                 this.niveles = data.data;
-                this.activeName= (this.niveles.length>0 && tab ==null) ? this.niveles[0].nombre : tab.name
+                this.activeName= (this.niveles.length>0 && tab ==null) ? this.niveles[0].nombre : tab.name  //para activar primer TAB del nivel
                 this.vistaMesas=true
 
 
@@ -826,7 +785,8 @@ export default {
                 this.showDialogOptions = true
             }
 
-           this.clickRefresh()
+           this.onLimPiarDatos()
+           this.handleClickNivel()
 
        },
         generateHtml() {
@@ -859,12 +819,46 @@ export default {
             <br/>`;
         },
 
+        printTicket(html_pdf, impresora_name){
+
+            //this.startConnectionQzTray(impresora_name)
+
+            if (html_pdf.length > 0)
+            {
+                const config = getUpdatedConfig()
+                const opts = getUpdatedConfig()
+
+                const printData = [
+                    {
+                        type: 'html',
+                        format: 'plain',
+                        data: html_pdf,
+                        options: opts
+                    }
+                ]
+
+                qz.print(config, printData)
+                    .then(()=>{
+
+                        this.$notify({
+                            title: '',
+                            message: 'Impresión en proceso...',
+                            type: 'success'
+                        })
+
+                    })
+                    .catch(displayError)
+            }
+
+        },
+        printPdf(){
+
+        },
+
         precuenta(){
             alert("precuenta")
             // this.startPrint()
             this.printTicket(this.generateHtml())
-
-            this.clickRefresh()
         },
         enviar_comanda(){
             alert("comanda")
@@ -872,11 +866,6 @@ export default {
         handleCurrentChange(val) {
             this.page = val;
         },
-
-        clickRefresh(){
-            this.handleClick()
-            console.log("recargando...")
-        }
     }
 }
 </script>
