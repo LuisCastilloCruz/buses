@@ -11,6 +11,11 @@ if ($hostname) {
             'verify'   => false
         ]);
 
+        //para devolver pdf a modulo restaurante
+        Route::get('sales/{id}/comanda_pdf_print', 'Tenant\SalesController@comandaPdfPrint')->name('tenant.restaurant.sales.comanda_pdf_print');
+        Route::get('sales/pre_cuenta_pdf_print', 'Tenant\SalesController@preCuentaPdfPrint')->name('tenant.restaurant.sales.pre_cuenta_pdf_print');
+
+
         Route::get('search', 'Tenant\SearchController@index')->name('search.index');
         Route::get('buscar', 'Tenant\SearchController@index')->name('search.index');
         Route::get('search/tables', 'Tenant\SearchController@tables');

@@ -236,7 +236,7 @@
                                                     <table class="table">
                                                         <tr>
                                                             <td style="width: 50%"><el-button size="small" icon="el-icon-s-order" class="btn-block" @click="precuenta">Precuenta</el-button></td>
-                                                            <td style="width: 50%"><el-button size="small" icon="el-icon-dish" class="btn-block" @click="enviar_comanda">Enviar Comanda</el-button></td>
+                                                            <td style="width: 50%"><el-button size="small" icon="el-icon-dish" class="btn-block" @click="enviar_comanda(pedidoId)">Enviar Comanda</el-button></td>
                                                         </tr>
                                                     </table>
                                                 </div>
@@ -419,6 +419,10 @@ export default {
         this.nombre_impresora_barra       = localStorage.nombre_impresora_barra
         this.nombre_impresora_precuenta   = localStorage.nombre_impresora_precuenta
         this.impresora_precuenta_is_pdf   = localStorage.impresora_precuenta_is_pdf
+
+        console.log("DUNAL")
+        console.log(this.ip_impresora_cocina)
+        //this.startConnectionQzTray()
     },
     methods: {
         filterResults ( ) {
@@ -458,11 +462,19 @@ export default {
             }
 
         },
-        startConnectionQzTray(ip_impresora,impresora_name){
+        startConnectionQzTray(){
 
-            if (!qz.websocket.isActive() && this.isAutoPrint)
+            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_cocina)
             {
-                startConnection({host: ip_impresora, usingSecure: false},impresora_name);
+                startConnection({host: this.ip_impresora_cocina, usingSecure: false},this.nombre_impresora_cocina);
+            }
+            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_precuenta)
+            {
+                startConnection({host: ip_impresora_precuenta, usingSecure: false},this.nombre_impresora_precuenta);
+            }
+            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_barra)
+            {
+                startConnection({host: ip_impresora_barra, usingSecure: false},nombre_impresora_barra);
             }
 
         },
@@ -821,8 +833,6 @@ export default {
 
         printTicket(html_pdf, impresora_name){
 
-            //this.startConnectionQzTray(impresora_name)
-
             if (html_pdf.length > 0)
             {
                 const config = getUpdatedConfig()
@@ -856,12 +866,25 @@ export default {
         },
 
         precuenta(){
-            alert("precuenta")
-            // this.startPrint()
             this.printTicket(this.generateHtml())
         },
-        enviar_comanda(){
-            alert("comanda")
+       async enviar_comanda(pedido_id){
+            try{
+                this.loading = true;
+                window.open(`/sales/${pedido_id}/comanda_pdf_print`);
+                this.loading = false;
+
+            }catch(error){
+                this.loading = false;
+                if(error.response) this.axiosError(error);
+
+                this.$notify({
+                    title: 'error',
+                    message: 'Error al imprimir...',
+                    type: 'error'
+                })
+                this.loading = false;
+            }
         },
         handleCurrentChange(val) {
             this.page = val;

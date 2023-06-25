@@ -23,6 +23,8 @@ use Modules\Item\Models\Category;
 use Modules\Restaurante\Models\Mesa;
 use Modules\Restaurante\Models\Pedido;
 use Modules\Restaurante\Models\PedidoDetalle;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
 
 class SaleController extends Controller
 {
@@ -218,8 +220,5 @@ class SaleController extends Controller
             'data'    => $item
         ], 200);
     }
-
-
-
 }
 

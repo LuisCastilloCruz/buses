@@ -562,7 +562,7 @@ export default {
 
           this.$notify({
               title: '',
-              message: 'Se guardó la configuración de las impresoras...',
+              message: 'Se guardó la configuración de las impresoras; recuerde que ésta configuración es válida solo para este dispositivo',
               type: 'success'
           })
       }

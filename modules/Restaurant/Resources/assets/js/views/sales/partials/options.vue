@@ -81,6 +81,7 @@
                     <label class="control-label">Tipo comprobante</label>
                     <el-select v-model="document.document_type_id" @change="changeDocumentType" popper-class="el-select-document_type" dusk="document_type_id" class="border-left rounded-left border-info">
                         <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                        <el-option key="nv" value="nv" label="NOTA DE VENTA"></el-option>
                     </el-select>
                     <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
                 </div>

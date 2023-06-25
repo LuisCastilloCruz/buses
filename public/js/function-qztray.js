@@ -15,8 +15,6 @@ function startConnection(config,printer_name) {
                 console.log("personalizado printer nameeeeeee")
             }
 
-
-
         }).catch(handleConnectionError);
     } else {
         displayError('An active connection with QZ already exists.', 'alert-warning');

@@ -99,6 +99,10 @@ Route::prefix('restaurant')->group(function() {
         Route::put('sales/item/delete_item', 'SaleController@deleteItem')->name('tenant.restaurant.sales.delete_item');
         Route::post('sales/item/insert-item', 'SaleController@insertItem')->name('tenant.restaurant.sales.insert_item');
         Route::put('sales/updatePedidoDocument', 'SaleController@updatePedidoDocument')->name('tenant.restaurant.sales.updatePedidoDocument');
+
+        Route::post('sales/comanda_pdf', 'SaleController@comandaPdf')->name('tenant.restaurant.sales.comanda_pdf');
+        Route::post('sales/pre_cuenta_pdf', 'SaleController@preCuentaPdf')->name('tenant.restaurant.sales.pre_cuenta_pdf');
+
     });
 
     Route::prefix('taps')->group(function() {
