@@ -221,7 +221,7 @@ export default {
         SaleNoteOptions
     },
     mixins: [functions, exchangeRate],
-    props: ["showDialogOptions", "recordId", "showClose", "showGenerate", "type", "id_user2","typeUser", "configuration","items","mesa_id","mesaIsActivo"],
+    props: ["showDialogOptions", "recordId", "showClose", "showGenerate", "type", "id_user2","typeUser", "configuration","itemaqp","mesa_id","mesaIsActivo"],
     watch:{
         cliente_numero(){
             if(this.cliente_numero.length >= 8){
@@ -447,18 +447,20 @@ export default {
                         }
                         this.saveCashDocument();
 
-                        if(this.recordId>0){
+                        this.autoPrintDocument()
+
+                        if(this.recordId>0 && this.documentNewId>0){
                             this.updatePedidoDocument(this.recordId,this.documentNewId)
                             this.$emit('update:recordId',0);
                             this.$emit('update:mesaIsActivo',false);
+
+                            this.initForm()
+                            this.initDocument()
+                            this.$eventHub.$emit('onLimPiarDatos')
+                            this.$eventHub.$emit('handleClickNivel')
+                            this.$emit('update:showDialogOptions',false);
                         }
 
-                        this.autoPrintDocument()
-
-                        this.initForm()
-                        this.initDocument()
-                        this.$eventHub.$emit('onLimPiarDatos')
-                        this.$emit('update:showDialogOptions',false);
 
                         this.loading_submit = false;
                     } else {
@@ -474,7 +476,7 @@ export default {
                         //this.$message.error(error.response.data.message);
 
                     console.log('ocurrió algun error cash')
-                    this.clickClose()
+                    //this.clickClose()
                     // }
                 })
                 .then(() => {
@@ -510,64 +512,7 @@ export default {
             };
             this.document.order_note_id = null;
         },
-        getSaleLotsGroup(lots_group) {
-
-            return _.filter(lots_group, (lot_group) => {
-                return lot_group.compromise_quantity > 0
-            })
-
-        },
-        transformSaleLotsGroup(sale_lots_group) {
-
-            return sale_lots_group.map((lot_group) => {
-                return {
-                    id: lot_group.id,
-                    code: lot_group.code,
-                    date_of_due: lot_group.date_of_due,
-                    compromise_quantity: lot_group.compromise_quantity,
-                }
-            })
-
-        },
-        getDataItems(items){
-
-            let new_items = items
-
-            if (this.document.document_type_id != '80')
-            {
-                new_items = items.map((row) => {
-
-                    // si existe propiedad regularizada en json item
-                    if(row.item.IdLoteSelected)
-                    {
-                        if (Array.isArray(row.item.IdLoteSelected))
-                        {
-                            row.IdLoteSelected = row.item.IdLoteSelected
-                        }
-                    }
-                    else
-                    {
-                        if (Array.isArray(row.item.lots_group))
-                        {
-                            // obtener lotes vendidos, con cantidad mayor a 0
-                            let sale_lots_group = this.getSaleLotsGroup(row.item.lots_group)
-
-                            if (sale_lots_group.length > 0)
-                            {
-                                // generar arreglo de lotes vendidos con la data necesaria para que sea procesado en registro de cpe
-                                row.IdLoteSelected = this.transformSaleLotsGroup(sale_lots_group)
-                            }
-                        }
-                    }
-
-                    return row
-                })
-            }
-
-            return new_items
-        },
         async create() {
-
             this.initForm();
             this.initDocument();
             await this.$http.get(`/documents/tables`)
@@ -604,6 +549,7 @@ export default {
             //this.validateIdentityDocumentType()
             // if(this.recordId>0)
             // {
+            console.log("preparando items")
                 this.prepararItems()
             // }
             this.clickAddPayment()
@@ -612,12 +558,11 @@ export default {
             this.document.document_type_id = '03';
             this.changeDocumentType()
 
-            this.startConnectionQzTray()
+            //this.startConnectionQzTray()
 
         },
         prepararItems(){
-            this.items.forEach(element => {
-                //console.log(element)
+            this.itemaqp.forEach(element => {
                 const percentage_igv = this.percentage_igv;
                 const percentage_igv_g = parseFloat(1+ percentage_igv);
                 let precio = parseFloat(element.precio);

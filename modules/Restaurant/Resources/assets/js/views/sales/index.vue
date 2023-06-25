@@ -267,12 +267,13 @@
                                :recordId.sync="pedidoId"
                                :showGenerate="true"
                                :showClose="true"
-                               :items="pedidos_detalles"
+                               :itemaqp="itemaqp"
                                :id_user2="id_user2"
                                :type-user="type_user"
                                :mesa_id="mesaActivo.id"
                                :mesaIsActivo.sync="mesaIsActivo"
                                 @onLimPiarDatos="onLimPiarDatos"
+                                @handleClickNivel = "handleClickNivel"
                                :configuration="configuration"></tenant-restaurant-pedidos-options>
 
     </div>
@@ -402,7 +403,8 @@ export default {
             nombre_impresora_cocina:null,
             nombre_impresora_barra:null,
             nombre_impresora_precuenta:null,
-            impresora_precuenta_is_pdf:null
+            impresora_precuenta_is_pdf:null,
+            itemaqp:{}
         };
     },
     created() {
@@ -420,7 +422,7 @@ export default {
         this.nombre_impresora_precuenta   = localStorage.nombre_impresora_precuenta
         this.impresora_precuenta_is_pdf   = localStorage.impresora_precuenta_is_pdf
 
-        console.log("DUNAL")
+        console.log("IMPRESORA COCINA")
         console.log(this.ip_impresora_cocina)
         //this.startConnectionQzTray()
     },
@@ -428,7 +430,7 @@ export default {
         filterResults ( ) {
             if(this.categoria_id){
                 this.filtrarCategorias = this.items.filter(item => item.category_id == this.categoria_id);
-                console.log(this.filtrarCategorias);
+                //console.log(this.filtrarCategorias);
             }
 
         },
@@ -484,7 +486,7 @@ export default {
         async onUpdateItem(){
 
             this.handleClickNivel()
-            console.log("socket jugando")
+            //console.log("socket jugando")
 
         },
         cargarTap(id){
@@ -497,6 +499,8 @@ export default {
         },
         handleClickNivel(tab, event) { // se activa al dar click en el tap de mesas, en sus niveles
             //console.log(tab, event);
+
+            console.log("handleclick activado")
             this.onLimPiarDatos()
             this.cargarNivelesMesas(tab)
 
@@ -742,6 +746,7 @@ export default {
                 const { data } = await this.$http.get(`/restaurant/cash/sales/get-pedidos-detalles/${pedido_id}`);
                 this.loading = false;
                 this.pedidos_detalles = data.data;
+                this.itemaqp = data.data
                 this.calculateTotal()
 
             }catch(error){
@@ -794,12 +799,12 @@ export default {
                     type: 'error'
                 })
             }else{
+                console.log(this.pedidos_detalles)
                 this.showDialogOptions = true
             }
 
-           this.onLimPiarDatos()
-           this.handleClickNivel()
-
+           //this.onLimPiarDatos()
+           //this.handleClickNivel()
        },
         generateHtml() {
             let productsHtml = "";
