@@ -54,7 +54,7 @@ function getUpdatedConfig() {
 }
 
 function setConfigW80(){
-    updateConfig(80, 100, 0, 0, 0, 0, 1, 'Default', 0, 'mm');
+    updateConfig(90, 100, 0, 0, 0, 0, 1, 'Default', 0, 'mm');
 }
 
 function updateConfig(pxlW, pxlH, top, right, bottom, left, copies, orientation, rotation, units) {
