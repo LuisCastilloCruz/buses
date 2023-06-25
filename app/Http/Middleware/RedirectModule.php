@@ -184,6 +184,10 @@
             {
                 $group = 'items';
             }
+            elseif (
+                $firstLevel == "restaurant") {
+                $group = "restaurant";
+            }//
 
             return $group;
         }
@@ -273,6 +277,8 @@
                     return redirect()->route('tenant.digemid.index');
                 case 'suscription_app':
                     return redirect()->route('tenant.suscription.client.index');
+                case 'restaurant':
+                    return redirect()->route('tenant.restaurant.sales.index');
 
                 default;
                     return redirect()->route('tenant.dashboard.index');
