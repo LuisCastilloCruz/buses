@@ -447,7 +447,7 @@ export default {
                         }
                         this.saveCashDocument();
 
-                        this.autoPrintDocument()
+                        //this.autoPrintDocument()
 
                         if(this.recordId>0 && this.documentNewId>0){
                             this.updatePedidoDocument(this.recordId,this.documentNewId)
