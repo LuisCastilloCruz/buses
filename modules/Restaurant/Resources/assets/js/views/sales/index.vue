@@ -422,9 +422,7 @@ export default {
         this.nombre_impresora_precuenta   = localStorage.nombre_impresora_precuenta
         this.impresora_precuenta_is_pdf   = localStorage.impresora_precuenta_is_pdf
 
-        console.log("IMPRESORA COCINA")
-        console.log(this.ip_impresora_cocina)
-        //this.startConnectionQzTray()
+        this.startConnectionQzTray()
     },
     methods: {
         filterResults ( ) {
@@ -466,15 +464,15 @@ export default {
         },
         startConnectionQzTray(){
 
-            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_cocina)
+            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_cocina !='undefined')
             {
                 startConnection({host: this.ip_impresora_cocina, usingSecure: false},this.nombre_impresora_cocina);
             }
-            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_precuenta)
+            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_precuenta!='undefined')
             {
                 startConnection({host: this.ip_impresora_precuenta, usingSecure: false},this.nombre_impresora_precuenta);
             }
-            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_barra)
+            if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_barra!='undefined')
             {
                 startConnection({host: this.ip_impresora_barra, usingSecure: false},this.nombre_impresora_barra);
             }
@@ -820,7 +818,8 @@ export default {
 
             return `
             <table border="0" width="99%" style="font-size:15px; font-family: Sans-serif, Arial;width: 250px;margin-bottom: 20px;">
-              <tr><th colspan="4" style="text-align:center;"> <b>Mesa ${this.mesaActivo.numero}</b> </th></tr>
+              <tr><th colspan="4" style="text-align:center;"> <b><span style="font-size:25px">PRECUENTA</span></b> </th></tr>
+              <tr><th colspan="4" style="text-align:center;"> <b>MESA: ${this.mesaActivo.numero}</b> </th></tr>
               <tr>
                 <th><b>CANT.</b></th>
                 <th><b>DESCRIPCI\xD3N</b></th>
@@ -836,7 +835,7 @@ export default {
             <br/>`;
         },
 
-        printTicket(html_pdf, impresora_name){
+        printTicket(html_pdf){
 
             if (html_pdf.length > 0)
             {
