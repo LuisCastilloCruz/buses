@@ -470,11 +470,11 @@ export default {
             }
             if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_precuenta)
             {
-                startConnection({host: ip_impresora_precuenta, usingSecure: false},this.nombre_impresora_precuenta);
+                startConnection({host: this.ip_impresora_precuenta, usingSecure: false},this.nombre_impresora_precuenta);
             }
             if (!qz.websocket.isActive() && this.isAutoPrint && this.ip_impresora_barra)
             {
-                startConnection({host: ip_impresora_barra, usingSecure: false},nombre_impresora_barra);
+                startConnection({host: this.ip_impresora_barra, usingSecure: false},this.nombre_impresora_barra);
             }
 
         },
