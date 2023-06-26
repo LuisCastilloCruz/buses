@@ -83,7 +83,7 @@ export default {
         return {
             loading: false,
             loading_submit: false,
-            resource: 'apiperudev/massive_validate_cpe_2',
+            resource: 'apiperudev/massive_validate_cpe',
             title: '',
             errors: {},
             form: {},

@@ -2,13 +2,12 @@
 
 namespace Modules\Document\Http\Controllers;
 
-use App\CoreFacturalo\Services\Extras\ValidateCpeSunat;
 use App\Models\Tenant\Configuration;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Document;
+use Illuminate\Support\Facades\Session;
 use Modules\Document\Http\Resources\ValidateDocumentsCollection;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
@@ -19,7 +18,8 @@ use Modules\Document\Http\Requests\ValidateDocumentsRequest;
 use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Services\IntegratedQuery\{
-    AuthApi
+    AuthApi,
+    ValidateCpe,
 };
 
 class ValidateDocumentController extends Controller
@@ -31,6 +31,34 @@ class ValidateDocumentController extends Controller
     {
         return view('document::validate_documents.index');
     }
+    private function getToken()
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api-seguridad.sunat.gob.pe/v1/clientesextranet/11d21fcf-2a30-4e98-bd5b-fb56f1e9096f/oauth2/token/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.sunat.gob.pe%2Fv1%2Fcontribuyente%2Fcontribuyentes&client_id=11d21fcf-2a30-4e98-bd5b-fb56f1e9096f&client_secret=OhQ25%2FGh55x8CFwsal1FAg%3D%3D',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded',
+                //'Cookie: TS019e7fc2=014dc399cbd5a552b1554969aef7c38dfbc4845c762c261502f754f0a263522b6e67201bea8e5a96586307dbe4057ab8b023e4bbca'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $data = json_decode($response);
+
+        return $data->access_token;
+    }
 
 
     public function records(ValidateDocumentsRequest $request)
@@ -39,7 +67,8 @@ class ValidateDocumentController extends Controller
 
 //        $auth_api = (new AuthApi())->getToken();
 //        if(!$auth_api['success']) return $auth_api;
-//        $this->access_token = $auth_api['data']['access_token'];
+
+        $this->access_token = $this->getToken();
 
         $records = $this->getRecords($request);
         $validate_documents = $this->validateDocuments($records);
@@ -62,29 +91,30 @@ class ValidateDocumentController extends Controller
         foreach ($records_paginate->getCollection() as $document)
         {
 
-            $validate_cpe = new ValidateCpeSunat();
+            $validate_cpe = new ValidateCpe(
+                                $this->access_token,
+                                $document->company->number,
+                                $document->document_type_id,
+                                $document->series,
+                                $document->number,
+                                $document->date_of_issue,
+                                $document->total
+                            );
 
-            $response = $validate_cpe->search(
-                $document->company->number,
-                $document->document_type_id,
-                $document->series,
-                $document->number,
-                Carbon::parse($document->date_of_issue)->format('d/m/Y'),
-                $document->total
-            );
+            $response = $validate_cpe->search();
 
-            //dd($response['response']);
+            // dd($response);
 
             if ($response['success']) {
 
-                $document->message =($response['response'] !="") ?$response['response'] : "" ;
-                $document->sunat_state_type_id = ($response['data']['comprobante_estado_codigo']=="01") ? "05" : null;
-                $document->code = $response['data']['comprobante_estado_codigo'];
+                $document->message = $response['message'];
+                $document->sunat_state_type_id = $response['data']['state_type_id'];
+                $document->code = $response['data']['estadoCp'];
                 $document->response = $response;
 
             } else{
 
-                $document->message = ($response['response'] !="") ?$response['response'] : "" ;
+                $document->message = $response['message'];
                 $document->sunat_state_type_id = null;
                 $document->code = '-2';  //custom code
                 $document->response = $response;
@@ -140,7 +170,7 @@ class ValidateDocumentController extends Controller
 
 //        $auth_api = (new AuthApi())->getToken();
 //        if(!$auth_api['success']) return $auth_api;
-//        $this->access_token = $auth_api['data']['access_token'];
+        $this->access_token = $this->getToken();
 
         $records = $this->getRecords($request)->get();
         $state_types = StateType::get();
@@ -149,22 +179,23 @@ class ValidateDocumentController extends Controller
 
             foreach ($records as $document)
             {
-                $validate_cpe = new ValidateCpeSunat();
+                $validate_cpe = new ValidateCpe(
+                                    $this->access_token,
+                                    $document->company->number,
+                                    $document->document_type_id,
+                                    $document->series,
+                                    $document->number,
+                                    $document->date_of_issue,
+                                    $document->total
+                                );
 
-                $response = $validate_cpe->search(
-                    $document->company->number,
-                    $document->document_type_id,
-                    $document->series,
-                    $document->number,
-                    Carbon::parse($document->date_of_issue)->format('d/m/Y'),
-                    $document->total
-                );
+                $response = $validate_cpe->search();
 
                 // dd($response, $document);
 
                 if ($response['success']) {
 
-                    $sunat_state_type_id = ($response['data']['comprobante_estado_codigo']=="01") ? "05" : null;
+                    $sunat_state_type_id = $response['data']['state_type_id'];
 
                     if($document->state_type_id !== $sunat_state_type_id){
 

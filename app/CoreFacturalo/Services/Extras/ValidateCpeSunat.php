@@ -18,6 +18,12 @@ class ValidateCpeSunat
     protected $client;
 
     protected $document_state = [
+        '0' => '-1', //'NO EXISTE' custom code
+        '1' => '05', //'ACEPTADO'
+        '2' => '11', //'ANULADO'
+    ];
+
+    protected $document_estado = [
         '-' => '-',
         '0' => 'NO EXISTE',
         '1' => 'ACEPTADO',
