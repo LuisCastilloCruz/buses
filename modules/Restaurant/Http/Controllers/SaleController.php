@@ -38,12 +38,14 @@ class SaleController extends Controller
         $items = Item::where('apply_restaurant',true)->get();
         $categorias = Category::all();
         $configuration= Configuration::first();
+        
+        $configuracion_socket = json_decode($configuration->configuracion_socket, true);
 
         $user = auth()->user();
         $type_user = $user->type;
         $id_user2=$user;
 
-        return view('restaurant::sales.index',compact('items','configuration','id_user2','type_user','categorias'));
+        return view('restaurant::sales.index',compact('items','configuration','id_user2','type_user','categorias', 'configuracion_socket'));
     }
 
     public function columns()

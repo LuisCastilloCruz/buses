@@ -274,6 +274,7 @@
                                :mesaIsActivo.sync="mesaIsActivo"
                                 @onLimPiarDatos="onLimPiarDatos"
                                 @handleClickNivel = "handleClickNivel"
+                                @updateTables="liberarMesa"
                                :configuration="configuration"></tenant-restaurant-pedidos-options>
 
     </div>
@@ -456,6 +457,12 @@ export default {
                     this.onUpdateItem();
                 });
 
+                this.socketClient.on("liberar-mesa", (payload)=>{
+                    this.updateTable(payload);
+                    this.onLimPiarDatos();
+                    this.vistaMesas=true;
+                    this.mesaIsActivo=false;
+                });
 
             }catch(error){
                 this.socketClient = null;
@@ -730,7 +737,8 @@ export default {
                     this.axiosError(error);
                 });
 
-            if(this.socketClient) this.socketClient.emit('mesa-ocupada',true);//recarga estado mesas
+            // if(this.socketClient) this.socketClient.emit('mesa-ocupada',true);//recarga estado mesas
+            if(this.socketClient) this.socketClient.emit("liberar-mesa", {nivel_id: this.mesaActivo.nivel_id , mesa_id: this.mesaActivo.id, estado:1});
 
         },
         onLimPiarDatos(){
@@ -893,6 +901,28 @@ export default {
         handleCurrentChange(val) {
             this.page = val;
         },
+
+                // busca la mesa y actualiza su estado, ademas de que si otro usuario, esta en la misma mesa, lo bloquea
+        liberarMesa(){
+            let payload = {nivel_id: this.mesaActivo.nivel_id , mesa_id: this.mesaActivo.id, estado: 0};
+
+            this.updateTable(payload)
+            if(this.socketClient) this.socketClient.emit("liberar-mesa", payload);
+            this.onLimPiarDatos();
+            this.vistaMesas=true;
+            this.mesaIsActivo=false;
+        },
+        updateTable({nivel_id, mesa_id, estado}){
+            this.niveles.forEach(nivel => {
+                if(nivel.id == nivel_id){
+                    nivel.mesas.forEach(mesa => {
+                        if(mesa.id == mesa_id){
+                            mesa.estado = estado;
+                        }
+                    })
+                }
+            });
+        }
     }
 }
 </script>

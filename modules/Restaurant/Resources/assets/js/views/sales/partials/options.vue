@@ -459,6 +459,7 @@ export default {
                             this.$eventHub.$emit('onLimPiarDatos')
                             this.$eventHub.$emit('handleClickNivel')
                             this.$emit('update:showDialogOptions',false);
+                            this.$emit('updateTables'); // update status table
                         }
 
 

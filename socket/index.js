@@ -37,6 +37,9 @@ io.on('connection',(socket) => {
         socket.broadcast.emit('mesa-ocupada',true); //emito a todos excepto a mi
     })
 
+    socket.on('liberar-mesa', (payload) => {
+        socket.broadcast.emit('liberar-mesa', payload); //emito a todos excepto a mi
+    })
 })
 
 
