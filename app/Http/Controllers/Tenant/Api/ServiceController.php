@@ -5,7 +5,6 @@
     use App\CoreFacturalo\Helpers\Storage\StorageDocument;
     use App\CoreFacturalo\Services\Dni\Dni;
     use App\CoreFacturalo\Services\Extras\ExchangeRate;
-    use App\CoreFacturalo\Services\Extras\ValidateCpeSunat;
     use App\CoreFacturalo\Services\IntegratedQuery\AuthApi;
     use App\CoreFacturalo\Services\IntegratedQuery\ValidateCpe;
     use App\CoreFacturalo\Services\Ruc\Sunat;
@@ -196,22 +195,61 @@
             }
         }
 
+        private function getToken()
+        {
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api-seguridad.sunat.gob.pe/v1/clientesextranet/11d21fcf-2a30-4e98-bd5b-fb56f1e9096f/oauth2/token/',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.sunat.gob.pe%2Fv1%2Fcontribuyente%2Fcontribuyentes&client_id=11d21fcf-2a30-4e98-bd5b-fb56f1e9096f&client_secret=OhQ25%2FGh55x8CFwsal1FAg%3D%3D',
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/x-www-form-urlencoded',
+                    //'Cookie: TS019e7fc2=014dc399cbd5a552b1554969aef7c38dfbc4845c762c261502f754f0a263522b6e67201bea8e5a96586307dbe4057ab8b023e4bbca'
+                ),
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+
+            $data = json_decode($response);
+
+            return $data->access_token;
+        }
+
         public function validateCpeSunat(Request $request)
         {
 //            $auth_api = (new AuthApi())->getToken();
 //            if(!$auth_api['success']) return $auth_api;
-//            $this->access_token = $auth_api['data']['access_token'];
+            $this->access_token = $this->access_token = $this->getToken();
 
             $company_number = $request->numero_ruc_emisor;
             $document_type_id = $request->codigo_tipo_documento;
             $series = $request->serie_documento;
             $number = $request->numero_documento;
-            $date_of_issue=Carbon::parse($request->fecha_de_emision)->format('d/m/Y');
+            $date_of_issue=$request->fecha_de_emision;
             $total = $request->total;
 
-            $validate_cpe = new ValidateCpeSunat();
+            //$validate_cpe = new ValidateCpe();
 
-            $response = $validate_cpe->search($company_number, $document_type_id, $series, $number, $date_of_issue, $total);
+            $validate_cpe = new ValidateCpe(
+                $this->access_token,
+                $company_number,
+                $document_type_id,
+                $series,
+                $number,
+                $date_of_issue,
+                $total
+            );
+
+            $response = $validate_cpe->search();
 
             if ($response['success']) {
 
