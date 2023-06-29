@@ -13,6 +13,7 @@ use App\Models\Tenant\Summary;
 use App\Models\Tenant\Voided;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Configuration;
+use Illuminate\Support\Facades\DB;
 use Modules\Expense\Models\Expense;
 use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Finance\Models\GlobalPayment;
@@ -82,6 +83,7 @@ class OptionController extends Controller
 
         //restaurante
         $this->deletePedidoDetalleRestaurante();
+        $this->deletePedidoRestaurante();
 
         //Document
         $this->deleteInventoryKardex(Document::class);
@@ -257,5 +259,13 @@ class OptionController extends Controller
         }
 
     }
-
+    private function deletePedidoRestaurante()
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::connection('tenant')
+            ->table('restaurante_pedidos')
+            ->where('soap_type_id', '01')
+            ->orWhere('soap_type_id', '')->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+    }
 }
