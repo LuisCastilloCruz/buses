@@ -1,6 +1,7 @@
 <?php
 namespace Modules\Restaurant\Http\Controllers;
 
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use Exception;
 
@@ -38,7 +39,7 @@ class SaleController extends Controller
         $items = Item::where('apply_restaurant',true)->get();
         $categorias = Category::all();
         $configuration= Configuration::first();
-        
+
         $configuracion_socket = json_decode($configuration->configuracion_socket, true);
 
         $user = auth()->user();
@@ -59,10 +60,13 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         try {
+            $company = Company::active();
+            $soap_type_id = $company->soap_type_id;
 
             $mesa_id= $request->pedido['mesa_id'];
 
             $pedido = new Pedido();
+            $pedido->soap_type_id=$soap_type_id;
             $pedido->mesa_id = $mesa_id;
             //$pedido->estado_mesa= $request->pedido['estado_mesa'];
             $pedido->user_id = auth()->user()->id;

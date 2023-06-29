@@ -24,6 +24,8 @@ use Modules\Inventory\Models\{
     ItemWarehouse,
     InventoryKardex
 };
+use Modules\Restaurante\Models\Pedido;
+use Modules\Restaurante\Models\PedidoDetalle;
 use Modules\Sale\Models\SaleOpportunity;
 use Modules\Sale\Models\Contract;
 use Modules\Purchase\Models\FixedAssetPurchase;
@@ -77,6 +79,12 @@ class OptionController extends Controller
         TransporteManifiesto::where('soap_type_id','01')->delete();
         TransporteEncomienda::where('soap_type_id','01')->delete();
         TransportePasaje::where('soap_type_id','01')->delete();
+
+        //restaurante
+        PedidoDetalle::query()->delete();
+        Pedido::where('soap_type_id', '01')
+            ->orWhere('soap_type_id', '')
+            ->delete();
 
         //Document
         $this->deleteInventoryKardex(Document::class);

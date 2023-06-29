@@ -1464,15 +1464,15 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                             </a>
                             <ul class="nav nav-children">
                                 <li class="nav-parent
-                                {{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active nav-expanded':'' }}">
+                                {{ ($secondLevel != null && $secondLevel == 'cash')?'nav-active nav-expanded':'' }}">
                                     <a class="nav-link"
                                        href="#">
                                         POS
                                     </a>
                                     <ul class="nav nav-children">
-                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active':'' }}">
+                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' )?'nav-active':'' }}">
                                             <a class="nav-link"
-                                               href="{{route('tenant.restaurant.cash.filter-pos')}}">
+                                               href="{{route('tenant.restaurant.cash.index')}}">
                                                 Caja
                                             </a>
                                         </li>
@@ -1484,19 +1484,13 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="nav-parent {{ ($secondLevel != null && $secondLevel == 'cash' || $secondLevel == 'mesas')?'nav-active nav-expanded':'' }}">
+                                <li class="nav-parent {{ ($secondLevel != null && $secondLevel == 'mesas')?'nav-active nav-expanded':'' }}">
                                     <a class="nav-link"
                                         href="#">
                                         Mesas
                                     </a>
 
                                     <ul class="nav nav-children">
-                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == '')?'nav-active':'' }}">
-                                            <a class="nav-link"
-                                               href="{{route('tenant.restaurant.cash.index')}}">
-                                                Caja
-                                            </a>
-                                        </li>
                                         <li class="{{ ($secondLevel != null && $secondLevel == 'niveles' && $thridLevel == '')?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.restaurant.niveles.index')}}">
@@ -1518,6 +1512,12 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                         Pedidos
                                     </a>
                                     <ul class="nav nav-children">
+                                        <li class="{{ ( $secondLevel != null && $secondLevel == 'orders')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.restaurant.order.index')}}">
+                                                Pedidos
+                                            </a>
+                                        </li>
                                         <li class="">
                                             <a class="nav-link"
                                                href="{{ route('tenant.restaurant.menu') }}"
@@ -1529,12 +1529,6 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                             <a class="nav-link"
                                                href="{{route('tenant.restaurant.promotion.index')}}">
                                                 Promociones(Banners)
-                                            </a>
-                                        </li>
-                                        <li class="{{ ( $secondLevel != null && $secondLevel == 'orders')?'nav-active':'' }}">
-                                            <a class="nav-link"
-                                               href="{{route('tenant.restaurant.order.index')}}">
-                                                Pedidos
                                             </a>
                                         </li>
                                     </ul>
