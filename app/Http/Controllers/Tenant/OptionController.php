@@ -81,10 +81,7 @@ class OptionController extends Controller
         TransportePasaje::where('soap_type_id','01')->delete();
 
         //restaurante
-        PedidoDetalle::query()->delete();
-        Pedido::where('soap_type_id', '01')
-            ->orWhere('soap_type_id', '')
-            ->delete();
+        $this->deletePedidoDetalleRestaurante();
 
         //Document
         $this->deleteInventoryKardex(Document::class);
@@ -247,6 +244,18 @@ class OptionController extends Controller
         $configuration = Configuration::first();
         $configuration->quantity_documents -= $quantity;
         $configuration->save();
+    }
+
+    private function deletePedidoDetalleRestaurante()
+    {
+        $mills = Pedido::where('soap_type_id', '01')->get();
+
+        foreach ($mills as $mill)
+        {
+            $mill->pedido_detalle()->delete();
+            $mill->delete();
+        }
+
     }
 
 }
