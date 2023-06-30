@@ -81,7 +81,7 @@
                     <label class="control-label">Tipo comprobante</label>
                     <el-select v-model="document.document_type_id" @change="changeDocumentType" popper-class="el-select-document_type" dusk="document_type_id" class="border-left rounded-left border-info">
                         <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                        <el-option key="nv" value="nv" label="NOTA DE VENTA"></el-option>
+                        <el-option key="nv" value="80" label="NOTA DE VENTA"></el-option>
                     </el-select>
                     <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
                 </div>
@@ -212,7 +212,7 @@
 
 <script>
 import DocumentOptions from "@views/documents/partials/options.vue";
-import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
+import SaleNoteOptions from '@views/sale_notes/partials/option_aqp.vue'
 import {exchangeRate, functions} from '@mixins/functions'
 
 export default {
@@ -432,13 +432,15 @@ export default {
                 this.resource_documents = "documents";
             }
 
+            console.log(this.resource_documents)
+
             this.$http
                 .post(`/${this.resource_documents}`, this.document)
                 .then(response => {
                     if (response.data.success) {
                         this.documentNewId = response.data.data.id;
                         // console.log(this.document.document_type_id)
-                        if (this.document.document_type_id === "nv") {
+                        if (this.document.document_type_id === "80") {//nota de venta
                             this.form_cash_document.sale_note_id = response.data.data.id;
                             this.showDialogSaleNoteOptions = true;
                         } else {
@@ -449,8 +451,8 @@ export default {
 
                         //this.autoPrintDocument()
 
-                        if(this.recordId>0 && this.documentNewId>0){
-                            this.updatePedidoDocument(this.recordId,this.documentNewId)
+                        if(this.recordId>0 && (this.documentNewId>0)){
+                            this.updatePedidoDocument(this.recordId,this.form_cash_document.document_id,this.form_cash_document.sale_note_id)
                             this.$emit('update:recordId',0);
                             this.$emit('update:mesaIsActivo',false);
 
@@ -550,7 +552,6 @@ export default {
             //this.validateIdentityDocumentType()
             // if(this.recordId>0)
             // {
-            console.log("preparando items")
                 this.prepararItems()
             // }
             this.clickAddPayment()
@@ -687,14 +688,30 @@ export default {
         },
         changeDocumentType() {
             // this.filterSeries()
-            this.document.is_receivable = false;
+            // this.document.is_receivable = false;
+            // this.series = [];
+            // if (this.document.document_type_id !== "nv") {
+            //     this.filterSeries();
+            //     this.is_document_type_invoice = true;
+            // } else {
+            //     this.is_document_type_invoice = false;
+            // }
+
+
             this.series = [];
             if (this.document.document_type_id !== "nv") {
                 this.filterSeries();
                 this.is_document_type_invoice = true;
             } else {
+                this.series = _.filter(this.all_series, {
+                    document_type_id: "80",
+                });
+                this.document.series_id =
+                    this.series.length > 0 ? this.series[0].id : null;
+
                 this.is_document_type_invoice = false;
             }
+
         },
         async validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
@@ -943,11 +960,12 @@ export default {
 
         },
 
-        updatePedidoDocument(pedido_id,document_id){
+        updatePedidoDocument(pedido_id,document_id,note_id){
             this.loading = true;
             let data = {
                 pedido_id : pedido_id,
                 document_id:document_id,
+                note_id:note_id,
                 mesa_id:this.mesa_id
             }
             this.$http

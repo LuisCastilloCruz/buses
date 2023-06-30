@@ -122,6 +122,7 @@ class SaleController extends Controller
 
             $pedido = Pedido::findOrFail($request->pedido_id);
             $pedido->document_id=$request->document_id;
+            $pedido->note_id=$request->note_id;
             $pedido->update();
 
             $mesa = Mesa::findOrFail($request->mesa_id);
