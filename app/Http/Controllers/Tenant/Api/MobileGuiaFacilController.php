@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Tenant\Api;
 
+use App\CoreFacturalo\Facturalo;
 use App\Http\Controllers\Tenant\EmailController;
+use App\Http\Requests\Tenant\DispatchRequest;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Tenant\Item;
@@ -20,6 +22,7 @@ use App\Models\Tenant\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\Tenant\PersonRequest;
+use Modules\ApiPeruDev\Http\Controllers\ServiceDispatchController;
 use Modules\Dispatch\Http\Controllers\DispatcherController;
 use Modules\Dispatch\Http\Requests\DispatcherRequest;
 use Modules\Item\Http\Requests\ItemRequest;
@@ -686,6 +689,72 @@ class MobileGuiaFacilController extends Controller
     public function eliminarTransportista(Request $request){
         $row = (new DispatcherController())->destroy($request->id);
         return $row;
+    }
+
+    //==================GUIA DE REMISIÓN REMITENTE
+    public function store(Request $request)
+    {
+        $company = Company::query()
+            ->select('soap_type_id')
+            ->first();
+        $configuration = Configuration::first();
+        $res = [];
+
+        dd($request);
+        if ($request->series[0] == 'T') {
+            /** @var Facturalo $fact */
+            $fact = DB::connection('tenant')->transaction(function () use ($request, $configuration) {
+                $facturalo = new Facturalo();
+                $facturalo->save($request->all());
+                $document = $facturalo->getDocument();
+                $data = (new ServiceDispatchController())->getData($document->id);
+                $facturalo->setXmlUnsigned((new ServiceDispatchController())->createXmlUnsigned($data));
+                $facturalo->signXmlUnsigned();
+//                $facturalo->createXmlUnsigned();
+//                $facturalo->signXmlUnsigned();
+                $facturalo->createPdf();
+//                if($configuration->isAutoSendDispatchsToSunat()) {
+//                     $facturalo->senderXmlSignedBill();
+//                }
+                return $facturalo;
+            });
+
+            $document = $fact->getDocument();
+//            if ($company->soap_type_id === '02') {
+//                $res = ((new ServiceDispatchController())->send($document->external_id));
+//            }
+            // $response = $fact->getResponse();
+        } else {
+            /** @var Facturalo $fact */
+            $fact = DB::connection('tenant')->transaction(function () use ($request) {
+                $facturalo = new Facturalo();
+                $facturalo->save($request->all());
+                $facturalo->createPdf();
+
+                return $facturalo;
+            });
+
+            $document = $fact->getDocument();
+            // $response = $fact->getResponse();
+        }
+
+        if (!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
+            $reference = Document::find($document->reference_document_id);
+            if (!empty($reference)) {
+                $reference->updatePdfs();
+            }
+        }
+
+        $message = "Se creo la guía de remisión {$document->series}-{$document->number}";
+
+        return [
+            'success' => true,
+            'message' => $message,
+            'data' => [
+                'id' => $document->id,
+                'send_sunat' => $configuration->auto_send_dispatchs_to_sunat
+            ],
+        ];
     }
 
 }

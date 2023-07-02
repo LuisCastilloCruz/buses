@@ -162,6 +162,11 @@ if ($hostname) {
                 Route::get('/get_delivery_addresses/{person_id}', 'Tenant\DispatchCarrierController@getDeliveryAddresses');
             });
 
+            Route::prefix('guia-remitente')->group(function () {
+                Route::post('/guardar', 'Tenant\Api\MobileGuiaFacilController@store');
+            });
+
+
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 
