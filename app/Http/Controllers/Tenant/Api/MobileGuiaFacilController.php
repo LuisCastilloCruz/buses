@@ -692,15 +692,13 @@ class MobileGuiaFacilController extends Controller
     }
 
     //==================GUIA DE REMISIÓN REMITENTE
-    public function store(Request $request)
+    public function storeGuiaRemitente(Request $request)
     {
         $company = Company::query()
             ->select('soap_type_id')
             ->first();
         $configuration = Configuration::first();
         $res = [];
-
-        dd($request);
         if ($request->series[0] == 'T') {
             /** @var Facturalo $fact */
             $fact = DB::connection('tenant')->transaction(function () use ($request, $configuration) {
