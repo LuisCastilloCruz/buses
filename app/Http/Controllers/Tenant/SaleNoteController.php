@@ -1031,6 +1031,12 @@ class SaleNoteController extends Controller
         $this->configuration = Configuration::first();
         // $configuration = $this->configuration->formats;
         $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
+        if (($format_pdf === 'ticket') OR
+            ($format_pdf === 'ticket_58') OR
+            ($format_pdf === 'ticket_50'))
+        {
+            $base_template = Establishment::find($this->document->establishment_id)->template_ticket_pdf;
+        }
 
         $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
 

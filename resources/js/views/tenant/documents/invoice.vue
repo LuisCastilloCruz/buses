@@ -16,7 +16,7 @@
                          style="background-color: #FFFFFF !important;">
                         <div class="col-xl-2 col-md-2 col-12">
                             <logo :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''"
-                                  :position_class="'text-left'"
+                                  :position_class="'text-left'"tipo_doc
                                   url="/"></logo>
                         </div>
                         <div class="col-xl-6 col-md-6 col-12 pl-2 align-self-center">

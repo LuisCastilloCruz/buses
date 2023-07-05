@@ -57,9 +57,10 @@
 
                     <div class="row">
                         <div class="col-md-4">
-                            <el-select v-model="tipo_doc">
+                            <el-select v-model="tipo_doc" @change="cambiar_tipo_dosc_cliente">
                                 <el-option value="1" label="DNI"></el-option>
                                 <el-option value="6" label="RUC"></el-option>
+                                <el-option value="0" label="CLIENTES VARIOS"></el-option>
                             </el-select>
                         </div>
                         <div class="col-md-8">
@@ -224,7 +225,9 @@ export default {
     props: ["showDialogOptions", "recordId", "showClose", "showGenerate", "type", "id_user2","typeUser", "configuration","itemaqp","mesa_id","mesaIsActivo"],
     watch:{
         cliente_numero(){
-            if(this.cliente_numero.length >= 8){
+            if( (this.tipo_doc == "1" || this.tipo_doc == "0") && this.cliente_numero.length >= 8){
+                this.buscar_cliente()
+            }else if(this.tipo_doc == "6" && this.cliente_numero.length >= 11){
                 this.buscar_cliente()
             }
         }
@@ -294,7 +297,8 @@ export default {
             });
         },
         initForm() {
-            this.generate = this.showGenerate ? true : false;
+            this.tipo_doc='1',
+            this.generate = this.showGenerate ? true : false,
             this.errors = {};
             this.form = {
                 id: null,
@@ -985,6 +989,11 @@ export default {
         limitText() {
             if (this.inputValue.length == 8) {
                 this.buscar_cliente()
+            }
+        },
+        cambiar_tipo_dosc_cliente(){
+            if(this.tipo_doc == "0"){
+                this.cliente_numero="99999999"
             }
         },
         startConnectionQzTray(){
