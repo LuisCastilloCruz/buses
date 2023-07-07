@@ -7,7 +7,7 @@
     // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
 
 
-    $allowed_items = 60;
+    $allowed_items = 50;
     $quantity_items = $document->items()->count();
     $cycle_items = $allowed_items - ($quantity_items * 5);
     $total_weight = 0;
