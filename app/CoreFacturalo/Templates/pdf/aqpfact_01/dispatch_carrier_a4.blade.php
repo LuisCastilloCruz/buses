@@ -64,9 +64,16 @@
     <table class="full-width mt-10 mb-10">
         <tbody >
         <tr>
-            <td class="pl-3 text-center" width="35%"><strong>Fecha Emisión:</strong> {{ $document->date_of_issue->format('Y-m-d') }}</td>
-            <td class="pl-3 text-center" width="35%"><strong>Fecha Inicio de Traslado:</strong> {{ $document->date_of_shipping->format('Y-m-d') }}</td>
-            <td class="pl-3 text-center"width="35%"><strong >Peso Bruto Total({{ $document->unit_type_id }})</strong> : {{ $document->total_weight }}
+            <td class="text-center" width="25%" style="border-right: 1px solid black"><strong>Fecha Emisión:</strong></td>
+            <td class="text-center" width="25%" style="border-right: 1px solid black"><strong>Fecha Inicio de Traslado:</strong> </td>
+            <td class="text-center" width="25%" style="border-right: 1px solid black"><strong >Peso Bruto Total({{ $document->unit_type_id }})</strong></td>
+            <td class="text-center" width="25%"><strong >Guía de remisión remitente</strong></td>
+        </tr>
+        <tr>
+            <td class="pl-2 text-center" width="25%" style="border-right: 1px solid black">{{ $document->date_of_issue->format('d-m-Y') }}</td>
+            <td class="pl-2 text-center" width="25%" style="border-right: 1px solid black">{{ $document->date_of_shipping->format('d-m-Y') }}</td>
+            <td class="pl-2 text-center" width="25%" style="border-right: 1px solid black">{{ $document->total_weight }} </td>
+            <td class="pl-2 text-center" width="25%">{{ $document->dispatch_number }} </td>
         </tr>
         </tbody>
     </table>
@@ -75,7 +82,7 @@
 <table class="mt-2 full-width mt-10 mb-10">
     <tbody>
     <tr>
-        <td class="pl-3" width="48%" style="border: 1px solid black">
+        <td class="pl-2" width="48%" style="border: 1px solid black">
             <table>
                 <tr>
                     <td class="full-width">
@@ -93,7 +100,7 @@
         <td width="4%">
 
         </td>
-        <td class="pl-3" width="48%" style="border: 1px solid black">
+        <td class="pl-2" width="48%" style="border: 1px solid black">
             <table>
                 <tr>
                     <td class="full-width">
@@ -115,7 +122,7 @@
 <table class="mt-2 full-width mt-10 mb-10">
     <tbody>
     <tr>
-        <td class="pl-3" width="48%" style="border: 1px solid black">
+        <td class="pl-2" width="48%" style="border: 1px solid black">
             <table>
                 <tr>
                     <td class="full-width">
@@ -124,7 +131,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <p style="font-size: 10px">{{ $document->sender_data['name'] }}- {{ $document->sender_data['identity_document_type_description'] }} {{ $document->sender_data['number'] }}</p>
+                        <p style="font-size: 11px">{{ $document->sender_data['name'] }}- {{ $document->sender_data['identity_document_type_description'] }} {{ $document->sender_data['number'] }}</p>
                     </td>
                 </tr>
                 <tr>
@@ -139,7 +146,7 @@
         <td width="4%">
 
         </td>
-        <td class="pl-3" width="48%" style="border: 1px solid black">
+        <td class="pl-2" width="48%" style="border: 1px solid black">
             <table>
                 <tr>
                     <td class="full-width">
@@ -148,7 +155,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <p style="font-size: 10px">{{ $document->receiver_data['name'] }}- {{ $document->receiver_data['identity_document_type_description'] }} {{ $document->receiver_data['number'] }}</p>
+                        <p style="font-size: 11px">{{ $document->receiver_data['name'] }}- {{ $document->receiver_data['identity_document_type_description'] }} {{ $document->receiver_data['number'] }}</p>
                     </td>
                 </tr>
 
@@ -169,21 +176,21 @@
     <table class="full-width mt-10 mb-10">
         <thead>
         <tr>
-            <th class="border-bottom text-left" colspan="2">DATOS DE LOS VEHÍCULOS</th>
+            <th class="border-bottom text-left pl-2" colspan="2">DATOS DE LOS VEHÍCULOS</th>
         </tr>
         </thead>
         <tbody>
         @if($document->transport_data)
             <tr>
-                <td>
-                    <b>PRINCIPAL:</b>
+                <td class="pl-2 pt-2">
+                    <b>PRINCIPAL</b>
                     <p><b>N° de placa:</b> {{ $document->transport_data['plate_number'] }} <br></p>
                     <p><b>N° de TUCE o Cert. de Hab. Vehicular:</b> {{ $document->transport_data['hab_veh'] }} <br></p>
 
                 </td>
                 @if($document->transport2_data)
-                    <td>
-                        <b>SECUNDARIO:</b>
+                    <td  class=" pl-2 pt-2">
+                        <b>SECUNDARIO</b>
                         <p><b>N° de placa aqui:</b> {{ $document->transport2_data['plate_number'] }} <br></p>
                         <p><b>N° de TUCE o Cert. de Hab. Vehicular:</b> {{ $document->transport2_data['hab_veh'] }} <br></p>
                     </td>
@@ -198,23 +205,23 @@
     <table class="full-width mt-10 mb-10">
         <thead>
         <tr>
-            <th class="border-bottom text-left" colspan="2">DATOS DE LOS CONDUCTORES</th>
+            <th class="border-bottom text-left pl-2" colspan="2">DATOS DE LOS CONDUCTORES</th>
         </tr>
         </thead>
         <tbody>
 
         @if($document->driver)
             <tr>
-                <td>
-                    <b>PRINCIPAL:</b>
-                    <p><b>Conductor:</b> {{ $document->driver->number }} <br></p>
+                <td class="pl-2">
+                    <b>PRINCIPAL</b>
+                    <p><b>Conductor:</b> {{ $document->driver->number }} - {{ $document->driver->name }} <br></p>
                     <p><b>Licencia del conductor:</b> {{ $document->driver->license }} <br></p>
 
                 </td>
                 @if($document->driver2_data)
-                    <td>
-                        <b>SECUNDARIO:</b>
-                        <p><b>Conductor:</b> {{ $document->driver2_data['number'] }} <br></p>
+                    <td class="pl-2">
+                        <b>SECUNDARIO</b>
+                        <p><b>Conductor:</b> {{ $document->driver2_data['number'] }} - {{ $document->driver2_data['name'] }}<br></p>
                         <p><b>Licencia del conductor:</b> {{ $document->driver2_data['license'] }} <br></p>
                     </td>
                 @endif
@@ -223,7 +230,7 @@
         </tbody>
     </table>
 </div>
-<table class="full-width border-box mt-10 mb-10">
+<table class="full-width mt-10 mb-10">
     <thead class="">
     <tr>
         <th class="border-top-bottom py-1 text-center text-white" style="background: <?php echo e($color1); ?>">Item</th>

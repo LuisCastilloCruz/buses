@@ -22,6 +22,20 @@
     @if($document['observations'])
         <cbc:Note><![CDATA[{{ $document['observations'] }}]]></cbc:Note>
     @endif
+
+    <!-- DOCUMENTOS ADICIONALES (Catalogo D41)-->
+    @if($document['dispatch_number'])
+        <cac:AdditionalDocumentReference>
+            <cbc:ID>{{ $document['dispatch_number'] }}</cbc:ID>
+            <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Documento relacionado al transporte" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo61">09</cbc:DocumentTypeCode>
+            <cbc:DocumentType>Gu&#237;a de Remisi&#243;n Remitente</cbc:DocumentType>
+            <cac:IssuerParty>
+                <cac:PartyIdentification>
+                    <cbc:ID schemeID="6" schemeAgencyName="PE:SUNAT" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">{{ $document['sender_number']}}</cbc:ID>
+                </cac:PartyIdentification>
+            </cac:IssuerParty>
+        </cac:AdditionalDocumentReference>
+    @endif
     <cac:Signature>
         <cbc:ID>{{ config('configuration.signature_uri') }}</cbc:ID>
         <cbc:Note>{{ config('configuration.signature_note') }}</cbc:Note>
