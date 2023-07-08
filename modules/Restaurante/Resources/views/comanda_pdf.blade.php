@@ -16,7 +16,7 @@
             </tr>
             <tr>
                 <td style="width:90px"><b>MESA:</b> <span style="font-size: 1.5em;font-weight: bold">{{$pedido->mesa->numero}}</span></td>
-                <td>HORA: <b>{{$pedido->created_at->format('H:m')}}</b></td>
+                <td>HORA: <b>{{$fecha_hora}}</b></td>
             </tr>
             <tr>
                 <td style="border:thin solid grey;text-align: center"> CANT </td>

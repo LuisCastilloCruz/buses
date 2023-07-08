@@ -14,6 +14,7 @@ class SalesController extends Controller
 
     public function comandaPdfPrint(Request $request)
     {
+        $fecha_hora = date("H:i");
         $pedido_id= $request->id;
         $pedido = Pedido::with('pedido_detalle','mozo','mesa')
         ->where("id",$pedido_id)
@@ -35,7 +36,7 @@ class SalesController extends Controller
             'margin_bottom' => 2,
             'margin_left' => 2
         ]);
-        $html = view('restaurante::comanda_pdf', compact('pedido','detalles'))->render();
+        $html = view('restaurante::comanda_pdf', compact('fecha_hora','pedido','detalles'))->render();
 
 
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
