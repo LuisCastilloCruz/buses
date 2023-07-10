@@ -253,14 +253,7 @@
             </td>
             <td class="text-center desc-9 align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left desc-9 align-top">
-                @if($row->item->name)
-                    {!!$row->item->name!!}
-                @elseif($row->name_product_pdf)
-                    {!!$row->name_product_pdf!!}
-                @else
-                    {!!$row->item->description!!}
-                @endif
-
+                {!!$row->item->description!!}
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
