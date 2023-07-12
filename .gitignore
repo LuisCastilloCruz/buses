@@ -37,3 +37,5 @@ app/Http/Controllers/TestController.php
 
 
 
+*.json
+*.json

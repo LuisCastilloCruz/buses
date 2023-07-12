@@ -163,7 +163,7 @@ if ($hostname) {
 //            });
 
             Route::prefix('guia-remitente')->group(function () {
-                Route::post('/guardar', 'Tenant\Api\DispatchController@storefr');
+                Route::post('/guardar', 'Tenant\Api\DispatchController@store');
             });
 
 

@@ -20,7 +20,7 @@ class DownloadController extends Controller
 
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
-        if ($format != null) $this->reloadPDF($document, 'invoice', $format);
+        if ($format != null) $this->reloadPDF($document, $type, $format);
 
         if(in_array($document->document_type_id, ['09', '31']) && $type === 'cdr') {
             $type = 'cdr_xml';
@@ -47,6 +47,9 @@ class DownloadController extends Controller
                 break;
             case 'sale_note':
                 $folder = 'sale_note';
+                break;
+            case 'dispatch':
+                $folder = 'pdf';
                 break;
 
             default:

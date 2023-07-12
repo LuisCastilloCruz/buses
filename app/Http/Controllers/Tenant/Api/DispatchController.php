@@ -30,6 +30,7 @@ class DispatchController extends Controller
             $data = (new ServiceDispatchController())->getData($document->id);
             $facturalo->setXmlUnsigned((new ServiceDispatchController())->createXmlUnsigned($data));
             $facturalo->signXmlUnsigned();
+            $facturalo->createPdf();
             return $facturalo;
         });
 
@@ -41,6 +42,9 @@ class DispatchController extends Controller
                 'number' => $document->number_full,
                 'filename' => $document->filename,
                 'external_id' => $document->external_id,
+                'download_external_pdf'=> $document->download_external_pdf,
+                'print_ticket' => url('')."/print/dispatch/{$document->external_id}/ticket",
+                'print_ticket_58' => url('')."/print/dispatch/{$document->external_id}/ticket_58",
             ],
         ];
     }
