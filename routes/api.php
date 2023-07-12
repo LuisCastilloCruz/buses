@@ -89,32 +89,32 @@ if ($hostname) {
 
 
             //////guias
-            Route::prefix('dispatches')->group(function () {
-                Route::get('', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
-                Route::get('/columns', 'Tenant\DispatchController@columns');
-                Route::get('/records', 'Tenant\DispatchController@records');
-                Route::get('/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchController@create');
-                Route::post('/tables', 'Tenant\DispatchController@tables');
-                //Route::post('', 'Tenant\DispatchController@store');
-                Route::get('/record/{id}', 'Tenant\DispatchController@record');
-                Route::post('/sendSunat/{document}', 'Tenant\DispatchController@sendDispatchToSunat');
-                Route::post('/email', 'Tenant\DispatchController@email');
-                Route::get('/generate/{sale_note}', 'Tenant\DispatchController@generate');
-                Route::get('/record/{id}/tables', 'Tenant\DispatchController@generateDocumentTables');
-                Route::post('/record/{id}/set-document-id', 'Tenant\DispatchController@setDocumentId');
-                Route::get('/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
-                Route::post('/items', 'Tenant\DispatchController@getItemsFromDispatches');
-                Route::post('/getDocumentType', 'Tenant\DispatchController@getDocumentTypeToDispatches');
-                Route::get('/data_table', 'Tenant\DispatchController@data_table');
-                Route::get('/search/customers', 'Tenant\DispatchController@searchCustomers');
-                Route::get('/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
-                //Route::post('/status_ticket', 'Tenant\Api\DispatchController@statusTicket');
-                Route::get('create_new/{table}/{id}', 'Tenant\DispatchController@createNew');
-                Route::get('/get_origin_addresses/{establishment_id}', 'Tenant\DispatchController@getOriginAddresses');
-                Route::get('/get_delivery_addresses/{person_id}', 'Tenant\DispatchController@getDeliveryAddresses');
-
-
-            });
+//            Route::prefix('dispatches')->group(function () {
+//                Route::get('', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
+//                Route::get('/columns', 'Tenant\DispatchController@columns');
+//                Route::get('/records', 'Tenant\DispatchController@records');
+//                Route::get('/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchController@create');
+//                Route::post('/tables', 'Tenant\DispatchController@tables');
+//                //Route::post('', 'Tenant\DispatchController@store');
+//                Route::get('/record/{id}', 'Tenant\DispatchController@record');
+//                Route::post('/sendSunat/{document}', 'Tenant\DispatchController@sendDispatchToSunat');
+//                Route::post('/email', 'Tenant\DispatchController@email');
+//                Route::get('/generate/{sale_note}', 'Tenant\DispatchController@generate');
+//                Route::get('/record/{id}/tables', 'Tenant\DispatchController@generateDocumentTables');
+//                Route::post('/record/{id}/set-document-id', 'Tenant\DispatchController@setDocumentId');
+//                Route::get('/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
+//                Route::post('/items', 'Tenant\DispatchController@getItemsFromDispatches');
+//                Route::post('/getDocumentType', 'Tenant\DispatchController@getDocumentTypeToDispatches');
+//                Route::get('/data_table', 'Tenant\DispatchController@data_table');
+//                Route::get('/search/customers', 'Tenant\DispatchController@searchCustomers');
+//                Route::get('/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
+//                //Route::post('/status_ticket', 'Tenant\Api\DispatchController@statusTicket');
+//                Route::get('create_new/{table}/{id}', 'Tenant\DispatchController@createNew');
+//                Route::get('/get_origin_addresses/{establishment_id}', 'Tenant\DispatchController@getOriginAddresses');
+//                Route::get('/get_delivery_addresses/{person_id}', 'Tenant\DispatchController@getDeliveryAddresses');
+//
+//
+//            });
 
             Route::prefix('conductores')->group(function () {
                 Route::post('/listar', 'Tenant\Api\MobileGuiaFacilController@conductores');
@@ -137,33 +137,33 @@ if ($hostname) {
                 Route::delete('/eliminar/{id}', 'Tenant\Api\MobileGuiaFacilController@eliminarTransportista');
             });
 
-            Route::prefix('dispatch_carrier')->group(function () {
-                Route::get('', 'Tenant\DispatchCarrierController@index')->name('tenant.dispatch_carrier.index');
-                Route::get('/columns', 'Tenant\DispatchCarrierController@columns');
-                Route::get('/records', 'Tenant\DispatchCarrierController@records');
-                Route::get('/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchCarrierController@create');
-                Route::post('/tables', 'Tenant\DispatchCarrierController@tables');
-                Route::post('', 'Tenant\DispatchCarrierController@store');
-                Route::get('/record/{id}', 'Tenant\DispatchCarrierController@record');
-                Route::post('/sendSunat/{document}', 'Tenant\DispatchCarrierController@sendDispatchToSunat');
-                Route::post('/email', 'Tenant\DispatchCarrierController@email');
-                Route::get('/generate/{sale_note}', 'Tenant\DispatchCarrierController@generate');
-                Route::get('/record/{id}/tables', 'Tenant\DispatchCarrierController@generateDocumentTables');
-                Route::post('/record/{id}/set-document-id', 'Tenant\DispatchCarrierController@setDocumentId');
-                Route::get('/client/{id}', 'Tenant\DispatchCarrierController@dispatchesByClient');
-                Route::post('/items', 'Tenant\DispatchCarrierController@getItemsFromDispatches');
-                Route::post('/getDocumentType', 'Tenant\DispatchCarrierController@getDocumentTypeToDispatches');
-                Route::get('/data_table', 'Tenant\DispatchCarrierController@data_table');
-                Route::get('/search/customers', 'Tenant\DispatchCarrierController@searchCustomers');
-                Route::get('/search/customer/{id}', 'Tenant\DispatchCarrierController@searchClientById');
-                Route::post('/status_ticket', 'Tenant\Api\DispatchCarrierController@statusTicket');
-                Route::get('create_new/{table}/{id}', 'Tenant\DispatchCarrierController@createNew');
-                Route::get('/get_origin_addresses/{establishment_id}', 'Tenant\DispatchCarrierController@getOriginAddresses');
-                Route::get('/get_delivery_addresses/{person_id}', 'Tenant\DispatchCarrierController@getDeliveryAddresses');
-            });
+//            Route::prefix('dispatch_carrier')->group(function () {
+//                Route::get('', 'Tenant\DispatchCarrierController@index')->name('tenant.dispatch_carrier.index');
+//                Route::get('/columns', 'Tenant\DispatchCarrierController@columns');
+//                Route::get('/records', 'Tenant\DispatchCarrierController@records');
+//                Route::get('/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchCarrierController@create');
+//                Route::post('/tables', 'Tenant\DispatchCarrierController@tables');
+//                Route::post('', 'Tenant\DispatchCarrierController@store');
+//                Route::get('/record/{id}', 'Tenant\DispatchCarrierController@record');
+//                Route::post('/sendSunat/{document}', 'Tenant\DispatchCarrierController@sendDispatchToSunat');
+//                Route::post('/email', 'Tenant\DispatchCarrierController@email');
+//                Route::get('/generate/{sale_note}', 'Tenant\DispatchCarrierController@generate');
+//                Route::get('/record/{id}/tables', 'Tenant\DispatchCarrierController@generateDocumentTables');
+//                Route::post('/record/{id}/set-document-id', 'Tenant\DispatchCarrierController@setDocumentId');
+//                Route::get('/client/{id}', 'Tenant\DispatchCarrierController@dispatchesByClient');
+//                Route::post('/items', 'Tenant\DispatchCarrierController@getItemsFromDispatches');
+//                Route::post('/getDocumentType', 'Tenant\DispatchCarrierController@getDocumentTypeToDispatches');
+//                Route::get('/data_table', 'Tenant\DispatchCarrierController@data_table');
+//                Route::get('/search/customers', 'Tenant\DispatchCarrierController@searchCustomers');
+//                Route::get('/search/customer/{id}', 'Tenant\DispatchCarrierController@searchClientById');
+//                Route::post('/status_ticket', 'Tenant\Api\DispatchCarrierController@statusTicket');
+//                Route::get('create_new/{table}/{id}', 'Tenant\DispatchCarrierController@createNew');
+//                Route::get('/get_origin_addresses/{establishment_id}', 'Tenant\DispatchCarrierController@getOriginAddresses');
+//                Route::get('/get_delivery_addresses/{person_id}', 'Tenant\DispatchCarrierController@getDeliveryAddresses');
+//            });
 
             Route::prefix('guia-remitente')->group(function () {
-                Route::post('/guardar', 'Tenant\Api\MobileGuiaFacilController@storeGuiaRemitente');
+                Route::post('/guardar', 'Tenant\Api\DispatchController@storefr');
             });
 
 
