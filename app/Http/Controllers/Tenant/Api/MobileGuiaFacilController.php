@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Tenant\Api;
 use App\CoreFacturalo\Facturalo;
 use App\Http\Controllers\Tenant\EmailController;
 use App\Http\Requests\Tenant\DispatchRequest;
+use App\Models\Tenant\Catalogs\TransferReasonType;
+use App\Models\Tenant\Catalogs\TransportModeType;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Tenant\Item;
@@ -753,6 +755,55 @@ class MobileGuiaFacilController extends Controller
                 'send_sunat' => $configuration->auto_send_dispatchs_to_sunat
             ],
         ];
+    }
+
+    public function getAllViewDispatchdata(){
+        $series = Series::where('establishment_id', auth()->user()->establishment_id)
+                ->whereIn('document_type_id', ['09'])
+                ->get()
+                ->transform(function($row) {
+                    return [
+                        "id" =>$row->id,
+                        "number"=>$row->number,
+                    ];
+                });
+        $modo_traslado = TransportModeType::get()
+                        ->transform(function($row) {
+                            return [
+                                "id" =>$row->id,
+                                "description"=>$row->description,
+                            ];
+                        });
+
+        $motivo_traslado = TransferReasonType::get()
+                        ->transform(function($row) {
+                            return [
+                                "id" =>$row->id,
+                                "description"=>$row->description,
+                            ];
+                        });
+
+
+        return [
+            'data' => [
+                'success' => true,
+                'series' =>$series,
+                'modo_traslado' => $modo_traslado,
+                'motivo_traslado' => $motivo_traslado
+            ]
+        ];
+    }
+    //==================GUIA DE REMISIÓN TRANSPORTISTA
+    public function getSeriesDispatchCarrier()
+    {
+
+        return Series::where('establishment_id', auth()->user()->establishment_id)
+            ->whereIn('document_type_id', ['31'])
+            ->get()
+            ->transform(function($row) {
+                return $row->getApiRowResource();
+            });
+
     }
 
 }

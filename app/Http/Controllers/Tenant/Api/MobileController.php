@@ -206,7 +206,13 @@ class MobileController extends Controller
                     ->whereIn('document_type_id', ['01', '03'])
                     ->get()
                     ->transform(function($row) {
-                        return $row->getApiRowResource();
+                        return [
+                            "id" =>$row->id,
+                            "establishment_id"=>$row->establishment_id,
+                            "document_type_id"=>$row->document_type_id,
+                            "number"=>$row->number,
+                            "contingency"=>$row->contingency
+                        ];
                     });
 
     }
