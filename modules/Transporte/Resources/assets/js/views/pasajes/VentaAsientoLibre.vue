@@ -499,16 +499,6 @@ export default {
         asiento(value){
             this.numeroAsiento = value ? value.numero_asiento : null;
         },
-        // transportePasaje(value){
-        //
-        //     if(!value){
-        //         this.estadoAsiento = 2;
-        //         this.pasajeroId = {};
-        //         this.precio = null;
-        //         this.clienteId =null;
-        //     }
-        //
-        // },
         tipoVenta(newVal){
             if(newVal == 1) {
 
@@ -543,6 +533,7 @@ export default {
     },
     data(){
         return ({
+            resources:"transportes",
             loading_search:false,
             dniPasajero:null,
             nombrePasajero:null,
@@ -631,7 +622,8 @@ export default {
                     descripcion: "",
                     importe: 0
             },
-            total_vista:0
+            total_vista:0,
+            transporte_configuration:[]
         });
     },
     methods:{
@@ -658,12 +650,20 @@ export default {
                 .then(response => {
                     this.identity_document_types = response.data.identity_document_types.filter(  doc => doc.description == "DNI" || doc.description == "CE" || doc.description == "Pasaporte" );
                 })
+            await this.$http.get(`/${this.resources}/configuration/record`)
+                .then(response => {
+                    this.transporte_configuration = response.data.data
+                })
+
             this.estadoAsiento = 2;
-            this.initProducto();
-            //this.initDocument();
+
+            if( this.transporte_configuration.pasaje_afecto_igv) { //jala la configuración de afectacion de igv de la nueva opcion de configuracion des módulo transporte
+                this.initProductoGrabado();
+            }else{
+                this.initProductoExonerado();
+            }
             this.clickAddPayment();
             this.onCalculateTotals();
-            //this.validateIdentityDocumentType();
             const date = moment().format("YYYY-MM-DD");
             await this.searchExchangeRateByDate(date).then((res) => {
                 this.document.exchange_rate_sale = res;
@@ -681,24 +681,15 @@ export default {
             }
 
             this.document.document_type_id = (this.documentTypesInvoice.length > 0)?this.documentTypesInvoice[0].id:null;
-
-
-
-            // let element = this.$refs.pasajero;
-            //
-            // this.$nextTick(() => element && element.focus());
             this.document.document_type_id = '03';
             this.changeDocumentType();
-            //await this.searchCliente();
-            //await this.searchPasajero();
             this.filterSeries();
-            //this.filterCustomers();
         },
 
         async guardarComprobante(){
             console.log('programa')
             console.log(this.programacion)
-            //
+
             let validator = this.validate();
 
             if(validator.fails){
@@ -708,7 +699,6 @@ export default {
 
             if(!this.pasajeroId && !this.isReserva) {
                 this.loading = true;
-                //console.log("mala")
 
                await this.$http
                     .post("/persons", this.persona)
@@ -733,7 +723,6 @@ export default {
             }
             if(!this.clienteId && this.document.document_type_id == '01' && !this.isReserva) {
                 this.loading = true;
-                //console.log("lala")
                 await this.$http
                     .post("/persons", this.empresa)
                     .then((response) => {
@@ -742,7 +731,6 @@ export default {
                         this.document.customer_id=response.data.id
                     })
                     .finally(() => {
-                        //this.loading = false;
                         this.errors = {};
                         this.loading = false;
                     })
@@ -754,62 +742,62 @@ export default {
             else{
                 console.log("Ningun contenido")
             }
-
-            // console.log("this.clienteId")
-            // console.log(this.clienteId)
-            //
-            // console.log("this.pasajeroId")
-            // console.log(this.pasajeroId)
-            //
-            // console.log("this.document.document_type_id")
-            // console.log(this.document.document_type_id)
-            //
-            //
-            // console.log("persona?")
-            // console.log(this.persona)
-
             this.document.customer_id= (this.document.document_type_id ==='01') ? this.clienteId:this.pasajeroId
-            // console.log("document.customer_id")
-            // console.log(this.document.customer_id)
             this.saveDocument()
-
         },
 
         async saveDocument(){
             this.loading = true;
             let precio = parseFloat(this.precio);
+            let cant = 1;
+            let valorventa = parseFloat(precio/1.18);
+            let igv = parseFloat(precio-valorventa);
+            let total = parseFloat(cant*precio);
 
-               if(this.isReserva) return this.guardarPasaje()
+            if(this.isReserva) return this.guardarPasaje()
+
+            if(this.transporte_configuration.pasaje_afecto_igv){// pasaje grabado con igv
 
                this.document.items.length=0;
-
                this.producto.input_unit_price_value=precio;
                this.producto.item.description = 'Pasaje -'+this.nameItem;
                this.producto.item.name = 'Pasaje -'+this.nameItem;
-               this.producto.item.sale_unit_price = precio;
+               this.producto.item.sale_unit_price = precio;//
                this.producto.item.unit_price=precio;
-               this.producto.total=precio;
-               this.producto.total_base_igv=precio;
-               this.producto.total_value=precio;
-               this.producto.unit_price=precio;
-               this.producto.unit_value=precio;
+               this.producto.total=total;//
+               this.producto.total_base_igv=valorventa*cant;//
+               this.producto.total_value=valorventa*cant;//
+               this.producto.unit_price=precio;//
+               this.producto.unit_value=valorventa;//
+                this.producto.total_igv= igv*cant;
+                this.producto.total_taxes=igv*cant;
 
+            }else{ //pasaje exonerado del igv
+                this.document.items.length=0;
+                this.producto.input_unit_price_value=precio;
+                this.producto.item.description = 'Pasaje -'+this.nameItem;
+                this.producto.item.name = 'Pasaje -'+this.nameItem;
+                this.producto.item.sale_unit_price = precio;
+                this.producto.item.unit_price=precio;
+                this.producto.total=precio;
+                this.producto.total_base_igv=precio;
+                this.producto.total_value=precio;
+                this.producto.unit_price=precio;
+                this.producto.unit_value=precio;
+            }
                const id = await this.createItem(this.producto.item);
                if(!id) return this.$message.error('Lo sentimos ha ocurrido un error');
                this.producto.item_id = this.producto.item.id = id;
-
                this.document.items.push(this.producto);
 
             let total_sobreequipaje = 0
                 if(this.sobre_equipajes.importe > 0){
 
                     this.initProductoGrabado()
-
                     let precio = parseFloat(this.sobre_equipajes.importe);
                     let cant = 1;
                     let valorventa = parseFloat(precio/1.18);
                     let igv = parseFloat(precio-valorventa);
-
                     let total = parseFloat(cant*precio);
 
                     this.producto.input_unit_price_value=precio;
@@ -826,7 +814,6 @@ export default {
                     this.producto.total_taxes=igv*cant;
 
                     let id = await this.createItem(this.producto.item);
-                    //await this.searchProducto(id);
                     if(!id) return this.$message.error('Lo sentimos no se pudo agregar el producto');
                     this.producto.item_id = this.producto.item.id = id;
 
@@ -920,7 +907,7 @@ export default {
 
                 dniPasajero:this.dniPasajero,
                 nombrePasajero:this.nombrePasajero,
-                telefono:this.telPasajero
+                telefono: this.telPasajero ? this.telPasajero : this.persona.telephone
 
 
             };
@@ -980,8 +967,12 @@ export default {
             this.document.document_type_id = '03';
             this.nombrePasajero = null;
             this.filterSeries();
-            //this.filterCustomers();
-            this.initProducto();
+
+            if( this.transporte_configuration.pasaje_afecto_igv) { //jala la configuración de afectacion de igv de la nueva opcion de configuracion des módulo transporte
+                this.initProductoGrabado();
+            }else{
+                this.initProductoExonerado();
+            }
             this.document.payments= [];
 
             this.empresa.id    = null
@@ -1015,7 +1006,7 @@ export default {
 
             this.dniPasajero=null
             this.nombrePasajero=null
-            this.telefono=null
+            this.telPasajero=null
         },
         async actualizarPasaje(){
             let data = {
@@ -1045,7 +1036,7 @@ export default {
             });
         },
         //document and payment
-        initProducto(){
+        initProductoExonerado(){
             this.producto = {
                 IdLoteSelected: null,
                 affectation_igv_type: {

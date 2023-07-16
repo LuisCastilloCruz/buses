@@ -588,7 +588,8 @@ export default {
                 number: '',
                 name: null,
                 addresses: []
-            }
+            },
+            transporte_configuration:[]
         };
     },
     async mounted() {
@@ -606,7 +607,7 @@ export default {
 
         },
     },
-    created(){
+   async created(){
         this.initDocument();
         this.initForm();
         this.all_document_types = this.documentTypesInvoice;
@@ -614,15 +615,10 @@ export default {
         this.series  = this.allSeries;
         this.document.establishment_id = this.establishment.id;
         this.changeDocumentType();
-
-        // this.$eventHub.$on('reloadDataPersons', (remitente_id) => {
-        //         this.reloadDataRemitente(remitente_id)
-        // })
-        //  this.$eventHub.$on('reloadDataDestinarios', (destinatario_id) => {
-        //         this.reloadDataDestinatario(destinatario_id)
-        // })
-
         this.startConnectionQzTray()
+
+
+
 
     },
     watch:{
@@ -651,7 +647,6 @@ export default {
                 this.producto.item.has_igv = this.selectItem.has_igv;
                 this.producto.item.has_plastic_bag_taxes = this.selectItem.has_plastic_bag_taxes;
                 this.producto.item.internal_id = this.selectItem.internal_id;
-
                 this.producto.item.item_unit_types = this.selectItem.item_unit_types
                 this.producto.item.lots = this.selectItem.lots
                 this.producto.item.lots_enabled = this.selectItem.lots_enabled
@@ -666,27 +661,12 @@ export default {
                 this.producto.item.stock_min = this.selectItem.stock_min;
                 this.producto.item.unit_type_id = this.selectItem.unit_type_id;
                 this.producto.unit_price = precio
-                // this.producto.total = precio;
-                // this.producto.total_base_igv=precio;
-                // this.producto.total_value=precio;
-                // this.producto.unit_price=precio;
-                // this.producto.unit_value=precio;
-                // this.document.items.push( Object.assign({},this.producto) );
-                // this.document.payments.push(this.payment);
-
-                // this.total += parseFloat(this.producto.unit_price);
-                // if(this.document.payments.length > 0){
-                //     this.document.payments[0].payment = this.total;
-                // }
-
-
             }else {
-               if(this.configuration.legend_footer==1){ // zona selva
-                     this.initProductoExonerado();
-                 }
-                 else{
-                     this.initProducto();
-                 }
+                if( this.transporte_configuration.encomienda_afecto_igv) { //jala la configuración de afectacion de igv de la nueva opcion de configuracion des módulo transporte
+                    this.initProductoGrabado();
+                }else{
+                    this.initProductoExonerado();
+                }
             }
         }
     },
@@ -703,33 +683,6 @@ export default {
             this.$eventHub.$emit('reloadDataNotes')
             this.showDialogSaleNoteOptions= true
         },
-        // modalPerson(buscar_destinatario){
-        //     this.showDialogNewPerson=true;
-        //     this.buscar_destinatario = buscar_destinatario
-        //
-        // },
-        // reloadDataRemitente(remitente_id) {
-        //     this.$http
-        //         .get(`/${this.resource}/search/customer/${remitente_id}`)
-        //         .then((response) => {
-        //             this.tempRemitentes = this.remitentes  = response.data.customers;
-        //             this.encomienda.remitente_id = remitente_id;
-        //             this.document.customer_id = remitente_id;
-        //         });
-        // },
-        // reloadDataDestinatario(destinatario_id) {
-        //     this.$http
-        //         .get(`/${this.resource}/search/customer/${destinatario_id}`)
-        //         .then((response) => {
-        //             this.destinatarios = response.data.customers;
-        //             this.encomienda.destinatario_id = destinatario_id;
-        //         });
-        // },
-        // selectCustomer(){
-        //     this.document.customer_id = this.encomienda.remitente_id;
-        //     this.document.customer = this.remitentes.find( remitente => remitente.id == this.encomienda.remitente_id );
-        //
-        // },
         validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
             let customer = this.document.customer;
@@ -915,7 +868,6 @@ export default {
             this.encomienda.programacion_id = programacion.id;
         },
         async agregarProducto(evt){
-            console.log(this.producto);
             if(this.producto.item.description && this.producto.unit_price){
                 let precio = parseFloat(this.producto.unit_price);
                 let cant = parseFloat(this.producto.quantity);
@@ -924,19 +876,8 @@ export default {
 
                 let total = parseFloat(cant*precio);
 
-                if(this.configuration.legend_footer==1){ // esto agrega producto exonerado
-                    this.producto.input_unit_price_value=precio;
-                    this.producto.cant=cant;
-                    this.producto.item.name = this.producto.item.description;
-                    this.producto.item.sale_unit_price = precio;
-                    this.producto.item.unit_price=precio;
-                    this.producto.total=total;
-                    this.producto.total_base_igv=precio*cant;
-                    this.producto.total_value=precio*cant;
-                    this.producto.unit_price=precio;
-                    this.producto.unit_value=precio*cant;
-                }
-                else{ // esto es por defecto encomienda grabada
+                if( this.transporte_configuration.encomienda_afecto_igv) { //encomienda grabada
+                    console.log("grabado")
                     this.producto.input_unit_price_value=precio;
                     this.producto.cant=cant;
                     this.producto.item.name = this.producto.item.description;
@@ -948,18 +889,26 @@ export default {
                     this.producto.unit_value=valorventa;
                     this.producto.total_igv= igv*cant;
                     this.producto.total_taxes=igv*cant;
+                }else{ // encomienda exonerada
+                    console.log("exonerado")
+                    this.producto.input_unit_price_value=precio;
+                    this.producto.cant=cant;
+                    this.producto.item.name = this.producto.item.description;
+                    this.producto.item.sale_unit_price = precio;
+                    this.producto.item.unit_price=precio;
+                    this.producto.total=total;
+                    this.producto.total_base_igv=precio*cant;
+                    this.producto.total_value=precio*cant;
+                    this.producto.unit_price=precio;
+                    this.producto.unit_value=precio*cant;
                 }
 
-                // if(!this.producto.item.id){
-                    this.loadingProducto = true;
-                    let id = await this.createItem(this.producto.item);
-                    await this.searchProducto(id);
-                    this.loadingProducto = false;
-                    if(!id) return this.$message.error('Lo sentimos no se pudo agregar el producto');
-                    this.producto.item_id = this.producto.item.id = id;
-                // }else {
-                //     this.producto.item_id = this.producto.item.id;
-                // }
+                this.loadingProducto = true;
+                let id = await this.createItem(this.producto.item);
+                await this.searchProducto(id);
+                this.loadingProducto = false;
+                if(!id) return this.$message.error('Lo sentimos no se pudo agregar el producto');
+                this.producto.item_id = this.producto.item.id = id;
 
                 let p =  JSON.parse(JSON.stringify(this.producto));
 
@@ -967,11 +916,10 @@ export default {
 
                 this.total += parseFloat(this.producto.total);
 
-                if(this.configuration.legend_footer==1){ // zona selva
+                if( this.transporte_configuration.encomienda_afecto_igv) { //jala la configuración de afectacion de igv de la nueva opcion de configuracion des módulo transporte
+                    this.initProductoGrabado();
+                }else{
                     this.initProductoExonerado();
-                }
-                else{
-                    this.initProducto();
                 }
                 this.selectItem = null;
             }
@@ -986,14 +934,8 @@ export default {
             this.total = total;
         },
         async onCreate() {
+            await this.cargar_transporte_configuracion()
             this.setTime()
-
-             if(this.configuration.legend_footer==1){ // zona selva
-                 this.initProductoExonerado();
-             }
-             else{
-                 this.initProducto();
-             }
 
             this.total = 0;
 
@@ -1104,8 +1046,6 @@ export default {
                 this.document.prefix = null;
                 this.resource_documents = "documents";
             }
-
-            console.log(this.document)
             this.$http
                 .post(`/${this.resource_documents}`, this.document)
                 .then(async (response) => {
@@ -1176,7 +1116,7 @@ export default {
                 .reduce((a, b) => a + b, 0);
             this.totalDebt = totalDebt + parseFloat(this.arrears);
         },
-        initProducto(){
+        initProductoGrabado(){
             this.producto = {
                 IdLoteSelected: null,
                 affectation_igv_type: {
@@ -1508,16 +1448,14 @@ export default {
             }
         },
         nuevoProducto(){
-            if(this.configuration.legend_footer==1){ // zona selva
-                 this.initProductoExonerado();
-             }
-             else{
-                 this.initProducto();
-             }
+            if( this.transporte_configuration.encomienda_afecto_igv) { //jala la configuración de afectacion de igv de la nueva opcion de configuracion des módulo transporte
+                this.initProductoGrabado();
+            }else{
+                this.initProductoExonerado();
+            }
         },
         setTime(){
 
-            console.log("tu prima");
             //setInterval(() => {
                 this.$http
                     .get(`/documents/fecha-actual`)
@@ -1618,6 +1556,18 @@ export default {
             }
             this.loading = false
 
+        },
+        async cargar_transporte_configuracion(){
+            await this.$http.get(`/transportes/configuration/record`)
+                .then(response => {
+                    this.transporte_configuration = response.data.data
+                })
+
+            if( this.transporte_configuration.encomienda_afecto_igv) { //jala la configuración de afectacion de igv de la nueva opcion de configuracion des módulo transporte
+                this.initProductoGrabado();
+            }else{
+                this.initProductoExonerado();
+            }
         }
     }
 };
