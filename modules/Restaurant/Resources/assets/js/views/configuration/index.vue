@@ -298,7 +298,7 @@
                           </div>
 
                               <label class="control-label">VER PDF?</label>
-                              <el-checkbox v-model="impresora_precuenta_is_pdf" @change="test" :checked="(impresora_precuenta_is_pdf)=='true'"></el-checkbox>
+                              <el-checkbox v-model="impresora_precuenta_is_pdf" :checked="(impresora_precuenta_is_pdf)=='true'"></el-checkbox>
 
                       </div>
                       <div class="col-md-12">
