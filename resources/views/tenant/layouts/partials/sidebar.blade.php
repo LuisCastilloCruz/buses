@@ -1668,6 +1668,9 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                     <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'usuarios-terminales')) ? 'nav-active' : '' }}">
                                         <a class="nav-link" href="{{ url('transportes/usuarios-terminales') }}">Usuarios terminales</a>
                                     </li>
+                                    <li class="{{ (($firstLevel === 'transportes') && ($secondLevel === 'configuration')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link" href="{{ url('transportes/configuration') }}">Configuración</a>
+                                    </li>
                                 @endif
                             </ul>
                     </li>

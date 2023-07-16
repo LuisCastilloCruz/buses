@@ -125,6 +125,11 @@ if ($hostname) {
 				// REPORTE DE VENTA POR BUSES
 				Route::post('reportes/reporte-ventas-buses/preview','TransporteReportes@getPreviewReporteVentaBuses');
 				Route::post('reportes/reporte-ventas-buses','TransporteReportes@getReporteVentaBuses');
+
+                // CONFIGURACION
+                Route::post('configuration','TransporteConfigurationController@setConfiguration');
+                Route::get('configuration','TransporteConfigurationController@configuration');
+                Route::get('configuration/record','TransporteConfigurationController@record');
 			});
 	});
 }
