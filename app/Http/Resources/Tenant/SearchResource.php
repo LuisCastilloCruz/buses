@@ -17,7 +17,7 @@ class SearchResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'customer' => $this->customer->number,
+            'customer' =>$this->customer? $this->customer->number : $this->sender_data['number'],
             'number' => $this->series.'-'.$this->number,
             'total' => (float) $this->total,
             'download_xml' => $this->download_external_xml,

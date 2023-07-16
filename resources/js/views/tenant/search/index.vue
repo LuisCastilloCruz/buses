@@ -12,7 +12,7 @@
                         <div class="col-md-8">
                             <div class="form-group" :class="{'has-danger': errors.document_type_id}">
                                 <label class="control-label mt-2">Tipo Documento<span class="text-danger"> *</span></label>
-                                <el-select v-model="form.document_type_id">
+                                <el-select v-model="form.document_type_id" @change="change_document_type">
                                     <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
@@ -45,12 +45,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group" :class="{'has-danger': errors.customer_number}">
-                                <label class="control-label mt-2">Número Cliente (RUC/DNI/CE)<span class="text-danger"> *</span></label>
+                                <label class="control-label mt-2">{{label_cliente_remitente}}<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.customer_number" :maxlength="11"></el-input>
                                 <small class="form-control-feedback" v-if="errors.customer_number" v-text="errors.customer_number[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" v-if="mostrar_total">
                             <div class="form-group" :class="{'has-danger': errors.total}">
                                 <label class="control-label mt-2">Monto total<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.total"></el-input>
@@ -103,7 +103,9 @@
                 errors: {},
                 form: {},
                 record: null,
-                document_types: []
+                document_types: [],
+                label_cliente_remitente:"Número Cliente (RUC/DNI/CE)",
+                mostrar_total: true
             }
         },
         created() {
@@ -148,6 +150,22 @@
                         this.loading_submit = false
                     })
             },
+            change_document_type(){
+                if(this.form.document_type_id==="09"){
+                    this.label_cliente_remitente = "Número Cliente (RUC/DNI/CE)"
+                    this.form.total =1.00
+                    this.mostrar_total = false
+                }
+                else if(this.form.document_type_id==="31"){
+                    this.label_cliente_remitente = "Número Remitente (RUC/DNI/CE)"
+                    this.form.total =1.00
+                    this.mostrar_total = false
+                }else{
+                    this.form.total =""
+                    this.mostrar_total = true
+                }
+            }
+
         }
     }
 </script>
