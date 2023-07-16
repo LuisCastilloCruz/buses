@@ -373,6 +373,9 @@ Vue.component('tenant-transporte-usuariosterminales',require('@viewsModuleTransp
 // //Transporte :: manifiesto encomiendas
 // Vue.component('tenant-transporte-programaciones',require('@viewsModuleTransporte/manifiestos/ManifiestoPasajes.vue'));
 
+// transporte - configuracion
+Vue.component('tenant-transporte-configuration',require('@viewsModuleTransporte/configuration/index.vue'));
+
 //Transporte :: manifiestos
 Vue.component('tenant-transporte-manifiestos',require('@viewsModuleTransporte/manifiestos/Manifiestos.vue'));
 Vue.component('tenant-transporte-encomiendas-manifiesto', require('@viewsModuleTransporte/manifiestos/AsignacionEncomiendaManifiestos.vue'));
