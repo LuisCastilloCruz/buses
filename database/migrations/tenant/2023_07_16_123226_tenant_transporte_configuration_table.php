@@ -24,8 +24,8 @@ class TenantTransporteConfigurationTable extends Migration
         // Insert some stuff
         DB::table('transporte_configurations')->insert(
             array(
-                'pasaje_afecto_igv' => 1,
-                'encomienda_afecto_igv' => 0
+                'pasaje_afecto_igv' => 0,
+                'encomienda_afecto_igv' => 1
             )
         );
     }
