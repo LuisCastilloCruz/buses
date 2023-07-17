@@ -832,7 +832,7 @@ class MobileGuiaFacilController extends Controller
                 'modo_traslado'     => $modo_traslado,
                 'motivo_traslado'   => $motivo_traslado,
                 'unidad_medida'     => $unidad_medida,
-                'transporte'        => $transportista,
+                'transportista'        => $transportista,
                 'conductor'         => $conductor,
                 'vehiculo'          => $vehiculo
             ]
