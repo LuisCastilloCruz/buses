@@ -176,13 +176,7 @@
             <td class="text-center align-top borde-gris">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-center align-top">{{ $row->relation_item->internal_id }}</td>
             <td class="text-left borde-gris">
-                @if($row->item->name)
-                    {!!$row->item->name!!}
-                @elseif($row->name_product_pdf)
-                    {!!$row->name_product_pdf!!}
-                @else
-                    {!!$row->item->description!!}
-                @endif
+                {!!$row->item->description!!}
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
                 @if($row->attributes)
