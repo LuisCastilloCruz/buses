@@ -28,6 +28,9 @@ use App\Http\Requests\Tenant\PersonRequest;
 use Modules\ApiPeruDev\Http\Controllers\ServiceDispatchController;
 use Modules\Dispatch\Http\Controllers\DispatcherController;
 use Modules\Dispatch\Http\Requests\DispatcherRequest;
+use Modules\Dispatch\Models\Dispatcher;
+use Modules\Dispatch\Models\Driver;
+use Modules\Dispatch\Models\Transport;
 use Modules\Item\Http\Requests\ItemRequest;
 use Modules\Dashboard\Helpers\DashboardData;
 use Modules\Finance\Helpers\UploadFileHelper;
@@ -47,7 +50,8 @@ use Modules\Dispatch\Http\Requests\DriverRequest;
 use Modules\Dispatch\Http\Controllers\DriverController;
 use Modules\Dispatch\Http\Controllers\TransportController;
 use Modules\Dispatch\Http\Requests\TransportRequest;
-
+use Modules\Transporte\Models\TransporteChofer;
+use Modules\Transporte\Models\TransporteVehiculo;
 
 
 class MobileGuiaFacilController extends Controller
@@ -791,6 +795,35 @@ class MobileGuiaFacilController extends Controller
                 ];
             });
 
+        $transportista = Dispatcher::where('is_active', 1)->get()
+            ->transform(function($row) {
+                return [
+                    "id" =>$row->id,
+                    "number"=>$row->number,
+                    "name"=>$row->name,
+                    "is_default"=>$row->is_default
+                ];
+            });
+        $conductor = Driver::where('is_active', 1)->get()
+            ->transform(function($row) {
+                return [
+                    "id" =>$row->id,
+                    "number"=>$row->number,
+                    "name"=>$row->name,
+                    "is_default"=>$row->is_default
+                ];
+            });
+        $vehiculo = Transport::where('is_active', 1)->get()
+            ->transform(function($row) {
+                return [
+                    "id" =>$row->id,
+                    "model"=>$row->model,
+                    "brand"=>$row->brand,
+                    "plate_number"=>$row->plate_number,
+                    "is_default"=>$row->is_default
+                ];
+            });
+
 
         return [
             'data' => [
@@ -799,6 +832,9 @@ class MobileGuiaFacilController extends Controller
                 'modo_traslado'     => $modo_traslado,
                 'motivo_traslado'   => $motivo_traslado,
                 'unidad_medida'     => $unidad_medida,
+                'transporte'        => $transportista,
+                'conductor'         => $conductor,
+                'vehiculo'          => $vehiculo
             ]
         ];
     }
