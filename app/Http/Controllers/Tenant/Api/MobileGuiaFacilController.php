@@ -7,6 +7,7 @@ use App\Http\Controllers\Tenant\EmailController;
 use App\Http\Requests\Tenant\DispatchRequest;
 use App\Models\Tenant\Catalogs\TransferReasonType;
 use App\Models\Tenant\Catalogs\TransportModeType;
+use App\Models\Tenant\Catalogs\UnitType;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Tenant\Item;
@@ -782,14 +783,22 @@ class MobileGuiaFacilController extends Controller
                                 "description"=>$row->description,
                             ];
                         });
+        $unidad_medida = UnitType::whereIn('id', ['KGM', 'TNE'])->get()
+            ->transform(function($row) {
+                return [
+                    "id" =>$row->id,
+                    "description"=>$row->description,
+                ];
+            });
 
 
         return [
             'data' => [
-                'success' => true,
-                'series' =>$series,
-                'modo_traslado' => $modo_traslado,
-                'motivo_traslado' => $motivo_traslado
+                'success'           => true,
+                'series'            =>$series,
+                'modo_traslado'     => $modo_traslado,
+                'motivo_traslado'   => $motivo_traslado,
+                'unidad_medida'     => $unidad_medida,
             ]
         ];
     }
