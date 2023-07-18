@@ -37,7 +37,19 @@ class SaleController extends Controller
     public function index()
     {
         $items = Item::where('apply_restaurant',true)->get();
+        
         $categorias = Category::all();
+        $categorias = $categorias->transform(function ($row, $index) {
+            $position = $index % Category::count();
+
+            return [
+                'id' => $row->id,
+                'name' => $row->name,
+                'color' => $this->coloresTag($position),
+            ];
+        });
+
+
         $configuration= Configuration::first();
 
         $configuracion_socket = json_decode($configuration->configuracion_socket, true);
@@ -48,6 +60,37 @@ class SaleController extends Controller
 
         return view('restaurant::sales.index',compact('items','configuration','id_user2','type_user','categorias', 'configuracion_socket'));
     }
+
+    public function coloresTag($position) {
+        $coloresBase = array("#007BFF", "#FFC107", "#28A745", "#FF6B6B", "#6610F2", "#FD7E14");
+        $totalColoresBase = count($coloresBase);
+
+        $complementarios = array();
+        for ($i = 0; $i < $totalColoresBase; $i++) {
+            $complementarios[] = $coloresBase[$i];
+            $complementarios[] = $this->complementoColor($coloresBase[$i]);
+        }
+
+        return $complementarios[$position % (2 * $totalColoresBase)];
+    }
+
+    public function complementoColor($color) {
+        // Obtener el valor hexadecimal del color
+        $color = str_replace("#", "", $color);
+        // Convertir a RGB
+        list($r, $g, $b) = sscanf($color, "%02x%02x%02x");
+
+        // Calcular el complemento de RGB (inverso)
+        $complementoR = 255 - $r;
+        $complementoG = 255 - $g;
+        $complementoB = 255 - $b;
+
+        // Convertir el complemento a formato hexadecimal
+        $complementoColor = sprintf("#%02x%02x%02x", $complementoR, $complementoG, $complementoB);
+
+        return $complementoColor;
+    }
+
 
     public function columns()
     {

@@ -73,11 +73,20 @@
 
                                 <div class="row">
                                     <div class="col-md-12 text-center">
-                                        <div class="form-group" style="width:300px; margin:0 auto; margin-bottom:20px">
-                                            <label class="control-label">CATEGORIAS</label>
-                                            <el-select v-model="categoria_id" @change="filterResults">
-                                                <el-option v-for="option in categorias" :key="option.id" :value="option.id" :label="option.name"></el-option>
-                                            </el-select>
+                                        <div class="row no-gutters">
+                                            <template v-for="(item, index) in categorias">
+                                                <div class="col" :key="index">
+                                                    <div @click="filterResults(item.id)" class="card p-0 m-0 mb-1 mr-1 text-center">
+                                                        <div
+                                                            :style="{ backgroundColor: item.color }"
+                                                            class="card-body pointer rounded-0"
+                                                            style="font-weight: bold;color: white;font-size: 18px;"
+                                                        >
+                                                            {{ item.name }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
                                         </div>
                                     </div>
                                             <div v-for="(item , index ) in filtrarCategorias" :key="item.id" class="col-lg-2 col-md-3  col-sm-4 col-xs-6 mb-2">
@@ -146,8 +155,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div> <!-- SECCION POS LIBRE -->
-                    <div v-else-if="AqpTap.active==2" class="col-md-12"> <!-- SECCION MESAS -->
+                    </div> <!-- FIN SECCION POS LIBRE -->
+                    <div v-else-if="AqpTap.active==2" class="col-md-12"> <!-- INICIO SECCION MESAS -->
                         <el-tabs v-model="activeName" @tab-click="handleClickNivel">
 
                             <el-tab-pane  v-for="nivel in niveles" :key="nivel.id" :label="nivel.nombre" :name="nivel.nombre">
@@ -166,11 +175,20 @@
                                                 <h3 class="font-weight-bold">Estás haciendo pedido para la mesa: <b style="color: #0A7CB5">{{ mesaActivo.numero}}</b></h3>
                                             </div>
                                             <div class="col-md-12 text-center">
-                                                <div class="form-group" style="width:300px; margin:0 auto; margin-bottom:20px">
-                                                    <label class="control-label">CATEGORIAS</label>
-                                                    <el-select v-model="categoria_id" @change="filterResults">
-                                                        <el-option v-for="option in categorias" :key="option.id" :value="option.id" :label="option.name"></el-option>
-                                                    </el-select>
+                                                <div class="row no-gutters">
+                                                    <template v-for="(item, index) in categorias">
+                                                        <div class="col" :key="index">
+                                                            <div @click="filterResults(item.id)" class="card p-0 m-0 mb-1 mr-1 text-center">
+                                                                <div
+                                                                    :style="{ backgroundColor: item.color }"
+                                                                    class="card-body pointer rounded-0"
+                                                                    style="font-weight: bold;color: white;font-size: 18px;"
+                                                                >
+                                                                    {{ item.name }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
                                                 </div>
                                             </div>
                                         </div>
@@ -405,7 +423,8 @@ export default {
             nombre_impresora_barra:null,
             nombre_impresora_precuenta:null,
             impresora_precuenta_is_pdf:null,
-            itemaqp:{}
+            itemaqp:{},
+            colors: ["#1cb973", "#bf7ae6", "#fc6304", "#9b4db4", "#77c1f3"],
         };
     },
     created() {
@@ -426,7 +445,11 @@ export default {
         this.startConnectionQzTray()
     },
     methods: {
-        filterResults ( ) {
+        getColor(i) {
+            return this.colors[i % this.colors.length];
+        },
+        filterResults ( id) {
+            this.categoria_id= id
             if(this.categoria_id){
                 this.filtrarCategorias = this.items.filter(item => item.category_id == this.categoria_id);
                 //console.log(this.filtrarCategorias);
@@ -922,7 +945,8 @@ export default {
                     })
                 }
             });
-        }
+        },
+
     }
 }
 </script>
