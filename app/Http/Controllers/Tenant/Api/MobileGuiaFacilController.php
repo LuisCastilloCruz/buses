@@ -716,7 +716,7 @@ class MobileGuiaFacilController extends Controller
                 "ubigeo" =>$cliente->district_id,
                 "direccion" =>$cliente->address,
                 "correoElectronico" =>$cliente->email,
-                "telephone" =>$cliente->telephone,
+                "telefono" =>$cliente->telephone,
             ];
         }else{
             return [
