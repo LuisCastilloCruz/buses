@@ -708,14 +708,20 @@ class MobileGuiaFacilController extends Controller
             return [
                 "success" =>true,
                 "id" =>$cliente->id,
-                "number"=>$cliente->number,
-                "name"=>$cliente->name,
-                "address"=>$cliente->address
+                "codigoTipoDocumentoIdentidad" =>$cliente->identity_document_type_id,
+                "numeroDocumento" =>$cliente->number,
+                "apellidosYNombresORazonSocial" =>$cliente->name,
+                "nombreComercial" =>$cliente->trade_name,
+                "codigoPais" =>$cliente->country_id,
+                "ubigeo" =>$cliente->district_id,
+                "direccion" =>$cliente->address,
+                "correoElectronico" =>$cliente->email,
+                "telephone" =>$cliente->telephone,
             ];
         }else{
             return [
                 "success" =>false,
-                "name"=>"Sin resultados"
+                "apellidosYNombresORazonSocial"=>"Sin resultados"
             ];
         }
     }
