@@ -699,6 +699,26 @@ class MobileGuiaFacilController extends Controller
     }
 
     //==================GUIA DE REMISIÓN REMITENTE
+
+    public function getClienteByNumber(Request $request){
+        $num_doc = $request->num_doc;
+        $cliente = Person::where("number",$num_doc)->whereType('customers')->first();
+
+        if($cliente){
+            return [
+                "succes" =>true,
+                "id" =>$cliente->id,
+                "number"=>$cliente->number,
+                "name"=>$cliente->name,
+                "address"=>$cliente->address
+            ];
+        }else{
+            return [
+                "succes" =>false,
+                "name"=>"Sin resultados"
+            ];
+        }
+    }
     public function storeGuiaRemitente(Request $request)
     {
         $company = Company::query()
@@ -761,7 +781,6 @@ class MobileGuiaFacilController extends Controller
             ],
         ];
     }
-
     public function getAllViewDispatchdata(){
         $series = Series::where('establishment_id', auth()->user()->establishment_id)
                 ->whereIn('document_type_id', ['09'])
@@ -832,7 +851,7 @@ class MobileGuiaFacilController extends Controller
                 'modo_traslado'     => $modo_traslado,
                 'motivo_traslado'   => $motivo_traslado,
                 'unidad_medida'     => $unidad_medida,
-                'transportista'        => $transportista,
+                'transportista'     => $transportista,
                 'conductor'         => $conductor,
                 'vehiculo'          => $vehiculo
             ]

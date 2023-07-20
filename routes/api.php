@@ -165,6 +165,8 @@ if ($hostname) {
             Route::prefix('guia-remitente')->group(function () {
                 Route::post('/guardar', 'Tenant\Api\DispatchController@store');
                 Route::get('/all-view-dispatch-data', 'Tenant\Api\MobileGuiaFacilController@getAllViewDispatchdata');
+                Route::get('/get-cliente-by-number/{num_doc}', 'Tenant\Api\MobileGuiaFacilController@getClienteByNumber');
+
             });
 
             Route::prefix('guia-transportista')->group(function () {
