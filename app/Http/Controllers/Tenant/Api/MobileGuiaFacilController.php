@@ -706,7 +706,7 @@ class MobileGuiaFacilController extends Controller
 
         if($cliente){
             return [
-                "succes" =>true,
+                "success" =>true,
                 "id" =>$cliente->id,
                 "number"=>$cliente->number,
                 "name"=>$cliente->name,
@@ -714,7 +714,7 @@ class MobileGuiaFacilController extends Controller
             ];
         }else{
             return [
-                "succes" =>false,
+                "success" =>false,
                 "name"=>"Sin resultados"
             ];
         }
