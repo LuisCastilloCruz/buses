@@ -97,8 +97,9 @@ class MobileGuiaFacilController extends Controller
                 'establishment_establishment_id'=>auth()->user()->establishment->id,
                 'establishment_country_id'=>auth()->user()->establishment->country_id,
                 'establishment_code'=>auth()->user()->establishment->code,
-                'logo_base64'=>$logo_base64,
+                'establishment_ubigeo'=>auth()->user()->establishment->district_id,
                 'soap_type_id'=> $company->soap_type_id,
+                'logo_base64'=>$logo_base64,
             ],
             'message' => 'Autorizado'
         ];
