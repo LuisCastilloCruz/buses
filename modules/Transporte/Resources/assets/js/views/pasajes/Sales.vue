@@ -237,9 +237,11 @@
                     <div class="col-md-8 text-left">
                         <p><b>Leyenda( Se vendió en el terminal de )</b></p>
 
-                        <span v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :style="{'background':terminal.color,'padding': '3px 5px','margin': '0 5px'}">
-                            <b class="text-white">{{terminal.nombre}}</b>
-                        </span>
+                        <ul class="list-group flex-md-row">
+                            <li class="list-group-item" v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :style="{'background':terminal.color,'padding': '3px 5px','margin': '0 5px'}">
+                             <b class="text-white">{{terminal.nombre}}</b>
+                            </li>
+                        </ul>
                     </div>
                     <div class="col-md-2 text-left">
                         <p><b>Manifiesto</b></p>
