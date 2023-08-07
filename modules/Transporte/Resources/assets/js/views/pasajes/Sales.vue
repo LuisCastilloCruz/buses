@@ -237,7 +237,7 @@
                     <div class="col-md-8 text-left">
                         <p><b>Leyenda( Se vendió en el terminal de )</b></p>
 
-                        <span v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :style="{'background':terminal.color,'padding': '10px','margin': '0 5px'}">
+                        <span v-for="terminal in terminales" :key="terminal.id" :value="terminal.id" :style="{'background':terminal.color,'padding': '3px 5px','margin': '0 5px'}">
                             <b class="text-white">{{terminal.nombre}}</b>
                         </span>
                     </div>

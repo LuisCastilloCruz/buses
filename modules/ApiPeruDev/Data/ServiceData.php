@@ -224,7 +224,7 @@ class ServiceData
         $res = $this->client->request('POST', '/api/tipo_de_cambio', $this->parameters);
         $response = json_decode($res->getBody()->getContents(), true);
 
-        if ($response['success']) {
+        if (key_exists('success', $response)) {
             $data = $response['data'];
             ExchangeRate::query()->create([
                 'date' => $data['fecha_busqueda'],

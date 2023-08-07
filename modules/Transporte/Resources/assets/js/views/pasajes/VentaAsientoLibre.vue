@@ -513,11 +513,11 @@ export default {
     },
     computed:{
         nameItem(){
-            if(this.tipoVenta == 2) return `${this.programacion.origen.nombre}-${this.programacion.destino.nombre}`
-            else if(this.tipoVenta == 1) return `${this.origen.nombre}-${this.destino.nombre}`;
+            if(this.tipoVenta === 2) return `${this.programacion.origen.nombre}-${this.programacion.destino.nombre}`
+            else if(this.tipoVenta === 1) return `${this.origen.nombre}-${this.destino.nombre}`;
         },
         isReserva(){
-            return this.estadoAsiento == 3;
+            return this.estadoAsiento === 3;
         },
 
         isAutoPrint: function () {
