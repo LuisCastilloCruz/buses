@@ -859,12 +859,13 @@ class MobileGuiaFacilController extends Controller
         $producto = Item::where('active', 1)->get()
         ->transform(function($row) {
                 return [
-                    "id"             => $row->id,
-                    "description"    => $row->description,
-                    "codigoInterno"  => $row->internal_id,
-                    "cantidad"       =>0,
-                    "unitTypeId "    => $row->unit_type_id,
-                    "isSelected"     =>false
+                    "id"              => $row->id,
+                    "description"     => $row->description,
+                    "codigo_interno"  => $row->internal_id,
+                    "cantidad"        =>0,
+                    "item_id"         => $row->id,
+                    "unit_type_id "   => $row->unit_type_id,
+                    "isSelected"      =>false
                 ];
             });
 
