@@ -856,7 +856,7 @@ class MobileGuiaFacilController extends Controller
                 ];
             });
 
-        $producto = Item::where('active', 1)->get()
+        $producto = Item::where('active', 1)->whereNotNull("internal_id")->get()
         ->transform(function($row) {
                 return [
                     "id"              => $row->id,
