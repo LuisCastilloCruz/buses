@@ -856,6 +856,17 @@ class MobileGuiaFacilController extends Controller
                 ];
             });
 
+        $producto = Item::where('active', 1)->get()
+            ->transform(function($row) {
+                return [
+                    "id"             => $row->id,
+                    "description"    => $row->description,
+                    "codigoInterno"  => $row->internal_id,
+                    "cantidad"       =>0,
+                    "unitTypeId "    => $row->unit_type_id,
+                    "isSelected"     =>false
+                ];
+            });
 
         return [
             'data' => [
@@ -866,7 +877,8 @@ class MobileGuiaFacilController extends Controller
                 'unidad_medida'     => $unidad_medida,
                 'transportista'     => $transportista,
                 'conductor'         => $conductor,
-                'vehiculo'          => $vehiculo
+                'vehiculo'          => $vehiculo,
+                'producto'          => $producto
             ]
         ];
     }
