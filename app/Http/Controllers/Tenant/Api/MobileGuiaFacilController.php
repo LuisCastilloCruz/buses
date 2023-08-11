@@ -839,6 +839,7 @@ class MobileGuiaFacilController extends Controller
             ->transform(function($row) {
                 return [
                     "id" =>$row->id,
+                    "identity_document_type_id"=>$row->identity_document_type_id,
                     "number"=>$row->number,
                     "name"=>$row->name,
                     "is_default"=>$row->is_default
