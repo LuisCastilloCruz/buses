@@ -13,13 +13,13 @@ $app->loadEnvironmentFrom('.no-original-env');
 $app->useStoragePath($runtime . '/storage');
 $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\LoadConfiguration::class, function ($app) use($root, $runtime) {
     $s = json_decode(file_get_contents($runtime . '/settings.json'), true);
-    if (($s['purpose'] ?? '') !== 'multifactura-native-v3' || $s['root'] !== str_replace('\\', '/', realpath($root))) {
+    if (($s['purpose'] ?? '') !== 'multifactura-native-v4' || $s['root'] !== str_replace('\\', '/', realpath($root))) {
         throw new RuntimeException('Invalid native lab settings');
     }
-    $db = ['driver' => 'mysql', 'host' => '127.0.0.1', 'port' => 13318, 'database' => 'mf_native_system', 'username' => $s['user'], 'password' => $s['password'], 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'prefix' => '', 'strict' => false, 'engine' => 'InnoDB'];
-    $probe = new PDO('mysql:host=127.0.0.1;port=13318;dbname=mf_native_system', $s['user'], $s['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $db = ['driver' => 'mysql', 'host' => '127.0.0.1', 'port' => 13319, 'database' => 'mf_v4_system', 'username' => $s['user'], 'password' => $s['password'], 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'prefix' => '', 'strict' => false, 'engine' => 'InnoDB'];
+    $probe = new PDO('mysql:host=127.0.0.1;port=13319;dbname=mf_v4_system', $s['user'], $s['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     $m = $probe->query('SELECT @@port port,@@datadir datadir')->fetch(PDO::FETCH_ASSOC);
-    if ((int) $m['port'] !== 13318 || strtolower(str_replace('\\', '/', $m['datadir'])) !== strtolower($s['root'] . '/.native-runtime/mysql-data/')) {
+    if ((int) $m['port'] !== 13319 || strtolower(str_replace('\\', '/', $m['datadir'])) !== strtolower($s['root'] . '/.native-runtime/mysql-data/')) {
         throw new RuntimeException('Unsafe server');
     }
     $app->detectEnvironment(function () {
@@ -27,8 +27,13 @@ $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\LoadConfiguration::clas
     });
     $app['config']->set('database.connections', ['system' => $db]);
     $app['config']->set('database.default', 'system');
-    foreach (['app.env' => 'local', 'app.debug' => true, 'debugbar.enabled' => false, 'app.key' => $s['key'], 'app.url' => 'http://localhost:8875', 'app.timezone' => 'America/Lima', 'tenant.app_url_base' => 'localhost', 'tenant.force_https' => false, 'cache.default' => 'array', 'session.driver' => 'file', 'session.files' => $runtime . '/storage/framework/sessions', 'session.domain' => null, 'session.cookie' => 'mf_native_session', 'mail.driver' => 'log', 'queue.default' => 'database', 'broadcasting.default' => 'log', 'aireception.native_enabled' => true, 'aireception.enabled' => false, 'aireception.external_connections_enabled' => false, 'tattooinbox.ai.enabled' => false, 'tattooinbox.meta.require_signature'=>true, 'tattooinbox.meta.verify_token'=>null, 'tattooinbox.meta.page_access_token'=>null, 'tattooinbox.meta.app_secret' => null, 'tattooinbox.meta.whatsapp_access_token' => null, 'native_lab.enabled' => true, 'tenancy.hostname.cache' => false, 'tenancy.website.cache' => false] as $k => $v) {
+    foreach (['app.env' => 'local', 'app.debug' => true, 'debugbar.enabled' => false, 'app.key' => $s['key'], 'app.url' => 'http://localhost:8876', 'app.timezone' => 'America/Lima', 'tenant.prefix_database' => 'mf_v4', 'tenant.app_url_base' => 'localhost', 'tenant.force_https' => false, 'cache.default' => 'array', 'session.driver' => 'file', 'session.files' => $runtime . '/storage/framework/sessions', 'session.domain' => null, 'session.cookie' => 'mf_v4_session', 'mail.driver' => 'log', 'queue.default' => 'database', 'broadcasting.default' => 'log', 'aireception.native_enabled' => true, 'aireception.enabled' => false, 'aireception.external_connections_enabled' => false, 'tattooinbox.ai.enabled' => false, 'tattooinbox.meta.require_signature'=>true, 'tattooinbox.meta.verify_token'=>null, 'tattooinbox.meta.page_access_token'=>null, 'tattooinbox.meta.app_secret' => null, 'tattooinbox.meta.whatsapp_access_token' => null, 'odontologia.clinical_records_enabled' => true, 'native_lab.enabled' => true, 'tenancy.hostname.cache' => false, 'tenancy.website.cache' => false] as $k => $v) {
         $app['config']->set($k, $v);
     }
+});
+$app->afterBootstrapping(Illuminate\Foundation\Bootstrap\RegisterProviders::class, function ($app) {
+    require_once __DIR__.'/ReservedDatabase.php';
+    $app->bind(Hyn\Tenancy\Contracts\Database\PasswordGenerator::class, NativeReservedPassword::class);
+    $app->make('tenancy.db.drivers')->put('mysql', NativeReservedDatabase::class);
 });
 return $app;

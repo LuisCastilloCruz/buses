@@ -9,10 +9,10 @@ Set-Location 'C:\Users\luis castillo\AiReception-lab\native-v3'
 .\native-lab\start.ps1
 ```
 
-- Superadministrador: http://localhost:8875
-- Estudio ficticio: http://tattoo.localhost:8875
-- Clinica ficticia: http://dental.localhost:8875
-- Comercio ficticio: http://comercio.localhost:8875
+- Superadministrador: http://localhost:8876
+- Estudio ficticio: http://tattoo.localhost:8876
+- Clinica ficticia: http://dental.localhost:8876
+- Comercio ficticio: http://comercio.localhost:8876
 
 Los usuarios y claves aleatorias estan exclusivamente en `.native-runtime\ACCESS.txt`. Abrir ese archivo localmente; no subirlo ni copiarlo a un informe publico. Cada negocio usa el login original y una cookie vinculada a su empresa. Para cambiar de negocio, abrir su URL e iniciar sesion con su cuenta.
 
@@ -31,11 +31,11 @@ Superadministrador > clientes > editar > Modulos permite habilitar apps y nivele
 
 ## Entorno y datos
 
-Laravel 5.7.29; Hyn 5.3.1; nwidart/laravel-modules 5.1.0; PHP 7.4.33; MySQL 8.4.3 privado en 127.0.0.1:13318. No se actualizaron paquetes PHP ni instalaciones globales.
+Laravel 5.7.29; Hyn 5.3.1; nwidart/laravel-modules 5.1.0; PHP 7.4.33; MySQL 8.4.3 privado en 127.0.0.1:13319. No se actualizaron paquetes PHP ni instalaciones globales.
 
 El proceso MySQL usa `--no-defaults`, un datadir propio, mysqlx desactivado y `--restrict-fk-on-non-standard-key=OFF`, necesario para claves foraneas heredadas. El arranque comprueba puerto, datadir, raiz del worktree y una lista exacta de bases. Nunca cargar el `.env` original. No ejecutar `php artisan migrate` directamente contra la instalacion original.
 
-Bases: `mf_native_system`, `mf_native_tattoo_v3`, `mf_native_dental`, `mf_native_commerce`. Cada tenant tiene su usuario MySQL Hyn limitado a su base. El intento inicial incompleto `mf_native_tattoo` se conserva como evidencia y no se usa.
+Bases: `mf_v4_system`, `mf_v4_tattoo`, `mf_v4_dental`, `mf_v4_commerce`. Cada tenant tiene su usuario MySQL Hyn limitado a su base. El intento inicial incompleto `mf_native_tattoo` se conserva como evidencia y no se usa.
 
 `start.ps1` crea el entorno vacio cuando no existe, ejecuta las migraciones verificadas y genera fixtures. En esta HP se verifico tambien su ejecucion repetida sin recrear datos. Una reconstruccion completa desde un checkout vacio en otra maquina no se certifica con esta entrega. Se requiere `vendor` compatible: copiar **solo vendor** desde el laboratorio V1 verificado, nunca `.env`, almacenamiento ni credenciales. El script no instala dependencias automaticamente.
 

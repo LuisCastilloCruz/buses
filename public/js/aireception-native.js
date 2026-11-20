@@ -2,7 +2,7 @@
 "use strict";
 const root=document.getElementById("native-reception");if(!root)return;const module=root.dataset.module;
 const $ = id => document.getElementById(id);
-const state = {catalog: null, bookings: [], days: 1, modal: null, config: null};
+const state = {catalog: null, bookings: [], days: 1, mode: 'day', modal: null, config: null};
 const csrf = document.querySelector('meta[name="csrf-token"]').content;
 const key = () => crypto.randomUUID();
 function node(tag, text, cls) { const e=document.createElement(tag); if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e; }
@@ -17,20 +17,21 @@ function options(select,rows,all){select.replaceChildren();if(all)select.append(
 function nameOf(type,id){return state.catalog[type].find(x=>Number(x.id)===Number(id))?.name||'?';}
 function datePlus(day,offset){const d=new Date(day+'T12:00:00');d.setDate(d.getDate()+offset);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function labelDay(day){return new Date(day+'T12:00:00').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'});}
-const statuses={confirmed:'Confirmada',pending:'Pendiente',cancelled:'Cancelada'};
+const statuses={confirmed:'Confirmada',attended:'Atendida',pending:'Pendiente',cancelled:'Cancelada'};
 async function refreshCalendar(){
+ if(state.mode==='month'){const d=new Date($('calendar-date').value+'T12:00:00');$('calendar-date').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';state.days=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();}
  const day=$('calendar-date').value, pro=$('professional-filter').value;
  state.bookings=await api('/api/calendar?'+new URLSearchParams({day,days:state.days,...(pro?{professional_id:pro}:{})}));
- $('calendar-title').textContent=state.days===1?labelDay(day):'Semana del '+new Date(day+'T12:00:00').toLocaleDateString('es-PE');
+ $('calendar-title').textContent=state.days===1?labelDay(day):(state.days===7?'Semana del ':'Mes desde ')+new Date(day+'T12:00:00').toLocaleDateString('es-PE');
  $('calendar-total').textContent=state.bookings.length+' reservas';
  $('metric-active').textContent=state.bookings.filter(x=>x.status!=='cancelled').length;
  $('metric-pending').textContent=state.bookings.filter(x=>x.status==='pending').length;
  $('metric-pros').textContent=state.catalog.professionals.filter(x=>x.active).length;
- const grid=$('calendar-grid');grid.replaceChildren();grid.className=state.days===7?'week-grid':'day-list';
+ const grid=$('calendar-grid');grid.replaceChildren();grid.className=state.days>1?'week-grid':'day-list';
  for(let i=0;i<state.days;i++){
-  const dayKey=datePlus(day,i),rows=state.bookings.filter(x=>x.day===dayKey);const column=state.days===7?node('section',undefined,'day-column'):grid;
-  if(state.days===7){column.append(node('div',labelDay(dayKey),'day-label'));grid.append(column);}
-  if(!rows.length){const empty=node('div',undefined,'empty');empty.append(node('b',state.days===7?'Sin citas':'Un espacio para lo que viene.'));if(state.days===1)empty.append(node('span','Crea una cita o prueba el agente de demostración.'));column.append(empty);}
+  const dayKey=datePlus(day,i),rows=state.bookings.filter(x=>x.day===dayKey);const column=state.days>1?node('section',undefined,'day-column'):grid;
+  if(state.days>1){column.append(node('div',labelDay(dayKey),'day-label'));grid.append(column);}
+  if(!rows.length){const empty=node('div',undefined,'empty');empty.append(node('b',state.days>1?'Sin citas':'Un espacio para lo que viene.'));if(state.days===1)empty.append(node('span','Crea una cita o prueba el agente de demostración.'));column.append(empty);}
   for(const b of rows){const card=node('button',undefined,'booking-card '+b.status);card.type='button';card.dataset.bookingId=b.id;card.setAttribute('aria-label','Cita '+b.client_name+' '+b.start);card.append(node('span',b.start+' - '+b.end,'booking-time'),node('strong',b.client_name),node('small',nameOf('services',b.service_id)+' - '+nameOf('professionals',b.professional_id)),node('span',statuses[b.status]||b.status,'badge'));card.addEventListener('click',attempt(()=>detail(b)));column.append(card);}
  }
 }
@@ -60,12 +61,12 @@ async function saveBooking(){
 }
 async function detail(b){
  const box=$('booking-detail');box.replaceChildren();for(const [label,value] of [['Cliente ficticio',b.client_name],['Servicio',nameOf('services',b.service_id)],['Profesional',nameOf('professionals',b.professional_id)],['Horario',b.day+' - '+b.start+' - '+b.end],['Estado',statuses[b.status]],['Duración / margen',b.duration_minutes+' min / '+b.buffer_minutes+' min']]){const row=node('div',undefined,'detail-line');row.append(node('span',label),node('strong',value));box.append(row);}
- $('detail-actions').replaceChildren();if(state.catalog.role!=='viewer'&&b.status!=='cancelled'){
+ $('detail-actions').replaceChildren();if(state.catalog.role!=='viewer'&&!['cancelled','attended'].includes(b.status)){
   if(b.status==='pending'){const btn=node('button','Confirmar cita','primary');btn.onclick=attempt(async()=>{await api('/api/commands/confirm','POST',{booking_id:b.id,version:b.version},key());await refreshCalendar();$('detail-dialog').close();notice('Cita confirmada.');});$('detail-actions').append(btn);}
   const move=node('button','Reprogramar');move.onclick=()=>{$('detail-dialog').close();openBooking(b);};
-  const cancel=node('button','Cancelar cita','danger');cancel.onclick=attempt(async()=>{await api('/api/commands/cancel','POST',{booking_id:b.id,version:b.version},key());await refreshCalendar();$('detail-dialog').close();notice('Cita cancelada. El horario vuelve a estar disponible.');});$('detail-actions').append(move,cancel);
+  const cancel=node('button','Cancelar cita','danger');cancel.onclick=attempt(async()=>{await api('/api/commands/cancel','POST',{booking_id:b.id,version:b.version},key());await refreshCalendar();$('detail-dialog').close();notice('Cita cancelada. El horario vuelve a estar disponible.');});$('detail-actions').append(move,cancel);if(b.status==='confirmed'){const attend=node('button','Marcar atendida','primary');attend.onclick=attempt(async()=>{await api('/api/commands/attend','POST',{booking_id:b.id,version:b.version},key());await refreshCalendar();$('detail-dialog').close();notice('Atencion registrada.');});$('detail-actions').append(attend);}
  }
- const events=await api('/api/bookings/'+b.id+'/events');$('booking-history').replaceChildren();const verbs={book:'Creada',confirm:'Confirmada',cancel:'Cancelada',reschedule:'Reprogramada'};for(const e of events)$('booking-history').append(node('div',e.created_at+' - '+(verbs[e.action]||e.action)+' - Usuario '+e.actor_id,'history-line'));
+ const events=await api('/api/bookings/'+b.id+'/events');$('booking-history').replaceChildren();const verbs={book:'Creada',confirm:'Confirmada',attend:'Atendida',cancel:'Cancelada',reschedule:'Reprogramada'};for(const e of events)$('booking-history').append(node('div',e.created_at+' - '+(verbs[e.action]||e.action)+' - Usuario '+e.actor_id,'history-line'));
  $('detail-dialog').showModal();
 }
 function bubble(text,side){const e=node('div',text,'bubble '+side);$('messages').append(e);$('messages').scrollTop=$('messages').scrollHeight;}
@@ -87,9 +88,10 @@ async function init(){
  await loadCatalog();const page=root.dataset.page;$(page+'-page').hidden=false;$('calendar-date').value=new URLSearchParams(location.search).get('day')||datePlus(state.catalog.today,1);await refreshCalendar();renderSettings();
 
  $('calendar-date').onchange=$('professional-filter').onchange=attempt(refreshCalendar);
- $('day-view').onclick=attempt(async()=>{state.days=1;$('day-view').classList.add('selected');$('week-view').classList.remove('selected');await refreshCalendar();});
- $('week-view').onclick=attempt(async()=>{state.days=7;$('week-view').classList.add('selected');$('day-view').classList.remove('selected');await refreshCalendar();});
- for(const [id,delta]of [['previous',-1],['next',1]])$(id).onclick=attempt(async()=>{$('calendar-date').value=datePlus($('calendar-date').value,delta*state.days);await refreshCalendar();});
+ $('day-view').onclick=attempt(async()=>{state.mode='day';state.days=1;$('day-view').classList.add('selected');$('week-view').classList.remove('selected');await refreshCalendar();});
+ $('week-view').onclick=attempt(async()=>{state.mode='week';state.days=7;$('week-view').classList.add('selected');$('day-view').classList.remove('selected');await refreshCalendar();});
+ $('month-view').onclick=attempt(async()=>{state.mode='month';const d=new Date($('calendar-date').value+'T12:00:00');$('calendar-date').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';state.days=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();await refreshCalendar();});
+ for(const [id,delta]of [['previous',-1],['next',1]])$(id).onclick=attempt(async()=>{if(state.mode==='month'){const d=new Date($('calendar-date').value+'T12:00:00');d.setMonth(d.getMonth()+delta,1);$('calendar-date').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';}else $('calendar-date').value=datePlus($('calendar-date').value,delta*state.days);await refreshCalendar();});
  $('today').onclick=attempt(async()=>{$('calendar-date').value=state.catalog.today;await refreshCalendar();});
  $('new-booking').onclick=()=>openBooking();$('agent-book').onclick=()=>openBooking(null,true);
  $('booking-professional').onchange=updateServices;$('booking-service').onchange=$('booking-date').onchange=resetSlots;

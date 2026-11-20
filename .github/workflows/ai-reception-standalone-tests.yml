@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/ai-reception-foundation-20261120
+      - feature/multifactura-aireception-odontologia-completo-v4
       - feature/ai-reception-agenda-v1
       - feature/multifactura-native-aireception-odontologia-v3
       - "integration/ai-reception-tattoo-20261120*"
@@ -52,3 +53,6 @@ jobs:
         run: php modules/AiReception/Tests/TattooAvailabilityTest.php
       - name: Test defensive validation (no network)
         run: php modules/AiReception/Tests/SecurityRegressionTest.php
+
+      - name: Provider contracts without network
+        run: php modules/AiReception/Tests/ProviderContractsTest.php

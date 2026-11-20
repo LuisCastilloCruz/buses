@@ -3,7 +3,8 @@
 <div class="row" v-pre><div class="col-lg-12"><section class="card"><header class="card-header"><h2 class="card-title">Odontologia / Administracion</h2></header><div class="card-body">
 <a class="btn btn-primary" href="/odontologia/calendar">Calendario compartido</a> <a class="btn btn-default" href="/odontologia/services">Servicios y duraciones</a>
 @if(app(\Modules\AiReception\Native\Access::class)->allows('odontologia','billing'))<a class="btn btn-default" href="/documents/create">Facturacion existente</a>@endif
-<p class="mt-3">Pacientes del catalogo de clientes existente. Historia clinica y odontograma pendientes; no se registran diagnosticos en esta version.</p>
+<p class="mt-3">Pacientes del catalogo de clientes existente. Registros clinicos restringidos y desactivados por defecto.</p>
+@if(config('odontologia.clinical_records_enabled') && app(\Modules\AiReception\Native\Access::class)->allows('odontologia','clinical'))<a class="btn btn-default" href="/odontologia/clinical">Historia clinica protegida</a>@endif
 <h3>Odontologos</h3><table class="table table-striped"><thead><tr><th>Nombre</th><th>Especialidad</th><th>Registro</th></tr></thead><tbody>@foreach($dentists as $dentist)<tr><td>{{ $dentist->name }}</td><td>{{ $dentist->specialty }}</td><td>{{ $dentist->registration }}</td></tr>@endforeach</tbody></table>
 <h3>Consultorios y sillones</h3><ul>@foreach($chairs as $chair)<li>{{ $chair->name }} / {{ $chair->room }}</li>@endforeach</ul>
 @if($canManage)

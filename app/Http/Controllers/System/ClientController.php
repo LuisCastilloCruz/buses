@@ -714,6 +714,9 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
+        if (config('native_lab.enabled', false)) {
+            abort_if($request->input('socket') || $request->input('temp_path') || $request->input('soap_type_id') !== '01', 422, 'Laboratorio: solo empresa ficticia sin servicios externos.');
+        }
         $temp_path = $request->input('temp_path');
         $configuration = Configuration::first();
 
@@ -748,7 +751,7 @@ class ClientController extends Controller
         $plan = Plan::findOrFail($request->input('plan_id'));
 
         $attributes = [
-            'send_auto' => true,
+            'send_auto' => !config('native_lab.enabled', false),
             'locked_emission' => $request->input('locked_emission'),
             'locked_tenant' => false,
             'locked_users' => false,
@@ -856,7 +859,7 @@ class ClientController extends Controller
         $http = config('tenant.force_https') == true ? 'https://' : 'http://';
 
         DB::connection('tenant')->table('configurations')->insert([
-            'send_auto' => true,
+            'send_auto' => !config('native_lab.enabled', false),
             'locked_emission' => $request->input('locked_emission'),
             'locked_tenant' => false,
             'locked_users' => false,

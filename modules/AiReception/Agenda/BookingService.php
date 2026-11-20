@@ -31,7 +31,7 @@ class BookingService implements BookingGateway
     {
         $this->authorize($actor, $business);
         $this->validate(['day' => $day], ['day' => 'required|date_format:Y-m-d']);
-        if (!in_array($days, [1, 7], true)) {
+        if (!in_array($days, [1, 7, 28, 29, 30, 31], true)) {
             abort(422, 'Vista invalida.');
         }
         if ($professional) {
@@ -154,7 +154,7 @@ class BookingService implements BookingGateway
     }
     public function execute(int $actor, int $business, string $action, array $input, string $key) : array
     {
-        if (!in_array($action, ['book', 'confirm', 'cancel', 'reschedule'], true)) {
+        if (!in_array($action, ['book', 'confirm', 'cancel', 'reschedule', 'attend'], true)) {
             abort(422, 'Accion invalida.');
         }
         if (!preg_match('/^[A-Za-z0-9_-]{8,80}$/D', $key)) {
@@ -190,7 +190,7 @@ class BookingService implements BookingGateway
             $this->guard->lock($this->db,$business,$proId);
             $this->professional($business, $proId, true);
             // Single serialization point for every write to this calendar.
-            if ($old && $old->status === 'cancelled') {
+            if ($old && in_array($old->status, ['cancelled', 'attended'], true)) {
                 abort(409, 'La reserva ya esta cancelada.');
             }
             if ($action === 'confirm' && $old->status !== 'pending') {
@@ -198,7 +198,8 @@ class BookingService implements BookingGateway
             }
             $now = date('Y-m-d H:i:s');
             $values = [];
-            if ($action !== 'cancel') {
+            if ($action === 'attend' && $old->status !== 'confirmed') abort(409, 'Solo se atienden citas confirmadas.');
+            if (!in_array($action, ['cancel', 'attend'], true)) {
                 $serviceId = $old ? (int) $old->service_id : (int) $data['service_id'];
                 $day = $action === 'confirm' ? $old->day : $data['day'];
                 $start = $action === 'confirm' ? $old->start : $data['start'];
@@ -221,7 +222,7 @@ class BookingService implements BookingGateway
                 $id = $this->db->table('aireception_bookings')->insertGetId($values);
             } else {
                 $id = (int) $old->id;
-                $values += ['status' => $action === 'cancel' ? 'cancelled' : ($action === 'confirm' ? 'confirmed' : $old->status), 'version' => (int) $old->version + 1, 'updated_at' => $now];
+                $values += ['status' => $action === 'cancel' ? 'cancelled' : ($action === 'confirm' ? 'confirmed' : ($action === 'attend' ? 'attended' : $old->status)), 'version' => (int) $old->version + 1, 'updated_at' => $now];
                 $this->db->table('aireception_bookings')->where('business_id', $business)->where('id', $id)->update($values);
             }
             $record = (array) $this->booking($business, $id);

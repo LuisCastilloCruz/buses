@@ -41,7 +41,7 @@ class Controller extends \Illuminate\Routing\Controller
     }
     public function calendar(Request $r)
     {
-        $r->validate(['day' => 'required|date_format:Y-m-d', 'days' => 'sometimes|in:1,7', 'professional_id' => 'nullable|integer|min:1']);
+        $r->validate(['day' => 'required|date_format:Y-m-d', 'days' => 'sometimes|in:1,7,28,29,30,31', 'professional_id' => 'nullable|integer|min:1']);
         return response()->json($this->engine($r)->calendar($this->actor(), $this->business(), $r->query('day'), (int) $r->query('days', 1), $r->query('professional_id') ? (int) $r->query('professional_id') : null));
     }
     public function availability(Request $r)

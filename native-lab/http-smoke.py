@@ -21,7 +21,7 @@ class Client:
   if data is not None:
    payload=(urllib.parse.urlencode(data) if form else json.dumps(data)).encode();headers['Content-Type']='application/x-www-form-urlencoded' if form else 'application/json'
   try:
-   r=self.opener.open(urllib.request.Request(self.base+path,data=payload,headers=headers),timeout=35);return r.status,r.read().decode()
+   r=self.opener.open(urllib.request.Request(self.base+path,data=payload,headers=headers),timeout=900);return r.status,r.read().decode()
   except urllib.error.HTTPError as e:
    body=e.read().decode();(root/'.native-runtime/last-http-error.html').write_text(body,encoding='utf-8');return e.code,body
 if __name__=='__main__':

@@ -8,7 +8,7 @@ try {
  $count=0
  foreach($path in $paths){foreach($file in Get-ChildItem -LiteralPath $path -Filter *.php -Recurse){& $Php -l $file.FullName | Out-Null;if($LASTEXITCODE -ne 0){throw "PHP syntax: $($file.FullName)"};$count++}}
  Write-Output "PASS syntax: $count PHP files"
- foreach($test in @('IntakeClassifierSmokeTest','MetaWebhookMockTest','SecurityRegressionTest','SlotPlannerTest','TattooAvailabilityTest')){Run-Php @("modules/AiReception/Tests/$test.php")}
+ foreach($test in @('ProviderContractsTest','IntakeClassifierSmokeTest','MetaWebhookMockTest','SecurityRegressionTest','SlotPlannerTest','TattooAvailabilityTest')){Run-Php @("modules/AiReception/Tests/$test.php")}
  foreach($test in @('LaravelCompatibilityTest','CalendarPersistenceTest')){Run-Php @('vendor/phpunit/phpunit/phpunit','--no-configuration','--bootstrap','vendor/autoload.php',"modules/AiReception/Tests/$test.php")}
  Run-Php @('native-lab/mysql-tests.php','dental')
  Run-Php @('native-lab/legacy-tests.php','tattoo')

@@ -6,7 +6,7 @@ class Catalog
 {
     public static function definitions() : array
     {
-        return ['aireception' => ['AiReception', ['calendar' => 'Calendario', 'book' => 'Gestionar reservas', 'conversations' => 'Conversaciones y derivacion', 'configure' => 'Profesionales, servicios y configuracion']], 'odontologia' => ['Odontologia', ['calendar' => 'Citas y disponibilidad', 'book' => 'Gestionar citas', 'manage' => 'Odontologos, especialidades y sillones', 'patients' => 'Pacientes', 'billing' => 'Servicios y facturacion']]];
+        return ['aireception' => ['AiReception', ['calendar' => 'Calendario', 'book' => 'Gestionar reservas', 'conversations' => 'Conversaciones y derivacion', 'configure' => 'Profesionales, servicios y configuracion']], 'odontologia' => ['Odontologia', ['calendar' => 'Citas y disponibilidad', 'book' => 'Gestionar citas', 'manage' => 'Odontologos, especialidades y sillones', 'patients' => 'Pacientes', 'billing' => 'Servicios y facturacion', 'clinical' => 'Acceso clinico restringido']]];
     }
     public static function install($db) : void
     {
