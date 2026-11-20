@@ -497,3 +497,5 @@ RESULT 11 V4 real Chrome assertions
 
 ## No aprobado / no ejecutado
 API OpenAI real, Meta sandbox externo, transcripcion OGG/Opus, salida de WhatsApp, E2E externo, cobros, SUNAT, uso clinico real, despliegue, regresion exhaustiva de cada modulo historico. Auditoria Composer encontro avisos criticos; no se considera una suite de seguridad aprobada.
+
+Ultima correccion de acceso: 13 checks de conversaciones PASS, incluyendo rechazo de usuario bloqueado aunque tenga modulo/nivel asignado. No se modifica su registro real: el test usa el objeto de usuario ficticio del proceso.

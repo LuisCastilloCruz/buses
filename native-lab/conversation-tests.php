@@ -16,4 +16,7 @@ try{$tools->run('execute_sql',[],$person);throw new LogicException('Unexpected t
 $reply=$tools->simulated('Quiero cancelar una cita',$person);check(strpos($reply['reply_hint'],'cancelacion')!==false,'cancellation intent precedes generic appointment intent');
 $other=(int)$db->table('persons')->where('type','customers')->where('id','<>',$person)->value('id');if(!$other)throw new RuntimeException('Second fictional customer required');
 try{$service->turn($other,'Hola',$id,'wrong-'.bin2hex(random_bytes(8)));throw new LogicException('Cross person');}catch(Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e){check($e->getStatusCode()===404,'conversation cannot switch customer identity');}
+
+$user=auth('web')->user();$originalLocked=$user->locked;$user->locked=true;
+try{check(!app(Modules\AiReception\Native\Access::class)->allows('aireception','conversations'),'locked user denied despite assigned module');try{$service->turn($person,'Hola',null,'locked-'.bin2hex(random_bytes(8)));throw new LogicException('Locked user allowed');}catch(Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e){check($e->getStatusCode()===403,'locked user cannot invoke conversation service');}}finally{$user->locked=$originalLocked;}
 echo "RESULT $n conversation MySQL checks; providers disabled.\n";
