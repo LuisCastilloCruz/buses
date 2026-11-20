@@ -30,6 +30,7 @@ class AdminController extends \Illuminate\Routing\Controller
             if ($kind !== 'dentist') {
                 abort(422);
             }
+            app(\Modules\AiReception\Native\ProfessionalQuota::class)->requireCapacity();
             $r->validate(['specialty_id' => 'required|integer', 'chair_id' => 'required|integer', 'registration' => 'nullable|string|max:50']);
             $specialty = $db->table('odontologia_specialties')->where('id', $r->input('specialty_id'))->where('active', true)->first();
             $chair = $db->table('odontologia_chairs')->where('id', $r->input('chair_id'))->first();

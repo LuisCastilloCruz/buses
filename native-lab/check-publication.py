@@ -3,7 +3,7 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 def git(*args):return subprocess.check_output(['git','-c','safe.directory='+root.as_posix(),*args],cwd=root)
 files=git('diff','--cached','--name-only','-z').decode().split('\0');secrets=[]
-for file in ['settings.json','admin.json','accounts.json']:
+for file in ['settings.json','admin.json','accounts.json','provision.json','fourth-account.json']:
  p=root/'.native-runtime'/file
  if p.exists():
   def visit(v):

@@ -25,7 +25,8 @@ class Access
         if (!$db->getSchemaBuilder()->hasTable('client_module_entitlements')) {
             return false;
         }
-        return $db->table('client_module_entitlements as e')->join('modules as m', 'm.id', '=', 'e.module_id')->join('clients as c', 'c.id', '=', 'e.client_id')->join('hostnames as h', 'h.id', '=', 'c.hostname_id')->where('h.website_id', $tenant->id)->where('m.value', $module)->where('e.enabled', true)->where('c.locked_tenant', false)->exists();
+        $client = $db->table('client_module_entitlements as e')->join('modules as m', 'm.id', '=', 'e.module_id')->join('clients as c', 'c.id', '=', 'e.client_id')->join('hostnames as h', 'h.id', '=', 'c.hostname_id')->where('h.website_id', $tenant->id)->where('m.value', $module)->where('e.enabled', true)->where('c.locked_tenant', false)->select('c.id','c.plan_id')->first();
+        return $client && app(SubscriptionPolicy::class)->allows($client, $module);
     }
     public function allows(string $module, string $level) : bool
     {

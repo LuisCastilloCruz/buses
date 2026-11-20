@@ -22,16 +22,16 @@ class MetaWebhookController extends Controller
     {
         $verifyToken = config('tattooinbox.meta.verify_token');
 
-        $mode = $request->query('hub.mode');
-        $token = $request->query('hub.verify_token');
-        $challenge = $request->query('hub.challenge');
+        $mode = $request->query('hub_mode', $request->query('hub.mode'));
+        $token = $request->query('hub_verify_token', $request->query('hub.verify_token'));
+        $challenge = $request->query('hub_challenge', $request->query('hub.challenge'));
 
         Log::info('[TATTOOINBOX][WEBHOOK] verify_request', [
             'mode' => $mode,
             'token_present' => !empty($token),
         ]);
 
-        if ($mode === 'subscribe' && $token === $verifyToken) {
+        if ($mode === 'subscribe' && is_string($verifyToken) && $verifyToken !== '' && is_string($token) && hash_equals($verifyToken, $token) && is_string($challenge) && strlen($challenge) <= 256) {
             return response($challenge, 200);
         }
 
@@ -82,15 +82,14 @@ class MetaWebhookController extends Controller
             ], 200);
         } catch (Throwable $e) {
             Log::error('[TATTOOINBOX][WEBHOOK] error_general', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error_type' => get_class($e),
                 'object' => $payload['object'] ?? null,
                 'entry_count' => is_array($payload['entry'] ?? null) ? count($payload['entry']) : 0,
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => 'Webhook processing unavailable',
             ], 200);
         }
     }

@@ -54,6 +54,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        // New reception endpoints must not inherit legacy API file/line disclosure or incorrect 500s.
+        if ($request->is('api/aireception/*', 'aireception/api/*', 'odontologia/api/*')) {
+            $status = $exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface ? $exception->getStatusCode() : ($exception instanceof AuthenticationException ? 401 : ($exception instanceof ValidationException ? 422 : 500));
+            return response()->json(['success'=>false,'message'=>$status===409?'La operacion cambio o no esta disponible; actualiza los datos.':($status>=500?'Servicio no disponible.':'Solicitud no autorizada o invalida.')], $status);
+        }
+
         if ($exception instanceof AuthenticationException) {
             if ($this->isFrontend($request)) {
                 return redirect()->guest('login');

@@ -7,12 +7,16 @@ if ($s['root'] !== str_replace('\\', '/', realpath(dirname(__DIR__))) || $s['pur
     throw new RuntimeException('Invalid lab root.');
 }
 $name = $argv[1] ?? 'mf_v4_system';
-if (!in_array($name, ['mf_v4_system', 'mf_v4_tattoo', 'mf_v4_dental', 'mf_v4_commerce'], true)) {
+if (!in_array($name, ['mf_v4_system', 'mf_v4_tattoo', 'mf_v4_dental', 'mf_v4_commerce', 'mf_v4_cuarta'], true)) {
     throw new RuntimeException('Unknown database.');
 }
 $c = ['driver' => 'mysql', 'host' => '127.0.0.1', 'port' => 13319, 'database' => $name, 'username' => $s['user'], 'password' => $s['password'], 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'prefix' => '', 'strict' => false, 'engine' => 'InnoDB'];
 $system = $c;
 $system['database'] = 'mf_v4_system';
+if ($name === 'mf_v4_cuarta') {
+    $reservation=json_decode(file_get_contents(dirname(__DIR__).'/.native-runtime/provision.json'),true);
+    $c['username']='mf_v4_cuarta';$c['password']=$reservation['password'];
+}
 $app->instance('config', new Illuminate\Config\Repository(['database' => ['default' => $name === 'mf_v4_system' ? 'system' : 'tenant', 'connections' => ['system' => $system, 'tenant' => $c]], 'app' => ['key' => $s['key'], 'timezone' => 'America/Lima'], 'tenant' => ['app_url_base' => 'localhost'], 'tenancy' => ['db' => ['system-connection-name' => 'system', 'tenant-connection-name' => 'tenant']]]));
 $app['config']->set('cache', ['default' => 'array', 'stores' => ['array' => ['driver' => 'array']]]);
 $app->instance('request', Illuminate\Http\Request::create('http://localhost:8876'));

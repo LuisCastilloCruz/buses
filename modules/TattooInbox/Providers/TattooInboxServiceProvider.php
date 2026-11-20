@@ -16,6 +16,9 @@ class TattooInboxServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        if (config('aireception.native_enabled', false) && !class_exists('RegisterExistingInboxCatalog', false)) {
+            class_alias(\Modules\TattooInbox\Services\CatalogMigrationCompatibility::class, 'RegisterExistingInboxCatalog');
+        }
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'tattooinbox');
         $this->mergeConfigFrom(__DIR__ . '/../Config/config.php', 'tattooinbox');

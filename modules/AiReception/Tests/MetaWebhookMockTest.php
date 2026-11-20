@@ -41,4 +41,10 @@ ok(count(MetaWebhook::messages($payload, ['98765' => 'otro-tenant'])) === 0, 'N�
 ok($messages[0]['message_id'] === 'wamid.fake.1', 'ID conservado para futura deduplicación');
 $bad = json_encode(['object' => 'nada', 'entry' => []]);
 ok(no(static function () use ($bad) { MetaWebhook::messages($bad, []); }), 'Evento no WhatsApp rechazado');
+$modern=json_decode($payload,true);
+$modern['entry'][0]['changes'][0]['value']['messages'][0]=['id'=>'wamid.HBgLMTY1MDM4Nzk0MzkVAgASGBQzQTRB=','from_user_id'=>'US.13491208655302741918','timestamp'=>'1795200000','type'=>'audio','audio'=>['id'=>'123456789']];
+$m=MetaWebhook::messages(json_encode($modern),['123456'=>'clinica-demo']);
+ok(count($m)===1 && $m[0]['from']==='' && $m[0]['sender_identity']==='bsuid:US.13491208655302741918','Business-scoped user identity without phone');
+ok($m[0]['media_id']==='123456789' && $m[0]['timestamp']==='1795200000','Authorized media identifier and event timestamp preserved');
+ok(substr($m[0]['message_id'],-1)==='=','Official base64 message identifier accepted');
 echo "OK: $checks verificaciones Meta webhook, firma y aislamiento, sin tráfico real.\n";

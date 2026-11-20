@@ -20,6 +20,7 @@ class MetaChannelRegistryService
         $synced = [];
 
         if (!empty($settings->whatsapp_phone_number_id)) {
+            if (config('aireception.native_enabled', false)) app(\Modules\AiReception\Native\ChannelOwnership::class)->claim((string)$settings->whatsapp_phone_number_id, $websiteId, 'tattoo_inbox');
             $record = TattooInboxMetaChannel::query()->updateOrCreate(
                 [
                     'platform' => 'whatsapp',

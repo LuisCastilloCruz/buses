@@ -3,6 +3,8 @@ namespace Modules\Odontologia\Http\Controllers;
 use Illuminate\Http\Request;
 use Modules\Odontologia\Services\ClinicalRecords;
 class ClinicalController extends \Illuminate\Routing\Controller {
+    public function upload(Request $r){$r->validate(['record_id'=>'required|integer|min:1','attachment'=>'required|file|max:2048']);app(\Modules\Odontologia\Services\ClinicalAttachments::class)->upload((int)$r->input('record_id'),$r->file('attachment'));return back();}
+    public function download($id){$f=app(\Modules\Odontologia\Services\ClinicalAttachments::class)->download((int)$id);return response($f['bytes'])->header('Content-Type',$f['mime'])->header('Content-Disposition','attachment; filename="'.$f['filename'].'"')->header('Cache-Control','no-store, private')->header('X-Content-Type-Options','nosniff');}
     public function index(Request $r){
         abort_unless(config('odontologia.clinical_records_enabled',false),403);
         $r->validate(['person_id'=>'nullable|integer|min:1']);

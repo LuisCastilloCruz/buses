@@ -35,6 +35,7 @@ class Controller extends \Illuminate\Routing\Controller
         $data = $this->engine($r)->catalogue($this->actor(), $this->business());
         $data['user'] = ['id' => $this->actor(), 'name' => auth()->user()->name];
         $data['today'] = date('Y-m-d');
+        if ($this->module($r) === 'aireception') $data['capabilities'] = app(DomainRegistry::class)->capabilities();
         $data['persons'] = app(Access::class)->allows($this->module($r), 'book') ? $this->db()->table('persons')->where('type', 'customers')->select('id', 'name')->limit(1000)->get() : collect();
         $data['items'] = $this->db()->table('items')->where('item_type_id', '02')->select('id', 'description as name')->limit(1000)->get();
         return response()->json($data);
@@ -74,11 +75,7 @@ class Controller extends \Illuminate\Routing\Controller
             $result = $engine->execute($this->actor(), $this->business(), $action, $data, (string) $r->header('Idempotency-Key'));
             if (!$result['replayed']) {
                 $booking = $result['booking'];
-                $this->db()->table('aireception_reminders')->where('booking_id', $booking['id'])->update(['status' => 'cancelled']);
-                if ($booking['status'] === 'confirmed') {
-                    $date = (new \DateTimeImmutable($booking['day'] . ' ' . $booking['start'], new \DateTimeZone('America/Lima')))->modify('-1 day');
-                    $this->db()->table('aireception_reminders')->updateOrInsert(['booking_id' => $booking['id'], 'scheduled_at' => $date->format('Y-m-d H:i:s')], ['status' => 'simulated_pending']);
-                }
+                app(ReminderSchedule::class)->sync($booking);
             }
             return response()->json($result);
         });
@@ -97,6 +94,7 @@ class Controller extends \Illuminate\Routing\Controller
         }
         $engine = $this->engine($r);
         return $this->db()->transaction(function () use($r, $kind, $data, $item, $engine) {
+            if ($kind === 'professional' && empty($data['id'])) app(ProfessionalQuota::class)->requireCapacity();
             $result = $engine->configure($this->actor(), $this->business(), $kind, $data);
             if ($item) {
                 $this->db()->table('aireception_services')->where('business_id', $this->business())->where('id', $result['id'])->update(['item_id' => $item->id]);

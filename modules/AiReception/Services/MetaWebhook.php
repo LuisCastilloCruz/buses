@@ -69,8 +69,11 @@ final class MetaWebhook
                     if (!is_array($message)) continue;
                     $id = $message['id'] ?? null;
                     $sender = $message['from'] ?? null;
-                    if (!is_string($id) || !preg_match('/^[\w.-]{1,160}$/D', $id)
-                        || !is_string($sender) || !preg_match('/^[0-9]{8,16}$/D', $sender)) {
+                    $scoped = $message['from_user_id'] ?? null;
+                    $validPhone = is_string($sender) && preg_match('/^[0-9]{8,16}$/D', $sender);
+                    $validScoped = is_string($scoped) && preg_match('/^[A-Za-z0-9._-]{1,128}$/D', $scoped);
+                    if (!is_string($id) || !preg_match('~^[A-Za-z0-9._=+/-]{1,255}$~D', $id)
+                        || (!$validPhone && !$validScoped)) {
                         continue;
                     }
                     $type = $message['type'] ?? '';
@@ -85,7 +88,10 @@ final class MetaWebhook
                         'business_id' => $phoneToBusiness[$phoneId],
                         'phone_number_id' => $phoneId,
                         'message_id' => $id,
-                        'from' => $sender,
+                        'from' => $validPhone ? $sender : '',
+                        'sender_identity' => $validScoped ? 'bsuid:' . $scoped : 'phone:' . $sender,
+                        'media_id' => $type === 'audio' && is_string($message['audio']['id'] ?? null) && preg_match('/^[0-9]{1,64}$/D', $message['audio']['id']) ? $message['audio']['id'] : '',
+                        'timestamp' => is_string($message['timestamp'] ?? null) && ctype_digit($message['timestamp']) ? $message['timestamp'] : '',
                         'type' => $type,
                         'text' => $body,
                     ];

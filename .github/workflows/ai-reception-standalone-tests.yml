@@ -56,3 +56,6 @@ jobs:
 
       - name: Provider contracts without network
         run: php modules/AiReception/Tests/ProviderContractsTest.php
+
+      - name: Audio validation without network
+        run: php modules/AiReception/Tests/AudioContractsTest.php

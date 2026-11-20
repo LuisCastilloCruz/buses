@@ -8,6 +8,7 @@
     <li><a href="/{{ $nativeModule }}/professionals">Profesionales y horarios</a></li>
     <li><a href="/{{ $nativeModule }}/services">Servicios</a></li>
     @if($nativeModule==='aireception' && $nativeAccess->allows($nativeModule,'conversations'))<li><a href="/aireception/conversations">Conversaciones y derivacion</a></li>@endif
+    @if($nativeModule==='aireception' && $nativeAccess->allows($nativeModule,'configure'))<li><a href="/aireception/automations">Automatizaciones</a></li>@endif
     <li><a href="/{{ $nativeModule }}/settings">Configuracion</a></li>
    </ul></li>
   @endif

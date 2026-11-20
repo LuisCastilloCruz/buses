@@ -1,6 +1,12 @@
 import importlib,json,secrets,copy
 m=importlib.import_module('http-smoke')
 accounts=json.loads((m.root/'.native-runtime/accounts.json').read_text())
+if 'cuarta' in accounts:
+ c=m.Client(accounts['cuarta'])
+ for path in ['/dashboard','/documents','/pos','/odontologia','/aireception/calendar']:
+  assert c.request(path)[0]==200,path
+ print('PASS existing fourth company retained and verified; no creation repeated',flush=True)
+ raise SystemExit(0)
 a=m.Client(accounts['system'])
 code,body=a.request('/clients/record/2');assert code==200
 payload=copy.deepcopy(json.loads(body)['data'])

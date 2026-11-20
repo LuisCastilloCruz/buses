@@ -15,12 +15,7 @@ class EngineFactory
             throw new \LogicException('Create agenda engine before starting a transaction.');
         }
         $connection->statement('SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED');
-        $adapters = [];
-        foreach (['tattoo', 'dental'] as $domain) {
-            if (app()->bound('aireception.domain.' . $domain)) {
-                $adapters[$domain] = app('aireception.domain.' . $domain);
-            }
-        }
+        $adapters = app(DomainRegistry::class)->calendars();
         return new \Modules\AiReception\Agenda\BookingService(app('db')->connection('tenant'), new Authority($module), new CalendarGuard($adapters));
     }
 }
