@@ -87,3 +87,17 @@ $php = 'C:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe'
 ```
 
 No se instala una tarea de Windows automaticamente. Repetir el tick y el worker de forma controlada solo dentro del laboratorio. Las credenciales de la cuarta empresa tambien aparecen en `.native-runtime/accounts.json`; son exclusivamente ficticias y privadas.
+
+## Pruebas de recepcion de webhook sintetico
+
+Despues del arranque y de las suites principales (solo cuentas ficticias):
+
+```powershell
+& $php native-lab/webhook-fixture.php dental
+python -u -X utf8 native-lab/webhook-http-tests.py
+& $php native-lab/artisan.php queue:work aireception --queue=aireception --once --tries=3 --sleep=0
+& $php native-lab/inbound-tests.php dental
+& $php native-lab/contact-link-tests.php dental
+```
+
+El worker debe haber procesado los eventos de la prueba antes de verificar inbound. Si existen jobs previos, procesarlos de uno en uno y revisar su resultado; no eliminar la cola para hacer pasar el test. Las firmas de este fixture usan valores falsos conocidos; nunca reutilizarlos en una conexion real.
