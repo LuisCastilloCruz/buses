@@ -80,4 +80,8 @@ OpenAI/WhatsApp reales quedan para otra fase. Primero crear credenciales sandbox
 
 ## GitHub
 
-Rama de entrega prevista: `feature/ai-reception-agenda-v1`, basada en la referencia segura indicada. El cierre privado registra el commit final exacto, el bundle y la verificacion remota. Este informe y las evidencias estan incluidos en la propia rama; el SHA mostrado por GitHub identifica inequivocamente su version. Publicacion y Actions se verifican despues del escaneo de secretos; no se hace merge ni despliegue.
+Rama publicada y verificada: [feature/ai-reception-agenda-v1](https://github.com/LuisCastilloCruz/buses/tree/feature/ai-reception-agenda-v1). Commit de implementacion probado: `4c3a67bcd1b1a37ce93e8e1e1368bc00612ff268`. `git ls-remote` devolvio exactamente ese SHA tras el push. El commit posterior de cierre solo actualiza documentacion; su SHA final se registra localmente en PRIVATE.md para evitar una referencia circular dentro del propio commit.
+
+Escaneo previo: 51 archivos del indice contrastados con marcadores y credenciales privadas del laboratorio, sin coincidencias. Escaneo de 190 blobs nuevos alcanzables respecto a github/main, incluidos secretos historicos conocidos: PASS. Las credenciales originales historicas no se revocaron y requieren el tratamiento documentado arriba.
+
+GitHub Actions [44809188315](https://github.com/LuisCastilloCruz/buses/actions/runs/44809188315): **success**, dos jobs (PHP 7.4 y 8.2) y todos sus pasos aprobados. Son pruebas puras y de sintaxis, no arranque completo de Laravel 5.7 en PHP 8.2 ni MySQL/navegador en la nube. MySQL, HTTP y Chrome se ejecutaron en la HP y sus evidencias estan en esta rama. No se creo PR, no se hizo merge y no se desplego.

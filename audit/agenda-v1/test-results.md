@@ -174,3 +174,7 @@ RESULT 11 real headless Chrome assertions passed
 - [07-settings.png](screenshots/07-settings.png) ? SHA-256 `e76aceb18c99076f0cc910fb7022a3a2bd52e334d366cbbfd7e636287cfe102f`
 
 Chrome se lanzo con un perfil desechable separado. Las capturas muestran solo datos ficticios. Se inspeccionaron calendario, agente y editor de horarios; no contienen contrasenas.
+
+## GitHub Actions
+
+[Run 44809188315](https://github.com/LuisCastilloCruz/buses/actions/runs/44809188315), commit `4c3a67bcd1b1a37ce93e8e1e1368bc00612ff268`: success. Jobs Standalone PHP 7.4 y Standalone PHP 8.2: success; todos los pasos aprobados. Solo sintaxis y cinco suites puras; las pruebas MySQL/HTTP/Chrome son locales, no se atribuyen a Actions.
