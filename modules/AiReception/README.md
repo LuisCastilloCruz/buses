@@ -46,3 +46,26 @@ El cliente HTTP se simula; no genera cargos de OpenAI ni Meta.
   LICENSE indica MIT y readme.md incluye condiciones comerciales adicionales.
 
 Referencia de API: https://platform.openai.com/docs/api-reference/responses
+
+## Avance del 20/11/2026: calculadora de disponibilidad
+
+Archivo: `Services/SlotPlanner.php` (PHP 7.4 compatible, sin dependencias externas).
+
+- Calcula espacios libres por empresa, profesional y duracion de servicio.
+- Acepta horarios separados (incluida pausa de almuerzo), cierres y horarios excepcionales.
+- Respeta tiempo minimo de aviso, intervalo entre opciones y margenes antes/despues de citas.
+- No bloquea espacios entre empresas ni entre profesionales.
+- Excluye citas confirmadas y pendientes; ignora las canceladas.
+- Solo calcula disponibilidad: **no autoriza usuarios, no consulta datos, no reserva**.
+- El adaptador de Laravel debe imponer autenticacion, roles y tenant confiable.
+- La escritura real requerira transacciones, locks, idempotencia y controles en la BD.
+
+Prueba reproducible:
+
+```bash
+php modules/AiReception/Tests/SlotPlannerTest.php
+```
+
+**Resultado local:** 26 comprobaciones OK y sintaxis PHP correcta (entorno de validacion PHP 8.4). El flujo de GitHub Actions `.github/workflows/ai-reception-standalone-tests.yml` esta agregado para comprobar PHP 7.4 y PHP 8.2; **la ejecucion remota no esta aun confirmada**.
+
+No cambiar `active: 0` ni intentar desplegar en produccion antes de conciliar cambios locales de la HP.
