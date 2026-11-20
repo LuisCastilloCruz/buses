@@ -108,6 +108,9 @@ class ClientController extends Controller
 
 
 
+        $group_odontologia = $group_basic;
+        $group_odontologia_apps = $this->getPreparedModulesByValuesOrDescriptions(['odontologia','aireception']);
+
         $config = Configuration::first();
 
         $certificate_admin = $config->certificate;
@@ -133,6 +136,8 @@ class ClientController extends Controller
             'group_restaurant_apps',
             'group_tattoo',
             'group_tattoo_apps',
+            'group_odontologia',
+            'group_odontologia_apps',
             'regex_password_client'
         );
     }
@@ -449,6 +454,7 @@ class ClientController extends Controller
          * @var Collection $valueModules
          * @var Collection $valueLevels
          */
+        $permissionTransaction = false;
         $user_id = 1;
         $array_modules = [];
         $array_levels = [];
@@ -579,6 +585,10 @@ class ClientController extends Controller
                 ]);
 
 
+            // New entitlements fail closed while permission rows are replaced atomically.
+            \Modules\AiReception\Native\Catalog::syncEntitlements($cliente, []);
+            DB::connection('tenant')->beginTransaction();
+            $permissionTransaction = true;
             //modules
             DB::connection('tenant')
                 ->table('module_user')
@@ -642,6 +652,7 @@ class ClientController extends Controller
                     $array_levels[] = (array)$level;
                 });
 
+
             // Se actualiza las tablas de permisos
             DB::connection('tenant')
                 ->table('module_user')
@@ -658,6 +669,9 @@ class ClientController extends Controller
             DB::connection('tenant')
                 ->table('configurations')
                 ->update($config);
+            DB::connection('tenant')->commit();
+            $permissionTransaction = false;
+            \Modules\AiReception\Native\Catalog::syncEntitlements($cliente, $valueModules->all());
             return [
                 'success' => true,
                 'message' => 'Cliente Actualizado satisfactoriamente',
@@ -665,6 +679,8 @@ class ClientController extends Controller
                 'levels' => $array_levels,
             ];
         } catch (Exception $e) {
+            if ($permissionTransaction) DB::connection('tenant')->rollBack();
+            if (config('native_lab.enabled', false)) \Log::warning('Native client update failed', ['file'=>$e->getFile(), 'line'=>$e->getLine()]);
             return [
                 'success' => false,
                 'message' => $e->getMessage()
@@ -685,7 +701,8 @@ class ClientController extends Controller
         $modulo_id = DB::connection('tenant')
             ->table('modules')
             ->where('value', 'digemid')
-            ->first()->id;
+            ->value('id');
+        if (!$modulo_id) return false;
         $modulo = DB::connection('tenant')
             ->table('module_user')
             ->where('module_id', $modulo_id)
@@ -772,6 +789,7 @@ class ClientController extends Controller
             $token = str_random(50);
 
             $client = new Client();
+            $nativeClient = $client;
             $client->hostname_id = $hostname->id;
             $client->token = $token;
             $client->email = strtolower($request->input('email'));
@@ -913,7 +931,7 @@ class ClientController extends Controller
         ]);
 
 
-        $user_id = DB::connection('tenant')->table('users')->insert([
+        $user_id = DB::connection('tenant')->table('users')->insertGetId([
             'name' => 'Administrador',
             'email' => $request->input('email'),
             'password' => bcrypt($request->input('password')),
@@ -996,6 +1014,7 @@ class ClientController extends Controller
             }
 
             // App modules móviles/globales, si los quieres para todos
+            \Modules\AiReception\Native\Catalog::syncEntitlements($nativeClient, $valueModules->all());
             $this->insertAppModules($user_id);
         } else {
             DB::connection('tenant')->table('module_user')->insert([

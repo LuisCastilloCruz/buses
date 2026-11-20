@@ -5,10 +5,15 @@ on:
     branches:
       - feature/ai-reception-foundation-20261120
       - feature/ai-reception-agenda-v1
+      - feature/multifactura-native-aireception-odontologia-v3
       - "integration/ai-reception-tattoo-20261120*"
     paths:
       - 'modules/AiReception/**'
       - 'demo-agenda/**'
+      - 'native-lab/**'
+      - 'modules/Odontologia/**'
+      - 'modules/Tattoo/Services/**'
+      - 'modules/TattooInbox/Services/Inbox*.php'
       - '.github/workflows/ai-reception-standalone-tests.yml'
   workflow_dispatch:
 
@@ -33,7 +38,7 @@ jobs:
           coverage: none
       - name: Check PHP syntax
         run: |
-          find modules/AiReception/Agenda demo-agenda -name '*.php' -print0 | xargs -0 -n1 php -l
+          find modules/AiReception/Agenda modules/AiReception/Native modules/Odontologia modules/Tattoo/Services native-lab demo-agenda -name '*.php' -print0 | xargs -0 -n1 php -l
           php -l modules/AiReception/Services/SlotPlanner.php
           php -l modules/AiReception/Services/OpenAiIntakeClassifier.php
           php -l modules/AiReception/Services/MetaWebhook.php

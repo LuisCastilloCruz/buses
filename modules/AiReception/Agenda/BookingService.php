@@ -4,31 +4,28 @@ namespace Modules\AiReception\Agenda;
 
 use Modules\AiReception\Contracts\BookingGateway;
 use Modules\AiReception\Services\SlotPlanner;
-use Modules\AiReception\Services\TattooAvailability;
+use Modules\AiReception\Contracts\BookingAuthority;
+use Modules\AiReception\Contracts\CalendarGuard;
 /** All writes require a trusted actor and explicit business membership; no AI or HTTP clients. */
 class BookingService implements BookingGateway
 {
     private $db;
-    public function __construct($db)
+    private $authority;
+    private $guard;
+    public function __construct($db, ?BookingAuthority $authority = null, ?CalendarGuard $guard = null)
     {
         $this->db = $db;
+        $this->authority = $authority ?: new LabAuthority();
+        $this->guard = $guard ?: new LabCalendarGuard();
     }
     public function authorize(int $actor, int $business, bool $write = false, bool $lock = false)
     {
-        $q = $this->db->table('aireception_memberships')->where('business_id', $business)->where('user_id', $actor)->where('active', true);
-        if ($lock) {
-            $q->lockForUpdate();
-        }
-        $member = $q->first();
-        if (!$member || !in_array($member->role, $write ? ['admin', 'reception'] : ['admin', 'reception', 'viewer'], true)) {
-            abort(403, 'No tienes permiso para este negocio.');
-        }
-        return $member;
+        return $this->authority->authorize($this->db,$actor,$business,$write,$lock);
     }
     public function catalogue(int $actor, int $business) : array
     {
         $member = $this->authorize($actor, $business);
-        return ['business' => $this->db->table('aireception_businesses')->where('id', $business)->first(), 'role' => $member->role, 'professionals' => $this->db->table('aireception_professionals')->where('business_id', $business)->get(), 'services' => $this->db->table('aireception_services')->where('business_id', $business)->get(), 'assignments' => $this->db->table('aireception_professional_services')->where('business_id', $business)->get()];
+        return ['business' => $this->authority->business($this->db,$business), 'role' => $member->role, 'professionals' => $this->db->table('aireception_professionals')->where('business_id', $business)->get(), 'services' => $this->db->table('aireception_services')->where('business_id', $business)->get(), 'assignments' => $this->db->table('aireception_professional_services')->where('business_id', $business)->get()];
     }
     public function calendar(int $actor, int $business, string $day, int $days = 1, ?int $professional = null) : array
     {
@@ -121,17 +118,11 @@ class BookingService implements BookingGateway
             $svc->buffer_minutes = $snapshot['buffer_minutes'];
         }
         $policy = json_decode($pro->policy, true);
-        $tenant = $this->db->table('aireception_businesses')->where('id', $business)->first();
+        $tenant = $this->authority->business($this->db,$business);
         $policy['timezone'] = $tenant->timezone;
         $policy['buffer_minutes'] = 0;
-        // A shadow with unknown duration closes availability. No inference from the requested service.
-        $legacy = new TattooAvailability(new LegacyCalendarSource($this->db), function ($b, $p) use($business, $professional) {
-            return $b === (string) $business && $p === (string) $professional;
-        });
         unset($policy['legacy_duration_minutes']);
-        if (!$legacy->slots((string) $business, (string) $professional, $day, (int) $svc->duration_minutes, $policy)) {
-            return [];
-        }
+        if (!$this->guard->permits($this->db,$business,$professional,$day,(int)$svc->duration_minutes,$policy)) return [];
         $margin = (int) $svc->buffer_minutes;
         foreach (['weekdays', 'exceptions'] as $collection) {
             foreach ($policy[$collection] ?? [] as $key => $windows) {
@@ -151,7 +142,7 @@ class BookingService implements BookingGateway
         if ($exclude) {
             $q->where('id', '!=', $exclude);
         }
-        $occupied = [];
+        $occupied = $this->guard->intervals($this->db,$business,$professional,$day,$exclude);
         foreach ($q->get() as $r) {
             $occupied[] = ['business_id' => (string) $business, 'professional_id' => (string) $professional, 'day' => $day, 'start' => $this->clock(max(0, $this->minute($r->start) - (int) $r->buffer_minutes)), 'end' => $this->clock(min(1439, $this->minute($r->end) + (int) $r->buffer_minutes)), 'status' => $r->status];
         }
@@ -169,9 +160,9 @@ class BookingService implements BookingGateway
         if (!preg_match('/^[A-Za-z0-9_-]{8,80}$/D', $key)) {
             abort(422, 'Identificador de idempotencia invalido.');
         }
-        $allowed = $action === 'book' ? ['professional_id', 'service_id', 'day', 'start', 'client_name', 'status'] : ['booking_id', 'version', 'day', 'start'];
+        $allowed = $action === 'book' ? ['professional_id', 'service_id', 'day', 'start', 'client_name', 'status', 'person_id'] : ['booking_id', 'version', 'day', 'start'];
         $data = array_intersect_key($input, array_flip($allowed));
-        $rules = $action === 'book' ? ['professional_id' => 'required|integer|min:1', 'service_id' => 'required|integer|min:1', 'day' => 'required|date_format:Y-m-d', 'start' => 'required|date_format:H:i', 'client_name' => 'required|string|max:100', 'status' => 'sometimes|in:pending,confirmed'] : ['booking_id' => 'required|integer|min:1', 'version' => 'required|integer|min:1'];
+        $rules = $action === 'book' ? ['person_id'=>'sometimes|integer|min:1', 'professional_id' => 'required|integer|min:1', 'service_id' => 'required|integer|min:1', 'day' => 'required|date_format:Y-m-d', 'start' => 'required|date_format:H:i', 'client_name' => 'required|string|max:100', 'status' => 'sometimes|in:pending,confirmed'] : ['booking_id' => 'required|integer|min:1', 'version' => 'required|integer|min:1'];
         if ($action === 'reschedule') {
             $rules += ['day' => 'required|date_format:Y-m-d', 'start' => 'required|date_format:H:i'];
         }
@@ -196,6 +187,7 @@ class BookingService implements BookingGateway
                 }
             }
             $proId = $old ? (int) $old->professional_id : (int) $data['professional_id'];
+            $this->guard->lock($this->db,$business,$proId);
             $this->professional($business, $proId, true);
             // Single serialization point for every write to this calendar.
             if ($old && $old->status === 'cancelled') {
@@ -225,6 +217,7 @@ class BookingService implements BookingGateway
             }
             if ($action === 'book') {
                 $values += ['business_id' => $business, 'professional_id' => $proId, 'service_id' => (int) $data['service_id'], 'client_name' => $data['client_name'], 'status' => $data['status'] ?? 'confirmed', 'version' => 1, 'created_at' => $now, 'updated_at' => $now];
+                if(isset($data['person_id']))$values['person_id']=(int)$data['person_id'];
                 $id = $this->db->table('aireception_bookings')->insertGetId($values);
             } else {
                 $id = (int) $old->id;

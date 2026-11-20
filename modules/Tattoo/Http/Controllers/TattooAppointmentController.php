@@ -192,6 +192,12 @@ class TattooAppointmentController extends Controller
             $artistId = (int) $request->input('tattoo_artist_id');
             $appointmentDate = $request->input('appointment_date');
             $appointmentTime = $request->input('appointment_time');
+            \Modules\Tattoo\Services\ReceptionWriteGuard::check($artistId, $appointmentDate);
+            if ($id && config('aireception.native_enabled', false)) {
+                foreach (TattooSession::where('tattoo_appointment_id', $id)->where('status', '!=', 'cancelled')->orderBy('session_date')->pluck('session_date') as $sessionDay) {
+                    \Modules\Tattoo\Services\ReceptionWriteGuard::check($artistId, $sessionDay);
+                }
+            }
 
             if ($appointmentTime && $this->artistHasAppointmentConflict($artistId, $appointmentDate, $appointmentTime, $id ?: null)) {
                 DB::rollBack();
@@ -235,6 +241,8 @@ class TattooAppointmentController extends Controller
                 'message' => $id ? 'Cita editada con éxito' : 'Cita registrada con éxito',
                 'data' => $record->load(['person', 'artist', 'style', 'consent'])->loadCount('sessions'),
             ]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            DB::rollBack(); throw $e;
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -279,6 +287,8 @@ class TattooAppointmentController extends Controller
                 'success' => true,
                 'message' => 'Cita eliminada con éxito',
             ]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            DB::rollBack(); throw $e;
         } catch (Exception $e) {
             DB::rollBack();
 

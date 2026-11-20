@@ -1,0 +1,1 @@
+{"name":"Odontologia","alias":"odontologia","description":"Administracion odontologica nativa de MultiFactura","keywords":[],"priority":0,"providers":["Modules\\Odontologia\\Providers\\OdontologiaServiceProvider"],"aliases":[],"files":[],"requires":[],"active":1}

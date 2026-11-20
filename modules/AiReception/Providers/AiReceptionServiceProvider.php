@@ -31,7 +31,6 @@ class AiReceptionServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        // Intencionalmente sin rutas, webhooks, migraciones ni tareas.
-        // Esta fase no debe modificar ningun negocio existente.
+        if (config('aireception.native_enabled', false)) $this->app->register(\Modules\AiReception\Native\Provider::class);
     }
 }

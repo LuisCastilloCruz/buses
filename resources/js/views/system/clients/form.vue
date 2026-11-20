@@ -212,6 +212,7 @@
                                     <el-radio :label="3">Hotel</el-radio>
                                     <el-radio :label="4">Restaurante</el-radio>
                                     <el-radio :label="5">Tattoo</el-radio>
+                                    <el-radio :label="6">Odontologia</el-radio>
                                 </el-radio-group>
                             </div>
                         </div>
@@ -658,6 +659,8 @@ export default {
             soap_password: null,
             collapse: 1,
             business: null,
+            group_odontologia: [],
+            group_odontologia_apps: [],
             group_tattoo: [],
             group_tattoo_apps: [],
             regex_password_client: false,
@@ -694,6 +697,8 @@ export default {
                 this.group_pharmacy_apps = response.data.group_pharmacy_apps
                 this.group_restaurant_apps = response.data.group_restaurant_apps
 
+                this.group_odontologia = response.data.group_odontologia || []
+                this.group_odontologia_apps = response.data.group_odontologia_apps || []
                 this.group_tattoo = response.data.group_tattoo || []
                 this.group_tattoo_apps = response.data.group_tattoo_apps || []
 
@@ -807,6 +812,8 @@ export default {
 
                 const preAppSelecteds = [];
                 this.apps.map(m => {
+                    // New capabilities require an explicit selection or business preset.
+                    if (['aireception', 'odontologia', 'tattooinbox'].includes(m.value)) return;
                     preAppSelecteds.push(m.id);
                     m.childrens.map(c => {
                         preAppSelecteds.push(c.id);
@@ -1007,6 +1014,13 @@ export default {
                 group.apps = this.getIds(this.group_tattoo_apps || []);
             }
 
+            if (this.business == 6) {
+                group.modules = this.getIds(this.group_odontologia || []);
+                group.apps = this.getIds(this.group_odontologia_apps || []);
+            }
+            // Presets suggest additions; manual compatible selections remain possible.
+            group.modules = [...new Set([...this.$refs.tree.getCheckedKeys(), ...group.modules])];
+            group.apps = [...new Set([...this.$refs.Apptree.getCheckedKeys(), ...group.apps])];
             this.$refs.tree.setCheckedKeys(group.modules);
             this.$refs.Apptree.setCheckedKeys(group.apps);
         },

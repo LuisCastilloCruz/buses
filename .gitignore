@@ -49,3 +49,8 @@ app/Http/Controllers/TestController.php
 /audit/agenda-v1/PRIVATE.md
 
 /demo-agenda/tests/__pycache__/
+
+/.native-runtime/
+/audit/native-v3/PRIVATE.md
+
+/native-lab/__pycache__/

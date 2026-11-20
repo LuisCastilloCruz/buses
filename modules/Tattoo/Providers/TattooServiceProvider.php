@@ -16,7 +16,7 @@ class TattooServiceProvider extends ServiceProvider
 
     public function register()
     {
-        //
+        $this->app->bind('aireception.domain.tattoo', \Modules\Tattoo\Services\ReceptionCalendarAdapter::class);
     }
 
     public function provides()

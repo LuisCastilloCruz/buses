@@ -1642,6 +1642,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                             </ul>
                         </li>
                     @endif
+                @include('tenant.layouts.partials.native_reception')
                 </ul>
             </nav>
         </div>

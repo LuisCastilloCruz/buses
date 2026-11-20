@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth'])
+Route::middleware(['web', 'auth', \Modules\TattooInbox\Services\InboxAccess::class])
     ->group(function () {
 
         Route::get('tattoo-inbox', 'TattooInboxController@index')

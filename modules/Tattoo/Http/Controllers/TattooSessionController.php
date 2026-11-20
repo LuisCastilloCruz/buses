@@ -141,6 +141,7 @@ class TattooSessionController extends Controller
                 ->findOrFail($appointmentId);
 
             $artistId = (int) $appointment->tattoo_artist_id;
+            \Modules\Tattoo\Services\ReceptionWriteGuard::check($artistId, $sessionDate);
 
             if ($sessionDate && $sessionTime) {
                 if ($this->artistHasSessionConflict($artistId, $sessionDate, $sessionTime, $id ?: null)) {
@@ -182,6 +183,8 @@ class TattooSessionController extends Controller
                 'message' => $id ? 'Sesión editada con éxito' : 'Sesión registrada con éxito',
                 'data' => $record->load(['appointment.person', 'appointment.artist', 'appointment.style']),
             ]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            DB::rollBack(); throw $e;
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -207,6 +210,8 @@ class TattooSessionController extends Controller
                 'success' => true,
                 'message' => 'Sesión eliminada con éxito',
             ]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            DB::rollBack(); throw $e;
         } catch (Exception $e) {
             DB::rollBack();
 

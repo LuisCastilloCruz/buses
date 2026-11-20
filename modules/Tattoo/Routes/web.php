@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web'])
+Route::middleware(['web', \Modules\Tattoo\Services\NativeAccess::class])
     ->namespace('Modules\Tattoo\Http\Controllers')
     ->group(function () {
 
