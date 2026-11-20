@@ -75,3 +75,11 @@ Las pruebas del panel tradicional son smoke tests de dashboard/documentos/POS/cl
 Instrucciones exactas: `native-lab/README.md`. URLs: `http://localhost:8875`, `http://tattoo.localhost:8875`, `http://dental.localhost:8875`, `http://comercio.localhost:8875`. Credenciales solo en `.native-runtime/ACCESS.txt` privado.
 
 Destino autorizado: https://github.com/LuisCastilloCruz/buses/tree/feature/multifactura-native-aireception-odontologia-v3 . La verificacion del commit remoto y Actions se registra al cierre. Consultar `git rev-parse HEAD` para el commit final del informe y `PRIVATE.md` para el cierre local completo.
+
+## Cierre verificado
+
+Commit de implementacion publicado y confirmado por `git ls-remote`: `80c8a3ffbe225ce34017c74eb3150dcf0316d0e2`. La rama contiene 112 archivos revisados; el escaneo no encontro secretos ni credenciales del runtime.
+
+Respaldo privado nuevo: `MultiFactura-private-backups/native-v3-20261120-final`. Bundle completo verificado por clonacion bare y fsck; SHA256 `b2b7004899d751ceba77f861262ba4522b89ca74d89663deaaa34503258a3cab`. Se restauraron las cuatro bases a nombres nuevos en el servidor desechable: 1010 tablas y 13270 filas, todos los hashes coincidentes. No se sobrescribieron las bases de demostracion.
+
+GitHub Actions: ejecucion [44824472616](https://github.com/LuisCastilloCruz/buses/actions/runs/44824472616), **aprobada** en ambos jobs, PHP 7.4 y PHP 8.2. Corresponde al commit de implementacion; este cierre solo agrega documentacion. La CI cubre pruebas aisladas PHP; MySQL, HTTP y Chrome se ejecutaron localmente como consta en TEST_RESULTS.md.
