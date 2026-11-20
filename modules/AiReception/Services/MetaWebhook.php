@@ -101,6 +101,28 @@ final class MetaWebhook
         return $result;
     }
 
+    /** Delivery receipts are scoped only by the trusted channel map, never recipient_id. */
+    public static function statuses(string $rawBody, array $phoneToBusiness): array
+    {
+        if (strlen($rawBody)>256000) throw new InvalidArgumentException('Event too large.');
+        $payload=json_decode($rawBody,true);
+        if(!is_array($payload) || ($payload['object']??'')!=='whatsapp_business_account')throw new InvalidArgumentException('Invalid event.');
+        $result=[];
+        foreach(self::rows($payload['entry']??[]) as $entry){
+            if(!is_array($entry))continue;
+            foreach(self::rows($entry['changes']??[]) as $change){
+                if(!is_array($change) || ($change['field']??'')!=='messages')continue;
+                $value=$change['value']??[];$phone=$value['metadata']['phone_number_id']??null;
+                if(!is_string($phone) || !isset($phoneToBusiness[$phone]))continue;
+                foreach(self::rows($value['statuses']??[]) as $status){
+                    if(!is_array($status) || !is_string($status['id']??null) || !preg_match('~^[A-Za-z0-9._=+/-]{1,255}$~D',$status['id']) || !in_array($status['status']??'', ['sent','delivered','read','failed'],true) || !is_string($status['timestamp']??null) || !preg_match('/^[0-9]{1,12}$/D',$status['timestamp']))continue;
+                    $result[]=['message_id'=>$status['id'],'status'=>$status['status'],'timestamp'=>(int)$status['timestamp'],'phone_number_id'=>$phone,'business_id'=>(string)$phoneToBusiness[$phone]];
+                }
+            }
+        }
+        return $result;
+    }
+
     private static function rows($value): array
     {
         if (!is_array($value)) throw new InvalidArgumentException('Estructura Meta invalida.');

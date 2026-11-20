@@ -27,6 +27,12 @@ class WebhookController extends \Illuminate\Routing\Controller {
     \Modules\AiReception\Jobs\ProcessInbound::dispatch((int)$id);$accepted++;
    },3);
   }
-  return response()->json(['accepted'=>$accepted]);
+  $receipts=0;
+  try{$statuses=MetaWebhook::statuses($r->getContent(),[$channel->phone_id=>(string)$channel->website_id]);}catch(\InvalidArgumentException $e){abort(422);}
+  foreach($statuses as $status){
+   $data=['channel_id'=>$channel->id,'message_id'=>$status['message_id'],'status'=>$status['status'],'provider_timestamp'=>$status['timestamp'],'event_hash'=>hash('sha256',json_encode([$channel->id,$status['message_id'],$status['status'],$status['timestamp']])),'created_at'=>date('Y-m-d H:i:s')];
+   $db->transaction(function()use($db,$channel,$data,&$receipts){$db->table('aireception_channels')->where('id',$channel->id)->lockForUpdate()->first();if(!$db->table('aireception_delivery_receipts')->where('event_hash',$data['event_hash'])->exists()){$db->table('aireception_delivery_receipts')->insert($data);$receipts++;}},3);
+  }
+  return response()->json(['accepted'=>$accepted,'receipts'=>$receipts]);
  }
 }

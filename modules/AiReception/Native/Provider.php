@@ -5,9 +5,13 @@ namespace Modules\AiReception\Native;
 use Illuminate\Support\ServiceProvider;
 class Provider extends ServiceProvider
 {
+    public function register()
+    {
+        $this->app->bind(\Modules\AiReception\ProvidersApi\ResponsesClient::class,function(){return new \Modules\AiReception\ProvidersApi\ResponsesClient(new \GuzzleHttp\Client());});
+    }
     public function boot()
     {
-        $this->commands([\Modules\AiReception\Console\QueueReminders::class]);
+        $this->commands([\Modules\AiReception\Console\QueueReminders::class,\Modules\AiReception\Console\ReminderTick::class]);
         config(['queue.connections.aireception'=>['driver'=>'database','connection'=>'system','table'=>'aireception_jobs','queue'=>'aireception','retry_after'=>90]]);
         app('router')->pushMiddlewareToGroup('web', TenantSession::class);
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'aireception');

@@ -13,6 +13,8 @@ final class ReminderProcessor
    $booking=$db->table('aireception_bookings')->where('business_id',$business)->where('id',$candidate->booking_id)->lockForUpdate()->first();if(!$booking)abort(404);
    $r=$db->table('aireception_reminders')->where('id',$id)->lockForUpdate()->first();
    if($r->status!=='simulated_pending')return $r->status;
+   $policy=app(ReminderPolicy::class)->get();if(!$policy['enabled'])return 'paused';
+   $clock=date('H:i');if($clock<$policy['window_start'] || $clock>$policy['window_end'])return 'outside_window';
    if($r->scheduled_at>date('Y-m-d H:i:s'))return 'not_due';
    $consent=$db->table('aireception_contact_consents')->where('person_id',$booking->person_id)->where('channel','whatsapp')->first();
    $status=$booking->status!=='confirmed'?'cancelled':(!$consent || !$consent->allowed || ($consent->expires_at && $consent->expires_at<=date('Y-m-d H:i:s'))?'suppressed_no_consent':'simulated_sent');

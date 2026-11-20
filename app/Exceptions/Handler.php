@@ -31,6 +31,7 @@ class Handler extends ExceptionHandler
     protected $dontFlash = [
         'password',
         'password_confirmation',
+        'app_secret', 'verify_token', 'access_token', 'openai_api_key', 'api_key', 'soap_password', 'password_certificate',
     ];
 
     /**
@@ -103,7 +104,7 @@ class Handler extends ExceptionHandler
         if ($this->isFrontend($request)) {
             return $request->ajax() ? response()->json($errors, 422) : redirect()
                 ->back()
-                ->withInput($request->input())
+                ->withInput($request->except($this->dontFlash))
                 ->withErrors($errors);
         }
 

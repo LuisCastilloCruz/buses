@@ -1,0 +1,10 @@
+<?php
+require __DIR__.'/test-bootstrap.php';$n=0;function check($x,$label){global $n;if(!$x)throw new RuntimeException($label);echo 'PASS '.++$n.' '.$label.PHP_EOL;}
+$f=json_decode(file_get_contents(dirname(__DIR__).'/.native-runtime/webhook-fixture.json'),true);$m=$db->table('aireception_inbound_messages')->where('channel_id',$f['id'])->first();if(!$m)throw new RuntimeException('Run webhook fixture first');
+$person=(int)$db->table('persons')->where('type','customers')->value('id');$service=app(Modules\AiReception\Native\ContactLinker::class);$service->link((int)$m->id,$person,'Fictional staff identity verification V4');
+$c=$db->table('aireception_conversations')->where('channel_id',$m->channel_id)->where('sender_hash',$m->sender_identity)->first();check($c && (int)$c->person_id===$person && $c->status==='human','verified identity links to manual conversation');
+$count=$db->table('aireception_messages')->where('conversation_id',$c->id)->count();$service->link((int)$m->id,$person,'Repeated fictional verification');check($db->table('aireception_messages')->where('conversation_id',$c->id)->count()===$count,'repeated linking cannot duplicate messages');
+$body=$db->table('aireception_messages')->where('conversation_id',$c->id)->first();check($body->is_encrypted && strpos($body->body,'Solicitud ficticia')===false,'linked message encrypted');
+$other=(int)$db->table('persons')->where('type','customers')->where('id','<>',$person)->value('id');try{$service->link((int)$m->id,$other,'Conflicting fictional identity');throw new LogicException('Identity overwritten');}catch(Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e){check($e->getStatusCode()===409,'linked identity cannot be silently reassigned');}
+$env=app(Hyn\Tenancy\Environment::class);$previous=$env->tenant();try{$env->tenant(Hyn\Tenancy\Models\Website::where('uuid','mf_v4_tattoo')->firstOrFail());check(app('db')->connection('tenant')->table('aireception_contact_links')->where('channel_id',$m->channel_id)->count()===0,'linked contact absent in other business');}finally{$env->tenant($previous);}
+echo "RESULT $n identity bridge MySQL checks.\n";

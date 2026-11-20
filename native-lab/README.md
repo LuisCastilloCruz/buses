@@ -5,7 +5,7 @@ Este worktree ejecuta **la aplicacion Laravel original completa**. `native-lab` 
 ## Abrir en esta HP
 
 ```powershell
-Set-Location 'C:\Users\luis castillo\AiReception-lab\native-v3'
+Set-Location 'C:\Users\luis castillo\AiReception-lab\native-v4'
 .\native-lab\start.ps1
 ```
 
@@ -35,11 +35,11 @@ Laravel 5.7.29; Hyn 5.3.1; nwidart/laravel-modules 5.1.0; PHP 7.4.33; MySQL 8.4.
 
 El proceso MySQL usa `--no-defaults`, un datadir propio, mysqlx desactivado y `--restrict-fk-on-non-standard-key=OFF`, necesario para claves foraneas heredadas. El arranque comprueba puerto, datadir, raiz del worktree y una lista exacta de bases. Nunca cargar el `.env` original. No ejecutar `php artisan migrate` directamente contra la instalacion original.
 
-Bases: `mf_v4_system`, `mf_v4_tattoo`, `mf_v4_dental`, `mf_v4_commerce`. Cada tenant tiene su usuario MySQL Hyn limitado a su base. El intento inicial incompleto `mf_native_tattoo` se conserva como evidencia y no se usa.
+Bases: `mf_v4_system`, `mf_v4_tattoo`, `mf_v4_dental`, `mf_v4_commerce`. Cada tenant tiene su usuario MySQL Hyn limitado a su base. La cuarta empresa usa `mf_v4_cuarta`, aprovisionada con un usuario limitado a esa base.
 
 `start.ps1` crea el entorno vacio cuando no existe, ejecuta las migraciones verificadas y genera fixtures. En esta HP se verifico tambien su ejecucion repetida sin recrear datos. Una reconstruccion completa desde un checkout vacio en otra maquina no se certifica con esta entrega. Se requiere `vendor` compatible: copiar **solo vendor** desde el laboratorio V1 verificado, nunca `.env`, almacenamiento ni credenciales. El script no instala dependencias automaticamente.
 
-La provision automatica de una cuarta empresa mediante el boton Guardar de alta no forma parte de la prueba completada: el usuario instalador del laboratorio solo dispone de las cuatro bases predefinidas. No ampliar permisos ni apuntar a otro servidor para sortear esta limitacion. La edicion y activacion real de las tres empresas esta probada.
+La cuarta empresa fue creada por el controlador original de Superadministrador y verificada mediante HTTP y Chrome. Antes del alta, `native-lab/reserve-fourth.php` reserva SOLO una base vacia y un usuario limitado en MySQL V4. El adaptador local permite a Hyn ejecutar la instalacion sin conceder privilegios globales al usuario de la aplicacion. No es un aprovisionador productivo generico. `native-lab/fourth-company-test.py` crea la empresa ficticia o verifica la ya creada; sus credenciales quedan privadas. No reutilizar ese script con datos reales.
 
 ## Pruebas
 
@@ -47,7 +47,7 @@ La provision automatica de una cuarta empresa mediante el boton Guardar de alta 
 .\native-lab\run-tests.ps1
 ```
 
-Necesita Python, Node 22 para CDP y Chrome instalado. Usa perfil Chrome nuevo, bloquea solicitudes web externas y guarda capturas en `audit/native-v3/screenshots`. MySQL/HTTP deben estar arrancados. Las pruebas solo agregan registros ficticios de QA; no son pruebas destructivas de clientes reales.
+Necesita Python, Node 22 para CDP y Chrome instalado. Usa perfil Chrome nuevo, bloquea solicitudes web externas y guarda capturas en `audit/native-v4/screenshots`. MySQL/HTTP deben estar arrancados. Las pruebas solo agregan registros ficticios de QA; no son pruebas destructivas de clientes reales.
 
 Comandos individuales:
 
@@ -74,10 +74,16 @@ python -u -X utf8 native-lab/build-assets.py
 
 Origen de herramientas: https://nodejs.org/dist/v14.21.3/win-x64/node.exe y https://github.com/sass/node-sass/releases/download/v4.14.1/win32-x64-83_binding.node . No son servicios de ejecucion de la aplicacion.
 
-## Limites de esta version
+## Alcance y limites V4
 
-- Odontologia es administrativa: especialidades, odontologos, sillones, clientes/pacientes existentes y citas. No hay historia clinica, odontograma, diagnosticos ni prescripcion automatica.
-- Facturacion usa `persons` e `items` existentes y el formulario de documentos original. No se generan facturas automaticamente desde citas ni se certifica emision SUNAT.
-- Los dos tatuadores ficticios estan enlazados al calendario canonico. La incorporacion de otros artistas heredados requiere revisar y registrar su enlace; no se infiere por nombres.
-- No se inventa duracion para citas/sesiones Tattoo antiguas. Se bloquea conservadoramente el dia afectado y el posible arrastre del anterior.
-- No se ejecutaron pruebas exhaustivas de todos los modulos historicos ni provision de nuevas empresas desde cero por HTTP. Ver informe para el alcance real.
+Consultar [informe V4](../audit/native-v4/INFORME_V4.md), [matriz](../audit/native-v4/FUNCTION_MATRIX.md) y [seguridad](../audit/native-v4/SECURITY_DEPENDENCIES.md). Hay historia y odontograma FDI cifrados con datos ficticios y permiso clinico; no estan validados para pacientes reales. OpenAI/Meta tienen adaptadores probados con mocks y recepcion HMAC sintetica, sin E2E externo. La deuda de dependencias impide considerar esta version apta para produccion.
+
+El arranque no copia `.env`. Nunca ejecutar el scheduler original para esta demostracion. Para encolar exclusivamente recordatorios simulados:
+
+```powershell
+$php = 'C:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe'
+& $php native-lab/artisan.php aireception:tick --simulate
+& $php native-lab/artisan.php queue:work aireception --queue=aireception --once --tries=3 --sleep=0
+```
+
+No se instala una tarea de Windows automaticamente. Repetir el tick y el worker de forma controlada solo dentro del laboratorio. Las credenciales de la cuarta empresa tambien aparecen en `.native-runtime/accounts.json`; son exclusivamente ficticias y privadas.

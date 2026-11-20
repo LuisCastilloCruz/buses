@@ -104,8 +104,8 @@ class Controller extends \Illuminate\Routing\Controller
     }
     public function agent(Request $r)
     {
-        $r->validate(['text' => 'required|string|max:2000']);
-        return response()->json(['reply' => 'Simulacion local: consulta los servicios y elige un horario disponible. La reserva requiere tu confirmacion.']);
+        $r->validate(['text'=>'required|string|max:2000','person_id'=>'required|integer|min:1','conversation_id'=>'nullable|integer|min:1']);
+        return response()->json(app(ConversationCoordinator::class)->turn((int)$r->input('person_id'),$r->input('text'),$r->input('conversation_id')?(int)$r->input('conversation_id'):null,(string)$r->header('Idempotency-Key')));
     }
     public function conversations()
     {
@@ -114,29 +114,9 @@ class Controller extends \Illuminate\Routing\Controller
     public function message(Request $r)
     {
         $r->validate(['person_id' => 'required|integer', 'text' => 'required|string|max:2000', 'conversation_id' => 'nullable|integer']);
-        $db = $this->db();
-        $person = $db->table('persons')->where('id', $r->input('person_id'))->where('type', 'customers')->first();
-        if (!$person) {
-            abort(404);
-        }
-        $id = $db->transaction(function () use($db, $r, $person) {
-            $id = (int) $r->input('conversation_id');
-            if ($id) {
-                $c = $db->table('aireception_conversations')->where('id', $id)->where('person_id', $person->id)->lockForUpdate()->first();
-                if (!$c) {
-                    abort(404);
-                }
-            } else {
-                $id = $db->table('aireception_conversations')->insertGetId(['person_id' => $person->id, 'status' => 'automated', 'created_at' => now(), 'updated_at' => now()]);
-                $c = (object) ['status' => 'automated'];
-            }
-            $db->table('aireception_messages')->insert(['conversation_id' => $id, 'direction' => 'incoming', 'body' => $r->input('text'), 'created_at' => now()]);
-            if ($c->status === 'automated') {
-                $db->table('aireception_messages')->insert(['conversation_id' => $id, 'direction' => 'simulation', 'body' => 'Solicitud recibida en simulacion. Consulta el calendario para elegir y confirmar un horario.', 'created_at' => now()]);
-            }
-            return $id;
-        });
-        return redirect('/aireception/conversations?selected=' . $id);
+        $r->validate(['request_key'=>'required|string|max:80']);
+        $result=app(ConversationCoordinator::class)->turn((int)$r->input('person_id'),$r->input('text'),$r->input('conversation_id')?(int)$r->input('conversation_id'):null,$r->input('request_key'));
+        return redirect('/aireception/conversations?selected='.$result['conversation_id']);
     }
     public function handoff(Request $r, $id)
     {

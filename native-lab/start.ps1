@@ -56,6 +56,10 @@ try {
   & $Php native-lab/finish-fixtures.php $database
   if($LASTEXITCODE -ne 0){throw "Referencias fallidas: $database"}
  }
+ if(Test-Path (Join-Path $runtime 'fourth-account.json')){
+  & $Php native-lab/migrate-original.php mf_v4_cuarta
+  if($LASTEXITCODE -ne 0){throw 'Migracion cuarta empresa fallida.'}
+ }
  if (!(Test-LabPort 8876)) {
   $webProcess=Start-Process -FilePath $Php -ArgumentList '-d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail -S 127.0.0.1:8876 -t public native-lab/router.php' -WorkingDirectory $labRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtime 'web.out.log') -RedirectStandardError (Join-Path $runtime 'web.err.log')
   $webProcess.Id | Set-Content (Join-Path $runtime 'web.pid')

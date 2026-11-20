@@ -16,4 +16,16 @@ $draft=$p->prepare($data);$competing=$engine->execute(1,$business,'book',$data+[
 denied(function()use($p,$draft){$p->confirm($draft['confirmation_token'],true);},409,'availability revalidated at confirmation');
 $engine->execute(1,$business,'cancel',['booking_id'=>$competing['id'],'version'=>$competing['version']],'proposal-test-'.bin2hex(random_bytes(8)));
 $draft=$p->prepare($data);$db->table('aireception_booking_drafts')->where('token_hash',hash('sha256',$draft['confirmation_token']))->update(['expires_at'=>'2000-01-01 00:00:00']);denied(function()use($p,$draft){$p->confirm($draft['confirmation_token'],true);},409,'expired proposal rejected');
+
+$draft=$p->prepare($data);$r=$p->confirm($draft['confirmation_token'],true);$booking=$r['booking'];
+check($db->table('aireception_bookings')->where('id',$booking['id'])->value('origin')==='assisted','assisted booking origin stored');
+$other=(int)$db->table('persons')->where('type','customers')->where('id','<>',$person)->value('id');
+denied(function()use($p,$booking,$other){$p->prepareChange('cancel',$other,['booking_id'=>$booking['id']]);},404,'AI cancellation cannot target another customer');
+$target=date('Y-m-d',strtotime($day.' +1 day'));if(date('N',strtotime($target))==7)$target=date('Y-m-d',strtotime($target.' +1 day'));
+$slots=$engine->reschedulingAvailability(1,$business,$booking['id'],$target);$change=$p->prepareChange('reschedule',$person,['booking_id'=>$booking['id'],'day'=>$target,'start'=>$slots[0]['start']]);
+check($db->table('aireception_bookings')->where('id',$booking['id'])->value('day')===$day,'rescheduling proposal does not change booking');
+$moved=$p->confirm($change['confirmation_token'],true)['booking'];check($moved['day']===$target,'confirmed proposal reschedules through booking engine');
+$cancel=$p->prepareChange('cancel',$person,['booking_id'=>$booking['id']]);check($db->table('aireception_bookings')->where('id',$booking['id'])->value('status')==='confirmed','cancellation proposal waits for confirmation');
+$cancelled=$p->confirm($cancel['confirmation_token'],true);check($cancelled['booking']['status']==='cancelled' && $p->confirm($cancel['confirmation_token'],true)['replayed'],'confirmed cancellation idempotent');
+denied(function()use($p,$change){$p->confirm($change['confirmation_token'],true);},409,'old successful proposal cannot report stale state');
 echo "RESULT $n proposal MySQL checks.\n";

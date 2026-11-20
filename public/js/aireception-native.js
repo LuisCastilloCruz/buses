@@ -41,10 +41,11 @@ function openBooking(existing=null,agent=false){
  state.modal={existing,agent,start:null,key:key()};options($('booking-professional'),state.catalog.professionals.filter(p=>p.active));
  if(existing)$('booking-professional').value=existing.professional_id;updateServices();if(existing)$('booking-service').value=existing.service_id;
  $('booking-date').value=existing?.day||$('calendar-date').value||datePlus(state.catalog.today,1);
+ if(agent)$('booking-person').value=$('chat-person').value;
  $('booking-client').value=existing?.client_name||(agent?'Cliente demo':'');$('booking-person').disabled=!!existing;if(existing)$('booking-person').value=existing.person_id;
  $('booking-professional').disabled=!!existing;$('booking-service').disabled=!!existing;
- $('booking-status-label').hidden=!!existing;$('booking-status').value='confirmed';
- $('booking-title').textContent=existing?'Reprogramar cita':'Nueva cita';$('save-booking').textContent=existing?'Guardar nuevo horario':'Guardar cita';
+ $('booking-status-label').hidden=!!existing||agent;$('booking-status').value='confirmed';
+ $('booking-title').textContent=existing?'Reprogramar cita':'Nueva cita';$('save-booking').textContent=existing?'Guardar nuevo horario':(agent?'Revisar cita':'Guardar cita');
  $('booking-dialog').showModal();
 }
 async function loadSlots(){
@@ -56,7 +57,11 @@ async function saveBooking(){
  if(!state.modal.start)return;const m=state.modal;
  const data=m.existing?{booking_id:m.existing.id,version:m.existing.version,day:$('booking-date').value,start:m.start}:{professional_id:Number($('booking-professional').value),service_id:Number($('booking-service').value),day:$('booking-date').value,start:m.start,person_id:Number($('booking-person').value),client_name:$('booking-person').selectedOptions[0]?.textContent,status:$('booking-status').value};
  $('save-booking').disabled=true;
- try{const result=await api('/api/commands/'+(m.existing?'reschedule':'book'),'POST',data,m.key);$('calendar-date').value=result.booking.day;await refreshCalendar();$('booking-dialog').close();notice('Cita #'+result.booking.id+' guardada en la agenda.');if(m.agent){bubble('Tu cita #'+result.booking.id+' está guardada para '+result.booking.day+' a las '+result.booking.start+'.','incoming');const link=node('a','Ver cita en el calendario');link.href='/'+module+'/calendar?day='+result.booking.day;link.className='primary';$('messages').append(link);$('messages').scrollTop=$('messages').scrollHeight;}}
+ try{let result;
+ if(m.agent&&!m.existing){const proposalData={professional_id:data.professional_id,service_id:data.service_id,person_id:data.person_id,day:data.day,start:data.start};const fingerprint=JSON.stringify(proposalData);
+  if(!m.proposal||m.fingerprint!==fingerprint){m.proposal=await api('/api/proposals','POST',proposalData);m.fingerprint=fingerprint;$('save-booking').textContent='Confirmar cita';$('slot-caption').textContent='Revisa: '+data.client_name+', '+data.day+' a las '+data.start+'. La cita aun no esta reservada. Confirma para guardarla.';bubble('Horario seleccionado: '+data.day+' a las '+data.start+'. Revisa los datos y confirma la cita. Aun no esta reservada.','incoming');return;}
+  result=await api('/api/proposals/confirm','POST',{confirmation_token:m.proposal.confirmation_token,confirmed:true});
+ }else result=await api('/api/commands/'+(m.existing?'reschedule':'book'),'POST',data,m.key);$('calendar-date').value=result.booking.day;await refreshCalendar();$('booking-dialog').close();notice('Cita #'+result.booking.id+' guardada en la agenda.');if(m.agent){bubble('Tu cita #'+result.booking.id+' está guardada para '+result.booking.day+' a las '+result.booking.start+'.','incoming');const link=node('a','Ver cita en el calendario');link.href='/'+module+'/calendar?day='+result.booking.day;link.className='primary';$('messages').append(link);$('messages').scrollTop=$('messages').scrollHeight;}}
  finally{$('save-booking').disabled=false;}
 }
 async function detail(b){
@@ -93,10 +98,11 @@ async function init(){
  $('month-view').onclick=attempt(async()=>{state.mode='month';const d=new Date($('calendar-date').value+'T12:00:00');$('calendar-date').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';state.days=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();await refreshCalendar();});
  for(const [id,delta]of [['previous',-1],['next',1]])$(id).onclick=attempt(async()=>{if(state.mode==='month'){const d=new Date($('calendar-date').value+'T12:00:00');d.setMonth(d.getMonth()+delta,1);$('calendar-date').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';}else $('calendar-date').value=datePlus($('calendar-date').value,delta*state.days);await refreshCalendar();});
  $('today').onclick=attempt(async()=>{$('calendar-date').value=state.catalog.today;await refreshCalendar();});
+ options($('chat-person'),state.catalog.persons);$('chat-person').onchange=()=>{state.chatId=null;$('messages').replaceChildren();bubble('Nueva conversacion para el cliente seleccionado.','incoming');};
  $('new-booking').onclick=()=>openBooking();$('agent-book').onclick=()=>openBooking(null,true);
  $('booking-professional').onchange=updateServices;$('booking-service').onchange=$('booking-date').onchange=resetSlots;
  $('load-slots').onclick=attempt(loadSlots);$('booking-form').onsubmit=attempt(saveBooking);
- $('chat-form').onsubmit=attempt(async()=>{const text=$('chat-text').value;bubble(text,'outgoing');$('chat-text').value='';const r=await api('/api/agent','POST',{text});bubble(r.reply,'incoming');});
+ $('chat-form').onsubmit=attempt(async()=>{const text=$('chat-text').value;bubble(text,'outgoing');$('chat-text').value='';const r=await api('/api/agent','POST',{text,person_id:Number($('chat-person').value),conversation_id:state.chatId||null},key());state.chatId=r.conversation_id;bubble(r.reply,'incoming');if(r.proposal){const button=node('button',r.proposal.action==='cancel'?'Confirmar cancelacion':r.proposal.action==='reschedule'?'Confirmar reprogramacion':'Confirmar cita propuesta','primary');button.type='button';button.onclick=attempt(async()=>{button.disabled=true;const result=await api('/api/proposals/confirm','POST',{confirmation_token:r.proposal.confirmation_token,confirmed:true});bubble('Cita #'+result.booking.id+': '+result.booking.status+'. Operacion registrada por el sistema.','incoming');await refreshCalendar();});$('messages').append(button);}});
  $('config-item').onchange=()=>{$('config-name').value=$('config-item').selectedOptions[0]?.textContent||'';};
  $('add-professional').onclick=()=>openConfig('professional');$('add-service').onclick=()=>openConfig('service');$('config-form').onsubmit=attempt(saveConfig);
  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());

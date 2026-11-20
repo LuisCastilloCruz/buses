@@ -15,6 +15,9 @@ try {
  Run-Php @('native-lab/v4-persistence-tests.php','dental')
  Run-Php @('native-lab/proposal-tests.php','dental')
  Run-Php @('native-lab/attachment-tests.php','dental')
+ Run-Php @('native-lab/budgeted-provider-tests.php','dental')
+ Run-Php @('native-lab/conversation-tests.php','dental')
+ Run-Php @('native-lab/reminder-policy-tests.php','dental')
  Run-Php @('native-lab/reminder-tests.php','dental')
  Run-Php @('native-lab/artisan.php','queue:work','aireception','--queue=aireception','--once','--tries=3','--sleep=0')
  Run-Php @('native-lab/artisan.php','queue:work','aireception','--queue=aireception','--once','--tries=3','--sleep=0')
@@ -23,6 +26,8 @@ try {
  if($LASTEXITCODE -ne 0){throw 'Native HTTP failed.'}
  & python -u -X utf8 native-lab/plan-http-tests.py
  if($LASTEXITCODE -ne 0){throw 'Plan HTTP failed.'}
+ & python -u -X utf8 native-lab/agent-http-tests.py
+ if($LASTEXITCODE -ne 0){throw 'Agent HTTP failed.'}
  & node native-lab/browser.mjs
  if($LASTEXITCODE -ne 0){throw 'Real Chrome failed.'}
  & node native-lab/browser-settings.mjs

@@ -3,13 +3,13 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 def git(*args):return subprocess.check_output(['git','-c','safe.directory='+root.as_posix(),*args],cwd=root)
 files=git('diff','--cached','--name-only','-z').decode().split('\0');secrets=[]
-for file in ['settings.json','admin.json','accounts.json','provision.json','fourth-account.json']:
+for file in ['settings.json','admin.json','accounts.json','provision.json','fourth-account.json','webhook-fixture.json']:
  p=root/'.native-runtime'/file
  if p.exists():
   def visit(v):
    if isinstance(v,dict):
     for k,x in v.items():
-     if k in ['password','key','token'] and isinstance(x,str) and len(x)>=16:secrets.append(x.encode())
+     if k in ['password','key','token','app_secret','verify_token','access_token','api_key'] and isinstance(x,str) and len(x)>=16:secrets.append(x.encode())
      else:visit(x)
    elif isinstance(v,list):
     for x in v:visit(x)

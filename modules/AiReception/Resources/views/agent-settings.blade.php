@@ -1,0 +1,7 @@
+@extends('tenant.layouts.app')
+@section('content')
+<div class="row" v-pre><div class="col-lg-12"><section class="card"><header class="card-header"><h2 class="card-title">AiReception / Configuracion del agente</h2></header><div class="card-body">
+<div class="alert alert-info">El modo real requiere habilitacion global de pruebas, modelo autorizado, tarifa vigente y presupuesto. Guardar una clave no conecta automaticamente OpenAI. La demostracion sigue siendo deterministica.</div>
+<form method="post" autocomplete="off">@csrf<label>Estado<select name="enabled"><option value="0">Desactivado</option><option value="1" {{ $settings && $settings->enabled?'selected':'' }}>Habilitado</option></select></label><label>Modo<select name="mode"><option value="simulated">Simulado</option><option value="sandbox" {{ $settings && $settings->mode==='sandbox'?'selected':'' }}>API de pruebas autorizada</option></select></label><label>Modelo<input name="model" class="form-control" maxlength="100" value="{{ $settings->model ?? '' }}" placeholder="Modelo vigente de tu cuenta"></label><label>Maximo de tokens de respuesta<input name="max_output_tokens" type="number" min="128" max="4096" value="{{ $settings->max_output_tokens ?? 512 }}"></label><label>Nueva clave privada (vacio conserva la anterior)<input name="api_key" type="password" class="form-control" autocomplete="new-password"></label><button class="btn btn-primary">Guardar configuracion</button></form>
+</div></section></div></div>
+@endsection

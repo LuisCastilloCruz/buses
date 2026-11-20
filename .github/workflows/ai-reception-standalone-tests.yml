@@ -10,6 +10,8 @@ on:
       - "integration/ai-reception-tattoo-20261120*"
     paths:
       - 'modules/AiReception/**'
+      - 'database/migrations/2026_11_22_*'
+      - 'database/migrations/tenant/2026_11_22_*'
       - 'demo-agenda/**'
       - 'native-lab/**'
       - 'modules/Odontologia/**'
@@ -40,6 +42,7 @@ jobs:
       - name: Check PHP syntax
         run: |
           find modules/AiReception/Agenda modules/AiReception/Native modules/Odontologia modules/Tattoo/Services native-lab demo-agenda -name '*.php' -print0 | xargs -0 -n1 php -l
+          find database/migrations -name '2026_11_22_*.php' -print0 | xargs -0 -n1 php -l
           php -l modules/AiReception/Services/SlotPlanner.php
           php -l modules/AiReception/Services/OpenAiIntakeClassifier.php
           php -l modules/AiReception/Services/MetaWebhook.php
