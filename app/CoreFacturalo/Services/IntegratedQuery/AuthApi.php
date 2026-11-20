@@ -30,12 +30,12 @@ class AuthApi
             $form_params = [
                 'grant_type' => self::GRANT_TYPE,
                 'scope' => self::SCOPE,
-                'client_id' => '11d21fcf-2a30-4e98-bd5b-fb56f1e9096f',
-                'client_secret' => 'OhQ25/Gh55x8CFwsal1FAg==',
+                'client_id' => $company->integrated_query_client_id,
+                'client_secret' => $company->integrated_query_client_secret,
             ];
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://api-seguridad.sunat.gob.pe/v1/clientesextranet/11d21fcf-2a30-4e98-bd5b-fb56f1e9096f/oauth2/token",
+                CURLOPT_URL => 'https://api-seguridad.sunat.gob.pe/v1/clientesextranet/' . rawurlencode($company->integrated_query_client_id) . '/oauth2/token',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,

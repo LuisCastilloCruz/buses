@@ -1,0 +1,24 @@
+PHP 7.4.33 (cli) (built: Nov  2 2022 16:00:55) ( ZTS Visual C++ 2017 x64 )
+Copyright (c) The PHP Group
+Zend Engine v3.4.0, Copyright (c) Zend Technologies
+PASS: syntax on 101 module PHP files
+OK: 4 pruebas de clasificacion, privacidad y manejo de errores.
+OK: 9 verificaciones Meta webhook, firma y aislamiento, sin tráfico real.
+OK: 26 comprobaciones SlotPlanner.
+OK: 18 Tattoo adapter checks (fixtures; no database or network).
+OK: 9 defensive validation checks (fake HTTP only).
+PHPUnit 7.5.20 by Sebastian Bergmann and contributors.
+
+......                                                              6 / 6 (100%)
+
+Time: 212 ms, Memory: 10.00 MB
+
+OK (6 tests, 20 assertions)
+PHPUnit 7.5.20 by Sebastian Bergmann and contributors.
+
+.                                                                   1 / 1 (100%)
+
+Time: 200 ms, Memory: 12.00 MB
+
+OK (1 test, 7 assertions)
+PASS: isolated checks complete; application .env was not loaded.

@@ -39,3 +39,8 @@ app/Http/Controllers/TestController.php
 
 *.json
 *.json
+
+# Sensitive legacy files remain local; never publish them again.
+/app/CoreFacturalo/WS/Signed/Resources/certificate.pem
+/report.*.json
+/audit/20261120/INFORME.md

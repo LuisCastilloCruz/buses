@@ -1,0 +1,14 @@
+{
+    "name": "TattooInbox",
+    "alias": "tattooinbox",
+    "description": "Modulo Tattoo Inbox",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\TattooInbox\\Providers\\TattooInboxServiceProvider"
+    ],
+    "aliases": [],
+    "files": [],
+    "requires": [],
+    "active": 1
+}

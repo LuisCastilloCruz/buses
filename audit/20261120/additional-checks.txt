@@ -1,0 +1,2 @@
+Additional modified PHP syntax: 24 files; failures: 0
+Node syntax: public/js/sign-message.js checked separately.

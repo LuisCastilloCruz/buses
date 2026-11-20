@@ -211,6 +211,7 @@
                                     <el-radio :label="2">Farmacia</el-radio>
                                     <el-radio :label="3">Hotel</el-radio>
                                     <el-radio :label="4">Restaurante</el-radio>
+                                    <el-radio :label="5">Tattoo</el-radio>
                                 </el-radio-group>
                             </div>
                         </div>
@@ -657,6 +658,8 @@ export default {
             soap_password: null,
             collapse: 1,
             business: null,
+            group_tattoo: [],
+            group_tattoo_apps: [],
             regex_password_client: false,
             rules: {
                 port:[
@@ -686,11 +689,15 @@ export default {
                 this.group_hotel = response.data.group_hotel
                 this.group_pharmacy = response.data.group_pharmacy
                 this.group_restaurant = response.data.group_restaurant
+
                 this.group_hotel_apps = response.data.group_hotel_apps
                 this.group_pharmacy_apps = response.data.group_pharmacy_apps
                 this.group_restaurant_apps = response.data.group_restaurant_apps
-                this.regex_password_client = response.data.regex_password_client
 
+                this.group_tattoo = response.data.group_tattoo || []
+                this.group_tattoo_apps = response.data.group_tattoo_apps || []
+
+                this.regex_password_client = response.data.regex_password_client
             })
 
         await this.initForm()
@@ -751,7 +758,7 @@ export default {
         },
         initForm() {
             this.errors = {}
-            this.form = {
+          this.form = {
                 id: null,
                 name: null,
                 email: null,
@@ -869,37 +876,42 @@ export default {
         async submit() {
             const modulesAndLevelsSelecteds = this.$refs.tree.getCheckedNodes();
             const appsAndLevelsSelecteds = this.$refs.Apptree.getCheckedNodes();
-            const modules = [];
-            modulesAndLevelsSelecteds.map(m => {
-                if (m.is_parent) {
-                    modules.push(m.id);
-                }
-            });
-            appsAndLevelsSelecteds.map(m => {
-                if (m.is_parent) {
-                    modules.push(m.id);
-                }
-            });
-            const levels = [];
-            modulesAndLevelsSelecteds.filter(l => {
-                if (!l.is_parent) {
-                    const idArray = l.id.split('-');
-                    levels.push(idArray[1]);
-                }
-            })
-            appsAndLevelsSelecteds.filter(l => {
-                if (!l.is_parent) {
-                    const idArray = l.id.split('-');
-                    levels.push(idArray[1]);
-                }
-            })
-            this.form.modules = modules;
-            this.form.levels = levels;
-            this.form.regex_password_client = this.regex_password_client
 
-            if (modules.length < 1) {
-                return this.$message.error('Debe seleccionar al menos un módulo')
+            const modules = [];
+            const apps = [];
+            const levels = [];
+
+            modulesAndLevelsSelecteds.forEach(m => {
+                if (m.is_parent) {
+                    modules.push(m.id);
+                } else {
+                    const idArray = String(m.id).split('-');
+                    if (idArray[1]) {
+                        levels.push(parseInt(idArray[1]));
+                    }
+                }
+            });
+
+            appsAndLevelsSelecteds.forEach(m => {
+                if (m.is_parent) {
+                    apps.push(m.id);
+                } else {
+                    const idArray = String(m.id).split('-');
+                    if (idArray[1]) {
+                        levels.push(parseInt(idArray[1]));
+                    }
+                }
+            });
+
+            this.form.modules = [...new Set(modules)];
+            this.form.apps = [...new Set(apps)];
+            this.form.levels = [...new Set(levels)];
+            this.form.regex_password_client = this.regex_password_client;
+
+            if (modules.length < 1 && apps.length < 1) {
+                return this.$message.error('Debe seleccionar al menos un módulo o app')
             }
+           
 
             if (!this.form.is_update) {
                 if (this.form.certificate && !this.form.password_certificate) {
@@ -966,25 +978,35 @@ export default {
             this.form.name = data.name;
         },
         changeModules() {
-            var group = {
+            let group = {
                 modules: [],
                 apps: [],
             };
-            if(this.business == 1){
-                group.modules = this.getIds(this.group_basic);
+
+            if (this.business == 1) {
+                group.modules = this.getIds(this.group_basic || []);
             }
-            if(this.business == 2){
-                group.modules = this.getIds(this.group_pharmacy);
-                group.apps = this.getIds(this.group_pharmacy_apps);
+
+            if (this.business == 2) {
+                group.modules = this.getIds(this.group_pharmacy || []);
+                group.apps = this.getIds(this.group_pharmacy_apps || []);
             }
-            if(this.business == 3){
-                group.modules = this.getIds(this.group_hotel);
-                group.apps = this.getIds(this.group_hotel_apps);
+
+            if (this.business == 3) {
+                group.modules = this.getIds(this.group_hotel || []);
+                group.apps = this.getIds(this.group_hotel_apps || []);
             }
-            if(this.business == 4){
-                group.modules = this.getIds(this.group_restaurant);
-                group.apps = this.getIds(this.group_restaurant_apps);
+
+            if (this.business == 4) {
+                group.modules = this.getIds(this.group_restaurant || []);
+                group.apps = this.getIds(this.group_restaurant_apps || []);
             }
+
+            if (this.business == 5) {
+                group.modules = this.getIds(this.group_tattoo || []);
+                group.apps = this.getIds(this.group_tattoo_apps || []);
+            }
+
             this.$refs.tree.setCheckedKeys(group.modules);
             this.$refs.Apptree.setCheckedKeys(group.apps);
         },

@@ -1,0 +1,14 @@
+{
+    "name": "Tattoo",
+    "alias": "tattoo",
+    "description": "Modulo Tattoo",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Tattoo\\Providers\\TattooServiceProvider"
+    ],
+    "aliases": [],
+    "files": [],
+    "requires": [],
+    "active": 1
+}

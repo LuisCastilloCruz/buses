@@ -19,13 +19,34 @@ class ClientRequest extends FormRequest
         $password_rules = $this->getPasswordRules($this->input('regex_password_client') ?? false);
 
         return [
+            'modules' => [
+                'nullable',
+                'array',
+            ],
+            'modules.*' => [
+                'integer',
+            ],
+            'apps' => [
+                'nullable',
+                'array',
+            ],
+            'apps.*' => [
+                'integer',
+            ],
+            'levels' => [
+                'nullable',
+                'array',
+            ],
+            'levels.*' => [
+                'integer',
+            ],
             'email' => [
                 'required',
                 'email',
             ],
             'number' => [
                 'required',
-                 Rule::unique('system.clients')->ignore($id),
+                Rule::unique('system.clients')->ignore($id),
             ],
             'name' => [
                 'required',
@@ -75,8 +96,7 @@ class ClientRequest extends FormRequest
             'min:6',
         ];
 
-        if($regex_password_client)
-        {
+        if ($regex_password_client) {
             $password_rules = array_merge($password_rules, [
                 'regex:/[a-z]/',
                 'regex:/[A-Z]/',
@@ -87,5 +107,4 @@ class ClientRequest extends FormRequest
 
         return $password_rules;
     }
-
 }

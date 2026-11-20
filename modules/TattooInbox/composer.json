@@ -1,0 +1,23 @@
+{
+    "name": "nwidart/tattooinbox",
+    "description": "Modulo Tattoo Inbox",
+    "authors": [
+        {
+            "name": "Luis Castillo",
+            "email": "luiscastillo152017@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\TattooInbox\\Providers\\TattooInboxServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TattooInbox\\": ""
+        }
+    }
+}

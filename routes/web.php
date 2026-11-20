@@ -10,6 +10,13 @@ if ($hostname) {
             'register' => false,
             'verify'   => false
         ]);
+        // WEB PÚBLICA DE TRANSPORTE
+        Route::get('/web-transportes', '\Modules\Transporte\Http\Controllers\TransporteWebController@index');
+        Route::get('/transportes-public/terminales', '\Modules\Transporte\Http\Controllers\TransporteWebController@getTerminales');
+        Route::match(['GET', 'POST'], '/transportes-public/programaciones-disponibles', '\Modules\Transporte\Http\Controllers\TransporteWebController@getProgramacionesDisponibles');
+        Route::match(['GET', 'POST'], '/transportes-public/asientos-disponibles', '\Modules\Transporte\Http\Controllers\TransporteWebController@getAsientosDisponibles');
+
+
 
         //para devolver pdf a modulo restaurante
         Route::get('sales/{id}/comanda_pdf_print', 'Tenant\SalesController@comandaPdfPrint')->name('tenant.restaurant.sales.comanda_pdf_print');
@@ -255,7 +262,6 @@ if ($hostname) {
                 Route::get('/search/{barcode}', 'Tenant\PersonController@getPersonByBarcode');
 
                 Route::get('accumulated-points/{id}', 'Tenant\PersonController@getAccumulatedPoints');
-
             });
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
@@ -534,7 +540,7 @@ if ($hostname) {
             // Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
             Route::get('purchases/search-items', 'Tenant\PurchaseController@searchItems');
             Route::get('purchases/search/item/{item}', 'Tenant\PurchaseController@searchItemById');
-            Route::post('purchases/search/purchase_order','Tenant\PurchaseController@searchPurchaseOrder');
+            Route::post('purchases/search/purchase_order', 'Tenant\PurchaseController@searchPurchaseOrder');
             // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
             Route::post('purchases/brands', 'Tenant\PurchaseController@storeBrands');
             Route::post('purchases/categories', 'Tenant\PurchaseController@storeCategories');
@@ -626,7 +632,7 @@ if ($hostname) {
             Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
             Route::get('sale-notes/esc-print/{id}', 'Tenant\SaleNoteController@esc');
 
-           //Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
+            //Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
 
             Route::post('sale-notes/transform-data-order', 'Tenant\SaleNoteController@transformDataOrder');
             Route::post('sale-notes/items-by-ids', 'Tenant\SaleNoteController@getItemsByIds');
@@ -760,13 +766,13 @@ if ($hostname) {
 
             Route::get('purchase-settlements/create/{order_id?}', 'Tenant\PurchaseSettlementController@create')->name('tenant.purchase-settlements.create');
 
-Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store');
+            Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store');
             Route::get('purchase-settlements/tables', 'Tenant\PurchaseSettlementController@tables');
             Route::get('purchase-settlements/table/{table}', 'Tenant\PurchaseSettlementController@table');
             Route::get('purchase-settlements/record/{document}', 'Tenant\PurchaseSettlementController@record');
 
             //Almacen de columnas por usuario
-            Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');
+            Route::post('validate_columns', 'Tenant\SettingController@getColumnsToDatatable');
 
             Route::post('general-upload-temp-image', 'Controller@generalUploadTempImage');
 
@@ -780,9 +786,9 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
         });
     });
 } else {
-    $prefix = env('PREFIX_URL',null);
-    $prefix = !empty($prefix)?$prefix.".":'';
-    $app_url = $prefix. env('APP_URL_BASE');
+    $prefix = env('PREFIX_URL', null);
+    $prefix = !empty($prefix) ? $prefix . "." : '';
+    $app_url = $prefix . env('APP_URL_BASE');
 
     Route::domain($app_url)->group(function () {
         Route::get('login', 'System\LoginController@showLoginForm')->name('login');
@@ -899,6 +905,9 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
             Route::get('backup/last-backup', 'System\BackupController@mostRecent');
             Route::get('backup/download/{filename}', 'System\BackupController@download');
 
+
+
+
             /*
             Route::get('ajuste_claves_mysql', function(){
 
@@ -920,9 +929,6 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
                 }
             });
             */
-
-
-
         });
     });
 }

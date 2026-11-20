@@ -1,0 +1,46 @@
+name: AiReception isolated PHP checks
+
+on:
+  push:
+    branches:
+      - feature/ai-reception-foundation-20261120
+      - "integration/ai-reception-tattoo-20261120*"
+    paths:
+      - 'modules/AiReception/**'
+      - '.github/workflows/ai-reception-standalone-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  standalone-php:
+    name: Standalone PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.2']
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Check PHP syntax
+        run: |
+          php -l modules/AiReception/Services/SlotPlanner.php
+          php -l modules/AiReception/Services/OpenAiIntakeClassifier.php
+          php -l modules/AiReception/Services/MetaWebhook.php
+      - name: Test slot planning (no network)
+        run: php modules/AiReception/Tests/SlotPlannerTest.php
+      - name: Test OpenAI fake HTTP (no network)
+        run: php modules/AiReception/Tests/IntakeClassifierSmokeTest.php
+      - name: Test Meta webhook fake signature (no network)
+        run: php modules/AiReception/Tests/MetaWebhookMockTest.php
+      - name: Test Tattoo availability fixtures (no database or network)
+        run: php modules/AiReception/Tests/TattooAvailabilityTest.php
+      - name: Test defensive validation (no network)
+        run: php modules/AiReception/Tests/SecurityRegressionTest.php

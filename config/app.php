@@ -187,7 +187,9 @@ return [
 
         ZanySoft\Zip\ZipServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
-
+        Modules\Tattoo\Providers\TattooServiceProvider::class,
+        Modules\TattooInbox\Providers\TattooInboxServiceProvider::class,
+        Modules\TattooInbox\Providers\RouteServiceProvider::class,
     ],
 
     /*

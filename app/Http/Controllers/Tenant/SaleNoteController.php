@@ -135,7 +135,7 @@ class SaleNoteController extends Controller
         $token = $migrationConfiguration->getApiKey();
         $web = $migrationConfiguration->getUrl();
         /*
-        $token = 'TESTING_TOKEN_mmmddasdadasd';
+        $token = ''; // Configure a test token privately when required.
         $web = 'testing.url';
         */
 
