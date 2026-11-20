@@ -1,0 +1,14 @@
+{
+    "name": "AiReception",
+    "alias": "aireception",
+    "description": "Recepcion inteligente multi-negocio; base desactivada hasta validacion por tenant.",
+    "keywords": ["agenda", "openai", "multi-tenant"],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\AiReception\\Providers\\AiReceptionServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
