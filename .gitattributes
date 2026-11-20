@@ -3,3 +3,12 @@
 *.scss linguist-vendored
 *.js linguist-vendored
 CHANGELOG.md export-ignore
+
+# Stable migration checksums across Windows and CI.
+/demo-agenda/** text eol=lf
+/modules/AiReception/Agenda/** text eol=lf
+/audit/agenda-v1/** text eol=lf
+/audit/agenda-v1/screenshots/*.png binary
+
+# This already-applied migration keeps its exact bytes on every checkout.
+/modules/AiReception/Agenda/Database/2026_11_20_000001_create_aireception_agenda_v1.php -text whitespace=cr-at-eol
