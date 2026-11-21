@@ -1,0 +1,24 @@
+PASS syntax: 232 PHP files
+RESULT 7 audio mock checks; no network.
+RESULT 17 provider contract assertions; mocks only, no network.
+OK (6 tests, 20 assertions)
+OK (1 test, 7 assertions)
+RESULT 24 real native Laravel/MySQL checks
+RESULT 6 real legacy compatibility checks
+RESULT 19 V4 MySQL assertions.
+RESULT 15 proposal MySQL checks.
+RESULT 6 private attachment MySQL checks.
+RESULT 9 budgeted provider MySQL/mock checks; zero external traffic.
+RESULT 13 conversation MySQL checks; providers disabled.
+RESULT 4 reminder policy MySQL checks.
+RESULT 3 reminder setup assertions; worker verification follows.
+RESULT 42 native HTTP assertions
+RESULT 11 plan/subscription HTTP assertions
+RESULT 17 agent HTTP checks; no external providers
+RESULT 16 real Chrome assertions
+RESULT 4 real settings Chrome assertions
+RESULT 11 V4 real Chrome assertions
+PASS all native local suites. No external providers.
+RESULT 33 V5 MySQL checks; providers simulated; host tattoo.
+RESULT 33 V5 MySQL checks; providers simulated; host dental.
+PASS V5 simulated circuit. No external provider approval is implied.

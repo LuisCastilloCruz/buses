@@ -1,0 +1,7 @@
+<?php
+require __DIR__.'/test-bootstrap.php';
+$system=app('db')->connection('system');$plan=(int)$system->table('clients as c')->join('hostnames as h','h.id','=','c.hostname_id')->where('h.website_id',$business)->value('c.plan_id');
+$system->table('aireception_plan_controls')->updateOrInsert(['plan_id'=>$plan],['allow_reception'=>true,'allow_dental'=>true,'monthly_units'=>1000000,'professional_limit'=>20,'message_limit'=>10000,'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
+app(Modules\AiReception\Native\AgentSettings::class)->save(['enabled'=>false,'mode'=>'simulated','model'=>'fixture-model','max_output_tokens'=>512]);
+if(!$db->table('aireception_bookings')->where('status','confirmed')->exists()){$cat=$engine->catalogue(1,$business);$pro=(int)$cat['professionals'][0]->id;$svc=(int)$cat['services'][0]->id;$day=date('Y-m-d',strtotime('+45 days'));if(date('N',strtotime($day))==7)$day=date('Y-m-d',strtotime($day.' +1 day'));$slots=$engine->availability(1,$business,$pro,$svc,$day);$person=(int)$db->table('persons')->where('type','customers')->value('id');$engine->execute(1,$business,'book',['professional_id'=>$pro,'service_id'=>$svc,'person_id'=>$person,'client_name'=>'Recordatorio ficticio V5','day'=>$day,'start'=>$slots[0]['start'],'status'=>'confirmed'],'fixture-'.bin2hex(random_bytes(12)));}
+echo "PASS isolated regression prerequisites configured.\n";

@@ -5,14 +5,14 @@ Este worktree ejecuta **la aplicacion Laravel original completa**. `native-lab` 
 ## Abrir en esta HP
 
 ```powershell
-Set-Location 'C:\Users\luis castillo\AiReception-lab\native-v4'
+Set-Location 'C:\Users\luis castillo\AiReception-lab\native-v5'
 .\native-lab\start.ps1
 ```
 
-- Superadministrador: http://localhost:8876
-- Estudio ficticio: http://tattoo.localhost:8876
-- Clinica ficticia: http://dental.localhost:8876
-- Comercio ficticio: http://comercio.localhost:8876
+- Superadministrador: http://localhost:8877
+- Estudio ficticio: http://tattoo.localhost:8877
+- Clinica ficticia: http://dental.localhost:8877
+- Comercio ficticio: http://comercio.localhost:8877
 
 Los usuarios y claves aleatorias estan exclusivamente en `.native-runtime\ACCESS.txt`. Abrir ese archivo localmente; no subirlo ni copiarlo a un informe publico. Cada negocio usa el login original y una cookie vinculada a su empresa. Para cambiar de negocio, abrir su URL e iniciar sesion con su cuenta.
 
@@ -31,11 +31,11 @@ Superadministrador > clientes > editar > Modulos permite habilitar apps y nivele
 
 ## Entorno y datos
 
-Laravel 5.7.29; Hyn 5.3.1; nwidart/laravel-modules 5.1.0; PHP 7.4.33; MySQL 8.4.3 privado en 127.0.0.1:13319. No se actualizaron paquetes PHP ni instalaciones globales.
+Laravel 5.7.29; Hyn 5.3.1; nwidart/laravel-modules 5.1.0; PHP 7.4.33; MySQL 8.4.3 privado en 127.0.0.1:13320. No se actualizaron paquetes PHP ni instalaciones globales.
 
 El proceso MySQL usa `--no-defaults`, un datadir propio, mysqlx desactivado y `--restrict-fk-on-non-standard-key=OFF`, necesario para claves foraneas heredadas. El arranque comprueba puerto, datadir, raiz del worktree y una lista exacta de bases. Nunca cargar el `.env` original. No ejecutar `php artisan migrate` directamente contra la instalacion original.
 
-Bases: `mf_v4_system`, `mf_v4_tattoo`, `mf_v4_dental`, `mf_v4_commerce`. Cada tenant tiene su usuario MySQL Hyn limitado a su base. La cuarta empresa usa `mf_v4_cuarta`, aprovisionada con un usuario limitado a esa base.
+Bases: `mf_v5_system`, `mf_v5_tattoo`, `mf_v5_dental`, `mf_v5_commerce`. Cada tenant tiene su usuario MySQL Hyn limitado a su base. La cuarta empresa usa `mf_v5_cuarta`, aprovisionada con un usuario limitado a esa base.
 
 `start.ps1` crea el entorno vacio cuando no existe, ejecuta las migraciones verificadas y genera fixtures. En esta HP se verifico tambien su ejecucion repetida sin recrear datos. Una reconstruccion completa desde un checkout vacio en otra maquina no se certifica con esta entrega. Se requiere `vendor` compatible: copiar **solo vendor** desde el laboratorio V1 verificado, nunca `.env`, almacenamiento ni credenciales. El script no instala dependencias automaticamente.
 
@@ -47,7 +47,7 @@ La cuarta empresa fue creada por el controlador original de Superadministrador y
 .\native-lab\run-tests.ps1
 ```
 
-Necesita Python, Node 22 para CDP y Chrome instalado. Usa perfil Chrome nuevo, bloquea solicitudes web externas y guarda capturas en `audit/native-v4/screenshots`. MySQL/HTTP deben estar arrancados. Las pruebas solo agregan registros ficticios de QA; no son pruebas destructivas de clientes reales.
+Necesita Python, Node 22 para CDP y Chrome instalado. Usa perfil Chrome nuevo, bloquea solicitudes web externas y guarda capturas en `audit/native-v5/screenshots`. MySQL/HTTP deben estar arrancados. Las pruebas solo agregan registros ficticios de QA; no son pruebas destructivas de clientes reales.
 
 Comandos individuales:
 
@@ -76,7 +76,7 @@ Origen de herramientas: https://nodejs.org/dist/v14.21.3/win-x64/node.exe y http
 
 ## Alcance y limites V4
 
-Consultar [informe V4](../audit/native-v4/INFORME_V4.md), [matriz](../audit/native-v4/FUNCTION_MATRIX.md) y [seguridad](../audit/native-v4/SECURITY_DEPENDENCIES.md). Hay historia y odontograma FDI cifrados con datos ficticios y permiso clinico; no estan validados para pacientes reales. OpenAI/Meta tienen adaptadores probados con mocks y recepcion HMAC sintetica, sin E2E externo. La deuda de dependencias impide considerar esta version apta para produccion.
+Consultar [informe V4](../audit/native-v5/INFORME_V4.md), [matriz](../audit/native-v5/FUNCTION_MATRIX.md) y [seguridad](../audit/native-v5/SECURITY_DEPENDENCIES.md). Hay historia y odontograma FDI cifrados con datos ficticios y permiso clinico; no estan validados para pacientes reales. OpenAI/Meta tienen adaptadores probados con mocks y recepcion HMAC sintetica, sin E2E externo. La deuda de dependencias impide considerar esta version apta para produccion.
 
 El arranque no copia `.env`. Nunca ejecutar el scheduler original para esta demostracion. Para encolar exclusivamente recordatorios simulados:
 

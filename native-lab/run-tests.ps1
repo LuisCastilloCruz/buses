@@ -8,6 +8,7 @@ try {
  $count=0
  foreach($path in $paths){foreach($file in Get-ChildItem -LiteralPath $path -Filter *.php -Recurse){& $Php -l $file.FullName | Out-Null;if($LASTEXITCODE -ne 0){throw "PHP syntax: $($file.FullName)"};$count++}}
  Write-Output "PASS syntax: $count PHP files"
+ Run-Php @('native-lab/prepare-regression.php','dental')
  foreach($test in @('AudioContractsTest','ProviderContractsTest','IntakeClassifierSmokeTest','MetaWebhookMockTest','SecurityRegressionTest','SlotPlannerTest','TattooAvailabilityTest')){Run-Php @("modules/AiReception/Tests/$test.php")}
  foreach($test in @('LaravelCompatibilityTest','CalendarPersistenceTest')){Run-Php @('vendor/phpunit/phpunit/phpunit','--no-configuration','--bootstrap','vendor/autoload.php',"modules/AiReception/Tests/$test.php")}
  Run-Php @('native-lab/mysql-tests.php','dental')
@@ -19,8 +20,8 @@ try {
  Run-Php @('native-lab/conversation-tests.php','dental')
  Run-Php @('native-lab/reminder-policy-tests.php','dental')
  Run-Php @('native-lab/reminder-tests.php','dental')
- Run-Php @('native-lab/artisan.php','queue:work','aireception','--queue=aireception','--once','--tries=3','--sleep=0')
- Run-Php @('native-lab/artisan.php','queue:work','aireception','--queue=aireception','--once','--tries=3','--sleep=0')
+ Run-Php @('native-lab/artisan.php','queue:work','aireception','--queue=aireception-reminder-tests','--once','--tries=3','--sleep=0')
+ Run-Php @('native-lab/artisan.php','queue:work','aireception','--queue=aireception-reminder-tests','--once','--tries=3','--sleep=0')
  Run-Php @('native-lab/reminder-verify.php','dental')
  & python -u -X utf8 native-lab/http-tests.py
  if($LASTEXITCODE -ne 0){throw 'Native HTTP failed.'}

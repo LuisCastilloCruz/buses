@@ -31,7 +31,7 @@ class Access
     public function allows(string $module, string $level) : bool
     {
         $user = auth('web')->user();
-        if (!$user || $user->locked || !$this->enabled($module)) {
+        if (!$user || $user->aireception_suspended || !$this->enabled($module)) {
             return false;
         }
         return $user->modules()->where('value', $module)->exists() && $user->levels()->where('value', $module . '_' . $level)->exists();

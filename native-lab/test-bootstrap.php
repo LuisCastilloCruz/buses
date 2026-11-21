@@ -4,9 +4,9 @@ $host = $argv[1] ?? 'dental';
 if (!in_array($host, ['tattoo', 'dental', 'comercio', 'cuarta'], true)) {
     throw new RuntimeException('Unknown fixture host');
 }
-$_SERVER['HTTP_HOST'] = $host . '.localhost:8876';
+$_SERVER['HTTP_HOST'] = $host . '.localhost:8877';
 $_SERVER['SERVER_NAME'] = $host . '.localhost';
-$_SERVER['SERVER_PORT'] = 8876;
+$_SERVER['SERVER_PORT'] = 8877;
 $_SERVER['REQUEST_URI'] = '/aireception/calendar';
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
@@ -19,12 +19,13 @@ $environment->hostname($hostname);
 $environment->tenant($hostname->website);
 $db = app('db')->connection('tenant');
 $meta = $db->selectOne('SELECT @@port port,@@datadir dir,DATABASE() db');
-$expected = ['tattoo' => 'mf_v4_tattoo', 'dental' => 'mf_v4_dental', 'comercio' => 'mf_v4_commerce', 'cuarta'=>'mf_v4_cuarta'][$host];
-if ((int) $meta->port !== 13319 || $meta->db !== $expected || strtolower(str_replace('\\', '/', $meta->dir)) !== strtolower(str_replace('\\', '/', realpath(dirname(__DIR__))) . '/.native-runtime/mysql-data/')) {
+$expected = ['tattoo' => 'mf_v5_tattoo', 'dental' => 'mf_v5_dental', 'comercio' => 'mf_v5_commerce', 'cuarta'=>'mf_v5_cuarta'][$host];
+if ((int) $meta->port !== 13320 || $meta->db !== $expected || strtolower(str_replace('\\', '/', $meta->dir)) !== strtolower(str_replace('\\', '/', realpath(dirname(__DIR__))) . '/.native-runtime/mysql-data/')) {
     throw new RuntimeException('Unsafe test database');
 }
 $actor = (int) ($argv[2] ?? 1);
 auth('web')->setUser(App\Models\Tenant\User::findOrFail($actor));
 $business = app(Modules\AiReception\Native\Access::class)->business();
 $engine = app(Modules\AiReception\Native\EngineFactory::class)->make('aireception');
+set_exception_handler(function($e){fwrite(STDERR,'FAIL '.get_class($e).': '.$e->getMessage().PHP_EOL);exit(1);});
 return $app;

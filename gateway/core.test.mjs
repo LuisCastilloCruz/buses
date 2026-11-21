@@ -1,0 +1,44 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {randomBytes} from 'node:crypto';
+import {Gateway,mac} from './core.mjs';
+import {transcribeMedia} from './audio.mjs';
+const secret='test-internal-secret-with-at-least-32-characters';
+function setup(overrides={}){return new Gateway({database:':memory:',keys:{worker:{secret,tenants:[1]}},channels:{10:{tenant:1,sandboxAuthorized:true,monthlyCapUnits:10000,maxRequestUnits:100,models:['fixture-model'],openaiKey:'fixture-key',version:'v99.0',phone:'12345678',recipients:['51999999999'],templates:[]}},encryptionKey:randomBytes(32),...overrides});}
+function headers(body,stamp=String(Math.floor(Date.now()/1000))){const nonce=randomBytes(16).toString('hex');return {'x-ar-client':'worker','x-ar-time':stamp,'x-ar-nonce':nonce,'x-ar-signature':mac(secret,`worker\n${stamp}\n${nonce}\n${body}`)};}
+const request={tenant:1,channel:10,operation:'responses',id:'request-12345',payload:{model:'fixture-model',store:false,input:[{role:'user',content:'test'}],max_output_tokens:128,tools:[]}};
+test('signed request binds body and rejects replay, expiry and unknown client',()=>{const g=setup();try{const h=headers('{}');assert.deepEqual(g.authenticate(h,'{}').tenants,[1]);assert.throws(()=>g.authenticate(h,'{}'));assert.throws(()=>g.authenticate(headers('{}'),'[]'));assert.throws(()=>g.authenticate(headers('{}','1000000000'),'{}'));assert.throws(()=>g.authenticate({...headers('{}'),'x-ar-client':'other'},'{}'));}finally{g.close();}});
+test('disabled gateway makes zero network calls',async()=>{let calls=0;const g=setup({fetcher:async()=>{calls++;}});try{await assert.rejects(g.execute({tenants:[1]},request));assert.equal(calls,0);}finally{g.close();}});
+test('tenant and channel substitution blocked before outbound',async()=>{const g=setup();try{await assert.rejects(g.execute({tenants:[2]},request));await assert.rejects(g.execute({tenants:[1]},{...request,channel:11}));}finally{g.close();}});
+test('successful generation encrypted and replayed without provider calls',async()=>{let calls=0;const g=setup({live:true,fetcher:async(url,o)=>{calls++;assert.equal(url,'https://api.openai.com/v1/responses');assert.equal(o.redirect,'error');return new Response(JSON.stringify({text:'PRIVATE_RESPONSE'}));}});try{assert.equal((await g.execute({tenants:[1]},request)).text,'PRIVATE_RESPONSE');await g.execute({tenants:[1]},request);assert.equal(calls,1);assert.ok(!g.db.prepare('SELECT response FROM requests').get().response.includes('PRIVATE_RESPONSE'));await assert.rejects(g.execute({tenants:[1]},{...request,payload:{...request.payload,max_output_tokens:129}}));}finally{g.close();}});
+test('timeout retains unknown and never retries paid operation',async()=>{let calls=0;const g=setup({live:true,fetcher:async()=>{calls++;throw Error('secret provider detail');}});try{await assert.rejects(g.execute({tenants:[1]},request),/reconcile/);await assert.rejects(g.execute({tenants:[1]},request),/Reconciliation/);assert.equal(calls,1);}finally{g.close();}});
+test('hosted tools, unbounded output and provider-managed contexts rejected',async()=>{let calls=0;const g=setup({live:true,fetcher:async()=>{calls++;}});try{for(const [i,patch] of [{tools:[{type:'web_search'}]},{max_output_tokens:999999},{previous_response_id:'another-tenant'},{store:true}].entries())await assert.rejects(g.execute({tenants:[1]},{...request,id:'rejected-'+i,payload:{...request.payload,...patch}}));assert.equal(calls,0);}finally{g.close();}});
+test('WhatsApp sandbox recipient allowlist enforced',async()=>{const g=setup({live:true,fetcher:async()=>{throw Error('must not call');}});try{await assert.rejects(g.execute({tenants:[1]},{...request,operation:'whatsapp',payload:{messaging_product:'whatsapp',to:'51888888888',type:'text'}}));}finally{g.close();}});
+test('audio remains disabled without approved decoder and media identity',async()=>{let calls=0;await assert.rejects(transcribeMedia({sandboxAuthorized:false},'123456',{fetcher:async()=>{calls++;}}));assert.equal(calls,0);});
+test('audio metadata cannot redirect downloads into private network',async()=>{let calls=0;const cfg={sandboxAuthorized:true,ffmpeg:'fixture',ffprobe:'fixture',mediaIds:['123456'],version:'v99.0',transcriptionModel:'fixture',maxAudioSeconds:120};await assert.rejects(transcribeMedia(cfg,'123456',{fetcher:async()=>{calls++;return new Response(JSON.stringify({url:'https://127.0.0.1/private',file_size:100,mime_type:'audio/ogg'}));}}),/origin/);assert.equal(calls,1);});
+test('ingress validates WABA and phone, encrypts, deduplicates and isolates leased acknowledgements',async()=>{
+ const g=setup();g.channels['10']={...g.channels['10'],receiver:'aireception',appSecret:'fixture-secret',waba:'12345'};
+ const body=JSON.stringify({object:'whatsapp_business_account',entry:[{id:'12345',changes:[{field:'messages',value:{metadata:{phone_number_id:'12345678'},messages:[{id:'wamid.test',text:{body:'PRIVATE_INBOUND'}}]}}]}]});
+ try{
+  assert.throws(()=>g.ingest(10,body,'sha256=wrong'));assert.throws(()=>g.ingest(11,body,'sha256='+mac('fixture-secret',body)));
+  g.ingest(10,body,'sha256='+mac('fixture-secret',body));g.ingest(10,body,'sha256='+mac('fixture-secret',body));assert.equal(g.db.prepare('SELECT count(*) n FROM ingress').get().n,1);
+  assert.ok(!g.db.prepare('SELECT payload FROM ingress').get().payload.includes('PRIVATE_INBOUND'));
+  const pull=await g.execute({tenants:[1]},{tenant:1,channel:10,operation:'ingress_pull',id:'lease-12345',payload:{}});assert.equal(pull.event.body,body);
+  assert.equal((await g.execute({tenants:[1]},{tenant:1,channel:10,operation:'ingress_pull',id:'lease-67890',payload:{}})).event,null);
+  await assert.rejects(g.execute({tenants:[1]},{tenant:1,channel:10,operation:'ingress_ack',id:'ack-123456',payload:{id:pull.event.id,owner:'wrong'}}));
+  await g.execute({tenants:[1]},{tenant:1,channel:10,operation:'ingress_ack',id:'ack-123456',payload:{id:pull.event.id,owner:pull.event.owner}});assert.equal(g.db.prepare('SELECT payload FROM ingress').get().payload,'');
+ }finally{g.close();}
+});
+test('gateway second spending ceiling rejects further paid work before network',async()=>{let calls=0;const g=setup({live:true,fetcher:async()=>{calls++;return new Response('{}');}});g.channels['10'].monthlyCapUnits=100;try{await g.execute({tenants:[1]},request);await assert.rejects(g.execute({tenants:[1]},{...request,id:'request-67890'}),/cap exhausted/);assert.equal(calls,1);}finally{g.close();}});
+test('audio conversion, transcription and cleanup are bounded with simulated decoder',async()=>{
+ const {mkdtemp,writeFile,readdir,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const path=await import('node:path');const {createHash}=await import('node:crypto');
+ const temp=await mkdtemp(path.join(tmpdir(),'ar-audio-test-'));const ogg=Buffer.alloc(80);ogg.write('OggS');ogg.write('OpusHead',28);let calls=0;
+ const cfg={sandboxAuthorized:true,ffmpeg:'fixture-ffmpeg',ffprobe:'fixture-ffprobe',mediaIds:['123456'],version:'v99.0',transcriptionModel:'fixture',maxAudioSeconds:120};
+ const fetcher=async(url,options)=>{calls++;assert.equal(options.redirect,'error');if(String(url).includes('graph.facebook.com'))return new Response(JSON.stringify({url:'https://lookaside.fbsbx.com/media',file_size:ogg.length,mime_type:'audio/ogg',sha256:createHash('sha256').update(ogg).digest('hex')}));if(String(url).includes('lookaside'))return new Response(ogg);return new Response(JSON.stringify({text:'Quiero una cita ficticia'}));};
+ const runner=async(command,args,limits)=>{assert.equal(limits.shell,false);assert.equal(limits.timeout,10000);if(command==='fixture-ffprobe')return {stdout:JSON.stringify({format:{duration:'1.5'},streams:[{codec_name:'opus',codec_type:'audio',channels:1}]})};const wav=Buffer.alloc(100);wav.write('RIFF');wav.write('WAVE',8);await writeFile(args.at(-1),wav);return {stdout:''};};
+ try{const result=await transcribeMedia(cfg,'123456',{fetcher,runner,tempRoot:temp});assert.equal(result.seconds,1.5);assert.equal(calls,3);assert.deepEqual(await readdir(temp),[]);await assert.rejects(transcribeMedia(cfg,'123456',{fetcher,runner:async()=>{throw Error('decoder failure');},tempRoot:temp}));assert.deepEqual(await readdir(temp),[]);}finally{await rm(temp,{recursive:true,force:true});}
+});
+test('explicit WhatsApp 429 can retry at most three times; timeouts remain blocked',async()=>{
+ let calls=0;const g=setup({live:true,fetcher:async()=>{calls++;return new Response('{"error":{"code":130429}}',{status:429});}});const req={...request,operation:'whatsapp',payload:{messaging_product:'whatsapp',to:'51999999999',type:'text',text:{body:'fixture'}}};
+ try{for(let i=0;i<3;i++)await assert.rejects(g.execute({tenants:[1]},req),e=>e.retryAfter===30);await assert.rejects(g.execute({tenants:[1]},req),/Reconciliation/);assert.equal(calls,3);}finally{g.close();}
+});

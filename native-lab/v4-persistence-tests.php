@@ -7,7 +7,7 @@ check($host==='dental','fixture dental context');
 $level=$db->table('module_levels')->where('value','odontologia_clinical')->value('id');
 check((bool)$level,'independent clinical permission exists');
 // Explicit opt-in for this fictional administrator only; never grant existing customers automatically.
-$db->table('module_level_user')->updateOrInsert(['user_id'=>1,'module_level_id'=>$level],[]);
+if(!$db->table('module_level_user')->where(['user_id'=>1,'module_level_id'=>$level])->exists())$db->table('module_level_user')->insert(['user_id'=>1,'module_level_id'=>$level]);
 $person=(int)$db->table('persons')->where('type','customers')->value('id');
 $service=app(Modules\Odontologia\Services\ClinicalRecords::class);
 $id=$service->save($person,'history',['note'=>'FICTICIO antecedente de prueba V4']);

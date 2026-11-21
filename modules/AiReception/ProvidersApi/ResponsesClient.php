@@ -11,7 +11,7 @@ final class ResponsesClient
         $payload = $this->payload($configuration, $messages, $tools);
         $allowed = array_fill_keys(array_column($tools, 'name'), true);
         try {
-            $r = $this->http->request('POST', 'https://api.openai.com/v1/responses', ['headers'=>['Authorization'=>'Bearer '.$configuration['api_key']], 'json'=>$payload, 'connect_timeout'=>5, 'timeout'=>25, 'allow_redirects'=>false, 'http_errors'=>false]);
+            $r = $this->http->request('POST', 'https://api.openai.com/v1/responses', ['headers'=>['Authorization'=>'Bearer '.$configuration['api_key'], 'X-AR-Request-Key'=>$configuration['request_key']??''], 'json'=>$payload, 'connect_timeout'=>5, 'timeout'=>25, 'allow_redirects'=>false, 'http_errors'=>false]);
             if ($r->getStatusCode() !== 200) throw new \RuntimeException();
             $body = (string)$r->getBody();
             if (strlen($body) > 262144) throw new \RuntimeException();
@@ -62,7 +62,7 @@ final class ResponsesClient
         $payload=$this->payload($configuration,$messages,$tools);
         $countPayload=array_intersect_key($payload,array_flip(['model','input','instructions','tools']));
         try{
-            $r=$this->http->request('POST','https://api.openai.com/v1/responses/input_tokens',['headers'=>['Authorization'=>'Bearer '.$configuration['api_key']],'json'=>$countPayload,'connect_timeout'=>5,'timeout'=>15,'allow_redirects'=>false,'http_errors'=>false]);
+            $r=$this->http->request('POST','https://api.openai.com/v1/responses/input_tokens',['headers'=>['Authorization'=>'Bearer '.$configuration['api_key'], 'X-AR-Request-Key'=>$configuration['request_key']??''],'json'=>$countPayload,'connect_timeout'=>5,'timeout'=>15,'allow_redirects'=>false,'http_errors'=>false]);
             if($r->getStatusCode()!==200)throw new \RuntimeException();$body=(string)$r->getBody();if(strlen($body)>16384)throw new \RuntimeException();$data=json_decode($body,true);
             if(($data['object']??'')!=='response.input_tokens' || !is_int($data['input_tokens']??null) || $data['input_tokens']<0 || $data['input_tokens']>1000000)throw new \RuntimeException();return $data['input_tokens'];
         }catch(\Throwable $e){throw new \RuntimeException('Input token count unavailable; generation blocked.');}

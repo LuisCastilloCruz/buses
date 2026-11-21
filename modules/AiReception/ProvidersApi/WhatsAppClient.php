@@ -22,11 +22,12 @@ final class WhatsAppClient
             $content=['template'=>['name'=>$name, 'language'=>['code'=>$language]]];
         } else throw new \InvalidArgumentException('Unsupported message.');
         try {
-            $r=$this->http->request('POST', 'https://graph.facebook.com/'.$channel['version'].'/'.$channel['phone_number_id'].'/messages', ['headers'=>['Authorization'=>'Bearer '.$channel['token']], 'json'=>['messaging_product'=>'whatsapp','recipient_type'=>'individual','to'=>$recipient,'type'=>$type]+$content,'connect_timeout'=>5,'timeout'=>20,'allow_redirects'=>false,'http_errors'=>false]);
+            $r=$this->http->request('POST', 'https://graph.facebook.com/'.$channel['version'].'/'.$channel['phone_number_id'].'/messages', ['headers'=>['Authorization'=>'Bearer '.$channel['token'],'X-AR-Request-Key'=>$channel['request_key']??'','X-AR-Channel'=>$channel['channel_id']??null], 'json'=>['messaging_product'=>'whatsapp','recipient_type'=>'individual','to'=>$recipient,'type'=>$type]+$content,'connect_timeout'=>5,'timeout'=>20,'allow_redirects'=>false,'http_errors'=>false]);
+            if($r->getStatusCode()===429){$retry=json_decode((string)$r->getBody(),true);if(($retry['error']??'')==='retryable_provider_rejection')throw new RetryableDelivery('Provider rejected before acceptance.');}
             if ($r->getStatusCode() !== 200) throw new \RuntimeException();
             $body=json_decode((string)$r->getBody(), true); $id=$body['messages'][0]['id'] ?? null;
             if (!is_string($id) || !$id || strlen($id)>255) throw new \RuntimeException();
             return $id;
-        } catch (\Throwable $e) { throw new \RuntimeException('Delivery outcome unknown; reconcile before retry.'); }
+        } catch (RetryableDelivery $e) { throw $e; } catch (\Throwable $e) { throw new \RuntimeException('Delivery outcome unknown; reconcile before retry.'); }
     }
 }

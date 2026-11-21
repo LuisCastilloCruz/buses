@@ -1,0 +1,4 @@
+<?php
+require __DIR__.'/test-bootstrap.php';
+$c=$db->table('aireception_conversations')->whereNotNull('channel_id')->orderByDesc('id')->first();if(!$c)throw new RuntimeException('Signed channel fixture required.');
+if(($argv[3]??'')==='verify'){$key=$argv[4];$rows=$db->table('aireception_outbox')->where('request_key','manual-'.$key)->get();if(count($rows)!==1)throw new RuntimeException('Manual outbox dedup failed');if($db->table('aireception_messages')->where('channel_id',$rows[0]->channel_id)->where('external_id','outbox-'.$rows[0]->id)->count()!==1)throw new RuntimeException('Manual message dedup failed');echo "PASS manual HTTP replay yields one outbox and one message.\n";}else file_put_contents(dirname(__DIR__).'/.native-runtime/manual-fixture.json',json_encode(['conversation_id'=>$c->id]));

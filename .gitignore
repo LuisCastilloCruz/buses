@@ -54,3 +54,6 @@ app/Http/Controllers/TestController.php
 /audit/native-v3/PRIVATE.md
 
 /native-lab/__pycache__/
+
+# Failed local browser run evidence is private; successful captures are versioned.
+/audit/native-v5/screenshots/failure.png

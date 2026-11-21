@@ -29,12 +29,13 @@ final class BookingProposals
         $db->table('aireception_booking_drafts')->insert(['business_id'=>$business,'actor_id'=>$actor,'token_hash'=>hash('sha256',$token),'payload'=>json_encode($v),'expires_at'=>$expires,'created_at'=>date('Y-m-d H:i:s')]);
         return ['confirmation_token'=>$token,'expires_at'=>$expires,'proposal'=>$v,'confirmed'=>false,'action'=>$action];
     }
-    public function confirm(string $token,bool $explicit):array {
+    public function confirm(string $token,bool $explicit,?callable $contextGuard=null):array {
         app(Access::class)->require('aireception','book');
         if(!$explicit || !preg_match('/^[a-f0-9]{64}$/D',$token))abort(422,'Confirmacion explicita requerida.');
         $db=app('db')->connection('tenant');$business=app(Access::class)->business();$actor=(int)auth('web')->id();$engine=app(EngineFactory::class)->make('aireception');
-        return $db->transaction(function()use($db,$business,$actor,$engine,$token){
+        return $db->transaction(function()use($db,$business,$actor,$engine,$token,$contextGuard){
             $engine->authorize($actor,$business,true,true);
+            if($contextGuard)$contextGuard();
             $draft=$db->table('aireception_booking_drafts')->where('business_id',$business)->where('actor_id',$actor)->where('token_hash',hash('sha256',$token))->lockForUpdate()->first();
             if(!$draft)abort(404);
             if($draft->result){$previous=json_decode($draft->result,true);$current=$db->table('aireception_bookings')->where('business_id',$business)->where('id',$previous['booking']['id'])->first();if(!$current || (int)$current->version!==(int)$previous['booking']['version'])abort(409,'La reserva ya cambio; consulta el calendario.');return $previous+['replayed'=>true];}

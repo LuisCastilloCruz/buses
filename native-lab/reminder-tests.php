@@ -10,7 +10,7 @@ $db->table('aireception_contact_consents')->updateOrInsert(['person_id'=>$person
 $p=app(Modules\AiReception\Native\ReminderProcessor::class);check($p->process($id)==='suppressed_no_consent','no consent suppresses reminder');check($p->process($id)==='suppressed_no_consent' && (int)$db->table('aireception_reminders')->where('id',$id)->value('attempts')===1,'repeat processing is idempotent');
 $db->table('aireception_contact_consents')->where('person_id',$person)->update(['allowed'=>true]);
 $id=$db->table('aireception_reminders')->insertGetId(['booking_id'=>$booking->id,'scheduled_at'=>date('Y-m-d H:i:s',time()-120),'status'=>'simulated_pending']);
-Modules\AiReception\Jobs\ProcessReminder::dispatch($business,$id);Modules\AiReception\Jobs\ProcessReminder::dispatch($business,$id);
-check(app('db')->connection('system')->table('aireception_jobs')->where('queue','aireception')->count()>=2,'duplicate real MySQL queue jobs persisted');
+Modules\AiReception\Jobs\ProcessReminder::dispatch($business,$id)->onQueue('aireception-reminder-tests');Modules\AiReception\Jobs\ProcessReminder::dispatch($business,$id)->onQueue('aireception-reminder-tests');
+check(app('db')->connection('system')->table('aireception_jobs')->where('queue','aireception-reminder-tests')->count()>=2,'duplicate real MySQL queue jobs persisted');
 file_put_contents(dirname(__DIR__).'/.native-runtime/reminder-fixture.json',json_encode(['business'=>$business,'reminder'=>$id]));
 echo "RESULT $n reminder setup assertions; worker verification follows.\n";

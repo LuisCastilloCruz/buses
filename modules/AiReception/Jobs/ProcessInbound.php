@@ -22,6 +22,7 @@ class ProcessInbound implements ShouldQueue {
     $link=$db->table('aireception_contact_links')->where('channel_id',$channel->id)->where('sender_hash',$row->sender_identity)->first();
     if($link)app(\Modules\AiReception\Native\ContactLinker::class)->attach($db,$row,(int)$link->person_id);
    },3);
+   if(config('aireception.channel_processing_enabled',false)){$received=$db->table('aireception_inbound_messages')->where('channel_id',$channel->id)->where('message_id',$message['message_id'])->first();$outcome=app(\Modules\AiReception\Native\ChannelReception::class)->process((int)$received->id);if(($outcome['state']??'')==='busy')throw new \RuntimeException('Conversation busy; retry after current turn.');}
    $system->table('aireception_webhook_events')->where('id',$event->id)->update(['state'=>'processed','updated_at'=>date('Y-m-d H:i:s')]);
   }finally{$environment->tenant($previous);}
  }

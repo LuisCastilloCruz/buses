@@ -23,54 +23,54 @@ function Test-LabPort([int]$Port) {
 $slashData=(Join-Path $runtime 'mysql-data').Replace('\','/')
 Push-Location $labRoot
 try {
- if (!(Test-LabPort 13319)) {
+ if (!(Test-LabPort 13320)) {
   if (!(Test-Path -LiteralPath (Join-Path $runtime 'mysql-data/auto.cnf'))) {
    if (@(Get-ChildItem -LiteralPath (Join-Path $runtime 'mysql-data') -Force).Count) { throw 'Directorio MySQL no vacio sin marcador: inspeccion requerida.' }
    $init=Start-Process -FilePath $mysqld -ArgumentList @('--no-defaults','--initialize-insecure',"--basedir=`"$MySqlBase`"","--datadir=`"$slashData`"") -WindowStyle Hidden -Wait -PassThru -RedirectStandardOutput (Join-Path $runtime 'mysql-init.out.log') -RedirectStandardError (Join-Path $runtime 'mysql-initialize.log')
    if($init.ExitCode -ne 0){throw 'Inicializacion MySQL fallida.'}
   }
-  $dbProcess=Start-Process -FilePath $mysqld -ArgumentList @('--no-defaults',"--basedir=`"$MySqlBase`"","--datadir=`"$slashData`"",'--port=13319','--bind-address=127.0.0.1','--mysqlx=0','--restrict-fk-on-non-standard-key=OFF','--console') -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtime 'mysql.out.log') -RedirectStandardError (Join-Path $runtime 'mysql.err.log')
+  $dbProcess=Start-Process -FilePath $mysqld -ArgumentList @('--no-defaults',"--basedir=`"$MySqlBase`"","--datadir=`"$slashData`"",'--port=13320','--bind-address=127.0.0.1','--mysqlx=0','--restrict-fk-on-non-standard-key=OFF','--console') -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtime 'mysql.out.log') -RedirectStandardError (Join-Path $runtime 'mysql.err.log')
   $dbProcess.Id | Set-Content (Join-Path $runtime 'mysql.pid')
   $ready=$false
-  for($i=0;$i -lt 40;$i++){Start-Sleep -Milliseconds 250;if(Test-LabPort 13319){$ready=$true;break}}
+  for($i=0;$i -lt 40;$i++){Start-Sleep -Milliseconds 250;if(Test-LabPort 13320){$ready=$true;break}}
   if(!$ready){throw 'MySQL no inicio. Revisar el registro privado.'}
  }
  & $Php native-lab/init.php
  if($LASTEXITCODE -ne 0){throw 'Configuracion privada fallida.'}
  # Every installer verifies port, datadir and an exact disposable database allowlist.
- foreach($database in @('mf_v4_system','mf_v4_tattoo','mf_v4_dental','mf_v4_commerce')) {
+ foreach($database in @('mf_v5_system','mf_v5_tattoo','mf_v5_dental','mf_v5_commerce')) {
   & $Php native-lab/migrate-original.php $database
   if($LASTEXITCODE -ne 0){throw "Migracion fallida: $database"}
  }
- foreach($database in @('mf_v4_tattoo','mf_v4_dental','mf_v4_commerce')) {
+ foreach($database in @('mf_v5_tattoo','mf_v5_dental','mf_v5_commerce')) {
   & $Php native-lab/migrate-modules.php $database
   if($LASTEXITCODE -ne 0){throw "Migracion de modulos fallida: $database"}
  }
- foreach($database in @('mf_v4_system','mf_v4_tattoo','mf_v4_dental','mf_v4_commerce')) {
+ foreach($database in @('mf_v5_system','mf_v5_tattoo','mf_v5_dental','mf_v5_commerce')) {
   & $Php native-lab/seed.php $database
   if($LASTEXITCODE -ne 0){throw "Fixtures fallidos: $database"}
  }
- foreach($database in @('mf_v4_tattoo','mf_v4_dental','mf_v4_commerce')) {
+ foreach($database in @('mf_v5_tattoo','mf_v5_dental','mf_v5_commerce')) {
   & $Php native-lab/configure-fixtures.php $database
   if($LASTEXITCODE -ne 0){throw "Configuracion fallida: $database"}
   & $Php native-lab/finish-fixtures.php $database
   if($LASTEXITCODE -ne 0){throw "Referencias fallidas: $database"}
  }
  if(Test-Path (Join-Path $runtime 'fourth-account.json')){
-  & $Php native-lab/migrate-original.php mf_v4_cuarta
+  & $Php native-lab/migrate-original.php mf_v5_cuarta
   if($LASTEXITCODE -ne 0){throw 'Migracion cuarta empresa fallida.'}
  }
- if (!(Test-LabPort 8876)) {
-  $webProcess=Start-Process -FilePath $Php -ArgumentList '-d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail -S 127.0.0.1:8876 -t public native-lab/router.php' -WorkingDirectory $labRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtime 'web.out.log') -RedirectStandardError (Join-Path $runtime 'web.err.log')
+ if (!(Test-LabPort 8877)) {
+  $webProcess=Start-Process -FilePath $Php -ArgumentList '-d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail -S 127.0.0.1:8877 -t public native-lab/router.php' -WorkingDirectory $labRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtime 'web.out.log') -RedirectStandardError (Join-Path $runtime 'web.err.log')
   $webProcess.Id | Set-Content (Join-Path $runtime 'web.pid')
  }
  $sha=[Security.Cryptography.SHA256]::Create()
  $expected=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($labRoot.Replace('\','/').ToLowerInvariant())))).Replace('-','').ToLowerInvariant()
  $webReady=$false
  for($i=0;$i -lt 20;$i++){
-  try{$response=Invoke-WebRequest 'http://127.0.0.1:8876/login' -UseBasicParsing -TimeoutSec 3;if($response.Headers['X-MultiFactura-Native'] -ne $expected){throw 'La URL pertenece a otra instancia.'};$webReady=$true;break}catch{if($i -eq 19){throw};Start-Sleep -Milliseconds 250}
+  try{$response=Invoke-WebRequest 'http://127.0.0.1:8877/login' -UseBasicParsing -TimeoutSec 3;if($response.Headers['X-MultiFactura-Native'] -ne $expected){throw 'La URL pertenece a otra instancia.'};$webReady=$true;break}catch{if($i -eq 19){throw};Start-Sleep -Milliseconds 250}
  }
  if(!$webReady){throw 'Web no disponible.'}
- Write-Output 'MultiFactura: http://localhost:8876 | tattoo.localhost:8876 | dental.localhost:8876 | comercio.localhost:8876'
+ Write-Output 'MultiFactura: http://localhost:8877 | tattoo.localhost:8877 | dental.localhost:8877 | comercio.localhost:8877'
  Write-Output "Credenciales ficticias privadas: $runtime\ACCESS.txt"
 } finally { Pop-Location }

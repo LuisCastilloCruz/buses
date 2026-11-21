@@ -19,6 +19,7 @@ final class BudgetedResponses {
   $prior=$db->table('aireception_usage')->where('budget_id',$b->id)->where('request_key',$key)->first();
   if($prior){if(!hash_equals($prior->request_hash,$hash))abort(409);if($prior->state==='settled' && $prior->encrypted_response)return app('encrypter')->decrypt($prior->encrypted_response);abort(409,'Solicitud pendiente de conciliacion; no se repite el consumo.');}
   if((int)$b->limit_units<=(int)$b->used_units+(int)$b->reserved_units)abort(409,'Presupuesto agotado; atencion humana.');
+  $configuration['request_key']=$key;
   $input=$this->provider->countInput($configuration,$messages,$tools);
   $maximum=max(1,$this->cost($input,(int)$rate->input_micro_usd_per_million)+$this->cost($configuration['max_output_tokens'],(int)$rate->output_micro_usd_per_million));
   $budget=new UsageBudget($db);$entry=$budget->reserve($business,$period,$key,$hash,'openai',$maximum);if($entry['replayed'])abort(409,'Otra solicitud ya proceso esta clave.');

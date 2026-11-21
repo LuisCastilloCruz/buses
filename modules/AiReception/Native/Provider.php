@@ -7,11 +7,11 @@ class Provider extends ServiceProvider
 {
     public function register()
     {
-        $this->app->bind(\Modules\AiReception\ProvidersApi\ResponsesClient::class,function(){return new \Modules\AiReception\ProvidersApi\ResponsesClient(new \GuzzleHttp\Client());});
+        $this->app->bind(\Modules\AiReception\ProvidersApi\ResponsesClient::class,function(){return new \Modules\AiReception\ProvidersApi\ResponsesClient(new \Modules\AiReception\ProvidersApi\GatewayTransport());});
     }
     public function boot()
     {
-        $this->commands([\Modules\AiReception\Console\QueueReminders::class,\Modules\AiReception\Console\ReminderTick::class]);
+        $this->commands([\Modules\AiReception\Console\GatewayPull::class,\Modules\AiReception\Console\TransportTick::class,\Modules\AiReception\Console\QueueReminders::class,\Modules\AiReception\Console\ReminderTick::class]);
         config(['queue.connections.aireception'=>['driver'=>'database','connection'=>'system','table'=>'aireception_jobs','queue'=>'aireception','retry_after'=>90]]);
         app('router')->pushMiddlewareToGroup('web', TenantSession::class);
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'aireception');

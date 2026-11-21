@@ -5,11 +5,14 @@ on:
     branches:
       - feature/ai-reception-foundation-20261120
       - feature/multifactura-aireception-odontologia-completo-v4
+      - feature/multifactura-aireception-segura-v5
       - feature/ai-reception-agenda-v1
       - feature/multifactura-native-aireception-odontologia-v3
       - "integration/ai-reception-tattoo-20261120*"
     paths:
       - 'modules/AiReception/**'
+      - 'gateway/**'
+      - 'database/migrations/tenant/2026_11_23_*'
       - 'database/migrations/2026_11_22_*'
       - 'database/migrations/tenant/2026_11_22_*'
       - 'demo-agenda/**'
@@ -42,7 +45,7 @@ jobs:
       - name: Check PHP syntax
         run: |
           find modules/AiReception/Agenda modules/AiReception/Native modules/Odontologia modules/Tattoo/Services native-lab demo-agenda -name '*.php' -print0 | xargs -0 -n1 php -l
-          find database/migrations -name '2026_11_22_*.php' -print0 | xargs -0 -n1 php -l
+          find database/migrations -name '2026_11_2[23]_*.php' -print0 | xargs -0 -n1 php -l
           php -l modules/AiReception/Services/SlotPlanner.php
           php -l modules/AiReception/Services/OpenAiIntakeClassifier.php
           php -l modules/AiReception/Services/MetaWebhook.php
@@ -62,3 +65,15 @@ jobs:
 
       - name: Audio validation without network
         run: php modules/AiReception/Tests/AudioContractsTest.php
+
+  gateway:
+    name: Isolated gateway contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          package-manager-cache: false
+      - name: Test gateway without external providers
+        run: node --test gateway/core.test.mjs gateway/http.test.mjs

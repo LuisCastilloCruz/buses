@@ -28,6 +28,6 @@ try{
  try{$service->propose($messages,$tools,'exhausted-'.bin2hex(random_bytes(8)));throw new LogicException('Expected budget rejection');}catch(Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e){check($e->getStatusCode()===409 && $http->generations===2,'budget exhausted blocks further generation');}
 }finally{
  config(['aireception.external_connections_enabled'=>false]);$system->table('aireception_plan_controls')->where('plan_id',1)->update(['monthly_units'=>$plan->monthly_units]);
- if($settings)$db->table('aireception_agent_settings')->where('id',1)->update((array)$settings);else $db->table('aireception_agent_settings')->where('id',1)->update(['enabled'=>false,'mode'=>'simulated']);
+ if($settings)$db->table('aireception_agent_settings')->where('id',1)->update((array)$settings);else $db->table('aireception_agent_settings')->where('id',1)->delete();
 }
 echo "RESULT $n budgeted provider MySQL/mock checks; zero external traffic.\n";
