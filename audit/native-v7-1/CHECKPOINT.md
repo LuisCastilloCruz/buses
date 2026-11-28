@@ -8,4 +8,4 @@ Servicios propios:MySQL13325 yHTTP8881 activos. Gateway8899 yMySQLrecuperacion13
 
 No reinicializar ni repetir migraciones. Reanudar solo native-lab/resume-v6.ps1 adaptadoV7.1. Para nueva evaluacion usar nuevo --run; nombres existentes omiten conversaciones completas. Para repetir E2E usar perfil e2e. No cerrar servicios ajenos.
 
-Pendientes:revision humana, calidad de solicitudes repetidas, mitigacion monolito, sandboxexterno, validacionclinica/legal. No declaracion comercial/productiva. Rama publicada y verificada e429296f; sin merge ni despliegue. Siguiente paso: comprobar CI del commit documental y conservar bundle final.
+Pendientes:revision humana, calidad de solicitudes repetidas, mitigacion monolito, sandboxexterno, validacionclinica/legal. No declaracion comercial/productiva. Rama publicada y verificada3e6cce02; CI success(run46126699772), sin merge ni despliegue. Bundle adicional v71-delivery.bundle verificado, SHA256 75BEC3B81E437CE9C5139D2F83372739963C2094FF3A65CDABE1E98F08243F05. RAM final6.33GiB libres, Ollama sin modelo cargado. Cierre documental posterior; trabajo seguro completado, bloqueos en PENDIENTES.md.

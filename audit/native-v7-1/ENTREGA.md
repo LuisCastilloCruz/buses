@@ -11,3 +11,5 @@ Para recuperar codigo usar el bundle con su base44ff5486 ya conservada en respal
 Estado:reservas E2E reales aprobadas; coherencia comercial pendiente; sandboxexterno no validado; no apto para produccion. Ver PENDIENTES.md.
 
 Publicacion inicial verificada por git ls-remote: e429296f0ae1c2cce3c5187412732741ca978d76. Rama: https://github.com/LuisCastilloCruz/buses/tree/feature/multifactura-ollama-coherence-v7-1 . Escaneo acumulado419 archivos nuevos/cambiados:0 hallazgos de patrones; no certifica secretos historicos. Bundle importado en referencia privada nueva y recupero36ec1322 correctamente. CI inicial sin ejecucion observada; se incluye la carpeta de evidencia en el filtro para validar tambien entregas documentales. CI solo cubre PHP/contratos, no reproduce MySQL/Ollama/Chrome HP.
+
+CI del codigo3e6cce02:success, ver CI.md. Bundle adicional v71-delivery.bundle contiene ese commit y evidencia; SHA25675BEC3B81E437CE9C5139D2F83372739963C2094FF3A65CDABE1E98F08243F05. RAM libre al cierre6.33GiB/15.84GiB; modelo descargado de memoria.
