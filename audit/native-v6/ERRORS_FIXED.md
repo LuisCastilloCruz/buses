@@ -28,3 +28,12 @@ El runner inicial usaba indice floor((n-1)*q), que subestimaba p95/p99 con n peq
 
 ## QA-003: alcance visual del dashboard
 Capturas tempranas mostraban placeholders de carga aun con sidebar presente. Se agrego browser-dashboard-v6.mjs que espera todos los loaders del componente Vue. Estado de ejecucion pendiente hasta su registro separado; las pruebas previas siguen acreditando solamente lo que comprobaron.
+
+## PERF-002: saturacion de cuatro workers con 20 clientes
+Misma carga y SLO p95 <= 2000 ms: pool4 3915.72 ms FAIL; pool4+OPcache 2272.03 ms FAIL; pool8+OPcache 1634.12 ms PASS. No se cambiaron reglas ni dependencias globales. Recursos previos permitian ocho workers; pico final CPU 92.51%, no sostenido. No se ensaya 50 HTTP por falta de margen. Las 42 verificaciones HTTP nativas repetidas sobre pool8 pasaron, incluyendo permisos, idempotencia y cancelacion. Resistencia posterior se registra al concluir, no por anticipado.
+
+## QA-004: nivel bloqueado no debe aparentar aprobado
+Concurrencia de 50 workers fue omitida por el guard de RAM. Se corrigio el estado de salida del runner a 2 y mensaje BLOCKED; reanudar niveles anteriores comprueba filas sin duplicarlas. No se reduce la carga para aparentar PASS.
+
+## AUTH-001 ? confirmacion adicional en MySQL
+La reproduccion posterior con una fila ficticia demostro ACCEPTED en TokenGuard heredado para la credencial numerica 1. StrictTokenGuard rechazo el mismo valor. La prueba se ejecuto dentro de transaccion y el token temporal se revirtio. Resultado actualizado: 13 comprobaciones Laravel/MySQL aprobadas, ademas de las mismas 19 unitarias. Esto confirma un defecto del codigo/consulta heredados, no del fixture. Ningun token se imprimio.

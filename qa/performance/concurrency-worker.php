@@ -8,8 +8,9 @@ echo "READY\n";flush();
 if(trim(fgets(STDIN))!=='GO')exit(2);
 $started=microtime(true);
 try {
- $r=$engine->execute(1,$business,'book',$input['data'],$input['key']);
- echo json_encode(['status'=>200,'replayed'=>$r['replayed'],'ms'=>(microtime(true)-$started)*1000]);
+ $r=$engine->execute($actor,$business,$input['action']??'book',$input['data'],$input['key']);
+ if(!empty($input['crash_after_commit']))exit(17);
+ echo json_encode(['status'=>200,'replayed'=>$r['replayed'],'booking'=>$r['booking'],'ms'=>(microtime(true)-$started)*1000]);
 } catch (Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e) {
  echo json_encode(['status'=>$e->getStatusCode(),'ms'=>(microtime(true)-$started)*1000]);
 } catch (Throwable $e) {

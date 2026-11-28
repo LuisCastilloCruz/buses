@@ -9,3 +9,6 @@ Respaldo privado native-v5-before-v6-20261127-225829: bundle incremental V5 sobr
 Las 14 pruebas Node del gateway V5 se ejecutaron de nuevo y pasaron antes de cambios. La bateria completa V5 se reproducira en V6 con bases/credenciales nuevas para no alterar V5. Solo se adaptaron identidad, rutas de evidencias y puertos de los wrappers: MySQL13321, HTTP8878, CDP19231. Esto no cuenta como pruebas aprobadas hasta ejecutar.
 
 Umbrales iniciales: detener carga si RAM libre < 2 GB, disco < 8 GB, CPU global > 90% sostenido o conexiones > 80% del limite. Ningun generador acepta destinos externos. No inferir capacidad productiva del servidor de desarrollo.
+
+## Reproduccion posterior a recuperacion
+La suite V5 completa se ejecuto en V6 y termino exit 0. Resultados nuevos en TEST_RESULTS.md. Antes de recuperar no habia listeners 13321/8878; resume-v6 reanudo sin migraciones ni fixtures. El respaldo V5 conserva manifiesto de 5418 archivos y archivo verificado. No se ha modificado V5.

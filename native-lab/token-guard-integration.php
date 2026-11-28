@@ -35,6 +35,17 @@ try {
         throw new RuntimeException('Unknown token accepted');
     }
     $checks++;
+    // Reproduce MySQL coercion with a fictitious token, without exposing its value.
+    $db->table('users')->where('id', 1)->update(['api_token'=>'1'.bin2hex(random_bytes(24))]);
+    $request=Illuminate\Http\Request::create('/','POST',[],[],[],['CONTENT_TYPE'=>'application/json'],json_encode(['api_token'=>1]));
+    $legacy=new Illuminate\Auth\TokenGuard(auth('api')->getProvider(),$request);
+    $legacyAccepted=$legacy->validate(['api_token'=>1]);
+    echo 'OBSERVATION legacy numeric credential on fictitious MySQL row: '.($legacyAccepted?'ACCEPTED':'REJECTED').PHP_EOL;
+    $strict=new App\Auth\StrictTokenGuard(auth('api')->getProvider(),$request);
+    if ($strict->validate(['api_token'=>1]) || $strict->user()!==null) {
+        throw new RuntimeException('Numeric credential crossed the strict guard');
+    }
+    $checks++;
 } finally {
     $db->rollBack();
 }

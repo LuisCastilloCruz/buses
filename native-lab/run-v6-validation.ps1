@@ -11,6 +11,7 @@ if(!(Test-Path "$runtime/settings.json")){throw 'Existing V6 runtime required'}
 # OS releases this exclusive lock on process death; stale PID files cannot bypass it.
 $lock=[IO.File]::Open("$runtime/validation.lock",[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
 $run=Get-Date -Format 'yyyyMMdd-HHmmss-fff'
+$script:V6Blocked=@()
 Push-Location $root
 try {
  function Stage([string]$Name,[string]$Executable,[string[]]$Arguments){
@@ -20,6 +21,11 @@ try {
   & $Executable @Arguments *> $log
   $code=$LASTEXITCODE
   & python -X utf8 native-lab/checkpoint-v6.py --stage "$Name-finished" --completed "$Name exit=$code" --pending 'Remaining V6 acceptance criteria' --next 'Continue sequentially; investigate nonzero exit' --tests "$Name exit=$code; evidence=$log"
+  if($code -eq 2 -and $Name -eq 'concurrency'){
+   $script:V6Blocked+=$Name
+   Write-Output "BLOCKED resource-limited level in $Name; continuing independent stages ($log)"
+   return
+  }
   if($code -ne 0){throw "Stage failed: $Name; inspect $log"}
   Write-Output "PASS $Name ($log)"
  }
@@ -27,16 +33,19 @@ try {
  if($Profile -in @('smoke','security','full')){
   Stage 'token-unit' $php @('native-lab/token-guard-tests.php')
   Stage 'token-integration' $php @('native-lab/token-guard-integration.php','dental')
-  Stage 'gateway' $node @('--test','gateway/core.test.mjs','gateway/http.test.mjs','gateway/concurrency.test.mjs')
+  Stage 'gateway' $node @('--test','gateway/core.test.mjs','gateway/http.test.mjs','gateway/concurrency.test.mjs','gateway/stress.test.mjs','gateway/recovery.test.mjs','gateway/provider-failures.test.mjs')
  }
  if($Profile -in @('functional','integration','full')){
   Stage 'regression' 'powershell' @('-NoProfile','-ExecutionPolicy','Bypass','-File','native-lab/run-v5-tests.ps1','-Full')
   Stage 'dashboard-loaded' $node @('native-lab/browser-dashboard-v6.mjs')
  }
  if($Profile -in @('integration','stress','full')){
+  Stage 'race-matrix' 'python' @('-u','-X','utf8','qa/performance/race-matrix.py')
   Stage 'concurrency' 'python' @('-u','-X','utf8','qa/performance/concurrency.py')
+  Stage 'synthetic-ingress' $node @('--test','gateway/stress.test.mjs','gateway/recovery.test.mjs')
  }
  if($Profile -in @('security','full')){
+  Stage 'decoder-integrity' 'powershell' @('-NoProfile','-ExecutionPolicy','Bypass','-File','native-lab/verify-decoder-v6.ps1')
   $env:AR_TEST_FFMPEG="$runtime/tools/ffmpeg-9.1/ffmpeg.exe"
   $env:AR_TEST_FFPROBE="$runtime/tools/ffmpeg-9.1/ffprobe.exe"
   if(!(Test-Path $env:AR_TEST_FFMPEG) -or !(Test-Path $env:AR_TEST_FFPROBE)){throw 'Verified local decoder required; do not count a skipped test as pass'}
@@ -56,6 +65,7 @@ try {
  if($Profile -eq 'full'){
   throw 'Implemented stages complete, but comprehensive fault injection and external/clinical acceptance remain pending. No release approval implied.'
  }
+ if($script:V6Blocked.Count){Write-Output ('Incomplete resource-limited profile: '+($script:V6Blocked -join ', '));exit 2}
  Write-Output "Completed implemented profile $Profile; external sandbox and production approval excluded."
 } finally {
  Pop-Location

@@ -1,5 +1,5 @@
 """Real MySQL writers, ready barrier, bounded resources, final persisted-state checks."""
-import argparse,concurrent.futures,datetime,json,math,re,secrets,subprocess,time
+import argparse,concurrent.futures,datetime,json,math,re,secrets,subprocess,sys,time
 from pathlib import Path
 from preflight import check,ROOT,PHP
 from resources import sample,require_margin
@@ -32,6 +32,7 @@ def main():
   # Reserve conservative headroom for each PHP worker before spawning it.
   if resources['memory_free_mb']-n*80<2048:
    report['blocked_level']={'workers':n,'reason':'80 MiB per worker plus 2 GiB headroom','resources':resources};save();break
+  if report.get('blocked_level',{}).get('workers')==n:report.pop('blocked_level')
   data['start']=f'{9+index:02}:00';children=[];results=[];key=f'v6-{run}-{n}'
   try:
    for i in range(n):
@@ -60,5 +61,8 @@ def main():
    for p in children:
     if p.poll() is None:p.terminate();p.wait(timeout=10)
  report['finished']=True;save();print('Evidence: '+target.name)
+ if report.get('blocked_level'):
+  print('BLOCKED by resource preflight: '+str(report['blocked_level']['workers'])+' workers; not executed')
+  sys.exit(2)
 
 if __name__=='__main__':main()

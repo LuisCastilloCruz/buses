@@ -1,8 +1,10 @@
 """Conservative staged-change gate; reports paths/rules, never credential values."""
-import pathlib,re,subprocess,sys
+import argparse,pathlib,re,subprocess,sys
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 def git(*args):return subprocess.check_output(['git','-c','safe.directory='+str(ROOT),*args],cwd=ROOT)
-names=git('diff','--cached','--name-only','--diff-filter=ACMR','-z').decode().split('\0')
+parser=argparse.ArgumentParser();parser.add_argument('--base');args=parser.parse_args()
+if args.base and not re.fullmatch('[a-f0-9]{40}',args.base):raise ValueError('Full base commit SHA required')
+names=(git('diff','--name-only','--diff-filter=ACMR','-z',args.base,'HEAD') if args.base else git('diff','--cached','--name-only','--diff-filter=ACMR','-z')).decode().split('\0')
 rules={
  'private-key':rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
  'openai-like':rb'\bsk-(?:proj-)?[A-Za-z0-9_-]{28,}',
@@ -15,7 +17,7 @@ for name in filter(None,names):
  p=pathlib.PurePosixPath(name);count+=1
  if '.native-runtime' in p.parts or p.name.startswith('.env') or p.suffix.lower() in ['.sql','.sqlite','.db','.zip','.bundle','.pem','.key']:
   fail.append((name,'private-artifact'));continue
- data=git('show',':'+name)
+ data=git('show',('HEAD:' if args.base else ':')+name)
  if p.suffix.lower()=='.png':
   if not data.startswith(b'\x89PNG\r\n\x1a\n'):fail.append((name,'invalid-PNG'))
   continue

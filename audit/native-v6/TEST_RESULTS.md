@@ -14,3 +14,16 @@ run-v5-tests.ps1 -Full ejecutado en bases V6: exit 0.
 - HTTP: ver PERFORMANCE_COMPARISON.md; se conservan fallos monoproceso.
 
 Evidencia detallada privada .native-runtime/*.log y *.json. Soak, restauracion y dashboard completamente cargado se registran por separado al finalizar; no aprobados por adelantado.
+
+## Validaciones adicionales concluidas
+Dashboard completo Chrome: 9/9, cuatro capturas adicionales, cero errores de ejecucion. Total capturas: 30. La limitacion de cargas tempranas se cubrio con una nueva espera de todos los loaders Vue.
+Soak 600.768 s PASS, 385 requests, cero errores; restauracion 5 bases/1409 tablas PASS. Gateway ampliado 17/17. Ver RECOVERY_TESTS.md y STRESS_TEST_RESULTS.md.
+
+## Cierre adicional
+- Gateway completo integrado: 26/26 PASS (incluye matriz 9 errores proveedor).
+- Credenciales: 19/19 unitarias y 13/13 Laravel/MySQL. Guard heredado acepto valor numerico frente a fila ficticia; corregido lo rechazo; rollback verificado.
+- Matriz MySQL: 7/7 carreras/recovery, con cancelacion vs reserva, reprogramacion vs reserva, confirmacion concurrente idempotente, muerte tras commit, profesionales independientes, tenants distintos y rechazo de usuario lector.
+- Segunda resistencia despues de optimizar: 601.227 s, 437 requests, cero errores; p50 361.07 ms, p95 454.27 ms, p99 498.85 ms. Checkpoints parciales y telemetria MySQL conservados.
+- HTTP sobre pool8+OPcache: 42/42 comprobaciones nativas adicionales.
+
+Ultima regresion tras endurecer decoder: 27/27 Node PASS, cero skips (26 gateway + decoder real). Hashes de los dos binarios verificados. Todas las verificaciones PHP/Python nuevas de sintaxis pasaron. V5 sigue limpia en d597fa32; original conserva exactamente sus seis archivos sin seguimiento previos.

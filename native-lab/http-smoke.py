@@ -1,4 +1,4 @@
-import json,re,socket,urllib.request,urllib.parse,urllib.error,http.cookiejar
+import json,re,socket,urllib.request,urllib.parse,urllib.error,http.cookiejar,os
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 original=socket.getaddrinfo
@@ -8,7 +8,14 @@ def local_dns(host,*a,**k):
 socket.getaddrinfo=local_dns
 class Client:
  def __init__(self,account):
-  self.base=account['url'];self.jar=http.cookiejar.CookieJar();self.opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),urllib.request.HTTPCookieProcessor(self.jar));self.csrf=''
+  self.base=account['url']
+  port=os.environ.get('MULTIFACTURA_TEST_PORT')
+  if port:
+   if port not in ('8878','8888'):raise ValueError('Only V6 loopback test ports allowed')
+   u=urllib.parse.urlsplit(self.base)
+   if u.scheme!='http' or not (u.hostname=='localhost' or u.hostname.endswith('.localhost')):raise ValueError('Only local fixture hosts allowed')
+   self.base=urllib.parse.urlunsplit((u.scheme,u.hostname+':'+port,u.path,u.query,u.fragment))
+  self.jar=http.cookiejar.CookieJar();self.opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),urllib.request.HTTPCookieProcessor(self.jar));self.csrf=''
   code,body=self.request('/login');assert code==200,(self.base,code)
   token=re.search(r'name="_token" value="([^"]+)"',body).group(1)
   code,body=self.request('/login',{'_token':token,'email':account['email'],'password':account['password']},form=True)

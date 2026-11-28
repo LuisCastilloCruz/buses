@@ -82,4 +82,4 @@ jobs:
           node-version: '26'
           package-manager-cache: false
       - name: Test gateway without external providers
-        run: node --test gateway/core.test.mjs gateway/http.test.mjs gateway/concurrency.test.mjs
+        run: node --test gateway/core.test.mjs gateway/http.test.mjs gateway/concurrency.test.mjs gateway/stress.test.mjs gateway/recovery.test.mjs gateway/provider-failures.test.mjs

@@ -19,9 +19,9 @@ export async function transcribeMedia(cfg,mediaId,{fetcher=fetch,runner=exec,tem
  try{
   const input=path.join(folder,'input.ogg'),output=path.join(folder,'output.wav');await writeFile(input,ogg,{mode:0o600});
   const limits={timeout:10000,maxBuffer:65536,windowsHide:true,shell:false};
-  const probe=await runner(cfg.ffprobe,['-v','error','-protocol_whitelist','file,pipe','-show_entries','format=duration:stream=codec_name,codec_type,channels','-of','json',input],limits);const info=JSON.parse(probe.stdout);
+  const probe=await runner(cfg.ffprobe,['-v','error','-max_alloc','33554432','-threads','1','-f','ogg','-protocol_whitelist','file,pipe','-show_entries','format=duration:stream=codec_name,codec_type,channels','-of','json',input],limits);const info=JSON.parse(probe.stdout);
   const seconds=Number(info.format?.duration);if(!Number.isFinite(seconds)||seconds<=0||seconds>cfg.maxAudioSeconds||info.streams?.length!==1||info.streams[0].codec_name!=='opus'||info.streams[0].codec_type!=='audio'||![1,2].includes(info.streams[0].channels))throw Error('Unsupported audio duration or stream');
-  await runner(cfg.ffmpeg,['-nostdin','-v','error','-protocol_whitelist','file,pipe','-i',input,'-map','0:a:0','-t',String(cfg.maxAudioSeconds),'-ac','1','-ar','16000','-c:a','pcm_s16le','-fs','4000000',output],limits);
+  await runner(cfg.ffmpeg,['-nostdin','-v','error','-max_alloc','33554432','-threads','1','-f','ogg','-protocol_whitelist','file,pipe','-i',input,'-map','0:a:0','-t',String(cfg.maxAudioSeconds),'-ac','1','-ar','16000','-c:a','pcm_s16le','-fs','4000000',output],limits);
   const wav=await readFile(output);if(wav.length<44||wav.length>4000000||wav.subarray(0,4).toString()!=='RIFF'||wav.subarray(8,12).toString()!=='WAVE')throw Error('Invalid decoded audio');
   const form=new FormData();form.append('model',cfg.transcriptionModel);form.append('file',new Blob([wav],{type:'audio/wav'}),'voice.wav');
   const result=JSON.parse(await bounded(await fetcher('https://api.openai.com/v1/audio/transcriptions',{method:'POST',headers:{Authorization:`Bearer ${cfg.openaiKey}`},body:form,redirect:'error',signal:AbortSignal.timeout(30000)}),65536));

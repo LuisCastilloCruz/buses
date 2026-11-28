@@ -1,11 +1,13 @@
+param([switch]$Opcache,[ValidateSet(4,8)][int]$Workers=4)
 $ErrorActionPreference='Stop'
 $root=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $runtime=Join-Path $root '.native-runtime'
 Push-Location $root
 try{
- & python -X utf8 qa/performance/preflight.py
+ & python -X utf8 qa/performance/preflight.py --reserve-mb ($Workers*128)
  if($LASTEXITCODE -ne 0){throw 'Preflight failed'}
- foreach($port in @(8888,19061,19062,19063,19064)){
+ $workerPorts=@(19061..(19060+$Workers))
+ foreach($port in (@(8888)+$workerPorts)){
   $c=New-Object Net.Sockets.TcpClient
   try{if($c.ConnectAsync('127.0.0.1',$port).Wait(300) -and $c.Connected){throw "Port already occupied: $port"}}catch [AggregateException]{}finally{$c.Dispose()}
  }
@@ -24,7 +26,7 @@ http {
  access_log access.log;
  client_body_temp_path client_temp;
  fastcgi_temp_path fastcgi_temp;
- upstream v6 { server 127.0.0.1:19061; server 127.0.0.1:19062; server 127.0.0.1:19063; server 127.0.0.1:19064; }
+ upstream v6 { __UPSTREAM__ }
  server {
   listen 127.0.0.1:8888;
   server_name localhost *.localhost;
@@ -51,21 +53,25 @@ http {
    fastcgi_param SERVER_PORT 8888;
    fastcgi_param SERVER_NAME $host;
    fastcgi_param REDIRECT_STATUS 200;
+   fastcgi_param AR_LAB_POOL v6-__WORKERS__-workers;
   }
  }
 }
 '@
- $config.Replace('__LAB_ROOT__',$slash) | Set-Content "$folder/nginx.conf" -Encoding Ascii
+ $config.Replace('__LAB_ROOT__',$slash).Replace('__UPSTREAM__',(($workerPorts | ForEach-Object {"server 127.0.0.1:$_;"}) -join ' ')).Replace('__WORKERS__',[string]$Workers) | Set-Content "$folder/nginx.conf" -Encoding Ascii
  $nginx='C:\laragon\bin\nginx\nginx-1.28.2\nginx.exe'
  & $nginx -p "$prefix/" -c nginx.conf -t
  if($LASTEXITCODE -ne 0){throw 'Invalid isolated nginx configuration'}
  $records=@()
- foreach($port in @(19061,19062,19063,19064)){
-  $p=Start-Process 'C:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php-cgi.exe' -ArgumentList @('-d','allow_url_fopen=0','-d','disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail','-d','cgi.fix_pathinfo=0','-b',"127.0.0.1:$port") -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput "$folder/php-$port.out.log" -RedirectStandardError "$folder/php-$port.err.log"
+ foreach($port in $workerPorts){
+  $phpArgs=@('-d','allow_url_fopen=0','-d','disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail','-d','cgi.fix_pathinfo=0')
+  if($Opcache){$phpArgs+=@('-d','zend_extension=C:/laragon/bin/php/php-7.4.33-Win32-vc15-x64/ext/php_opcache.dll','-d','opcache.enable=1','-d','opcache.memory_consumption=64','-d','opcache.max_accelerated_files=20000','-d','opcache.validate_timestamps=1','-d','opcache.revalidate_freq=0')}
+  $phpArgs+=@('-b',"127.0.0.1:$port")
+  $p=Start-Process 'C:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php-cgi.exe' -ArgumentList $phpArgs -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput "$folder/php-$port.out.log" -RedirectStandardError "$folder/php-$port.err.log"
   $records+=@{pid=$p.Id;port=$port;start=$p.StartTime.ToUniversalTime().ToString('o')}
  }
  $p=Start-Process $nginx -ArgumentList @('-p',"`"$prefix/`"",'-c','nginx.conf') -WorkingDirectory $folder -WindowStyle Hidden -PassThru
  $records+=@{pid=$p.Id;port=8888;start=$p.StartTime.ToUniversalTime().ToString('o')}
  $records | ConvertTo-Json | Set-Content "$folder/processes.json"
- Write-Output "V6 load pool started: $folder; loopback 8888, four PHP CGI workers."
+ Write-Output "V6 load pool started: $folder; loopback 8888, $Workers PHP CGI workers."
 }finally{Pop-Location}
