@@ -6,12 +6,16 @@ on:
       - feature/ai-reception-foundation-20261120
       - feature/multifactura-aireception-odontologia-completo-v4
       - feature/multifactura-aireception-segura-v5
+      - feature/multifactura-ai-reception-release-candidate-v6
       - feature/ai-reception-agenda-v1
       - feature/multifactura-native-aireception-odontologia-v3
       - "integration/ai-reception-tattoo-20261120*"
     paths:
       - 'modules/AiReception/**'
       - 'gateway/**'
+      - 'app/Auth/**'
+      - 'app/Providers/AuthServiceProvider.php'
+      - 'qa/performance/**'
       - 'database/migrations/tenant/2026_11_23_*'
       - 'database/migrations/2026_11_22_*'
       - 'database/migrations/tenant/2026_11_22_*'
@@ -49,6 +53,8 @@ jobs:
           php -l modules/AiReception/Services/SlotPlanner.php
           php -l modules/AiReception/Services/OpenAiIntakeClassifier.php
           php -l modules/AiReception/Services/MetaWebhook.php
+          php -l app/Auth/StrictTokenGuard.php
+          php -l app/Providers/AuthServiceProvider.php
       - name: Test slot planning (no network)
         run: php modules/AiReception/Tests/SlotPlannerTest.php
       - name: Test OpenAI fake HTTP (no network)
@@ -76,4 +82,4 @@ jobs:
           node-version: '26'
           package-manager-cache: false
       - name: Test gateway without external providers
-        run: node --test gateway/core.test.mjs gateway/http.test.mjs
+        run: node --test gateway/core.test.mjs gateway/http.test.mjs gateway/concurrency.test.mjs

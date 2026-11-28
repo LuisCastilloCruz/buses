@@ -8,7 +8,7 @@ def check(x,label):
  n+=1;print('PASS',n,label,flush=True)
 def post(payload,valid=True,channel=None):
  raw=json.dumps(payload,separators=(',',':')).encode();signature='sha256='+hmac.new(c['app_secret'].encode(),raw,hashlib.sha256).hexdigest()
- req=urllib.request.Request('http://127.0.0.1:8877/api/aireception/meta/'+str(channel or c['id']),data=raw,headers={'Content-Type':'application/json','X-Hub-Signature-256':signature if valid else 'sha256=invalid'})
+ req=urllib.request.Request('http://127.0.0.1:8878/api/aireception/meta/'+str(channel or c['id']),data=raw,headers={'Content-Type':'application/json','X-Hub-Signature-256':signature if valid else 'sha256=invalid'})
  try:
   r=opener.open(req,timeout=60);return r.status,json.loads(r.read())
  except urllib.error.HTTPError as e:return e.code,None
