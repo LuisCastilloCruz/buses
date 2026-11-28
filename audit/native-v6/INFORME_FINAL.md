@@ -45,4 +45,10 @@ RUNBOOK.md contiene comandos de arranque, perfiles, puertos, parada y recuperaci
 
 Commits de hitos: 48a78ffd (seguridad/gateway) y 36bceda6 (laboratorio/mediciones). Commit de cierre y publicacion se registran en el checkpoint privado de entrega y respuesta final; el commit que contiene este informe no puede incluir su propio hash sin cambiarlo.
 
-Publicacion pendiente de revision final: solo rama V6, sin merge ni despliegue. GitHub Actions valida suites aisladas; no sustituye MySQL/Chrome/carga de la HP.
+Rama V6 publicada: https://github.com/LuisCastilloCruz/buses/tree/feature/multifactura-ai-reception-release-candidate-v6 . Commit funcional b6c78de3728a7a6239343c591df0adbffadc75f4, verificado remotamente. CI https://github.com/LuisCastilloCruz/buses/actions/runs/46112557116 : PHP 7.4, PHP 8.2 y gateway SUCCESS. Estas suites aisladas no sustituyen MySQL/Chrome/carga de la HP. Sin merge ni despliegue.
+
+
+## Respaldo y estado de cierre
+Respaldo privado fuera del worktree: native-v6-20261128-002957, 11 archivos/manifiestos con hashes. Bundle recuperado en repositorio privado: 9059 archivos del arbol Git comprobados. SHA256 archivo recuperado 32e41ed565188405526590d72d6c5ea7021ab3f713587055c7e697b1ca0d0b97. SQL final restaurado: 529756ec5c44862707fa69c95aaf0a06d4a50834c3134aedbe998e5b4616605e.
+
+Pool de carga cerrado mediante verificacion de propiedad. MySQL13322 de restauracion cerrado. Permanecen unicamente los servicios V6 principales, loopback13321/8878. No hay generador de carga ni tarea de QA prometida en segundo plano. Checkpoint privado de entrega registra el commit documental final y proximo paso seguro.

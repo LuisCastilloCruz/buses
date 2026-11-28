@@ -7,4 +7,4 @@
 - Concurrencia ampliada cubre mismo profesional; recurso compartido e idempotencia con dos workers en suite existente. Siete carreras adicionales (incluidas cancelacion, reprogramacion y tenants distintos) aprobadas. Falta matriz exhaustiva de deadlocks inducidos/cortes de red y mezcla integral de carga.
 - Modernizacion PHP/Laravel y mitigacion integral de dependencias pendientes; sin composer update global.
 - Retencion/exportacion clinica y obligaciones normativas no certificadas.
-- Publicacion y CI se documentaran segun resultado real. No es release aprobada.
+- Rama V6 publicada y CI aislada aprobada; esto no elimina los bloqueos anteriores ni constituye release aprobada.

@@ -11,3 +11,6 @@ AUTH-001: 19 pruebas unitarias y 12 comprobaciones Laravel/MySQL aprobadas. GW-0
 Pendiente: suite V6 completa, carga/concurrencia/estres/resistencia, recuperacion de backups en MySQL, proveedores reales y publicacion. No contar resultados anteriores como nuevos.
 
 Reanudar servicios: powershell -NoProfile -ExecutionPolicy Bypass -File native-lab/resume-v6.ps1. Este comando requiere configuracion V6 existente y nunca instala ni migra.
+
+## Ultimo hito de cierre
+Codigo funcional b6c78de3 publicado, Actions 46112557116 SUCCESS. 27 tests Node/decoder, 19 guard unitarios +13 MySQL, suite nativa completa, 42 HTTP sobre pool, 7 carreras adicionales, dos resistencias de 10 minutos y dos restauraciones reales aprobadas. Pool/nginx de carga cerrado. V5 limpia y original sin cambios respecto de auditoria. Proximo paso seguro: revisar bloqueos de seguridad y completar matriz de fallos pendiente; no activar proveedores ni repetir instalacion al recuperar.

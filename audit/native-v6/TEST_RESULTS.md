@@ -27,3 +27,6 @@ Soak 600.768 s PASS, 385 requests, cero errores; restauracion 5 bases/1409 tabla
 - HTTP sobre pool8+OPcache: 42/42 comprobaciones nativas adicionales.
 
 Ultima regresion tras endurecer decoder: 27/27 Node PASS, cero skips (26 gateway + decoder real). Hashes de los dos binarios verificados. Todas las verificaciones PHP/Python nuevas de sintaxis pasaron. V5 sigue limpia en d597fa32; original conserva exactamente sus seis archivos sin seguimiento previos.
+
+## CI comprobada
+[Actions 46112557116](https://github.com/LuisCastilloCruz/buses/actions/runs/46112557116), commit funcional b6c78de3728a7a6239343c591df0adbffadc75f4: Standalone PHP 7.4 SUCCESS, Standalone PHP 8.2 SUCCESS, Isolated gateway contracts SUCCESS. CI no ejecuta MySQL/Chrome/decoder Windows/carga de la HP. Commits documentales posteriores no cambian el codigo probado.

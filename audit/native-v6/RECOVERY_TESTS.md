@@ -13,3 +13,5 @@ Limites: no se provoco un corte de energia fisico ni caida real del MySQL fuente
 
 ## Respaldo actualizado despues de carreras
 Segunda restauracion aprobada: 5 bases, 1409 tablas; todos los conteos/hashes coinciden. Evidencia privada recovery-20261128-002146. SHA256 SQL 529756ec5c44862707fa69c95aaf0a06d4a50834c3134aedbe998e5b4616605e.
+
+Bundle V6 b6c78de3 recuperado desde respaldo privado fuera del worktree; archivo de 9059 ficheros comprobado por CRC y SHA256. Primer comando git archive fallo por argumento PowerShell de salida vacio antes de crear el archivo; repeticion con argumento citado fue correcta. No se sobrescribieron respaldos.
