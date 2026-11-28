@@ -1,0 +1,69 @@
+{
+  "business": "peluqueria",
+  "scenario": "molesto",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 8,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Estoy molesto porque nadie me responde",
+      "proposals": [],
+      "unverified_text": "Entiendo que te sientes molesto. ¿Podrías darme más detalles sobre lo que te gustaría ayudar? Estoy aquí para atenderte.",
+      "usage": {
+        "input_tokens": 300,
+        "output_tokens": 35
+      },
+      "metrics": {
+        "elapsed_ms": 582.3617000000013,
+        "load_ms": 6.0558,
+        "generation_ms": 486.665,
+        "tokens_per_second": 71.91805451388532
+      }
+    },
+    {
+      "user": "q precio tiene corte de cabello",
+      "proposals": [],
+      "unverified_text": "El precio del corte de cabello es de S/ 35. ¿Te gustaría obtener más información o tener una cita?",
+      "usage": {
+        "input_tokens": 352,
+        "output_tokens": 29
+      },
+      "metrics": {
+        "elapsed_ms": 630.7200000000012,
+        "load_ms": 8.1662,
+        "generation_ms": 408.271,
+        "tokens_per_second": 71.03125130121904
+      }
+    },
+    {
+      "user": "Quiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "¿Quién es la persona que te gustaría hablar con? Estoy aquí para ayudarte.",
+      "usage": {
+        "input_tokens": 396,
+        "output_tokens": 21
+      },
+      "metrics": {
+        "elapsed_ms": 461.3127000000022,
+        "load_ms": 5.9688,
+        "generation_ms": 289.706,
+        "tokens_per_second": 72.48728020821108
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2350
+}

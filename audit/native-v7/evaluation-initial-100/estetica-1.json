@@ -1,0 +1,69 @@
+{
+  "business": "estetica",
+  "scenario": "horario",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 2,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Buenas, ¿a qué hora abren?",
+      "proposals": [],
+      "unverified_text": "Buenas, ¿a qué hora abren?  \nEl centro Brisa abre los lunes a viernes de 09:00 a 18:00 y los sábados y domingos cerrado.",
+      "usage": {
+        "input_tokens": 298,
+        "output_tokens": 50
+      },
+      "metrics": {
+        "elapsed_ms": 794.8834999999963,
+        "load_ms": 7.1662,
+        "generation_ms": 697.724,
+        "tokens_per_second": 71.66157391748027
+      }
+    },
+    {
+      "user": "¿Y el domingo?",
+      "proposals": [],
+      "unverified_text": "¿Y el domingo?  \nEl domingo y los sábados el centro Brisa cerrado.",
+      "usage": {
+        "input_tokens": 362,
+        "output_tokens": 21
+      },
+      "metrics": {
+        "elapsed_ms": 510.2404999999999,
+        "load_ms": 6.7379,
+        "generation_ms": 287.576,
+        "tokens_per_second": 73.02417447909423
+      }
+    },
+    {
+      "user": "¿Dónde están?",
+      "proposals": [],
+      "unverified_text": "¿Dónde están?  \nEl centro Brisa se encuentra en la Avenida Ejemplo 100, Lima.",
+      "usage": {
+        "input_tokens": 398,
+        "output_tokens": 27
+      },
+      "metrics": {
+        "elapsed_ms": 546.3677000000025,
+        "load_ms": 7.0522,
+        "generation_ms": 374.303,
+        "tokens_per_second": 72.13407319738288
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2289
+}

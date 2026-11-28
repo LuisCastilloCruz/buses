@@ -1,0 +1,12 @@
+{
+  "model": "qwen3:1.7b",
+  "started": "2026-11-28T06:24:31.123Z",
+  "levels": [],
+  "resource_samples": [],
+  "scope": "Local API only; observed concurrency is not unlimited production capacity",
+  "blocked": {
+    "reason": "Insufficient free RAM for safe inference",
+    "free_mb": 2630,
+    "required_mb": 3328
+  }
+}

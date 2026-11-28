@@ -1,0 +1,69 @@
+{
+  "business": "tienda",
+  "scenario": "reprogramacion",
+  "split": "held-out",
+  "model": "qwen3:1.7b",
+  "seed": 10,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Necesito cambiar mi cita al viernes",
+      "proposals": [],
+      "unverified_text": "Entiendo. Podrías compartir la fecha exacta que deseas cambiar y la hora actual de la cita, por favor.",
+      "usage": {
+        "input_tokens": 307,
+        "output_tokens": 27
+      },
+      "metrics": {
+        "elapsed_ms": 463.9876000000004,
+        "load_ms": 5.5284,
+        "generation_ms": 365.811,
+        "tokens_per_second": 73.80860608346933
+      }
+    },
+    {
+      "user": "Mejor el lunes con Ana",
+      "proposals": [],
+      "unverified_text": "Entiendo. La fecha será el lunes con Ana. Gracias por la información.",
+      "usage": {
+        "input_tokens": 351,
+        "output_tokens": 19
+      },
+      "metrics": {
+        "elapsed_ms": 433.1248999999989,
+        "load_ms": 6.2347,
+        "generation_ms": 261.76,
+        "tokens_per_second": 72.58557457212714
+      }
+    },
+    {
+      "user": "¿Ya quedó cambiada?",
+      "proposals": [],
+      "unverified_text": "No aún. La fecha será el lunes con Ana. Gracias por la información.",
+      "usage": {
+        "input_tokens": 386,
+        "output_tokens": 19
+      },
+      "metrics": {
+        "elapsed_ms": 410.42489999999816,
+        "load_ms": 10.2822,
+        "generation_ms": 263.285,
+        "tokens_per_second": 72.16514423533434
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2533
+}

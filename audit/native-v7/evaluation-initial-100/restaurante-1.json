@@ -1,0 +1,69 @@
+{
+  "business": "restaurante",
+  "scenario": "horario",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 2,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Buenas, ¿a qué hora abren?",
+      "proposals": [],
+      "unverified_text": "Buenas, ¿a qué hora abren? El restaurante Olivo abre los lunes a viernes de 09:00 a 18:00 y los sábados y domingos cerrado.",
+      "usage": {
+        "input_tokens": 300,
+        "output_tokens": 50
+      },
+      "metrics": {
+        "elapsed_ms": 808.5385000000097,
+        "load_ms": 6.8931,
+        "generation_ms": 706.163,
+        "tokens_per_second": 70.80518237290823
+      }
+    },
+    {
+      "user": "¿Y el domingo?",
+      "proposals": [],
+      "unverified_text": "¿Y el domingo? El restaurante Olivo cerrado el domingo.",
+      "usage": {
+        "input_tokens": 364,
+        "output_tokens": 16
+      },
+      "metrics": {
+        "elapsed_ms": 437.5874999999942,
+        "load_ms": 6.0822,
+        "generation_ms": 214.471,
+        "tokens_per_second": 74.60216066507826
+      }
+    },
+    {
+      "user": "¿Dónde están?",
+      "proposals": [],
+      "unverified_text": "¿Dónde están? Está en la Avenida Ejemplo 100, Lima.",
+      "usage": {
+        "input_tokens": 395,
+        "output_tokens": 21
+      },
+      "metrics": {
+        "elapsed_ms": 432.6198000000004,
+        "load_ms": 6.1698,
+        "generation_ms": 286.562,
+        "tokens_per_second": 73.28257061299126
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2132
+}

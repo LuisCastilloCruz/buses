@@ -15,7 +15,7 @@ def main():
  if sha(source/'fictional-v6.sql')!=verified['dump_sha256']:raise ValueError('Dump checksum changed')
  parent=Path(r'C:\Users\luis castillo\MultiFactura-private-backups')
  if not parent.is_dir():raise ValueError('Expected private backup root missing')
- target=parent/('native-v6-'+datetime.datetime.now().strftime('%Y%m%d-%H%M%S'));target.mkdir(exist_ok=False)
+ target=parent/('native-v7-'+datetime.datetime.now().strftime('%Y%m%d-%H%M%S'));target.mkdir(exist_ok=False)
  user=subprocess.check_output(['whoami'],text=True).strip()
  subprocess.run(['icacls',str(target),'/inheritance:r','/grant:r',user+':(OI)(CI)F','*S-1-5-18:(OI)(CI)F','*S-1-5-32-544:(OI)(CI)F'],capture_output=True,check=True)
  files={}

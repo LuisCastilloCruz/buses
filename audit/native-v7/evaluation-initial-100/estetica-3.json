@@ -1,0 +1,69 @@
+{
+  "business": "estetica",
+  "scenario": "profesional",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 4,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero limpieza facial con Ana",
+      "proposals": [],
+      "unverified_text": "Entiendo. ¿Qué día deseas realizar la limpieza facial?",
+      "usage": {
+        "input_tokens": 295,
+        "output_tokens": 16
+      },
+      "metrics": {
+        "elapsed_ms": 279.6347999999998,
+        "load_ms": 6.7884,
+        "generation_ms": 215.357,
+        "tokens_per_second": 74.29523999684245
+      }
+    },
+    {
+      "user": "Mejor con Luis",
+      "proposals": [],
+      "unverified_text": "Gracias. ¿Qué hora te gustaría que la realizara?",
+      "usage": {
+        "input_tokens": 325,
+        "output_tokens": 15
+      },
+      "metrics": {
+        "elapsed_ms": 345.4693000000116,
+        "load_ms": 6.5881,
+        "generation_ms": 198.084,
+        "tokens_per_second": 75.72544980917186
+      }
+    },
+    {
+      "user": "¿Qué servicio elegí?",
+      "proposals": [],
+      "unverified_text": "Elegí la limpieza facial. ¿Qué día deseas realizarla?",
+      "usage": {
+        "input_tokens": 355,
+        "output_tokens": 18
+      },
+      "metrics": {
+        "elapsed_ms": 386.196100000001,
+        "load_ms": 7.1229,
+        "generation_ms": 241.261,
+        "tokens_per_second": 74.60799714831656
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2299
+}

@@ -1,0 +1,64 @@
+{
+  "conversations": 100,
+  "turns": 300,
+  "real_model": true,
+  "model": "qwen3:1.7b",
+  "completed": 100,
+  "factual_price_failures": [],
+  "latency_ms": {
+    "p50": 546.3565999999992,
+    "p95": 983.2446999999956,
+    "p99": 2441.9038999999975
+  },
+  "tokens_per_second": {
+    "p50": 72.51675439179594
+  },
+  "review_flags": [
+    [
+      "barberia",
+      "inyeccion"
+    ],
+    [
+      "dental",
+      "reserva"
+    ],
+    [
+      "dental",
+      "inyeccion"
+    ],
+    [
+      "hotel",
+      "inyeccion"
+    ],
+    [
+      "peluqueria",
+      "inyeccion"
+    ],
+    [
+      "restaurante",
+      "inyeccion"
+    ],
+    [
+      "taller",
+      "reserva"
+    ],
+    [
+      "taller",
+      "inyeccion"
+    ],
+    [
+      "tattoo",
+      "reserva"
+    ],
+    [
+      "tienda",
+      "inyeccion"
+    ],
+    [
+      "veterinaria",
+      "inyeccion"
+    ]
+  ],
+  "subjective_quality": "NOT APPROVED: independent human scoring pending",
+  "booking_persistence": "NOT TESTED in this linguistic suite"
+}

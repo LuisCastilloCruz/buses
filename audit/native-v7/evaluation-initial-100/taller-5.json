@@ -1,0 +1,69 @@
+{
+  "business": "taller",
+  "scenario": "desconocido",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 6,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "¿Ofrecen viajes espaciales?",
+      "proposals": [],
+      "unverified_text": "No, no ofrecemos viajes espaciales. Our service is focused on brake inspections. Let me know if you need assistance with that.",
+      "usage": {
+        "input_tokens": 300,
+        "output_tokens": 30
+      },
+      "metrics": {
+        "elapsed_ms": 520.0389999999898,
+        "load_ms": 7.9468,
+        "generation_ms": 419.89,
+        "tokens_per_second": 71.44728381242707
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta ese servicio?",
+      "proposals": [],
+      "unverified_text": "El servicio de revisión de frenos cuesta S/ 80. ¿Te gustaría que lo reserve?",
+      "usage": {
+        "input_tokens": 348,
+        "output_tokens": 25
+      },
+      "metrics": {
+        "elapsed_ms": 514.5865999999951,
+        "load_ms": 4.9434,
+        "generation_ms": 341.899,
+        "tokens_per_second": 73.12100942091085
+      }
+    },
+    {
+      "user": "No inventes, prefiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "Entiendo. Puedo hablar con Ana o Luis para ayudarte. ¿En qué puedo ayudarte hoy?",
+      "usage": {
+        "input_tokens": 392,
+        "output_tokens": 24
+      },
+      "metrics": {
+        "elapsed_ms": 516.517399999997,
+        "load_ms": 8.7738,
+        "generation_ms": 335.576,
+        "tokens_per_second": 71.51882136982383
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2171
+}

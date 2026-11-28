@@ -1,0 +1,69 @@
+{
+  "business": "peluqueria",
+  "scenario": "precio",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 1,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Hola",
+      "proposals": [],
+      "unverified_text": "Hola, ¿en qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 291,
+        "output_tokens": 10
+      },
+      "metrics": {
+        "elapsed_ms": 616.1974999999948,
+        "load_ms": 6.7968,
+        "generation_ms": 132.614,
+        "tokens_per_second": 75.40681979278206
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta corte de cabello?",
+      "proposals": [],
+      "unverified_text": "El corte de cabello costo S/ 35. ¿Te gustaría reservar una cita?",
+      "usage": {
+        "input_tokens": 322,
+        "output_tokens": 23
+      },
+      "metrics": {
+        "elapsed_ms": 452.92499999999563,
+        "load_ms": 4.7767,
+        "generation_ms": 313.748,
+        "tokens_per_second": 73.30724020551524
+      }
+    },
+    {
+      "user": "¿Y cuál era el precio?",
+      "proposals": [],
+      "unverified_text": "El precio del corte de cabello es S/ 35. ¿Te gustaría reservar una cita?",
+      "usage": {
+        "input_tokens": 362,
+        "output_tokens": 25
+      },
+      "metrics": {
+        "elapsed_ms": 517.2589999999982,
+        "load_ms": 4.809,
+        "generation_ms": 341.106,
+        "tokens_per_second": 73.29100045147256
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2377
+}

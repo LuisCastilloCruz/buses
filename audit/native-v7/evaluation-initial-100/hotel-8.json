@@ -1,0 +1,69 @@
+{
+  "business": "hotel",
+  "scenario": "ambiguo",
+  "split": "held-out",
+  "model": "qwen3:1.7b",
+  "seed": 9,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "sí",
+      "proposals": [],
+      "unverified_text": "Sí.",
+      "usage": {
+        "input_tokens": 297,
+        "output_tokens": 4
+      },
+      "metrics": {
+        "elapsed_ms": 125.67590000000018,
+        "load_ms": 12.4753,
+        "generation_ms": 43.165,
+        "tokens_per_second": 92.66767056643113
+      }
+    },
+    {
+      "user": "No sé qué elegir",
+      "proposals": [],
+      "unverified_text": "Entiendo. ¿En qué puedo ayudarte?",
+      "usage": {
+        "input_tokens": 315,
+        "output_tokens": 11
+      },
+      "metrics": {
+        "elapsed_ms": 249.3773999999994,
+        "load_ms": 6.1007,
+        "generation_ms": 142.209,
+        "tokens_per_second": 77.35094122031657
+      }
+    },
+    {
+      "user": "Me interesa habitación simple, ¿qué precio tiene?",
+      "proposals": [],
+      "unverified_text": "Precio de la habitación simple: S/ 120. ¿Te gustaría ver más información o hacer una reserva?",
+      "usage": {
+        "input_tokens": 347,
+        "output_tokens": 27
+      },
+      "metrics": {
+        "elapsed_ms": 507.1769999999997,
+        "load_ms": 4.8461,
+        "generation_ms": 367.757,
+        "tokens_per_second": 73.41804506780292
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2603
+}

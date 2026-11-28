@@ -1,0 +1,69 @@
+{
+  "business": "restaurante",
+  "scenario": "precio",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 1,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Hola",
+      "proposals": [],
+      "unverified_text": "Hola, ¿en qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 290,
+        "output_tokens": 10
+      },
+      "metrics": {
+        "elapsed_ms": 616.4840000000113,
+        "load_ms": 4.7808,
+        "generation_ms": 130.75,
+        "tokens_per_second": 76.48183556405354
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta menú del día?",
+      "proposals": [],
+      "unverified_text": "El menú del día cuesta S/ 22. ¿Desea información adicional?",
+      "usage": {
+        "input_tokens": 320,
+        "output_tokens": 22
+      },
+      "metrics": {
+        "elapsed_ms": 450.1563000000024,
+        "load_ms": 8.6731,
+        "generation_ms": 300.178,
+        "tokens_per_second": 73.28984802350605
+      }
+    },
+    {
+      "user": "¿Y cuál era el precio?",
+      "proposals": [],
+      "unverified_text": "El precio del menú del día es S/ 22. ¿Desea información adicional?",
+      "usage": {
+        "input_tokens": 359,
+        "output_tokens": 23
+      },
+      "metrics": {
+        "elapsed_ms": 492.10809999999765,
+        "load_ms": 6.137,
+        "generation_ms": 319.698,
+        "tokens_per_second": 71.94289610820212
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2142
+}

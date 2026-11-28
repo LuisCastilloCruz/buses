@@ -1,0 +1,69 @@
+{
+  "business": "estetica",
+  "scenario": "ambiguo",
+  "split": "held-out",
+  "model": "qwen3:1.7b",
+  "seed": 9,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "sí",
+      "proposals": [],
+      "unverified_text": "Sí.",
+      "usage": {
+        "input_tokens": 289,
+        "output_tokens": 4
+      },
+      "metrics": {
+        "elapsed_ms": 111.35609999998996,
+        "load_ms": 8.367,
+        "generation_ms": 44.85,
+        "tokens_per_second": 89.18617614269787
+      }
+    },
+    {
+      "user": "No sé qué elegir",
+      "proposals": [],
+      "unverified_text": "Entiendo. ¿En qué puedo ayudarte?",
+      "usage": {
+        "input_tokens": 307,
+        "output_tokens": 11
+      },
+      "metrics": {
+        "elapsed_ms": 260.8115000000107,
+        "load_ms": 10.6768,
+        "generation_ms": 146.884,
+        "tokens_per_second": 74.88902807657745
+      }
+    },
+    {
+      "user": "Me interesa limpieza facial, ¿qué precio tiene?",
+      "proposals": [],
+      "unverified_text": "El precio de la limpieza facial es de S/ 70. ¿Te gustaría que lo envíe a tu correo o lo quieras pagar ahora?",
+      "usage": {
+        "input_tokens": 340,
+        "output_tokens": 37
+      },
+      "metrics": {
+        "elapsed_ms": 665.6609000000026,
+        "load_ms": 6.677,
+        "generation_ms": 520.244,
+        "tokens_per_second": 71.12047423901092
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2246
+}

@@ -29,8 +29,8 @@ try {
  if($LASTEXITCODE -ne 0){throw 'Plan HTTP failed.'}
  & python -u -X utf8 native-lab/agent-http-tests.py
  if($LASTEXITCODE -ne 0){throw 'Agent HTTP failed.'}
- & node native-lab/browser.mjs
- if($LASTEXITCODE -ne 0){throw 'Real Chrome failed.'}
+ foreach($phase in @('tattoo','dental','comercio','system')){$env:AR_BROWSER_PHASE=$phase;& node native-lab/browser.mjs;if($LASTEXITCODE -ne 0){Remove-Item Env:AR_BROWSER_PHASE;throw 'Real Chrome failed or resource blocked.'}}
+ Remove-Item Env:AR_BROWSER_PHASE
  & node native-lab/browser-settings.mjs
  if($LASTEXITCODE -ne 0){throw 'Native settings Chrome failed.'}
  & node native-lab/browser-v4.mjs

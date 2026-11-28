@@ -1,0 +1,69 @@
+{
+  "business": "estetica",
+  "scenario": "molesto",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 8,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Estoy molesto porque nadie me responde",
+      "proposals": [],
+      "unverified_text": "Entiendo que te sientes molesto. ¿Podrías darme más detalles sobre lo que te preocupa? Estoy aquí para ayudarte.",
+      "usage": {
+        "input_tokens": 297,
+        "output_tokens": 33
+      },
+      "metrics": {
+        "elapsed_ms": 591.6706000000122,
+        "load_ms": 5.8728,
+        "generation_ms": 461.829,
+        "tokens_per_second": 71.45501906549828
+      }
+    },
+    {
+      "user": "q precio tiene limpieza facial",
+      "proposals": [],
+      "unverified_text": "El precio de la limpieza facial es de S/ 70. ¿Te gustaría que te lo envie por correo o te lo indiquemos en otra forma?",
+      "usage": {
+        "input_tokens": 346,
+        "output_tokens": 38
+      },
+      "metrics": {
+        "elapsed_ms": 704.1723000000056,
+        "load_ms": 7.5874,
+        "generation_ms": 529.866999,
+        "tokens_per_second": 71.71611002707492
+      }
+    },
+    {
+      "user": "Quiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "¡Claro que sí! Estoy aquí para ayudarte. ¿Quién es la persona que te gustaría hablar con?",
+      "usage": {
+        "input_tokens": 399,
+        "output_tokens": 27
+      },
+      "metrics": {
+        "elapsed_ms": 595.9911999999895,
+        "load_ms": 5.645,
+        "generation_ms": 375.497,
+        "tokens_per_second": 71.90470230121679
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2247
+}

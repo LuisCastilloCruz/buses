@@ -1,0 +1,69 @@
+{
+  "business": "peluqueria",
+  "scenario": "profesional",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 4,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero corte de cabello con Ana",
+      "proposals": [],
+      "unverified_text": "Entiendo. ¿Qué día deseas el corte de cabello?",
+      "usage": {
+        "input_tokens": 299,
+        "output_tokens": 16
+      },
+      "metrics": {
+        "elapsed_ms": 282.3603000000003,
+        "load_ms": 5.378,
+        "generation_ms": 215.721,
+        "tokens_per_second": 74.16987683164828
+      }
+    },
+    {
+      "user": "Mejor con Luis",
+      "proposals": [],
+      "unverified_text": "Gracias. ¿Qué hora te gustaría que lo haga Luis?",
+      "usage": {
+        "input_tokens": 329,
+        "output_tokens": 16
+      },
+      "metrics": {
+        "elapsed_ms": 367.0992000000042,
+        "load_ms": 8.6118,
+        "generation_ms": 221.506,
+        "tokens_per_second": 72.23280633481711
+      }
+    },
+    {
+      "user": "¿Qué servicio elegí?",
+      "proposals": [],
+      "unverified_text": "Elegí el corte de cabello con Luis. ¿Qué día deseas que lo haga?",
+      "usage": {
+        "input_tokens": 360,
+        "output_tokens": 23
+      },
+      "metrics": {
+        "elapsed_ms": 462.6883999999991,
+        "load_ms": 6.9318,
+        "generation_ms": 313.749,
+        "tokens_per_second": 73.3070065561962
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2368
+}

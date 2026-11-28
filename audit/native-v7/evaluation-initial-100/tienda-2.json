@@ -1,0 +1,69 @@
+{
+  "business": "tienda",
+  "scenario": "reserva",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 3,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero mochila azul mañana con Ana",
+      "proposals": [],
+      "unverified_text": "Entendido. Tienes una mochila azul mañana con Ana. La entrega será en la sede de la tienda. ¡Hasta luego!",
+      "usage": {
+        "input_tokens": 307,
+        "output_tokens": 33
+      },
+      "metrics": {
+        "elapsed_ms": 547.6851000000024,
+        "load_ms": 4.7843,
+        "generation_ms": 454.962,
+        "tokens_per_second": 72.53353027285796
+      }
+    },
+    {
+      "user": "Mejor el viernes",
+      "proposals": [],
+      "unverified_text": "Entendido. La entrega será el viernes con Ana. ¡Hasta luego!",
+      "usage": {
+        "input_tokens": 355,
+        "output_tokens": 19
+      },
+      "metrics": {
+        "elapsed_ms": 426.5519999999997,
+        "load_ms": 6.0639,
+        "generation_ms": 256.519999,
+        "tokens_per_second": 74.06829905687003
+      }
+    },
+    {
+      "user": "Conservo el servicio y la profesional, ¿qué solicité?",
+      "proposals": [],
+      "unverified_text": "Entendido. Has solicitado una mochila azul mañana con Ana. La entrega será en la sede de la tienda. ¡Hasta luego!",
+      "usage": {
+        "input_tokens": 396,
+        "output_tokens": 34
+      },
+      "metrics": {
+        "elapsed_ms": 647.6238999999987,
+        "load_ms": 6.5961,
+        "generation_ms": 471.599,
+        "tokens_per_second": 72.0951486326307
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2529
+}

@@ -1,0 +1,69 @@
+{
+  "business": "barberia",
+  "scenario": "molesto",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 8,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Estoy molesto porque nadie me responde",
+      "proposals": [],
+      "unverified_text": "Entiendo que te sientes molesto. ¿Podrías darme más detalles sobre qué te gustaría ayudar?",
+      "usage": {
+        "input_tokens": 298,
+        "output_tokens": 26
+      },
+      "metrics": {
+        "elapsed_ms": 458.7063999999955,
+        "load_ms": 7.2747,
+        "generation_ms": 364.274,
+        "tokens_per_second": 71.37484421067659
+      }
+    },
+    {
+      "user": "q precio tiene arreglo de barba",
+      "proposals": [],
+      "unverified_text": "El precio del arreglo de barba es de S/ 25. ¿Te gustaría que lo resuelva alguien?",
+      "usage": {
+        "input_tokens": 340,
+        "output_tokens": 27
+      },
+      "metrics": {
+        "elapsed_ms": 546.3565999999992,
+        "load_ms": 5.0703,
+        "generation_ms": 369.948,
+        "tokens_per_second": 72.98323007557819
+      }
+    },
+    {
+      "user": "Quiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "¿Quién es la persona que te gustaría hablar con?",
+      "usage": {
+        "input_tokens": 382,
+        "output_tokens": 14
+      },
+      "metrics": {
+        "elapsed_ms": 371.38980000000447,
+        "load_ms": 6.8295,
+        "generation_ms": 193.48,
+        "tokens_per_second": 72.3589001447178
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2358
+}

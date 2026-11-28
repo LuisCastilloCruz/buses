@@ -1,0 +1,69 @@
+{
+  "business": "peluqueria",
+  "scenario": "ambiguo",
+  "split": "held-out",
+  "model": "qwen3:1.7b",
+  "seed": 9,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "sí",
+      "proposals": [],
+      "unverified_text": "Sí.",
+      "usage": {
+        "input_tokens": 292,
+        "output_tokens": 4
+      },
+      "metrics": {
+        "elapsed_ms": 111.65959999999905,
+        "load_ms": 7.8833,
+        "generation_ms": 45.24,
+        "tokens_per_second": 88.41732979664013
+      }
+    },
+    {
+      "user": "No sé qué elegir",
+      "proposals": [],
+      "unverified_text": "Entiendo. ¿Qué tipo de corte de cabello te gustaría elegir?",
+      "usage": {
+        "input_tokens": 310,
+        "output_tokens": 19
+      },
+      "metrics": {
+        "elapsed_ms": 367.01280000000406,
+        "load_ms": 6.8512,
+        "generation_ms": 256.986,
+        "tokens_per_second": 73.93398862194827
+      }
+    },
+    {
+      "user": "Me interesa corte de cabello, ¿qué precio tiene?",
+      "proposals": [],
+      "unverified_text": "El precio del corte de cabello es de S/ 35. ¿Te gustaría que lo realice Ana o Luis?",
+      "usage": {
+        "input_tokens": 352,
+        "output_tokens": 29
+      },
+      "metrics": {
+        "elapsed_ms": 569.8643999999986,
+        "load_ms": 7.802,
+        "generation_ms": 396.653,
+        "tokens_per_second": 73.11176267417618
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2348
+}

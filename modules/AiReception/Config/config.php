@@ -7,6 +7,7 @@ return [
     'name' => 'AiReception',
     'v5_transport_mode' => 'simulated',
     'gateway_authorized' => false,
+    'ollama_enabled' => false,
     'channel_processing_enabled' => false,
     'channel_actors' => [],
     'gateway_channels' => [],

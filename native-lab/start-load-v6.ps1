@@ -7,7 +7,7 @@ try{
  & python -X utf8 qa/performance/preflight.py --reserve-mb ($Workers*128)
  if($LASTEXITCODE -ne 0){throw 'Preflight failed'}
  $workerPorts=@(19061..(19060+$Workers))
- foreach($port in (@(8888)+$workerPorts)){
+ foreach($port in (@(8889)+$workerPorts)){
   $c=New-Object Net.Sockets.TcpClient
   try{if($c.ConnectAsync('127.0.0.1',$port).Wait(300) -and $c.Connected){throw "Port already occupied: $port"}}catch [AggregateException]{}finally{$c.Dispose()}
  }
@@ -28,7 +28,7 @@ http {
  fastcgi_temp_path fastcgi_temp;
  upstream v6 { __UPSTREAM__ }
  server {
-  listen 127.0.0.1:8888;
+  listen 127.0.0.1:8889;
   server_name localhost *.localhost;
   client_max_body_size 1m;
   location / {
@@ -50,7 +50,7 @@ http {
    fastcgi_param REMOTE_ADDR $remote_addr;
    fastcgi_param REMOTE_PORT $remote_port;
    fastcgi_param SERVER_ADDR 127.0.0.1;
-   fastcgi_param SERVER_PORT 8888;
+   fastcgi_param SERVER_PORT 8889;
    fastcgi_param SERVER_NAME $host;
    fastcgi_param REDIRECT_STATUS 200;
    fastcgi_param AR_LAB_POOL v6-__WORKERS__-workers;
@@ -71,7 +71,7 @@ http {
   $records+=@{pid=$p.Id;port=$port;start=$p.StartTime.ToUniversalTime().ToString('o')}
  }
  $p=Start-Process $nginx -ArgumentList @('-p',"`"$prefix/`"",'-c','nginx.conf') -WorkingDirectory $folder -WindowStyle Hidden -PassThru
- $records+=@{pid=$p.Id;port=8888;start=$p.StartTime.ToUniversalTime().ToString('o')}
+ $records+=@{pid=$p.Id;port=8889;start=$p.StartTime.ToUniversalTime().ToString('o')}
  $records | ConvertTo-Json | Set-Content "$folder/processes.json"
- Write-Output "V6 load pool started: $folder; loopback 8888, $Workers PHP CGI workers."
+ Write-Output "V6 load pool started: $folder; loopback 8889, $Workers PHP CGI workers."
 }finally{Pop-Location}

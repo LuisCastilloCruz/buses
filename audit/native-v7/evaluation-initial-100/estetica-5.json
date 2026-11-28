@@ -1,0 +1,69 @@
+{
+  "business": "estetica",
+  "scenario": "desconocido",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 6,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "¿Ofrecen viajes espaciales?",
+      "proposals": [],
+      "unverified_text": "No, el Centro Brisa no ofrece viajes espaciales. Su único servicio es la limpieza facial, precio S/ 70.",
+      "usage": {
+        "input_tokens": 297,
+        "output_tokens": 32
+      },
+      "metrics": {
+        "elapsed_ms": 546.0075999999972,
+        "load_ms": 6.6047,
+        "generation_ms": 451.636,
+        "tokens_per_second": 70.85351920573206
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta ese servicio?",
+      "proposals": [],
+      "unverified_text": "El servicio de limpieza facial cuesta S/ 70.",
+      "usage": {
+        "input_tokens": 347,
+        "output_tokens": 16
+      },
+      "metrics": {
+        "elapsed_ms": 389.5994999999966,
+        "load_ms": 6.6676,
+        "generation_ms": 216.478,
+        "tokens_per_second": 73.91051284657101
+      }
+    },
+    {
+      "user": "No inventes, prefiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "Entiendo. Puedo ayudarte con la limpieza facial. ¿Te gustaría que te lo prepare?",
+      "usage": {
+        "input_tokens": 382,
+        "output_tokens": 25
+      },
+      "metrics": {
+        "elapsed_ms": 489.01370000001043,
+        "load_ms": 5.4792,
+        "generation_ms": 347.283,
+        "tokens_per_second": 71.98739932562204
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2279
+}

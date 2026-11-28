@@ -1,0 +1,69 @@
+{
+  "business": "tienda",
+  "scenario": "profesional",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 4,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero mochila azul con Ana",
+      "proposals": [],
+      "unverified_text": "¡Hola! ¿En qué puedo ayudarte hoy? Tengo mochila azul disponible en la tienda Nube. ¿Te gustaría verla o necesitas alguna información adicional?",
+      "usage": {
+        "input_tokens": 306,
+        "output_tokens": 41
+      },
+      "metrics": {
+        "elapsed_ms": 637.6638999999996,
+        "load_ms": 7.8863,
+        "generation_ms": 574.293,
+        "tokens_per_second": 71.39212910482976
+      }
+    },
+    {
+      "user": "Mejor con Luis",
+      "proposals": [],
+      "unverified_text": "¡Hola! ¿En qué puedo ayudarte hoy? Tengo mochila azul disponible en la tienda Nube. ¿Te gustaría verla o necesitas alguna información adicional?",
+      "usage": {
+        "input_tokens": 361,
+        "output_tokens": 41
+      },
+      "metrics": {
+        "elapsed_ms": 789.6090000000004,
+        "load_ms": 4.8543,
+        "generation_ms": 573.957,
+        "tokens_per_second": 71.43392275031056
+      }
+    },
+    {
+      "user": "¿Qué servicio elegí?",
+      "proposals": [],
+      "unverified_text": "¿Qué servicio elegí? 🧩",
+      "usage": {
+        "input_tokens": 417,
+        "output_tokens": 10
+      },
+      "metrics": {
+        "elapsed_ms": 353.0578999999998,
+        "load_ms": 5.8662,
+        "generation_ms": 131.838,
+        "tokens_per_second": 75.85066521033389
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2527
+}

@@ -1,0 +1,69 @@
+{
+  "business": "dental",
+  "scenario": "precio",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 1,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Hola",
+      "proposals": [],
+      "unverified_text": "Hola, ¿en qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 290,
+        "output_tokens": 10
+      },
+      "metrics": {
+        "elapsed_ms": 951.7529999999999,
+        "load_ms": 10.8797,
+        "generation_ms": 133.769,
+        "tokens_per_second": 74.7557356338165
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta limpieza dental?",
+      "proposals": [],
+      "unverified_text": "El precio de la limpieza dental es de S/ 90. ¿En qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 320,
+        "output_tokens": 24
+      },
+      "metrics": {
+        "elapsed_ms": 477.8831,
+        "load_ms": 8.3473,
+        "generation_ms": 320.224,
+        "tokens_per_second": 74.94753672429299
+      }
+    },
+    {
+      "user": "¿Y cuál era el precio?",
+      "proposals": [],
+      "unverified_text": "El precio de la limpieza dental es de S/ 90. ¿En qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 361,
+        "output_tokens": 24
+      },
+      "metrics": {
+        "elapsed_ms": 500.68169999999986,
+        "load_ms": 10.3916,
+        "generation_ms": 324.595,
+        "tokens_per_second": 73.93829233352331
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2561
+}

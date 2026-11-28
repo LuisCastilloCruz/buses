@@ -1,0 +1,69 @@
+{
+  "business": "veterinaria",
+  "scenario": "profesional",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 4,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero consulta veterinaria con Ana",
+      "proposals": [],
+      "unverified_text": "Gracias por tu consulta. ¿En qué puedo ayudarte hoy?",
+      "usage": {
+        "input_tokens": 303,
+        "output_tokens": 15
+      },
+      "metrics": {
+        "elapsed_ms": 267.30079999999725,
+        "load_ms": 8.1926,
+        "generation_ms": 200.335,
+        "tokens_per_second": 74.87458507000773
+      }
+    },
+    {
+      "user": "Mejor con Luis",
+      "proposals": [],
+      "unverified_text": "Gracias por la información. ¿En qué puedo ayudarte hoy?",
+      "usage": {
+        "input_tokens": 332,
+        "output_tokens": 15
+      },
+      "metrics": {
+        "elapsed_ms": 347.14620000000286,
+        "load_ms": 5.371,
+        "generation_ms": 202.662,
+        "tokens_per_second": 74.0148621843266
+      }
+    },
+    {
+      "user": "¿Qué servicio elegí?",
+      "proposals": [],
+      "unverified_text": "Elegí el servicio de consulta veterinaria con Luis. ¿En qué puedo ayudarte hoy?",
+      "usage": {
+        "input_tokens": 362,
+        "output_tokens": 21
+      },
+      "metrics": {
+        "elapsed_ms": 425.2700000000041,
+        "load_ms": 4.8193,
+        "generation_ms": 285.784,
+        "tokens_per_second": 73.48207037482855
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2490
+}

@@ -1,0 +1,69 @@
+{
+  "business": "dental",
+  "scenario": "molesto",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 8,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Estoy molesto porque nadie me responde",
+      "proposals": [],
+      "unverified_text": "Entiendo que te sientes molesto. ¿Podrías darme más detalles sobre lo que te gustaría ayudar con? Estamos aquí para asistirte.",
+      "usage": {
+        "input_tokens": 299,
+        "output_tokens": 37
+      },
+      "metrics": {
+        "elapsed_ms": 598.5452000000005,
+        "load_ms": 5.2627,
+        "generation_ms": 506.236,
+        "tokens_per_second": 73.08844096429333
+      }
+    },
+    {
+      "user": "q precio tiene limpieza dental",
+      "proposals": [],
+      "unverified_text": "El precio de la limpieza dental es de S/ 90. ¿Te gustaría que te lo envie por correo o te lo indiquemos en otro formato?",
+      "usage": {
+        "input_tokens": 352,
+        "output_tokens": 38
+      },
+      "metrics": {
+        "elapsed_ms": 743.4261000000006,
+        "load_ms": 8.1506,
+        "generation_ms": 524.333999,
+        "tokens_per_second": 72.47288955603278
+      }
+    },
+    {
+      "user": "Quiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "¡Claro que podemos hablar con Ana o con Luis. ¿Cuál de ellos te gustaría hablar?",
+      "usage": {
+        "input_tokens": 405,
+        "output_tokens": 23
+      },
+      "metrics": {
+        "elapsed_ms": 528.8981000000022,
+        "load_ms": 5.5497,
+        "generation_ms": 309.889,
+        "tokens_per_second": 74.22012397987666
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2535
+}

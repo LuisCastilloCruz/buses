@@ -1,3 +1,5 @@
+import {InferenceJobs} from './inference-jobs.mjs';
+import {OllamaProvider} from './ollama.mjs';
 import {transcribeMedia} from './audio.mjs';
 import {createHmac,timingSafeEqual,createCipheriv,createDecipheriv,randomBytes} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
@@ -7,8 +9,8 @@ export class Gateway {
  constructor({database,keys,channels,encryptionKey,live=false,fetcher=fetch}){
   if(!Buffer.isBuffer(encryptionKey)||encryptionKey.length!==32)throw Error('32-byte encryption key required');
   for(const value of Object.values(keys)){if(typeof value.secret!=='string'||value.secret.length<32||!Array.isArray(value.tenants)||value.tenants.some(t=>!Number.isSafeInteger(t)||t<1))throw Error('Invalid internal credentials');}
-  this.keys=keys;this.channels=channels;this.key=encryptionKey;this.live=live;this.fetcher=fetcher;
-  this.db=new DatabaseSync(database);this.db.exec('PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS nonces (client TEXT, nonce TEXT, expires INTEGER, PRIMARY KEY(client,nonce)); CREATE TABLE IF NOT EXISTS ingress (id INTEGER PRIMARY KEY, channel TEXT, hash TEXT, payload TEXT, state TEXT, owner TEXT, lease INTEGER, UNIQUE(channel,hash)); CREATE TABLE IF NOT EXISTS caps (tenant INTEGER, period TEXT, used INTEGER NOT NULL, PRIMARY KEY(tenant,period)); CREATE TABLE IF NOT EXISTS requests (scope TEXT, id TEXT, hash TEXT, state TEXT, response TEXT, attempts INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(scope,id));');
+  this.localProviders=new Map();this.keys=keys;this.channels=channels;this.key=encryptionKey;this.live=live;this.fetcher=fetcher;
+  this.db=new DatabaseSync(database);this.db.exec('PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS local_leases (slot TEXT PRIMARY KEY, owner TEXT, expires INTEGER); CREATE TABLE IF NOT EXISTS nonces (client TEXT, nonce TEXT, expires INTEGER, PRIMARY KEY(client,nonce)); CREATE TABLE IF NOT EXISTS ingress (id INTEGER PRIMARY KEY, channel TEXT, hash TEXT, payload TEXT, state TEXT, owner TEXT, lease INTEGER, UNIQUE(channel,hash)); CREATE TABLE IF NOT EXISTS caps (tenant INTEGER, period TEXT, used INTEGER NOT NULL, PRIMARY KEY(tenant,period)); CREATE TABLE IF NOT EXISTS requests (scope TEXT, id TEXT, hash TEXT, state TEXT, response TEXT, attempts INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(scope,id));');this.jobs=new InferenceJobs(this);
  }
  encrypt(value){const iv=randomBytes(12),c=createCipheriv('aes-256-gcm',this.key,iv);const data=Buffer.concat([c.update(JSON.stringify(value)),c.final()]);return Buffer.concat([iv,c.getAuthTag(),data]).toString('base64');}
  decrypt(value){const b=Buffer.from(value,'base64'),d=createDecipheriv('aes-256-gcm',this.key,b.subarray(0,12));d.setAuthTag(b.subarray(12,28));return JSON.parse(Buffer.concat([d.update(b.subarray(28)),d.final()]).toString());}
@@ -19,8 +21,14 @@ export class Gateway {
  }
  async execute(principal,request){
   const {tenant,channel,operation,id,payload}=request;
-  if(!principal.tenants.includes(tenant)||!['responses','input_tokens','whatsapp','transcription','ingress_pull','ingress_ack'].includes(operation)||!/^[A-Za-z0-9_-]{8,80}$/.test(id))throw Error('Forbidden');
+  if(!principal.tenants.includes(tenant)||!['job_enqueue','job_pull','job_start','job_complete','job_result','ollama','responses','input_tokens','whatsapp','transcription','ingress_pull','ingress_ack'].includes(operation)||!/^[A-Za-z0-9_-]{8,80}$/.test(id))throw Error('Forbidden');
   const cfg=this.channels[String(channel)];if(!cfg||cfg.tenant!==tenant)throw Error('Channel mismatch');
+  if(operation==='job_enqueue')return this.jobs.enqueue(principal,{id,tenant,channel,payload});
+  if(operation==='job_pull')return {job:this.jobs.claim(principal,tenant,channel)};
+  if(operation==='job_start'){this.jobs.start(principal,{...payload,tenant,channel});return {started:true};}
+  if(operation==='job_complete')return this.jobs.complete(principal,{...payload.job,tenant,channel},payload.result);
+  if(operation==='job_result')return this.jobs.result(principal,tenant,channel,payload.id);
+  if(operation==='ollama' && (cfg.ollamaEnabled!==true || !['qwen3:1.7b','qwen3:4b'].includes(cfg.ollamaModel)))throw Error('Local provider disabled');
   if(operation==='ingress_pull')return this.pull(channel,id);
   if(operation==='ingress_ack'){const row=this.db.prepare('SELECT * FROM ingress WHERE id=? AND channel=? AND owner=?').get(payload.id,String(channel),payload.owner);if(!row)throw Error('Lease mismatch');this.db.prepare("UPDATE ingress SET state='done',payload='' WHERE id=?").run(row.id);return {acknowledged:true};}
   const scope=`${tenant}:${channel}:${operation}`,hash=mac(this.key,JSON.stringify(payload));
@@ -30,10 +38,20 @@ export class Gateway {
    // Re-read under the write lock: another process may have claimed a retry while BEGIN waited.
    const old=this.db.prepare('SELECT * FROM requests WHERE scope=? AND id=?').get(scope,id);
    if(old){if(old.hash!==hash)throw Error('Idempotency conflict');if(old.state==='completed'){const result=this.decrypt(old.response);this.db.exec('COMMIT');return result;}if(old.state!=='retryable'||old.attempts>=3)throw Error('Reconciliation required');}
-   if(this.live){const period=new Date().toISOString().slice(0,7);if(!Number.isSafeInteger(cfg.monthlyCapUnits)||cfg.monthlyCapUnits<1||!Number.isSafeInteger(cfg.maxRequestUnits)||cfg.maxRequestUnits<1)throw Error('Sandbox spending cap missing');const used=this.db.prepare('SELECT used FROM caps WHERE tenant=? AND period=?').get(tenant,period)?.used||0;if(used+cfg.maxRequestUnits>cfg.monthlyCapUnits)throw Error('Sandbox cap exhausted');this.db.prepare('INSERT INTO caps VALUES(?,?,?) ON CONFLICT(tenant,period) DO UPDATE SET used=excluded.used').run(tenant,period,used+cfg.maxRequestUnits);}
+   if(operation==='ollama'){
+    const now=Date.now(),lease=this.db.prepare('SELECT * FROM local_leases WHERE slot=?').get('inference');
+    if(lease&&lease.expires>now)throw Error('Local inference queue busy');
+    this.db.prepare('INSERT INTO local_leases VALUES(?,?,?) ON CONFLICT(slot) DO UPDATE SET owner=excluded.owner,expires=excluded.expires').run('inference',scope+':'+id,now+120000);
+   }
+   if(this.live||operation==='ollama'){const period=new Date().toISOString().slice(0,7);if(!Number.isSafeInteger(cfg.monthlyCapUnits)||cfg.monthlyCapUnits<1||!Number.isSafeInteger(cfg.maxRequestUnits)||cfg.maxRequestUnits<1)throw Error('Sandbox spending cap missing');const used=this.db.prepare('SELECT used FROM caps WHERE tenant=? AND period=?').get(tenant,period)?.used||0;if(used+cfg.maxRequestUnits>cfg.monthlyCapUnits)throw Error('Sandbox cap exhausted');this.db.prepare('INSERT INTO caps VALUES(?,?,?) ON CONFLICT(tenant,period) DO UPDATE SET used=excluded.used').run(tenant,period,used+cfg.maxRequestUnits);}
    if(old)this.db.prepare("UPDATE requests SET state='pending',attempts=attempts+1 WHERE scope=? AND id=?").run(scope,id);else this.db.prepare('INSERT INTO requests(scope,id,hash,state,response,attempts) VALUES(?,?,?,?,NULL,1)').run(scope,id,hash,'pending');this.db.exec('COMMIT');
   }catch(e){this.db.exec('ROLLBACK');throw e;}
   try{
+   if(operation==='ollama'){
+    if(payload.model!==cfg.ollamaModel)throw Error('Local model mismatch');
+    let provider=this.localProviders.get(cfg.ollamaModel);if(!provider){provider=new OllamaProvider({model:cfg.ollamaModel,fetcher:this.fetcher});this.localProviders.set(cfg.ollamaModel,provider);}
+    const result=await provider.propose(payload);this.db.prepare('UPDATE requests SET state=?,response=? WHERE scope=? AND id=?').run('completed',this.encrypt(result),scope,id);return result;
+   }
    if(!this.live||!cfg.sandboxAuthorized)throw Error('External sandbox disabled');
    if(operation==='transcription'){const result=await transcribeMedia(cfg,payload.media_id,{fetcher:this.fetcher});this.db.prepare('UPDATE requests SET state=?,response=? WHERE scope=? AND id=?').run('completed',this.encrypt(result),scope,id);return result;}
    let url,token,body;
@@ -52,7 +70,7 @@ export class Gateway {
    if(operation==='whatsapp'&&response.status===429){this.db.prepare("UPDATE requests SET state='retryable' WHERE scope=? AND id=?").run(scope,id);const e=Error('Retryable rejection');e.retryAfter=30;throw e;}
    if(response.status!==200)throw Error('Provider failure');const result=JSON.parse(Buffer.concat(parts));
    this.db.prepare('UPDATE requests SET state=?,response=? WHERE scope=? AND id=?').run('completed',this.encrypt(result),scope,id);return result;
-  }catch(e){if(e.retryAfter)throw e;this.db.prepare('UPDATE requests SET state=? WHERE scope=? AND id=?').run('unknown',scope,id);throw Error('Provider outcome unavailable; reconcile');}
+  }catch(e){if(e.retryAfter)throw e;this.db.prepare('UPDATE requests SET state=? WHERE scope=? AND id=?').run('unknown',scope,id);throw Error('Provider outcome unavailable; reconcile');}finally{if(operation==='ollama')this.db.prepare('DELETE FROM local_leases WHERE slot=? AND owner=?').run('inference',scope+':'+id);}
  }
 
  ingest(channel,body,signature){

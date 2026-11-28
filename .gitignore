@@ -58,3 +58,4 @@ app/Http/Controllers/TestController.php
 
 # Failed local browser run evidence is private; successful captures are versioned.
 /audit/native-v5/screenshots/failure.png
+/v7-install.log

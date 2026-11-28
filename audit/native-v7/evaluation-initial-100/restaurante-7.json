@@ -1,0 +1,69 @@
+{
+  "business": "restaurante",
+  "scenario": "molesto",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 8,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Estoy molesto porque nadie me responde",
+      "proposals": [],
+      "unverified_text": "Entiendo que te sientes molesto. ¿Podrías darme más detalles sobre lo que te gustaría ayudar con?",
+      "usage": {
+        "input_tokens": 299,
+        "output_tokens": 28
+      },
+      "metrics": {
+        "elapsed_ms": 487.7983999999997,
+        "load_ms": 9.4414,
+        "generation_ms": 390.343,
+        "tokens_per_second": 71.7317846099456
+      }
+    },
+    {
+      "user": "q precio tiene menú del día",
+      "proposals": [],
+      "unverified_text": "El menú del día está disponible para un precio de S/ 22. ¿Te gustaría que te lo detalle más o necesitas alguna información adicional?",
+      "usage": {
+        "input_tokens": 343,
+        "output_tokens": 35
+      },
+      "metrics": {
+        "elapsed_ms": 666.7073999999993,
+        "load_ms": 8.7027,
+        "generation_ms": 490.486,
+        "tokens_per_second": 71.35779614504797
+      }
+    },
+    {
+      "user": "Quiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "¿Quién es la persona que te gustaría hablar con?",
+      "usage": {
+        "input_tokens": 393,
+        "output_tokens": 14
+      },
+      "metrics": {
+        "elapsed_ms": 376.6438999999955,
+        "load_ms": 11.192,
+        "generation_ms": 196.645,
+        "tokens_per_second": 71.19428411604669
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2119
+}

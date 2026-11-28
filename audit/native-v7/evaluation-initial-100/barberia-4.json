@@ -1,0 +1,69 @@
+{
+  "business": "barberia",
+  "scenario": "cancelacion",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 5,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero cancelar mi cita",
+      "proposals": [],
+      "unverified_text": "Disculpe, no podemos confirmar cancelaciones ni reprogramaciones. ¿Podría indicarnos la fecha de la cita que desea cancelar?",
+      "usage": {
+        "input_tokens": 294,
+        "output_tokens": 32
+      },
+      "metrics": {
+        "elapsed_ms": 535.0008000000016,
+        "load_ms": 6.3128,
+        "generation_ms": 437.822,
+        "tokens_per_second": 73.08906359205339
+      }
+    },
+    {
+      "user": "No tengo el identificador",
+      "proposals": [],
+      "unverified_text": "Disculpe, no tenemos información sobre la cita que desea cancelar. Podría indicarnos la fecha y el identificador de la cita?",
+      "usage": {
+        "input_tokens": 340,
+        "output_tokens": 31
+      },
+      "metrics": {
+        "elapsed_ms": 611.2963999999993,
+        "load_ms": 5.8536,
+        "generation_ms": 436.587,
+        "tokens_per_second": 71.00532081807292
+      }
+    },
+    {
+      "user": "¿Ya está cancelada?",
+      "proposals": [],
+      "unverified_text": "Disculpe, no podemos confirmar la cancelación de la cita. ¿Podría indicarnos la fecha de la cita que desea verificar?",
+      "usage": {
+        "input_tokens": 386,
+        "output_tokens": 31
+      },
+      "metrics": {
+        "elapsed_ms": 600.4887000000017,
+        "load_ms": 8.5339,
+        "generation_ms": 425.003,
+        "tokens_per_second": 72.94066159532991
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2330
+}

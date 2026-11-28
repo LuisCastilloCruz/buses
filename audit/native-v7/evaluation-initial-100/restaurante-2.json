@@ -1,0 +1,69 @@
+{
+  "business": "restaurante",
+  "scenario": "reserva",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 3,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero menú del día mañana con Ana",
+      "proposals": [],
+      "unverified_text": "¡Claro! ¿Qué tipo de menú te gustaría ver?",
+      "usage": {
+        "input_tokens": 298,
+        "output_tokens": 16
+      },
+      "metrics": {
+        "elapsed_ms": 312.21960000001127,
+        "load_ms": 6.2572,
+        "generation_ms": 214.616,
+        "tokens_per_second": 74.55175755768443
+      }
+    },
+    {
+      "user": "Mejor el viernes",
+      "proposals": [],
+      "unverified_text": "¡Genial! El menú del día del viernes te lo enviamos pronto. ¿Te gustaría que te lo envíe por correo electrónico o en un plato?",
+      "usage": {
+        "input_tokens": 329,
+        "output_tokens": 39
+      },
+      "metrics": {
+        "elapsed_ms": 699.2108000000007,
+        "load_ms": 7.0282,
+        "generation_ms": 549.704,
+        "tokens_per_second": 70.94727344170681
+      }
+    },
+    {
+      "user": "Conservo el servicio y la profesional, ¿qué solicité?",
+      "proposals": [],
+      "unverified_text": "¡Claro! La solicitud fue: \"Quiero menú del día mañana con Ana\".",
+      "usage": {
+        "input_tokens": 390,
+        "output_tokens": 20
+      },
+      "metrics": {
+        "elapsed_ms": 501.77799999999115,
+        "load_ms": 6.6494,
+        "generation_ms": 274.384,
+        "tokens_per_second": 72.89054755379323
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2125
+}

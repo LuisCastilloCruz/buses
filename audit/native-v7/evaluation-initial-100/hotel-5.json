@@ -1,0 +1,69 @@
+{
+  "business": "hotel",
+  "scenario": "desconocido",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 6,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "¿Ofrecen viajes espaciales?",
+      "proposals": [],
+      "unverified_text": "No, el hotel Mirador no ofrece viajes espaciales. Su único servicio es una habitación simple a un precio de S/ 120. ¿Desea información sobre reservas o política de cambios?",
+      "usage": {
+        "input_tokens": 305,
+        "output_tokens": 47
+      },
+      "metrics": {
+        "elapsed_ms": 746.7343000000001,
+        "load_ms": 4.7576,
+        "generation_ms": 650.001,
+        "tokens_per_second": 72.3075810652599
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta ese servicio?",
+      "proposals": [],
+      "unverified_text": "El servicio de habitación simple costará S/ 120. ¿Desea más información?",
+      "usage": {
+        "input_tokens": 370,
+        "output_tokens": 23
+      },
+      "metrics": {
+        "elapsed_ms": 532.4653000000008,
+        "load_ms": 7.6116,
+        "generation_ms": 310.643,
+        "tokens_per_second": 74.03997514832139
+      }
+    },
+    {
+      "user": "No inventes, prefiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "Entiendo. Puedo hablar con Ana, la recepcionista. ¿Qué tal?",
+      "usage": {
+        "input_tokens": 412,
+        "output_tokens": 20
+      },
+      "metrics": {
+        "elapsed_ms": 445.2503000000006,
+        "load_ms": 6.014,
+        "generation_ms": 277.472,
+        "tokens_per_second": 72.07934494291315
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2554
+}

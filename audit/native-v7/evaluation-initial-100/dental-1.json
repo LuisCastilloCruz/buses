@@ -1,0 +1,69 @@
+{
+  "business": "dental",
+  "scenario": "horario",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 2,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Buenas, ¿a qué hora abren?",
+      "proposals": [],
+      "unverified_text": "Buenas, ¿a qué hora abren?  \nEl horario de atención es lunes a viernes de 09:00 a 18:00 y sábado y domingo cerrado.",
+      "usage": {
+        "input_tokens": 300,
+        "output_tokens": 45
+      },
+      "metrics": {
+        "elapsed_ms": 713.8589000000002,
+        "load_ms": 5.415,
+        "generation_ms": 616.342,
+        "tokens_per_second": 73.01141249501089
+      }
+    },
+    {
+      "user": "¿Y el domingo?",
+      "proposals": [],
+      "unverified_text": "¿Y el domingo?  \nEl domingo y los viernes cerramos.",
+      "usage": {
+        "input_tokens": 359,
+        "output_tokens": 16
+      },
+      "metrics": {
+        "elapsed_ms": 431.7937999999999,
+        "load_ms": 4.8473,
+        "generation_ms": 215.585,
+        "tokens_per_second": 74.21666628012153
+      }
+    },
+    {
+      "user": "¿Dónde están?",
+      "proposals": [],
+      "unverified_text": "¿Dónde están?  \nEstamos en la Clínica Alba, ubicada en la Avenida Ejemplo 100, Lima.",
+      "usage": {
+        "input_tokens": 390,
+        "output_tokens": 33
+      },
+      "metrics": {
+        "elapsed_ms": 587.8983000000003,
+        "load_ms": 5.4614,
+        "generation_ms": 449.687,
+        "tokens_per_second": 73.38437624392077
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2559
+}

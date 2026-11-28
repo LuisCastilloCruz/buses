@@ -1,0 +1,69 @@
+{
+  "business": "tienda",
+  "scenario": "precio",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 1,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Hola",
+      "proposals": [],
+      "unverified_text": "Hola, ¿en qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 298,
+        "output_tokens": 10
+      },
+      "metrics": {
+        "elapsed_ms": 615.9307000000008,
+        "load_ms": 6.7938,
+        "generation_ms": 130.252,
+        "tokens_per_second": 76.77425298651843
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta mochila azul?",
+      "proposals": [],
+      "unverified_text": "El precio de la mochila azul es de S/ 65. ¿Desea hacer alguna otra consulta?",
+      "usage": {
+        "input_tokens": 329,
+        "output_tokens": 27
+      },
+      "metrics": {
+        "elapsed_ms": 515.9431999999997,
+        "load_ms": 6.8629,
+        "generation_ms": 371.367,
+        "tokens_per_second": 72.70435983811163
+      }
+    },
+    {
+      "user": "¿Y cuál era el precio?",
+      "proposals": [],
+      "unverified_text": "El precio de la mochila azul es de S/ 65. ¿Desea hacer alguna otra consulta?",
+      "usage": {
+        "input_tokens": 373,
+        "output_tokens": 27
+      },
+      "metrics": {
+        "elapsed_ms": 537.8450999999986,
+        "load_ms": 4.8241,
+        "generation_ms": 367.875,
+        "tokens_per_second": 73.39449541284404
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2556
+}

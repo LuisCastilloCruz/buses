@@ -1,0 +1,69 @@
+{
+  "business": "barberia",
+  "scenario": "precio",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 1,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Hola",
+      "proposals": [],
+      "unverified_text": "Hola, ¿en qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 289,
+        "output_tokens": 10
+      },
+      "metrics": {
+        "elapsed_ms": 605.861800000006,
+        "load_ms": 5.9547,
+        "generation_ms": 132.003999,
+        "tokens_per_second": 75.75528071691221
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta arreglo de barba?",
+      "proposals": [],
+      "unverified_text": "El precio del arreglo de barba es de S/ 25. ¿En qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 319,
+        "output_tokens": 23
+      },
+      "metrics": {
+        "elapsed_ms": 453.4795000000013,
+        "load_ms": 5.9753,
+        "generation_ms": 311.686,
+        "tokens_per_second": 73.79221395892019
+      }
+    },
+    {
+      "user": "¿Y cuál era el precio?",
+      "proposals": [],
+      "unverified_text": "El precio del arreglo de barba es de S/ 25. ¿En qué puedo ayudar?",
+      "usage": {
+        "input_tokens": 359,
+        "output_tokens": 23
+      },
+      "metrics": {
+        "elapsed_ms": 483.1195999999982,
+        "load_ms": 5.4132,
+        "generation_ms": 313.988,
+        "tokens_per_second": 73.25120705249883
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2326
+}

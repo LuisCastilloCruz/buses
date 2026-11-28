@@ -1,0 +1,69 @@
+{
+  "business": "restaurante",
+  "scenario": "cancelacion",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 5,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero cancelar mi cita",
+      "proposals": [],
+      "unverified_text": "Disculpe, no puedo confirmar cancelaciones ni reprogramaciones. Por favor, contacte con el personal del restaurante para obtener información sobre la cancelación.",
+      "usage": {
+        "input_tokens": 295,
+        "output_tokens": 35
+      },
+      "metrics": {
+        "elapsed_ms": 579.3629000000074,
+        "load_ms": 6.5907,
+        "generation_ms": 485.539,
+        "tokens_per_second": 72.08483767524339
+      }
+    },
+    {
+      "user": "No tengo el identificador",
+      "proposals": [],
+      "unverified_text": "Disculpe, no tengo información sobre identificadores o registros de reservas. Por favor, contacte con el personal del restaurante para obtener ayuda.",
+      "usage": {
+        "input_tokens": 344,
+        "output_tokens": 33
+      },
+      "metrics": {
+        "elapsed_ms": 631.8291000000027,
+        "load_ms": 8.0565,
+        "generation_ms": 455.618,
+        "tokens_per_second": 72.42909630436023
+      }
+    },
+    {
+      "user": "¿Ya está cancelada?",
+      "proposals": [],
+      "unverified_text": "Disculpe, no tengo información sobre cancelaciones ni reprogramaciones. Por favor, contacte con el personal del restaurante para obtener ayuda.",
+      "usage": {
+        "input_tokens": 392,
+        "output_tokens": 31
+      },
+      "metrics": {
+        "elapsed_ms": 610.4106000000029,
+        "load_ms": 6.6609,
+        "generation_ms": 430.756,
+        "tokens_per_second": 71.96649611380921
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2128
+}

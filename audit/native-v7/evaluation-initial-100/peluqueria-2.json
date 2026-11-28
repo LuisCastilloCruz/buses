@@ -1,0 +1,69 @@
+{
+  "business": "peluqueria",
+  "scenario": "reserva",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 3,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero corte de cabello mañana con Ana",
+      "proposals": [],
+      "unverified_text": "Entiendo. Tienes cita con Ana para un corte de cabello mañana. ¿Te gustaría que te informe sobre las opciones disponibles o necesitas alguna ayuda adicional?",
+      "usage": {
+        "input_tokens": 300,
+        "output_tokens": 38
+      },
+      "metrics": {
+        "elapsed_ms": 671.1298000000024,
+        "load_ms": 5.3854,
+        "generation_ms": 576.787,
+        "tokens_per_second": 65.8822060830081
+      }
+    },
+    {
+      "user": "Mejor el viernes",
+      "proposals": [],
+      "unverified_text": "Entiendo. Tienes cita con Ana el viernes para un corte de cabello. ¿Te gustaría que te informe sobre las opciones disponibles o necesitas alguna ayuda adicional?",
+      "usage": {
+        "input_tokens": 353,
+        "output_tokens": 40
+      },
+      "metrics": {
+        "elapsed_ms": 807.3467000000019,
+        "load_ms": 20.8525,
+        "generation_ms": 561.463,
+        "tokens_per_second": 71.24245052657076
+      }
+    },
+    {
+      "user": "Conservo el servicio y la profesional, ¿qué solicité?",
+      "proposals": [],
+      "unverified_text": "Gracias por la información. Tienes cita con Ana el viernes para un corte de cabello. ¿Te gustaría que te informe sobre las opciones disponibles o necesitas alguna ayuda adicional?",
+      "usage": {
+        "input_tokens": 415,
+        "output_tokens": 43
+      },
+      "metrics": {
+        "elapsed_ms": 824.4636000000028,
+        "load_ms": 11.6305,
+        "generation_ms": 593.543,
+        "tokens_per_second": 72.44630970291958
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2369
+}

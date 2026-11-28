@@ -1,0 +1,69 @@
+{
+  "business": "estetica",
+  "scenario": "reserva",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 3,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero limpieza facial mañana con Ana",
+      "proposals": [],
+      "unverified_text": "Entiendo. Tengo la información de que deseas una limpieza facial mañana con Ana. Estoy aquí para ayudarte. ¿Tienes alguna preferencia específica para la hora o cualquier otro servicio que desees realizar?",
+      "usage": {
+        "input_tokens": 296,
+        "output_tokens": 47
+      },
+      "metrics": {
+        "elapsed_ms": 762.6033000000025,
+        "load_ms": 7.4434,
+        "generation_ms": 664.566,
+        "tokens_per_second": 70.7228476930809
+      }
+    },
+    {
+      "user": "Mejor el viernes",
+      "proposals": [],
+      "unverified_text": "Entiendo. Tengo la información de que deseas una limpieza facial el viernes con Ana. Estoy aquí para ayudarte. ¿Tienes alguna preferencia específica para la hora o cualquier otro servicio que desees realizar?",
+      "usage": {
+        "input_tokens": 358,
+        "output_tokens": 49
+      },
+      "metrics": {
+        "elapsed_ms": 916.4210000000021,
+        "load_ms": 9.8994,
+        "generation_ms": 686.807,
+        "tokens_per_second": 71.3446426725412
+      }
+    },
+    {
+      "user": "Conservo el servicio y la profesional, ¿qué solicité?",
+      "proposals": [],
+      "unverified_text": "Entiendo. Tu solicitud es una limpieza facial el viernes con Ana. Estoy aquí para ayudarte. ¿Tienes alguna preferencia específica para la hora o cualquier otro servicio que desees realizar?",
+      "usage": {
+        "input_tokens": 429,
+        "output_tokens": 44
+      },
+      "metrics": {
+        "elapsed_ms": 863.9158999999927,
+        "load_ms": 7.3838,
+        "generation_ms": 608.002,
+        "tokens_per_second": 72.36818299939803
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2296
+}

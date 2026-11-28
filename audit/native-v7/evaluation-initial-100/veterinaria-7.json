@@ -1,0 +1,69 @@
+{
+  "business": "veterinaria",
+  "scenario": "molesto",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 8,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Estoy molesto porque nadie me responde",
+      "proposals": [],
+      "unverified_text": "Entiendo que te sientes molesto. ¿Podrías darme más detalles sobre lo que te gustaría que se hiciera? Estoy aquí para ayudarte.",
+      "usage": {
+        "input_tokens": 306,
+        "output_tokens": 36
+      },
+      "metrics": {
+        "elapsed_ms": 599.1800000000003,
+        "load_ms": 7.5172,
+        "generation_ms": 500.934,
+        "tokens_per_second": 71.86575477008948
+      }
+    },
+    {
+      "user": "q precio tiene consulta veterinaria",
+      "proposals": [],
+      "unverified_text": "El precio de la consulta veterinaria es de S/ 60. ¿Te gustaría que te lo confirmen?",
+      "usage": {
+        "input_tokens": 357,
+        "output_tokens": 26
+      },
+      "metrics": {
+        "elapsed_ms": 537.2816999999995,
+        "load_ms": 12.7408,
+        "generation_ms": 356.944,
+        "tokens_per_second": 72.8405576224842
+      }
+    },
+    {
+      "user": "Quiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "¿Quién es la persona que te gustaría hablar con? Estoy aquí para ayudarte.",
+      "usage": {
+        "input_tokens": 398,
+        "output_tokens": 21
+      },
+      "metrics": {
+        "elapsed_ms": 459.9766000000018,
+        "load_ms": 4.7663,
+        "generation_ms": 288.324,
+        "tokens_per_second": 72.83472759811877
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2479
+}

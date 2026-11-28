@@ -22,13 +22,16 @@ final class ConversationCoordinator {
    if(!$turn['human']){
     $settings=app(AgentSettings::class)->privateConfiguration();
     if(ReceptionTools::clinical($text))$reply=$tools->simulated($text,$person);
-    elseif(($settings['mode']??'simulated')!=='sandbox'){$reply=$tools->simulated($text,$person);$reply['reply']='Simulacion local: '.$reply['reply'].(isset($reply['reply_hint'])?' '.$reply['reply_hint']:'');}
+    elseif(!in_array($settings['mode']??'simulated',['sandbox','local'],true)){$reply=$tools->simulated($text,$person);$reply['reply']='Simulacion local: '.$reply['reply'].(isset($reply['reply_hint'])?' '.$reply['reply_hint']:'');}
     elseif(!empty($settings['enabled'])){
      $history=$db->table('aireception_messages')->where('conversation_id',$turn['conversation_id'])->orderByDesc('id')->limit(20)->get()->reverse();$messages=[];
      foreach($history as $m){$body=$m->is_encrypted?app('encrypter')->decrypt($m->body):$m->body;if(ReceptionTools::clinical($body))throw new \RuntimeException('Clinical conversation requires human review.');$messages[]=['role'=>$m->direction==='incoming'?'user':'assistant','content'=>$body];}
-     $response=app(BudgetedResponses::class)->propose($messages,$tools->definitions(),'turn-'.$turn['id']);
+     $catalog=['services'=>$db->table('aireception_services')->where('business_id',$business)->where('active',true)->select('id','name','duration_minutes')->limit(20)->get()->toArray(),'professionals'=>$db->table('aireception_professionals')->where('business_id',$business)->where('active',true)->select('id','name')->limit(20)->get()->toArray()];
+     array_unshift($messages,['role'=>'assistant','content'=>'Catalogo verificado: '.json_encode($catalog)]);
+     $memory=app(ConversationMemory::class)->load((int)$turn['conversation_id'],$person);array_unshift($messages,['role'=>'assistant','content'=>'Seleccion previa verificada, no reserva confirmada: '.json_encode($memory)]);
+     $response=app($settings['mode']==='local'?LocalResponses::class:BudgetedResponses::class)->propose($messages,$tools->definitions(),'conversation-turn-'.$turn['id']);
      if(count($response['proposals'])!==1)throw new \RuntimeException('Verified tool proposal required.');
-     $proposal=$response['proposals'][0];$reply=$tools->run($proposal['name'],$proposal['arguments'],$person);
+     $proposal=$response['proposals'][0];$reply=$tools->run($proposal['name'],$proposal['arguments'],$person);app(ConversationMemory::class)->record((int)$turn['conversation_id'],$person,$proposal['name'],$proposal['arguments']);
     }
    }
   }catch(\Throwable $e){$reply=['reply'=>'No puedo completar la solicitud automaticamente. La he derivado a recepcion humana; no se ha confirmado ninguna cita.','handoff'=>true];}

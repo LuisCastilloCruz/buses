@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-28T05:56:03.094Z",
+  "model": "qwen3:1.7b",
+  "result": {
+    "proposals": [],
+    "unverified_text": "El corte de cabello costo es de S/ 35. ¿Querés hacerlo?",
+    "usage": {
+      "input_tokens": 178,
+      "output_tokens": 23
+    },
+    "metrics": {
+      "elapsed_ms": 11026.541500000001,
+      "load_ms": 9886.5814,
+      "generation_ms": 302.478,
+      "tokens_per_second": 76.03858793036187
+    }
+  }
+}

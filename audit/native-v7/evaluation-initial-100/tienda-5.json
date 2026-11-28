@@ -1,0 +1,69 @@
+{
+  "business": "tienda",
+  "scenario": "desconocido",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 6,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "¿Ofrecen viajes espaciales?",
+      "proposals": [],
+      "unverified_text": "No, no ofrecemos viajes espaciales. Our servicio es único: mochila azul a S/ 65. ¿Querés ayudarme a encontrarla?",
+      "usage": {
+        "input_tokens": 307,
+        "output_tokens": 39
+      },
+      "metrics": {
+        "elapsed_ms": 631.759100000003,
+        "load_ms": 5.3982,
+        "generation_ms": 536.445,
+        "tokens_per_second": 72.70083605961469
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta ese servicio?",
+      "proposals": [],
+      "unverified_text": "El servicio de la mochila azul cuesta S/ 65. ¿Querés comprarla?",
+      "usage": {
+        "input_tokens": 364,
+        "output_tokens": 25
+      },
+      "metrics": {
+        "elapsed_ms": 565.9194000000025,
+        "load_ms": 5.6185,
+        "generation_ms": 342.635,
+        "tokens_per_second": 72.96394122024894
+      }
+    },
+    {
+      "user": "No inventes, prefiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "Entiendo. Puedo ayudarte a encontrar la mochila azul. ¿Te gustaría que busque en la sede para ti?",
+      "usage": {
+        "input_tokens": 408,
+        "output_tokens": 31
+      },
+      "metrics": {
+        "elapsed_ms": 600.4899000000005,
+        "load_ms": 5.4512,
+        "generation_ms": 432.28,
+        "tokens_per_second": 71.71277875451096
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2531
+}

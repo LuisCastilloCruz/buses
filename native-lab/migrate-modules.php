@@ -15,7 +15,7 @@ $done = 0;
 foreach ($files as $f) {
     $base = basename($f, '.php');
     // These exact duplicated Tattoo schema files belong to tenant scope, never system.
-    if ($name === 'mf_v6_system' && in_array($base, ['2026_04_12_000001_add_photo_path_to_tattoo_artists_table', '2026_04_12_000002_create_tattoo_artist_portfolios_table'], true)) {
+    if ($name === 'mf_v7_system' && in_array($base, ['2026_04_12_000001_add_photo_path_to_tattoo_artists_table', '2026_04_12_000002_create_tattoo_artist_portfolios_table'], true)) {
         continue;
     }
     if ($db->table('migrations')->where('migration', $base)->exists()) {

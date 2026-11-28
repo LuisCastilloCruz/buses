@@ -1,0 +1,69 @@
+{
+  "business": "estetica",
+  "scenario": "cancelacion",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 5,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero cancelar mi cita",
+      "proposals": [],
+      "unverified_text": "Disculpe, no puedo confirmar cancelaciones ni reprogramaciones. Puedo ayudar con otras consultas. ¿Qué necesita?",
+      "usage": {
+        "input_tokens": 293,
+        "output_tokens": 31
+      },
+      "metrics": {
+        "elapsed_ms": 530.6078999999881,
+        "load_ms": 4.2423,
+        "generation_ms": 434.147,
+        "tokens_per_second": 71.40438607199866
+      }
+    },
+    {
+      "user": "No tengo el identificador",
+      "proposals": [],
+      "unverified_text": "Disculpe, no tengo información sobre identificadores o registros de citas. Puedo ayudar con otras consultas. ¿Qué necesita?",
+      "usage": {
+        "input_tokens": 337,
+        "output_tokens": 31
+      },
+      "metrics": {
+        "elapsed_ms": 598.9960999999894,
+        "load_ms": 5.823,
+        "generation_ms": 428.517,
+        "tokens_per_second": 72.34252083347918
+      }
+    },
+    {
+      "user": "¿Ya está cancelada?",
+      "proposals": [],
+      "unverified_text": "Disculpe, no puedo confirmar cancelaciones ni reprogramaciones. Puedo ayudar con otras consultas. ¿Qué necesita?",
+      "usage": {
+        "input_tokens": 383,
+        "output_tokens": 30
+      },
+      "metrics": {
+        "elapsed_ms": 590.7157000000007,
+        "load_ms": 6.0789,
+        "generation_ms": 417.957,
+        "tokens_per_second": 71.77771876054234
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2279
+}

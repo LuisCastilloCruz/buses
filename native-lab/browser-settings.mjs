@@ -1,3 +1,4 @@
+import os from 'node:os';
 // Headless Chrome regression tests with a NEW disposable profile. No user's browser profile.
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -7,9 +8,11 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const chrome=process.env.AGENDA_TEST_CHROME||'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const port=19231;
 const clientName='Cliente ficticio UI '+Date.now();
-const artifacts=path.join(root,'audit/native-v6/screenshots');await fs.mkdir(artifacts,{recursive:true});
+const artifacts=path.join(root,'audit/native-v7/screenshots');await fs.mkdir(artifacts,{recursive:true});
 const profile=path.join(root,'.native-runtime/browser-'+Date.now());
+if(os.freemem()<2400*1024**2)throw Error('RESOURCE_BLOCKED: Chrome requires headroom');
 const proc=spawn(chrome,['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--disable-background-networking','--remote-debugging-address=127.0.0.1','--remote-debugging-port='+port,'--user-data-dir='+profile,'about:blank'],{windowsHide:true,stdio:'ignore'});
+const resourceTimer=setInterval(()=>{if(os.freemem()<2*1024**3){console.error('RESOURCE_BLOCKED: Chrome memory guard');proc.kill();process.exitCode=2;}},1000);resourceTimer.unref();
 const delay=ms=>new Promise(r=>setTimeout(r,ms));let socket;let seq=0;const pending=new Map();const errors=[];let count=0;
 async function command(method,params={}){const id=++seq;return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{pending.delete(id);reject(new Error('Timeout '+method));},15000);pending.set(id,{resolve:r=>{clearTimeout(timer);resolve(r);},reject});socket.send(JSON.stringify({id,method,params}));});}
 async function evaluate(expression){const r=await command('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw new Error(r.exceptionDetails.text+' '+(r.exceptionDetails.exception?.description||''));return r.result.value;}
@@ -31,4 +34,4 @@ try{
  const old=await evaluate("document.querySelector('#config-duration').value");check(await evaluate("document.querySelector('#config-name').readOnly && !!document.querySelector('#config-name').value"),'service name comes from existing MultiFactura item');
  await value('#config-duration',String(Number(old)+5));await click('#config-form button.primary');await wait("!document.querySelector('#config-dialog').open");await click('#service-list button');await wait("document.querySelector('#config-dialog').open");check(await evaluate("document.querySelector('#config-duration').value")==String(Number(old)+5),'duration configuration persists from native browser');await shot('15-service-policy');
  await value('#config-duration',old);await click('#config-form button.primary');await wait("!document.querySelector('#config-dialog').open");check(errors.length===0,'no settings JavaScript exceptions');console.log('RESULT '+count+' real settings Chrome assertions');
-}catch(e){console.error(String(e));console.error('JS_ERRORS '+JSON.stringify(errors));process.exitCode=1;}finally{if(socket){try{await command('Browser.close');}catch{}socket.close();}else proc.kill();}
+}catch(e){console.error(String(e));console.error('JS_ERRORS '+JSON.stringify(errors));process.exitCode=1;}finally{clearInterval(resourceTimer);if(socket){try{await command('Browser.close');}catch{}socket.close();}else proc.kill();}

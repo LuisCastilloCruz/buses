@@ -14,6 +14,9 @@ Route::middleware(['web', 'auth', 'locked.tenant'])->group(function () {
     Route::post('aireception/channels','\Modules\AiReception\Native\InboxController@saveChannel')->middleware(\Modules\AiReception\Native\ModuleMiddleware::class.':aireception,configure');
     Route::post('aireception/conversations/{id}/{action}','\Modules\AiReception\Native\ConversationController@action')->where('action','resume|assign|reply')->middleware(\Modules\AiReception\Native\ModuleMiddleware::class.':aireception,conversations');
     Route::get('aireception/overview','\Modules\AiReception\Native\AgentController@overview')->middleware(\Modules\AiReception\Native\ModuleMiddleware::class.':aireception,configure');
+    Route::get('aireception/knowledge','\Modules\AiReception\Native\KnowledgeController@index')->middleware(\Modules\AiReception\Native\ModuleMiddleware::class.':aireception,configure');
+    Route::post('aireception/knowledge','\Modules\AiReception\Native\KnowledgeController@save')->middleware(\Modules\AiReception\Native\ModuleMiddleware::class.':aireception,configure');
+    Route::post('aireception/knowledge/remove','\Modules\AiReception\Native\KnowledgeController@remove')->middleware(\Modules\AiReception\Native\ModuleMiddleware::class.':aireception,configure');
     Route::get('aireception/agent-settings','\Modules\AiReception\Native\AgentController@index')->middleware(\Modules\AiReception\Native\ModuleMiddleware::class.':aireception,configure');
     Route::post('aireception/agent-settings','\Modules\AiReception\Native\AgentController@save')->middleware(\Modules\AiReception\Native\ModuleMiddleware::class.':aireception,configure');
     foreach (['aireception'] as $module) {

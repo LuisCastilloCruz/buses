@@ -1,0 +1,69 @@
+{
+  "business": "taller",
+  "scenario": "profesional",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 4,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Quiero revisión de frenos con Ana",
+      "proposals": [],
+      "unverified_text": "Entiendo. Se realizará la revisión de frenos con Ana. ¿Qué día y hora desea realizarla?",
+      "usage": {
+        "input_tokens": 299,
+        "output_tokens": 25
+      },
+      "metrics": {
+        "elapsed_ms": 413.9393999999884,
+        "load_ms": 11.23,
+        "generation_ms": 343.884,
+        "tokens_per_second": 72.69893336124971
+      }
+    },
+    {
+      "user": "Mejor con Luis",
+      "proposals": [],
+      "unverified_text": "Perfecto. Se realizará la revisión de frenos con Luis. ¿Qué día y hora desea realizarla?",
+      "usage": {
+        "input_tokens": 338,
+        "output_tokens": 25
+      },
+      "metrics": {
+        "elapsed_ms": 516.4014000000025,
+        "load_ms": 5.2345,
+        "generation_ms": 344.906,
+        "tokens_per_second": 72.48351724817776
+      }
+    },
+    {
+      "user": "¿Qué servicio elegí?",
+      "proposals": [],
+      "unverified_text": "Elegí el servicio de revisión de frenos con Luis. ¿Qué día y hora desea realizarla?",
+      "usage": {
+        "input_tokens": 378,
+        "output_tokens": 24
+      },
+      "metrics": {
+        "elapsed_ms": 504.06870000000345,
+        "load_ms": 7.2313,
+        "generation_ms": 329.686,
+        "tokens_per_second": 72.79653973781113
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2172
+}

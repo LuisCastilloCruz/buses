@@ -1,0 +1,69 @@
+{
+  "business": "taller",
+  "scenario": "horario",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 2,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Buenas, ¿a qué hora abren?",
+      "proposals": [],
+      "unverified_text": "Buenas, ¿a qué hora abren?  \nEl taller Rueda está abierto lunes a viernes de 09:00 a 18:00 y sábado y domingo cerrado.",
+      "usage": {
+        "input_tokens": 301,
+        "output_tokens": 47
+      },
+      "metrics": {
+        "elapsed_ms": 756.7102000000014,
+        "load_ms": 7.4084,
+        "generation_ms": 659.258,
+        "tokens_per_second": 71.29227100770866
+      }
+    },
+    {
+      "user": "¿Y el domingo?",
+      "proposals": [],
+      "unverified_text": "¿Y el domingo?  \nEl taller Rueda está cerrado el domingo.",
+      "usage": {
+        "input_tokens": 362,
+        "output_tokens": 18
+      },
+      "metrics": {
+        "elapsed_ms": 468.31029999999737,
+        "load_ms": 6.3761,
+        "generation_ms": 244.854,
+        "tokens_per_second": 73.51319561861355
+      }
+    },
+    {
+      "user": "¿Dónde están?",
+      "proposals": [],
+      "unverified_text": "¿Dónde están?  \nEl taller Rueda se encuentra en la calle Avenida Ejemplo 100, Lima.",
+      "usage": {
+        "input_tokens": 395,
+        "output_tokens": 29
+      },
+      "metrics": {
+        "elapsed_ms": 544.3424999999988,
+        "load_ms": 6.1481,
+        "generation_ms": 399.863,
+        "tokens_per_second": 72.52483975761697
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2174
+}

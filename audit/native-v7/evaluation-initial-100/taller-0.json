@@ -1,0 +1,69 @@
+{
+  "business": "taller",
+  "scenario": "precio",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 1,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "Hola",
+      "proposals": [],
+      "unverified_text": "Hola, ¿qué puede hacer por usted?",
+      "usage": {
+        "input_tokens": 291,
+        "output_tokens": 10
+      },
+      "metrics": {
+        "elapsed_ms": 617.8714999999938,
+        "load_ms": 6.1418,
+        "generation_ms": 131.615,
+        "tokens_per_second": 75.97918170421303
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta revisión de frenos?",
+      "proposals": [],
+      "unverified_text": "El precio de la revisión de frenos es de S/ 80. ¿Desea que le haga la consulta?",
+      "usage": {
+        "input_tokens": 322,
+        "output_tokens": 29
+      },
+      "metrics": {
+        "elapsed_ms": 542.9678999999887,
+        "load_ms": 4.9474,
+        "generation_ms": 402.499,
+        "tokens_per_second": 72.04986844687814
+      }
+    },
+    {
+      "user": "¿Y cuál era el precio?",
+      "proposals": [],
+      "unverified_text": "El precio de la revisión de frenos es de S/ 80. ¿Desea que le haga la consulta?",
+      "usage": {
+        "input_tokens": 368,
+        "output_tokens": 29
+      },
+      "metrics": {
+        "elapsed_ms": 580.8853999999992,
+        "load_ms": 12.3078,
+        "generation_ms": 402.718,
+        "tokens_per_second": 72.01068737925794
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2194
+}

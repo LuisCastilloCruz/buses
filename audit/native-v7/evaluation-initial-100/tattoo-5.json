@@ -1,0 +1,69 @@
+{
+  "business": "tattoo",
+  "scenario": "desconocido",
+  "split": "development",
+  "model": "qwen3:1.7b",
+  "seed": 6,
+  "fictional": true,
+  "turns": [
+    {
+      "user": "¿Ofrecen viajes espaciales?",
+      "proposals": [],
+      "unverified_text": "No, no ofrecemos viajes espaciales. Our servicio es consultas de diseño, a un precio de S/ 40.",
+      "usage": {
+        "input_tokens": 297,
+        "output_tokens": 30
+      },
+      "metrics": {
+        "elapsed_ms": 513.2757999999994,
+        "load_ms": 6.3823,
+        "generation_ms": 411.479,
+        "tokens_per_second": 72.90773040665502
+      }
+    },
+    {
+      "user": "¿Cuánto cuesta ese servicio?",
+      "proposals": [],
+      "unverified_text": "El servicio de consulta de diseño cuesta S/ 40.",
+      "usage": {
+        "input_tokens": 345,
+        "output_tokens": 15
+      },
+      "metrics": {
+        "elapsed_ms": 368.97699999999895,
+        "load_ms": 6.1521,
+        "generation_ms": 198.011,
+        "tokens_per_second": 75.75336723717369
+      }
+    },
+    {
+      "user": "No inventes, prefiero hablar con una persona",
+      "proposals": [],
+      "unverified_text": "Entiendo. Puedo ayudarte con la consulta de diseño. ¿En qué puedo asistirte hoy?",
+      "usage": {
+        "input_tokens": 379,
+        "output_tokens": 25
+      },
+      "metrics": {
+        "elapsed_ms": 483.79320000000007,
+        "load_ms": 5.5223,
+        "generation_ms": 342.639,
+        "tokens_per_second": 72.96308943231797
+      }
+    }
+  ],
+  "checks": {
+    "prices_not_invented": true,
+    "no_reasoning": true,
+    "complete": true
+  },
+  "failure": null,
+  "manual_review_required": [
+    "intent",
+    "continuity",
+    "naturalness",
+    "unauthorized_confirmation",
+    "clinical_advice"
+  ],
+  "free_memory_mb": 2489
+}
