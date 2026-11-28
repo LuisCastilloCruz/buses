@@ -1,1 +1,9 @@
-V7.2 base241e4ce8; previous worktrees intact. MySQL13327 installation in progress (system+Tattoo+dental markers read; commerce pending). HTTP8882 not yet assumed ready. Baseline same60 turns51passed; correction1 58/60; correction2 60/60. Independent20 conversations frozen before inference, running foreground. Policy10 unit assertions and13 gateway checks passed. Next: finish independent set, diagnose failures without editing heldout expectations; native E2E26 checks per tenant; full conversation queue stress1/2/3; browser; backup; publish only V72. External APIs disabled. RAM guards unchanged.
+# Checkpoint V7.2
+
+Implementacion50ec2904 preservada. Producto congelado:hashes FROZEN_CODE.json; no cambios de producto tras evaluacion independiente. BaseV7.1 limpia241e4ce8.
+
+Terminados:correccion tres ciclos;60/60 conocido;78/78 largo;168/196 independiente(falla umbral);52 E2E;14 aislamiento;75HTTP;29Chrome;108 turnos concurrentes;recuperacion worker;restauracion4bases1083tablas. Ver TEST_RESULTS para alcance exacto.
+
+Recursos propios:MySQL13327,HTTP8882,puerto de restauracion13328 cerrado al terminar. Ollama compartido local11434; no reiniciar servicio global. Gateway8900 solo durante E2E, se detiene al finalizar. Datos privados bajo.native-runtime. No hay tareas prometidas en segundo plano.
+
+Pendiente:revision humana,calidad independiente95%,riesgos heredados,validaciones externas. Publicacion y respaldo final:ver GIT_STATUS/RECOVERY. Al retomar inspeccionar Git,puertos y resultados; no repetir inicializador ni migraciones. Los casos de evaluacion completos se preservan, y nuevos intentos requieren nombres distintos.

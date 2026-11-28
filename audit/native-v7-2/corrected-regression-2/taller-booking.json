@@ -1,0 +1,261 @@
+{
+  "business": "taller",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 11240.014500000005,
+        "load_ms": 9241.2973,
+        "generation_ms": 226.935,
+        "tokens_per_second": 48.47202943574151
+      },
+      "usage": {
+        "input_tokens": 658,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene revision de frenos",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "revision de frenos: S/ 80.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1137.2206000000006,
+        "load_ms": 12.0863,
+        "generation_ms": 220.785,
+        "tokens_per_second": 49.82222524175102
+      },
+      "usage": {
+        "input_tokens": 504,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero revision de frenos con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 929.3978000000061,
+        "load_ms": 14.5622,
+        "generation_ms": 281.471,
+        "tokens_per_second": 60.39698583513044
+      },
+      "usage": {
+        "input_tokens": 458,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 737.4529999999941,
+        "load_ms": 14.0201,
+        "generation_ms": 233.17,
+        "tokens_per_second": 60.04202942059442
+      },
+      "usage": {
+        "input_tokens": 496,
+        "output_tokens": 14
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1862.3371000000043,
+        "load_ms": 13.7033,
+        "generation_ms": 275.91,
+        "tokens_per_second": 57.98992425066145
+      },
+      "usage": {
+        "input_tokens": 798,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero revision de frenos con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1172.6310000000085,
+        "load_ms": 15.8196,
+        "generation_ms": 245.438,
+        "tokens_per_second": 57.040882015009906
+      },
+      "usage": {
+        "input_tokens": 595,
+        "output_tokens": 14
+      }
+    }
+  ]
+}

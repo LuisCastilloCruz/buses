@@ -1,0 +1,7 @@
+{
+  "turns": 60,
+  "passed": 60,
+  "same_scenario": "booking",
+  "model": "real qwen3:1.7b",
+  "product_commit": "50ec2904"
+}

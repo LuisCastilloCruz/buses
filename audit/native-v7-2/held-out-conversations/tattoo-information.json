@@ -1,0 +1,797 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "tattoo",
+    "Tinta Andina",
+    "consulta de diseno",
+    45,
+    "cercano"
+  ],
+  "id": "tattoo-information",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Buenas, te escribo por primera vez",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Hola, soy Recepcion de Tinta Andina. En que puedo ayudarte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 9192.057300000008,
+        "load_ms": 6625.4351,
+        "generation_ms": 229.571,
+        "tokens_per_second": 47.91545970527636
+      },
+      "timing": {
+        "total_ms": 9192.090500000006
+      }
+    },
+    {
+      "user": "Me puedes indicar que servicios ofrecen",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta de diseno: S/ 45. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 559.3441000000021,
+        "load_ms": 8.9861,
+        "generation_ms": 278.455,
+        "tokens_per_second": 57.45991273275754
+      },
+      "timing": {
+        "total_ms": 559.3788999999961
+      }
+    },
+    {
+      "user": "q presio tiene consulta de diseno",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta de diseno: S/ 45. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1408.9668999999994,
+        "load_ms": 8.0427,
+        "generation_ms": 305.264,
+        "tokens_per_second": 36.034383353425234
+      },
+      "timing": {
+        "total_ms": 1409.042100000006
+      }
+    },
+    {
+      "user": "Tienen alguna promocion disponible",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "promociones"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 2697.7697999999946,
+        "load_ms": 14.816,
+        "generation_ms": 353.153,
+        "tokens_per_second": 42.47450821598571
+      },
+      "timing": {
+        "total_ms": 2697.854600000006
+      }
+    },
+    {
+      "user": "Donde estan y en que horario atienden",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Tinta Andina atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 101.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 627.4167000000016,
+        "load_ms": 9.5656,
+        "generation_ms": 308.185,
+        "tokens_per_second": 35.69284682901504
+      },
+      "timing": {
+        "total_ms": 627.4668999999994
+      }
+    },
+    {
+      "user": "Que profesionales tienen",
+      "expected": [
+        "list_professionals"
+      ],
+      "proposal": {
+        "name": "list_professionals",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Puedes consultar por Ana o Luis.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 753.8818000000028,
+        "load_ms": 10.5192,
+        "generation_ms": 376.63,
+        "tokens_per_second": 34.51663436263707
+      },
+      "timing": {
+        "total_ms": 753.938799999989
+      }
+    },
+    {
+      "user": "Cual es su politica de cancelacion",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1404.098100000003,
+        "load_ms": 10.6474,
+        "generation_ms": 364.755,
+        "tokens_per_second": 32.89879508163013
+      },
+      "timing": {
+        "total_ms": 1404.1460999999981
+      }
+    },
+    {
+      "user": "Y como funciona el estacionamiento",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Tinta Andina atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 101.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1155.4827000000078,
+        "load_ms": 11.13,
+        "generation_ms": 246.046,
+        "tokens_per_second": 44.70708729262008
+      },
+      "timing": {
+        "total_ms": 1155.5354999999981
+      }
+    },
+    {
+      "user": "El precio incluye algo mas",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "precio incluye algo mas"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1306.7851999999984,
+        "load_ms": 7.7842,
+        "generation_ms": 291.831,
+        "tokens_per_second": 58.2528929414627
+      },
+      "timing": {
+        "total_ms": 1306.8622000000032
+      }
+    },
+    {
+      "user": "Me repites la direccion, por favor",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Tinta Andina atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 101.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1240.2733000000007,
+        "load_ms": 9.2476,
+        "generation_ms": 238.327,
+        "tokens_per_second": 46.15507265228027
+      },
+      "timing": {
+        "total_ms": 1240.3157999999967
+      }
+    },
+    {
+      "user": "Que servicios me puedes mostrar",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta de diseno: S/ 45. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1239.3092000000033,
+        "load_ms": 13.9014,
+        "generation_ms": 221.494,
+        "tokens_per_second": 49.662744814757964
+      },
+      "timing": {
+        "total_ms": 1239.3733000000066
+      }
+    },
+    {
+      "user": "Cuanto cuesta consulta de diseno",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta de diseno: S/ 45. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1054.8025000000052,
+        "load_ms": 7.891,
+        "generation_ms": 213.629,
+        "tokens_per_second": 51.49113650300286
+      },
+      "timing": {
+        "total_ms": 1054.844299999997
+      }
+    },
+    {
+      "user": "Hay descuentos esta semana",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "descuentos esta semana"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1266.617000000013,
+        "load_ms": 8.3962,
+        "generation_ms": 309.646,
+        "tokens_per_second": 54.901403538233986
+      },
+      "timing": {
+        "total_ms": 1266.6863999999914
+      }
+    },
+    {
+      "user": "Cual es el horario general",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Tinta Andina atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 101.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1229.7318999999989,
+        "load_ms": 8.7235,
+        "generation_ms": 286.959,
+        "tokens_per_second": 38.3330022755864
+      },
+      "timing": {
+        "total_ms": 1229.775099999999
+      }
+    },
+    {
+      "user": "Quiero revisar sus servicios antes de decidir",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "servicios"
+        }
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1343.5647000000026,
+        "load_ms": 13.9284,
+        "generation_ms": 338.987,
+        "tokens_per_second": 41.299518860605275
+      },
+      "timing": {
+        "total_ms": 1343.6033999999927
+      }
+    },
+    {
+      "user": "Cuales son sus requisitos administrativos",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Tinta Andina atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 101.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1273.1434000000008,
+        "load_ms": 12.6664,
+        "generation_ms": 266.185,
+        "tokens_per_second": 41.324642635760846
+      },
+      "timing": {
+        "total_ms": 1273.2016000000003
+      }
+    },
+    {
+      "user": "No encuentro el documento de politicas",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1307.8264999999956,
+        "load_ms": 11.7837,
+        "generation_ms": 241.204,
+        "tokens_per_second": 49.750418732691
+      },
+      "timing": {
+        "total_ms": 1307.8828000000067
+      }
+    },
+    {
+      "user": "Tengo un reclamo, necesito hablar con una persona",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Lamento la molestia. Te derivo a una persona del equipo para revisar tu caso.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "cancel",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "booking_id"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1562.7012000000104,
+        "load_ms": 8.9425,
+        "generation_ms": 224.612,
+        "tokens_per_second": 53.42546257546346
+      },
+      "timing": {
+        "total_ms": 1562.7428000000073
+      }
+    }
+  ]
+}

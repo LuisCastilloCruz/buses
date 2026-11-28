@@ -1,0 +1,1870 @@
+{
+  "created_before_inference": true,
+  "kind": "new independent held-out V72; expectations frozen, no tuning from results",
+  "cases": [
+    {
+      "id": "dental-information",
+      "profile": [
+        "dental",
+        "Sonrisa del Sur",
+        "limpieza dental",
+        95,
+        "cordial"
+      ],
+      "seed": 901,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene limpieza dental",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta limpieza dental",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "dental-workflow",
+      "profile": [
+        "dental",
+        "Sonrisa del Sur",
+        "limpieza dental",
+        95,
+        "cordial"
+      ],
+      "seed": 971,
+      "rows": [
+        [
+          "Quisiera limpieza dental",
+          [
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Prefiero con Ana el 2027-02-12",
+          [
+            "availability"
+          ]
+        ],
+        [
+          "Cambie de opinion, mejor con Luis",
+          [
+            "availability",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Mejor el 2027-02-15",
+          [
+            "availability"
+          ]
+        ],
+        [
+          "Puedes recapitular lo que elegi",
+          [
+            "request_summary"
+          ]
+        ],
+        [
+          "si",
+          [
+            "clarify_selection",
+            "availability"
+          ]
+        ],
+        [
+          "Elijo las 10:00",
+          [
+            "prepare_booking",
+            "availability"
+          ]
+        ],
+        [
+          "Quiero hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "tattoo-information",
+      "profile": [
+        "tattoo",
+        "Tinta Andina",
+        "consulta de diseno",
+        45,
+        "cercano"
+      ],
+      "seed": 902,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene consulta de diseno",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta consulta de diseno",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "tattoo-workflow",
+      "profile": [
+        "tattoo",
+        "Tinta Andina",
+        "consulta de diseno",
+        45,
+        "cercano"
+      ],
+      "seed": 972,
+      "rows": [
+        [
+          "Quisiera consulta de diseno",
+          [
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Prefiero con Ana el 2027-02-12",
+          [
+            "availability"
+          ]
+        ],
+        [
+          "Cambie de opinion, mejor con Luis",
+          [
+            "availability",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Mejor el 2027-02-15",
+          [
+            "availability"
+          ]
+        ],
+        [
+          "Puedes recapitular lo que elegi",
+          [
+            "request_summary"
+          ]
+        ],
+        [
+          "si",
+          [
+            "clarify_selection",
+            "availability"
+          ]
+        ],
+        [
+          "Elijo las 10:00",
+          [
+            "prepare_booking",
+            "availability"
+          ]
+        ],
+        [
+          "Quiero hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "peluqueria-information",
+      "profile": [
+        "peluqueria",
+        "Cabello Lima",
+        "corte de cabello",
+        38,
+        "formal"
+      ],
+      "seed": 903,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene corte de cabello",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta corte de cabello",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "peluqueria-workflow",
+      "profile": [
+        "peluqueria",
+        "Cabello Lima",
+        "corte de cabello",
+        38,
+        "formal"
+      ],
+      "seed": 973,
+      "rows": [
+        [
+          "Buenas tardes",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Cuanto cuesta corte de cabello",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es su direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Tienen promociones",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Que politicas tienen",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Necesito informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Quisiera reservar corte de cabello con Ana el 2027-02-12",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "barberia-information",
+      "profile": [
+        "barberia",
+        "Barba Norte",
+        "arreglo de barba",
+        28,
+        "cordial"
+      ],
+      "seed": 904,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene arreglo de barba",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta arreglo de barba",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "barberia-workflow",
+      "profile": [
+        "barberia",
+        "Barba Norte",
+        "arreglo de barba",
+        28,
+        "cordial"
+      ],
+      "seed": 974,
+      "rows": [
+        [
+          "Buenas tardes",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Cuanto cuesta arreglo de barba",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es su direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Tienen promociones",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Que politicas tienen",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Necesito informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Quisiera reservar arreglo de barba con Ana el 2027-02-12",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "estetica-information",
+      "profile": [
+        "estetica",
+        "Brisa Bella",
+        "limpieza facial",
+        75,
+        "profesional"
+      ],
+      "seed": 905,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene limpieza facial",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta limpieza facial",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "estetica-workflow",
+      "profile": [
+        "estetica",
+        "Brisa Bella",
+        "limpieza facial",
+        75,
+        "profesional"
+      ],
+      "seed": 975,
+      "rows": [
+        [
+          "Buenas tardes",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Cuanto cuesta limpieza facial",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es su direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Tienen promociones",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Que politicas tienen",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Necesito informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Quisiera reservar limpieza facial con Ana el 2027-02-12",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "taller-information",
+      "profile": [
+        "taller",
+        "Motor Seguro",
+        "revision de frenos",
+        85,
+        "formal"
+      ],
+      "seed": 906,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene revision de frenos",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta revision de frenos",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "taller-workflow",
+      "profile": [
+        "taller",
+        "Motor Seguro",
+        "revision de frenos",
+        85,
+        "formal"
+      ],
+      "seed": 976,
+      "rows": [
+        [
+          "Buenas tardes",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Cuanto cuesta revision de frenos",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es su direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Tienen promociones",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Que politicas tienen",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Necesito informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Quisiera reservar revision de frenos con Ana el 2027-02-12",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "restaurante-information",
+      "profile": [
+        "restaurante",
+        "Mesa Peru",
+        "menu del dia",
+        24,
+        "cercano"
+      ],
+      "seed": 907,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene menu del dia",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta menu del dia",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "restaurante-workflow",
+      "profile": [
+        "restaurante",
+        "Mesa Peru",
+        "menu del dia",
+        24,
+        "cercano"
+      ],
+      "seed": 977,
+      "rows": [
+        [
+          "Buenas tardes",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Cuanto cuesta menu del dia",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es su direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Tienen promociones",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Que politicas tienen",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Necesito informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Quisiera reservar menu del dia con Ana el 2027-02-12",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "hotel-information",
+      "profile": [
+        "hotel",
+        "Posada Sol",
+        "habitacion simple",
+        130,
+        "formal"
+      ],
+      "seed": 908,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene habitacion simple",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta habitacion simple",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "hotel-workflow",
+      "profile": [
+        "hotel",
+        "Posada Sol",
+        "habitacion simple",
+        130,
+        "formal"
+      ],
+      "seed": 978,
+      "rows": [
+        [
+          "Buenas tardes",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Cuanto cuesta habitacion simple",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es su direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Tienen promociones",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Que politicas tienen",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Necesito informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Quisiera reservar habitacion simple con Ana el 2027-02-12",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "tienda-information",
+      "profile": [
+        "tienda",
+        "Tienda Cielo",
+        "mochila azul",
+        68,
+        "cordial"
+      ],
+      "seed": 909,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene mochila azul",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta mochila azul",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "tienda-workflow",
+      "profile": [
+        "tienda",
+        "Tienda Cielo",
+        "mochila azul",
+        68,
+        "cordial"
+      ],
+      "seed": 979,
+      "rows": [
+        [
+          "Buenas tardes",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Cuanto cuesta mochila azul",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es su direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Tienen promociones",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Que politicas tienen",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Necesito informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Quisiera reservar mochila azul con Ana el 2027-02-12",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "veterinaria-information",
+      "profile": [
+        "veterinaria",
+        "Patitas Lima",
+        "consulta veterinaria",
+        65,
+        "profesional"
+      ],
+      "seed": 910,
+      "rows": [
+        [
+          "Buenas, te escribo por primera vez",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me puedes indicar que servicios ofrecen",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "q presio tiene consulta veterinaria",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Tienen alguna promocion disponible",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Donde estan y en que horario atienden",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales tienen",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Cual es su politica de cancelacion",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Y como funciona el estacionamiento",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "El precio incluye algo mas",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me repites la direccion, por favor",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que servicios me puedes mostrar",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuanto cuesta consulta veterinaria",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay descuentos esta semana",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es el horario general",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Quiero revisar sus servicios antes de decidir",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cuales son sus requisitos administrativos",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No encuentro el documento de politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Tengo un reclamo, necesito hablar con una persona",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "veterinaria-workflow",
+      "profile": [
+        "veterinaria",
+        "Patitas Lima",
+        "consulta veterinaria",
+        65,
+        "profesional"
+      ],
+      "seed": 980,
+      "rows": [
+        [
+          "Buenas tardes",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Cuanto cuesta consulta veterinaria",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Cual es su direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Que profesionales atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Tienen promociones",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Que politicas tienen",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Necesito informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Quisiera reservar consulta veterinaria con Ana el 2027-02-12",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,822 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "veterinaria",
+    "Patitas Lima",
+    "consulta veterinaria",
+    65,
+    "profesional"
+  ],
+  "id": "veterinaria-independent-long",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Buen dia, quisiera hacer una consulta",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Hola, soy Recepcion de Patitas Lima. En que puedo ayudarte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 5960.111700000009,
+        "load_ms": 4135.2398,
+        "generation_ms": 220.088,
+        "tokens_per_second": 72.69819344989277
+      },
+      "timing": {
+        "total_ms": 5960.137000000046
+      }
+    },
+    {
+      "user": "Me muestras el catalogo de servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta veterinaria: S/ 65. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 883.4356000000262,
+        "load_ms": 6.4587,
+        "generation_ms": 141.873,
+        "tokens_per_second": 77.53413263975527
+      },
+      "timing": {
+        "total_ms": 883.4637999999686
+      }
+    },
+    {
+      "user": "Que costo tiene consulta veterinaria",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta veterinaria: S/ 65. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 594.3340999999782,
+        "load_ms": 4.7223,
+        "generation_ms": 184.222,
+        "tokens_per_second": 59.710566598994696
+      },
+      "timing": {
+        "total_ms": 594.3567000000039
+      }
+    },
+    {
+      "user": "Hay alguna oferta de temporada",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "oferta de temporada"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 640.3176000000094,
+        "load_ms": 4.8228,
+        "generation_ms": 217.887,
+        "tokens_per_second": 73.43255907878854
+      },
+      "timing": {
+        "total_ms": 640.3411999999662
+      }
+    },
+    {
+      "user": "Podrias darme la ubicacion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Patitas Lima atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 109.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1025.219599999953,
+        "load_ms": 4.2972,
+        "generation_ms": 164.33,
+        "tokens_per_second": 66.93847745390373
+      },
+      "timing": {
+        "total_ms": 1025.244000000006
+      }
+    },
+    {
+      "user": "Necesito saber quienes atienden",
+      "expected": [
+        "list_professionals"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1139.1542999999947,
+        "load_ms": 6.8008,
+        "generation_ms": 181.358,
+        "tokens_per_second": 66.16746986623143
+      },
+      "timing": {
+        "total_ms": 1139.1843000000226
+      }
+    },
+    {
+      "user": "Donde puedo leer las politicas",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Patitas Lima atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 109.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 560.2635000000009,
+        "load_ms": 7.5126,
+        "generation_ms": 192.901,
+        "tokens_per_second": 57.02406934126832
+      },
+      "timing": {
+        "total_ms": 560.2994000000181
+      }
+    },
+    {
+      "user": "Que requisitos debo llevar",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "requisitos debo llevar"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1386.0052000000142,
+        "load_ms": 7.4705,
+        "generation_ms": 245.721,
+        "tokens_per_second": 73.2538122504792
+      },
+      "timing": {
+        "total_ms": 1386.0332000000053
+      }
+    },
+    {
+      "user": "Hay estacionamiento para visitantes",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "estacionamiento para visitantes"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1083.9077999999863,
+        "load_ms": 5.4086,
+        "generation_ms": 359.005,
+        "tokens_per_second": 72.42238966031114
+      },
+      "timing": {
+        "total_ms": 1083.9328000000096
+      }
+    },
+    {
+      "user": "A que hora abren normalmente",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Patitas Lima atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 109.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1928.7574000000022,
+        "load_ms": 6.4459,
+        "generation_ms": 193.691,
+        "tokens_per_second": 56.79148747231415
+      },
+      "timing": {
+        "total_ms": 1928.785600000003
+      }
+    },
+    {
+      "user": "Deseo informacion de sus servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta veterinaria: S/ 65. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1459.0819999999949,
+        "load_ms": 5.3502,
+        "generation_ms": 166.771,
+        "tokens_per_second": 65.95870984763538
+      },
+      "timing": {
+        "total_ms": 1459.1083999999682
+      }
+    },
+    {
+      "user": "Puedo consultar el precio de consulta veterinaria",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta veterinaria: S/ 65. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 985.7262000000337,
+        "load_ms": 7.2695,
+        "generation_ms": 166.296,
+        "tokens_per_second": 66.14711117525377
+      },
+      "timing": {
+        "total_ms": 985.7534999999916
+      }
+    },
+    {
+      "user": "Manejan descuentos para esta fecha",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta veterinaria: S/ 65. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 979.274700000009,
+        "load_ms": 4.8035,
+        "generation_ms": 166.053,
+        "tokens_per_second": 66.24391007690315
+      },
+      "timing": {
+        "total_ms": 979.3008000000264
+      }
+    },
+    {
+      "user": "Me pasas nuevamente la direccion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Patitas Lima atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 109.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 961.5914000000339,
+        "load_ms": 4.9841,
+        "generation_ms": 187.567,
+        "tokens_per_second": 58.645710599412475
+      },
+      "timing": {
+        "total_ms": 961.616399999999
+      }
+    },
+    {
+      "user": "Busco el documento con las condiciones",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "documento con las condiciones"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1357.0105999999796,
+        "load_ms": 4.9198,
+        "generation_ms": 220.599,
+        "tokens_per_second": 72.52979387939202
+      },
+      "timing": {
+        "total_ms": 1357.0383000000147
+      }
+    },
+    {
+      "user": "No he decidido, quiero ver el catalogo",
+      "expected": [
+        "list_services",
+        "clarify_selection"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "consulta veterinaria: S/ 65. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1417.3461000000243,
+        "load_ms": 5.0412,
+        "generation_ms": 167.363,
+        "tokens_per_second": 65.72539928180063
+      },
+      "timing": {
+        "total_ms": 1417.372399999993
+      }
+    },
+    {
+      "user": "Tienen un servicio de viajes a Marte",
+      "expected": [
+        "knowledge_search",
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "consulta veterinaria: S/ 65. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1066.7799000000232,
+        "load_ms": 4.2066,
+        "generation_ms": 169.372,
+        "tokens_per_second": 64.94579977800345
+      },
+      "timing": {
+        "total_ms": 1066.805400000012
+      }
+    },
+    {
+      "user": "Prefiero hablar con un asesor por un reclamo",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Lamento la molestia. Te derivo a una persona del equipo para revisar tu caso.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 994.7722000000067,
+        "load_ms": 4.8687,
+        "generation_ms": 237.424,
+        "tokens_per_second": 71.60185996360941
+      },
+      "timing": {
+        "total_ms": 994.7969000000157
+      }
+    }
+  ]
+}

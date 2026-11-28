@@ -1,0 +1,376 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "peluqueria",
+    "Cabello Lima",
+    "corte de cabello",
+    38,
+    "formal"
+  ],
+  "id": "peluqueria-workflow",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Buenas tardes",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Hola, soy Recepcion de Cabello Lima. En que puedo ayudarte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 10965.365900000004,
+        "load_ms": 8996.6957,
+        "generation_ms": 215.102,
+        "tokens_per_second": 51.13852962780449
+      },
+      "timing": {
+        "total_ms": 10965.417799999996
+      }
+    },
+    {
+      "user": "Cuanto cuesta corte de cabello",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "corte de cabello: S/ 38. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1032.6748999999836,
+        "load_ms": 12.6244,
+        "generation_ms": 236.525,
+        "tokens_per_second": 46.50671176408413
+      },
+      "timing": {
+        "total_ms": 1032.7228999999934
+      }
+    },
+    {
+      "user": "Cual es su direccion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Cabello Lima atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 102.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 967.5077999999921,
+        "load_ms": 11.6204,
+        "generation_ms": 268.947,
+        "tokens_per_second": 40.90025172245833
+      },
+      "timing": {
+        "total_ms": 967.5721999999951
+      }
+    },
+    {
+      "user": "Que profesionales atienden",
+      "expected": [
+        "list_professionals"
+      ],
+      "proposal": {
+        "name": "list_professionals",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Puedes consultar por Ana o Luis.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1642.9357000000018,
+        "load_ms": 11.5222,
+        "generation_ms": 206.379,
+        "tokens_per_second": 62.99090508239695
+      },
+      "timing": {
+        "total_ms": 1643.0037000000011
+      }
+    },
+    {
+      "user": "Tienen promociones",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "corte de cabello: S/ 38. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 858.1961999999767,
+        "load_ms": 11.8518,
+        "generation_ms": 250.067,
+        "tokens_per_second": 43.98821115940928
+      },
+      "timing": {
+        "total_ms": 858.2606000000087
+      }
+    },
+    {
+      "user": "Que politicas tienen",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "políticas"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1185.3831000000064,
+        "load_ms": 15.1291,
+        "generation_ms": 262.492,
+        "tokens_per_second": 57.14459869253158
+      },
+      "timing": {
+        "total_ms": 1185.4463000000105
+      }
+    },
+    {
+      "user": "Necesito informacion de sus servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "corte de cabello: S/ 38. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 545.2235999999975,
+        "load_ms": 10.4931,
+        "generation_ms": 196.96,
+        "tokens_per_second": 55.84890333062551
+      },
+      "timing": {
+        "total_ms": 545.2828999999911
+      }
+    },
+    {
+      "user": "Quisiera reservar corte de cabello con Ana el 2027-02-12",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2027-02-12"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1500.573299999989,
+        "load_ms": 12.0358,
+        "generation_ms": 296.581,
+        "tokens_per_second": 57.319922719257136
+      },
+      "timing": {
+        "total_ms": 1500.6412999999884
+      }
+    }
+  ]
+}

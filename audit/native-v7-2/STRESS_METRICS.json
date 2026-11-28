@@ -1,0 +1,62 @@
+{
+  "levels": [
+    {
+      "clients": 1,
+      "turns": 18,
+      "quality_passed": 18,
+      "latency_ms": {
+        "0.5": 1115.78,
+        "0.95": 6066.0,
+        "0.99": 6066.0
+      },
+      "queue_ms": {
+        "0.5": 50.81,
+        "0.95": 1017.46,
+        "0.99": 1017.46
+      },
+      "tokens_per_second_median": 66.94
+    },
+    {
+      "clients": 2,
+      "turns": 36,
+      "quality_passed": 36,
+      "latency_ms": {
+        "0.5": 2222.78,
+        "0.95": 2839.66,
+        "0.99": 2899.81
+      },
+      "queue_ms": {
+        "0.5": 176.45,
+        "0.95": 1252.94,
+        "0.99": 1434.16
+      },
+      "tokens_per_second_median": 67.06
+    },
+    {
+      "clients": 3,
+      "turns": 54,
+      "quality_passed": 54,
+      "latency_ms": {
+        "0.5": 3505.14,
+        "0.95": 4116.77,
+        "0.99": 4211.57
+      },
+      "queue_ms": {
+        "0.5": 1125.92,
+        "0.95": 2363.8,
+        "0.99": 2901.39
+      },
+      "tokens_per_second_median": 65.65
+    }
+  ],
+  "min_free_ram_mib": 2900,
+  "max_cpu_sample_percent": 33.24088169666132,
+  "max_gpu_memory_mib": 1719,
+  "recovery": {
+    "injected": true,
+    "persisted_result_reused": true,
+    "sqlite_closed_and_reopened": true,
+    "no_duplicate_inference": true
+  },
+  "scope": "One serial inference worker; complete conversations queued concurrently. No production capacity claim."
+}

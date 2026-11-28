@@ -1,0 +1,843 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "dental",
+    "Sonrisa del Sur",
+    "limpieza dental",
+    95,
+    "cordial"
+  ],
+  "id": "dental-information-clients2",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Buenas, te escribo por primera vez",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Hola, soy Recepcion de Sonrisa del Sur. En que puedo ayudarte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 217.44870000000083,
+        "load_ms": 4.7947,
+        "generation_ms": 140.996,
+        "tokens_per_second": 78.0163976283015
+      },
+      "timing": {
+        "total_ms": 845.7917000000016,
+        "queue_wait_ms": 124.24630000000252
+      }
+    },
+    {
+      "user": "Me puedes indicar que servicios ofrecen",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "limpieza dental: S/ 95. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 515.6363000000019,
+        "load_ms": 5.9558,
+        "generation_ms": 158.969,
+        "tokens_per_second": 69.19588095792261
+      },
+      "timing": {
+        "total_ms": 1272.2598999999973,
+        "queue_wait_ms": 126.09529999999722
+      }
+    },
+    {
+      "user": "q presio tiene limpieza dental",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "limpieza dental: S/ 95. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 756.0167000000001,
+        "load_ms": 4.2288,
+        "generation_ms": 207.912,
+        "tokens_per_second": 52.906999115010194
+      },
+      "timing": {
+        "total_ms": 1653.3328000000038,
+        "queue_wait_ms": 113.91909999999916
+      }
+    },
+    {
+      "user": "Tienen alguna promocion disponible",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "promociones disponibles"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 876.7078000000038,
+        "load_ms": 4.5728,
+        "generation_ms": 240.588,
+        "tokens_per_second": 66.5037325219878
+      },
+      "timing": {
+        "total_ms": 1864.5648,
+        "queue_wait_ms": 97.3946999999971
+      }
+    },
+    {
+      "user": "Donde estan y en que horario atienden",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Sonrisa del Sur atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 100.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 713.7684000000008,
+        "load_ms": 6.1246,
+        "generation_ms": 184.961,
+        "tokens_per_second": 59.47199679932527
+      },
+      "timing": {
+        "total_ms": 1774.095699999998,
+        "queue_wait_ms": 111.9580999999962
+      }
+    },
+    {
+      "user": "Que profesionales tienen",
+      "expected": [
+        "list_professionals"
+      ],
+      "proposal": {
+        "name": "list_professionals",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Puedes consultar por Ana o Luis.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 320.29649999999674,
+        "load_ms": 6.4821,
+        "generation_ms": 196.398,
+        "tokens_per_second": 66.19212008268924
+      },
+      "timing": {
+        "total_ms": 1548.6372999999949,
+        "queue_wait_ms": 118.76589999999851
+      }
+    },
+    {
+      "user": "Cual es su politica de cancelacion",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "política de cancelación"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Segun la politica aprobada de Sonrisa del Sur: las cancelaciones se solicitan con 24 horas de anticipacion. No hay promociones vigentes. Para otros requisitos no tengo una fuente verificada; puedo derivarte al equipo. [Fuente: politica-dental v1]",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1114.6153999999951,
+        "load_ms": 4.4058,
+        "generation_ms": 249.696,
+        "tokens_per_second": 68.08278867102396
+      },
+      "timing": {
+        "total_ms": 2437.7405,
+        "queue_wait_ms": 96.0512000000017
+      }
+    },
+    {
+      "user": "Y como funciona el estacionamiento",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "estacionamiento"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1056.8041000000012,
+        "load_ms": 4.8536,
+        "generation_ms": 200.075,
+        "tokens_per_second": 74.9718855429214
+      },
+      "timing": {
+        "total_ms": 2226.6118999999962,
+        "queue_wait_ms": 93.73959999999352
+      }
+    },
+    {
+      "user": "El precio incluye algo mas",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "precio incluye algo mas"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1374.9093999999968,
+        "load_ms": 4.5945,
+        "generation_ms": 230.242,
+        "tokens_per_second": 73.8353558429826
+      },
+      "timing": {
+        "total_ms": 2839.6589999999997,
+        "queue_wait_ms": 95.6794000000009
+      }
+    },
+    {
+      "user": "Me repites la direccion, por favor",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Sonrisa del Sur atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 100.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1068.0092000000004,
+        "load_ms": 5.2168,
+        "generation_ms": 203.451,
+        "tokens_per_second": 54.06707266123047
+      },
+      "timing": {
+        "total_ms": 2215.436099999999,
+        "queue_wait_ms": 95.31040000000212
+      }
+    },
+    {
+      "user": "Que servicios me puedes mostrar",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "limpieza dental: S/ 95. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1062.3196000000025,
+        "load_ms": 5.3298,
+        "generation_ms": 170.689,
+        "tokens_per_second": 64.44469180790794
+      },
+      "timing": {
+        "total_ms": 2258.448399999994,
+        "queue_wait_ms": 111.08699999999953
+      }
+    },
+    {
+      "user": "Cuanto cuesta limpieza dental",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "limpieza dental: S/ 95. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1039.2169000000067,
+        "load_ms": 5.4875,
+        "generation_ms": 163.461,
+        "tokens_per_second": 67.29433932252954
+      },
+      "timing": {
+        "total_ms": 2222.776899999997,
+        "queue_wait_ms": 98.36170000000129
+      }
+    },
+    {
+      "user": "Hay descuentos esta semana",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "limpieza dental: S/ 95. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1120.9874999999956,
+        "load_ms": 5.4719,
+        "generation_ms": 222.975,
+        "tokens_per_second": 67.27211570803901
+      },
+      "timing": {
+        "total_ms": 2378.0790999999954,
+        "queue_wait_ms": 124.5853999999963
+      }
+    },
+    {
+      "user": "Cual es el horario general",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Sonrisa del Sur atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 100.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 959.6478999999963,
+        "load_ms": 5.5117,
+        "generation_ms": 188.1,
+        "tokens_per_second": 58.4795321637427
+      },
+      "timing": {
+        "total_ms": 2063.828099999999,
+        "queue_wait_ms": 114.0106999999989
+      }
+    },
+    {
+      "user": "Quiero revisar sus servicios antes de decidir",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "limpieza dental: S/ 95. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1058.6071999999986,
+        "load_ms": 5.6865,
+        "generation_ms": 171.743,
+        "tokens_per_second": 64.0491897777493
+      },
+      "timing": {
+        "total_ms": 2235.908000000003,
+        "queue_wait_ms": 96.1195000000007
+      }
+    },
+    {
+      "user": "Cuales son sus requisitos administrativos",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "requisitos administrativos"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1116.173999999999,
+        "load_ms": 4.4599,
+        "generation_ms": 230.411,
+        "tokens_per_second": 73.78119968230683
+      },
+      "timing": {
+        "total_ms": 2430.1204,
+        "queue_wait_ms": 176.44510000000446
+      }
+    },
+    {
+      "user": "No encuentro el documento de politicas",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "documento de politicas"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Segun la politica aprobada de Sonrisa del Sur: las cancelaciones se solicitan con 24 horas de anticipacion. No hay promociones vigentes. Para otros requisitos no tengo una fuente verificada; puedo derivarte al equipo. [Fuente: politica-dental v1]",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1094.405399999996,
+        "load_ms": 11.1053,
+        "generation_ms": 213.259,
+        "tokens_per_second": 75.02614192132572
+      },
+      "timing": {
+        "total_ms": 2319.0557000000044,
+        "queue_wait_ms": 128.63440000000264
+      }
+    },
+    {
+      "user": "Tengo un reclamo, necesito hablar con una persona",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Lamento la molestia. Te derivo a una persona del equipo para revisar tu caso.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 284.8325999999943,
+        "load_ms": 7.5026,
+        "generation_ms": 181.826,
+        "tokens_per_second": 65.99716212202875
+      },
+      "timing": {
+        "total_ms": 1758.2949999999983,
+        "queue_wait_ms": 151.9475000000093
+      }
+    }
+  ]
+}

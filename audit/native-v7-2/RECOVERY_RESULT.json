@@ -1,0 +1,8 @@
+{
+  "databases": 4,
+  "tables": 1083,
+  "dump_sha256": "9d5c6dedcf0464919f77093fb5a6f2a70b56a763f3a2403036b10c9d2a83447f",
+  "all_row_counts_and_digests_match": true,
+  "source_port": 13327,
+  "restore_port": 13328
+}

@@ -1,0 +1,376 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "barberia",
+    "Barba Norte",
+    "arreglo de barba",
+    28,
+    "cordial"
+  ],
+  "id": "barberia-workflow",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Buenas tardes",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Hola, soy Recepcion de Barba Norte. En que puedo ayudarte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 11684.758900000015,
+        "load_ms": 9595.4081,
+        "generation_ms": 246.714,
+        "tokens_per_second": 44.58603889523902
+      },
+      "timing": {
+        "total_ms": 11684.80660000001
+      }
+    },
+    {
+      "user": "Cuanto cuesta arreglo de barba",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "arreglo de barba: S/ 28. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1286.9176000000152,
+        "load_ms": 12.5078,
+        "generation_ms": 317.973,
+        "tokens_per_second": 34.594132206193606
+      },
+      "timing": {
+        "total_ms": 1286.9807999999903
+      }
+    },
+    {
+      "user": "Cual es su direccion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Barba Norte atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 103.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1764.0504000000074,
+        "load_ms": 14.4261,
+        "generation_ms": 289.896,
+        "tokens_per_second": 37.94464221651903
+      },
+      "timing": {
+        "total_ms": 1764.0933000000077
+      }
+    },
+    {
+      "user": "Que profesionales atienden",
+      "expected": [
+        "list_professionals"
+      ],
+      "proposal": {
+        "name": "list_professionals",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Puedes consultar por Ana o Luis.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 607.5909999999858,
+        "load_ms": 14.8998,
+        "generation_ms": 257.265,
+        "tokens_per_second": 50.53155306784832
+      },
+      "timing": {
+        "total_ms": 607.6532000000007
+      }
+    },
+    {
+      "user": "Tienen promociones",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "promociones"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 583.8036999999895,
+        "load_ms": 13.0736,
+        "generation_ms": 339.859,
+        "tokens_per_second": 44.13595049711792
+      },
+      "timing": {
+        "total_ms": 583.8575999999885
+      }
+    },
+    {
+      "user": "Que politicas tienen",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 531.859999999986,
+        "load_ms": 16.1155,
+        "generation_ms": 246.17,
+        "tokens_per_second": 48.746800991184955
+      },
+      "timing": {
+        "total_ms": 531.9220999999961
+      }
+    },
+    {
+      "user": "Necesito informacion de sus servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1515.0419999999867,
+        "load_ms": 16.2782,
+        "generation_ms": 233.395,
+        "tokens_per_second": 51.41498318301592
+      },
+      "timing": {
+        "total_ms": 1515.1008000000147
+      }
+    },
+    {
+      "user": "Quisiera reservar arreglo de barba con Ana el 2027-02-12",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2027-02-12"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1267.7946999999986,
+        "load_ms": 12.8538,
+        "generation_ms": 238.441,
+        "tokens_per_second": 50.32691525366862
+      },
+      "timing": {
+        "total_ms": 1267.8560999999754
+      }
+    }
+  ]
+}

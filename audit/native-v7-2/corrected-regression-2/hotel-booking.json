@@ -1,0 +1,261 @@
+{
+  "business": "hotel",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1627.0573000000004,
+        "load_ms": 12.5608,
+        "generation_ms": 193.092,
+        "tokens_per_second": 56.967663082882765
+      },
+      "usage": {
+        "input_tokens": 654,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene habitacion simple",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "habitacion simple: S/ 120.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1099.0046999999904,
+        "load_ms": 13.3806,
+        "generation_ms": 217.407,
+        "tokens_per_second": 50.59634694375066
+      },
+      "usage": {
+        "input_tokens": 499,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero habitacion simple con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 961.9155000000028,
+        "load_ms": 16.6093,
+        "generation_ms": 274.635,
+        "tokens_per_second": 61.90034045187248
+      },
+      "usage": {
+        "input_tokens": 452,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 819.1514000000025,
+        "load_ms": 11.9714,
+        "generation_ms": 291.256,
+        "tokens_per_second": 58.36789628368171
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1945.4372000000003,
+        "load_ms": 14.8085,
+        "generation_ms": 271.867,
+        "tokens_per_second": 58.8523064586728
+      },
+      "usage": {
+        "input_tokens": 792,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero habitacion simple con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1139.9395999999979,
+        "load_ms": 11.8127,
+        "generation_ms": 264.076,
+        "tokens_per_second": 53.015041124524764
+      },
+      "usage": {
+        "input_tokens": 588,
+        "output_tokens": 14
+      }
+    }
+  ]
+}

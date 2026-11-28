@@ -1,0 +1,243 @@
+{
+  "business": "veterinaria",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1734.329899999997,
+        "load_ms": 15.1938,
+        "generation_ms": 229.324,
+        "tokens_per_second": 47.96706842720343
+      },
+      "usage": {
+        "input_tokens": 653,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene consulta veterinaria",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "consulta veterinaria: S/ 60.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1288.8035999999993,
+        "load_ms": 15.029,
+        "generation_ms": 271.89,
+        "tokens_per_second": 40.45753797491632
+      },
+      "usage": {
+        "input_tokens": 496,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero consulta veterinaria con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1022.7157999999908,
+        "load_ms": 15.6004,
+        "generation_ms": 276.758,
+        "tokens_per_second": 61.425505315112844
+      },
+      "usage": {
+        "input_tokens": 443,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 799.9719000000041,
+        "load_ms": 15.472,
+        "generation_ms": 275.177,
+        "tokens_per_second": 61.77841898123753
+      },
+      "usage": {
+        "input_tokens": 487,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1845.8120000000054,
+        "load_ms": 13.5084,
+        "generation_ms": 276.856,
+        "tokens_per_second": 57.79177623024244
+      },
+      "usage": {
+        "input_tokens": 790,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero consulta veterinaria con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 966.4367000000057,
+        "load_ms": 13.6351,
+        "generation_ms": 204.762,
+        "tokens_per_second": 58.60462390482609
+      },
+      "usage": {
+        "input_tokens": 579,
+        "output_tokens": 12
+      }
+    }
+  ]
+}

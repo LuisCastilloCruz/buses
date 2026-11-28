@@ -1,0 +1,822 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "tienda",
+    "Tienda Cielo",
+    "mochila azul",
+    68,
+    "cordial"
+  ],
+  "id": "tienda-independent-long",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Buen dia, quisiera hacer una consulta",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Hola, soy Recepcion de Tienda Cielo. En que puedo ayudarte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 6045.979600000021,
+        "load_ms": 4258.1084,
+        "generation_ms": 146.407,
+        "tokens_per_second": 75.13301959605757
+      },
+      "timing": {
+        "total_ms": 6046.0083999999915
+      }
+    },
+    {
+      "user": "Me muestras el catalogo de servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "mochila azul: S/ 68. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 885.0910000000149,
+        "load_ms": 9.2602,
+        "generation_ms": 139.953,
+        "tokens_per_second": 78.59781498074354
+      },
+      "timing": {
+        "total_ms": 885.1180999999633
+      }
+    },
+    {
+      "user": "Que costo tiene mochila azul",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "mochila azul: S/ 68. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 622.2112999999663,
+        "load_ms": 4.2181,
+        "generation_ms": 213.896,
+        "tokens_per_second": 51.426861652391814
+      },
+      "timing": {
+        "total_ms": 622.2357000000193
+      }
+    },
+    {
+      "user": "Hay alguna oferta de temporada",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "Oferta de temporada"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 670.9336999999941,
+        "load_ms": 8.8508,
+        "generation_ms": 238.036,
+        "tokens_per_second": 67.21672352081198
+      },
+      "timing": {
+        "total_ms": 670.9696000000113
+      }
+    },
+    {
+      "user": "Podrias darme la ubicacion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Tienda Cielo atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 108.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1152.9109999999637,
+        "load_ms": 8.12,
+        "generation_ms": 195.167,
+        "tokens_per_second": 56.361987426152986
+      },
+      "timing": {
+        "total_ms": 1152.9414999999572
+      }
+    },
+    {
+      "user": "Necesito saber quienes atienden",
+      "expected": [
+        "list_professionals"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1296.4479000000283,
+        "load_ms": 8.1922,
+        "generation_ms": 186.631,
+        "tokens_per_second": 64.29799979638967
+      },
+      "timing": {
+        "total_ms": 1296.486799999955
+      }
+    },
+    {
+      "user": "Donde puedo leer las politicas",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Tienda Cielo atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 108.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 579.8339999999735,
+        "load_ms": 5.1964,
+        "generation_ms": 214.293,
+        "tokens_per_second": 51.33158805933931
+      },
+      "timing": {
+        "total_ms": 579.8594000000157
+      }
+    },
+    {
+      "user": "Que requisitos debo llevar",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "requisitos debo llevar"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1380.8111999999965,
+        "load_ms": 9.33,
+        "generation_ms": 245.32,
+        "tokens_per_second": 73.37355291048426
+      },
+      "timing": {
+        "total_ms": 1380.849600000016
+      }
+    },
+    {
+      "user": "Hay estacionamiento para visitantes",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "estacionamiento para visitantes"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1058.2633999999962,
+        "load_ms": 4.9149,
+        "generation_ms": 245.849,
+        "tokens_per_second": 73.21567303507437
+      },
+      "timing": {
+        "total_ms": 1058.2894999999553
+      }
+    },
+    {
+      "user": "A que hora abren normalmente",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Tienda Cielo atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 108.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 2009.822199999995,
+        "load_ms": 5.7997,
+        "generation_ms": 197.285,
+        "tokens_per_second": 55.75689991636465
+      },
+      "timing": {
+        "total_ms": 2009.8465999999898
+      }
+    },
+    {
+      "user": "Deseo informacion de sus servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "mochila azul: S/ 68. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1453.907600000035,
+        "load_ms": 4.775,
+        "generation_ms": 167.374,
+        "tokens_per_second": 65.72107973759366
+      },
+      "timing": {
+        "total_ms": 1453.9356000000262
+      }
+    },
+    {
+      "user": "Puedo consultar el precio de mochila azul",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "mochila azul: S/ 68. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1009.4691999999923,
+        "load_ms": 4.4574,
+        "generation_ms": 194.517,
+        "tokens_per_second": 56.550327220757055
+      },
+      "timing": {
+        "total_ms": 1009.5162000000128
+      }
+    },
+    {
+      "user": "Manejan descuentos para esta fecha",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "mochila azul: S/ 68. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 986.9423999999999,
+        "load_ms": 7.5274,
+        "generation_ms": 167.101,
+        "tokens_per_second": 65.82845105654664
+      },
+      "timing": {
+        "total_ms": 986.9703999999911
+      }
+    },
+    {
+      "user": "Me pasas nuevamente la direccion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Tienda Cielo atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 108.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 970.8943999999901,
+        "load_ms": 5.415,
+        "generation_ms": 195.163,
+        "tokens_per_second": 56.36314260387471
+      },
+      "timing": {
+        "total_ms": 970.9194000000134
+      }
+    },
+    {
+      "user": "Busco el documento con las condiciones",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "documento con las condiciones"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1363.402699999977,
+        "load_ms": 4.8114,
+        "generation_ms": 217.142,
+        "tokens_per_second": 73.68450138618968
+      },
+      "timing": {
+        "total_ms": 1363.4283000000287
+      }
+    },
+    {
+      "user": "No he decidido, quiero ver el catalogo",
+      "expected": [
+        "list_services",
+        "clarify_selection"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "mochila azul: S/ 68. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1390.0915999999852,
+        "load_ms": 4.6797,
+        "generation_ms": 144.767,
+        "tokens_per_second": 75.98416766251977
+      },
+      "timing": {
+        "total_ms": 1390.1278000000166
+      }
+    },
+    {
+      "user": "Tienen un servicio de viajes a Marte",
+      "expected": [
+        "knowledge_search",
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "mochila azul: S/ 68. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1114.6278000000166,
+        "load_ms": 6.7493,
+        "generation_ms": 173.082,
+        "tokens_per_second": 63.55369131394367
+      },
+      "timing": {
+        "total_ms": 1114.6552000000374
+      }
+    },
+    {
+      "user": "Prefiero hablar con un asesor por un reclamo",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Lamento la molestia. Te derivo a una persona del equipo para revisar tu caso.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1000.3588000000454,
+        "load_ms": 7.2718,
+        "generation_ms": 238.168,
+        "tokens_per_second": 71.37818682610595
+      },
+      "timing": {
+        "total_ms": 1000.3896999999997
+      }
+    }
+  ]
+}

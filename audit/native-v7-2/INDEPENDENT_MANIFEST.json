@@ -1,0 +1,1384 @@
+{
+  "frozen_before_inference": true,
+  "purpose": "Fresh heldout after diagnosis; never use these results for tuning this release",
+  "cases": [
+    {
+      "id": "dental-independent-long",
+      "profile": [
+        "dental",
+        "Sonrisa del Sur",
+        "limpieza dental",
+        95,
+        "cordial"
+      ],
+      "seed": 1801,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene limpieza dental",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de limpieza dental",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "dental-independent-workflow",
+      "profile": [
+        "dental",
+        "Sonrisa del Sur",
+        "limpieza dental",
+        95,
+        "cordial"
+      ],
+      "seed": 1901,
+      "rows": [
+        [
+          "Necesito agendar limpieza dental",
+          [
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Con Luis, el 2027-03-15",
+          [
+            "availability"
+          ]
+        ],
+        [
+          "Pensandolo bien, mejor con Ana",
+          [
+            "availability",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Mejor el 2027-03-17",
+          [
+            "availability"
+          ]
+        ],
+        [
+          "Me haces un resumen de lo que pedi",
+          [
+            "request_summary"
+          ]
+        ],
+        [
+          "ok",
+          [
+            "clarify_selection",
+            "availability"
+          ]
+        ],
+        [
+          "Prefiero el horario 09:00",
+          [
+            "prepare_booking",
+            "availability"
+          ]
+        ],
+        [
+          "Necesito asistencia humana",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "tattoo-independent-long",
+      "profile": [
+        "tattoo",
+        "Tinta Andina",
+        "consulta de diseno",
+        45,
+        "cercano"
+      ],
+      "seed": 1802,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene consulta de diseno",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de consulta de diseno",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "tattoo-independent-workflow",
+      "profile": [
+        "tattoo",
+        "Tinta Andina",
+        "consulta de diseno",
+        45,
+        "cercano"
+      ],
+      "seed": 1902,
+      "rows": [
+        [
+          "Necesito agendar consulta de diseno",
+          [
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Con Luis, el 2027-03-15",
+          [
+            "availability"
+          ]
+        ],
+        [
+          "Pensandolo bien, mejor con Ana",
+          [
+            "availability",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Mejor el 2027-03-17",
+          [
+            "availability"
+          ]
+        ],
+        [
+          "Me haces un resumen de lo que pedi",
+          [
+            "request_summary"
+          ]
+        ],
+        [
+          "ok",
+          [
+            "clarify_selection",
+            "availability"
+          ]
+        ],
+        [
+          "Prefiero el horario 09:00",
+          [
+            "prepare_booking",
+            "availability"
+          ]
+        ],
+        [
+          "Necesito asistencia humana",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "peluqueria-independent-long",
+      "profile": [
+        "peluqueria",
+        "Cabello Lima",
+        "corte de cabello",
+        38,
+        "formal"
+      ],
+      "seed": 1803,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene corte de cabello",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de corte de cabello",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "barberia-independent-long",
+      "profile": [
+        "barberia",
+        "Barba Norte",
+        "arreglo de barba",
+        28,
+        "cordial"
+      ],
+      "seed": 1804,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene arreglo de barba",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de arreglo de barba",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "estetica-independent-long",
+      "profile": [
+        "estetica",
+        "Brisa Bella",
+        "limpieza facial",
+        75,
+        "profesional"
+      ],
+      "seed": 1805,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene limpieza facial",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de limpieza facial",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "taller-independent-long",
+      "profile": [
+        "taller",
+        "Motor Seguro",
+        "revision de frenos",
+        85,
+        "formal"
+      ],
+      "seed": 1806,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene revision de frenos",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de revision de frenos",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "restaurante-independent-long",
+      "profile": [
+        "restaurante",
+        "Mesa Peru",
+        "menu del dia",
+        24,
+        "cercano"
+      ],
+      "seed": 1807,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene menu del dia",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de menu del dia",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "hotel-independent-long",
+      "profile": [
+        "hotel",
+        "Posada Sol",
+        "habitacion simple",
+        130,
+        "formal"
+      ],
+      "seed": 1808,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene habitacion simple",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de habitacion simple",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "tienda-independent-long",
+      "profile": [
+        "tienda",
+        "Tienda Cielo",
+        "mochila azul",
+        68,
+        "cordial"
+      ],
+      "seed": 1809,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene mochila azul",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de mochila azul",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "veterinaria-independent-long",
+      "profile": [
+        "veterinaria",
+        "Patitas Lima",
+        "consulta veterinaria",
+        65,
+        "profesional"
+      ],
+      "seed": 1810,
+      "rows": [
+        [
+          "Buen dia, quisiera hacer una consulta",
+          [
+            "greeting"
+          ]
+        ],
+        [
+          "Me muestras el catalogo de servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Que costo tiene consulta veterinaria",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Hay alguna oferta de temporada",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Podrias darme la ubicacion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Necesito saber quienes atienden",
+          [
+            "list_professionals"
+          ]
+        ],
+        [
+          "Donde puedo leer las politicas",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Que requisitos debo llevar",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "Hay estacionamiento para visitantes",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "A que hora abren normalmente",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Deseo informacion de sus servicios",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Puedo consultar el precio de consulta veterinaria",
+          [
+            "list_services"
+          ]
+        ],
+        [
+          "Manejan descuentos para esta fecha",
+          [
+            "knowledge_search",
+            "list_services"
+          ]
+        ],
+        [
+          "Me pasas nuevamente la direccion",
+          [
+            "business_info"
+          ]
+        ],
+        [
+          "Busco el documento con las condiciones",
+          [
+            "knowledge_search"
+          ]
+        ],
+        [
+          "No he decidido, quiero ver el catalogo",
+          [
+            "list_services",
+            "clarify_selection"
+          ]
+        ],
+        [
+          "Tienen un servicio de viajes a Marte",
+          [
+            "knowledge_search",
+            "human_handoff"
+          ]
+        ],
+        [
+          "Prefiero hablar con un asesor por un reclamo",
+          [
+            "human_handoff"
+          ]
+        ]
+      ]
+    }
+  ]
+}

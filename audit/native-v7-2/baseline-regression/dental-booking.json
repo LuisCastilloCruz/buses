@@ -1,0 +1,261 @@
+{
+  "business": "dental",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 9864.7195,
+        "load_ms": 7427.4906,
+        "generation_ms": 180.719,
+        "tokens_per_second": 60.86797735711242
+      },
+      "usage": {
+        "input_tokens": 896,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene limpieza dental",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "limpieza dental: S/ 90.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1123.1978999999992,
+        "load_ms": 12.6646,
+        "generation_ms": 210.845,
+        "tokens_per_second": 52.17102610922716
+      },
+      "usage": {
+        "input_tokens": 487,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero limpieza dental con Ana el 2026-12-04",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 1,
+          "service_id": 1,
+          "day": "2026-12-04"
+        }
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Disponibilidad ficticia de evaluacion: 09:00, 10:00. No se ha reservado.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 2986.6098,
+        "load_ms": 13.5545,
+        "generation_ms": 880.831,
+        "tokens_per_second": 55.62928643519585
+      },
+      "usage": {
+        "input_tokens": 1020,
+        "output_tokens": 49
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "availability",
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 1,
+          "service_id": 1,
+          "day": "2026-12-07"
+        }
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Disponibilidad ficticia de evaluacion: 09:00, 10:00. No se ha reservado.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1506.8779999999988,
+        "load_ms": 7.7867,
+        "generation_ms": 894.691,
+        "tokens_per_second": 54.76751191193384
+      },
+      "usage": {
+        "input_tokens": 1074,
+        "output_tokens": 49
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 904.6261000000013,
+        "load_ms": 9.6007,
+        "generation_ms": 283.267,
+        "tokens_per_second": 56.483812092478125
+      },
+      "usage": {
+        "input_tokens": 1127,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero limpieza dental con Ana el 2026-12-04",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": false,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-04\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1058.3775999999998,
+        "load_ms": 15.4731,
+        "generation_ms": 233.394,
+        "tokens_per_second": 55.69980376530674
+      },
+      "usage": {
+        "input_tokens": 1177,
+        "output_tokens": 13
+      }
+    }
+  ]
+}

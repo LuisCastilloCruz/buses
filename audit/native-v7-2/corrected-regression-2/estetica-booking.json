@@ -1,0 +1,261 @@
+{
+  "business": "estetica",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1617.4065000000046,
+        "load_ms": 10.5701,
+        "generation_ms": 192.536,
+        "tokens_per_second": 57.13217268458885
+      },
+      "usage": {
+        "input_tokens": 655,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene limpieza facial",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "limpieza facial: S/ 70.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1151.3245000000024,
+        "load_ms": 17.2247,
+        "generation_ms": 212.718,
+        "tokens_per_second": 51.711655807218946
+      },
+      "usage": {
+        "input_tokens": 501,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero limpieza facial con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 989.1722999999984,
+        "load_ms": 14.785,
+        "generation_ms": 276.449,
+        "tokens_per_second": 61.49416348042496
+      },
+      "usage": {
+        "input_tokens": 455,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 749.3015000000014,
+        "load_ms": 13.3615,
+        "generation_ms": 229.828,
+        "tokens_per_second": 60.915119132568705
+      },
+      "usage": {
+        "input_tokens": 493,
+        "output_tokens": 14
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1913.578300000001,
+        "load_ms": 14.9485,
+        "generation_ms": 289.225,
+        "tokens_per_second": 55.32025239865157
+      },
+      "usage": {
+        "input_tokens": 795,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero limpieza facial con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1080.8327999999892,
+        "load_ms": 12.2225,
+        "generation_ms": 207.244,
+        "tokens_per_second": 57.902761961745576
+      },
+      "usage": {
+        "input_tokens": 592,
+        "output_tokens": 12
+      }
+    }
+  ]
+}

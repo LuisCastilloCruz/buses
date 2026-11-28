@@ -1,0 +1,243 @@
+{
+  "business": "restaurante",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1661.4603999999963,
+        "load_ms": 14.674,
+        "generation_ms": 189.787,
+        "tokens_per_second": 57.95971273058745
+      },
+      "usage": {
+        "input_tokens": 653,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene menu del dia",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "menu del dia: S/ 22.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1102.2477999999974,
+        "load_ms": 16.2948,
+        "generation_ms": 210.5,
+        "tokens_per_second": 52.25653206650831
+      },
+      "usage": {
+        "input_tokens": 496,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero menu del dia con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 951.4393000000127,
+        "load_ms": 13.8121,
+        "generation_ms": 276.921,
+        "tokens_per_second": 61.389349309008715
+      },
+      "usage": {
+        "input_tokens": 443,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 701.8006000000023,
+        "load_ms": 12.414,
+        "generation_ms": 229.715,
+        "tokens_per_second": 60.94508412598219
+      },
+      "usage": {
+        "input_tokens": 487,
+        "output_tokens": 14
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1922.5726999999897,
+        "load_ms": 18.0396,
+        "generation_ms": 284.737,
+        "tokens_per_second": 56.19220543870308
+      },
+      "usage": {
+        "input_tokens": 790,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero menu del dia con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 981.4785999999876,
+        "load_ms": 8.7559,
+        "generation_ms": 203.824,
+        "tokens_per_second": 58.874322945286124
+      },
+      "usage": {
+        "input_tokens": 579,
+        "output_tokens": 12
+      }
+    }
+  ]
+}

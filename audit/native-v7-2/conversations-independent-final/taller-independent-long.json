@@ -1,0 +1,822 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "taller",
+    "Motor Seguro",
+    "revision de frenos",
+    85,
+    "formal"
+  ],
+  "id": "taller-independent-long",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Buen dia, quisiera hacer una consulta",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Hola, soy Recepcion de Motor Seguro. En que puedo ayudarte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 5910.311200000026,
+        "load_ms": 4082.2789,
+        "generation_ms": 215.518,
+        "tokens_per_second": 74.23973867611987
+      },
+      "timing": {
+        "total_ms": 5910.336700000014
+      }
+    },
+    {
+      "user": "Me muestras el catalogo de servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "revision de frenos: S/ 85. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 871.6386000000057,
+        "load_ms": 4.7544,
+        "generation_ms": 141.448,
+        "tokens_per_second": 77.76709462134495
+      },
+      "timing": {
+        "total_ms": 871.665100000042
+      }
+    },
+    {
+      "user": "Que costo tiene revision de frenos",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "revision de frenos: S/ 85. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 616.497699999949,
+        "load_ms": 4.2226,
+        "generation_ms": 205.764,
+        "tokens_per_second": 53.4593028906903
+      },
+      "timing": {
+        "total_ms": 616.5206999999937
+      }
+    },
+    {
+      "user": "Hay alguna oferta de temporada",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "oferta de temporada"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 655.6769999999669,
+        "load_ms": 4.4338,
+        "generation_ms": 236.394,
+        "tokens_per_second": 67.68361295125933
+      },
+      "timing": {
+        "total_ms": 655.7152000000351
+      }
+    },
+    {
+      "user": "Podrias darme la ubicacion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Motor Seguro atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 105.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1028.9502999999677,
+        "load_ms": 6.8273,
+        "generation_ms": 169.194,
+        "tokens_per_second": 65.01412579642303
+      },
+      "timing": {
+        "total_ms": 1028.9807000000146
+      }
+    },
+    {
+      "user": "Necesito saber quienes atienden",
+      "expected": [
+        "list_professionals"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1137.602899999998,
+        "load_ms": 7.6042,
+        "generation_ms": 182.617,
+        "tokens_per_second": 65.71129741480804
+      },
+      "timing": {
+        "total_ms": 1137.6392000000342
+      }
+    },
+    {
+      "user": "Donde puedo leer las politicas",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Motor Seguro atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 105.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 560.2880000000005,
+        "load_ms": 7.077,
+        "generation_ms": 191.018,
+        "tokens_per_second": 57.58619606529228
+      },
+      "timing": {
+        "total_ms": 560.3153000000166
+      }
+    },
+    {
+      "user": "Que requisitos debo llevar",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "requisitos debo llevar"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1392.8117999999668,
+        "load_ms": 4.7955,
+        "generation_ms": 248.595,
+        "tokens_per_second": 72.4069269293429
+      },
+      "timing": {
+        "total_ms": 1392.8368999999948
+      }
+    },
+    {
+      "user": "Hay estacionamiento para visitantes",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "Hay estacionamiento para visitantes"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 986.4251999999979,
+        "load_ms": 4.7492,
+        "generation_ms": 261.86,
+        "tokens_per_second": 72.55785534254946
+      },
+      "timing": {
+        "total_ms": 986.4496999999974
+      }
+    },
+    {
+      "user": "A que hora abren normalmente",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Motor Seguro atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 105.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1920.6457999999984,
+        "load_ms": 4.839,
+        "generation_ms": 201.848,
+        "tokens_per_second": 54.49645277634656
+      },
+      "timing": {
+        "total_ms": 1920.6711999999825
+      }
+    },
+    {
+      "user": "Deseo informacion de sus servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "revision de frenos: S/ 85. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1447.1298000000534,
+        "load_ms": 6.5645,
+        "generation_ms": 163.676,
+        "tokens_per_second": 67.20594344925341
+      },
+      "timing": {
+        "total_ms": 1447.162399999972
+      }
+    },
+    {
+      "user": "Puedo consultar el precio de revision de frenos",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "revision de frenos: S/ 85. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1003.7678000000305,
+        "load_ms": 4.5626,
+        "generation_ms": 194.658,
+        "tokens_per_second": 56.5093651429687
+      },
+      "timing": {
+        "total_ms": 1003.7938999999897
+      }
+    },
+    {
+      "user": "Manejan descuentos para esta fecha",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "revision de frenos: S/ 85. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 976.2256000000052,
+        "load_ms": 5.4139,
+        "generation_ms": 166.245,
+        "tokens_per_second": 66.16740353093326
+      },
+      "timing": {
+        "total_ms": 976.2501999999513
+      }
+    },
+    {
+      "user": "Me pasas nuevamente la direccion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Motor Seguro atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 105.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 931.6220999999787,
+        "load_ms": 4.2335,
+        "generation_ms": 167.425,
+        "tokens_per_second": 65.7010601761983
+      },
+      "timing": {
+        "total_ms": 931.648199999996
+      }
+    },
+    {
+      "user": "Busco el documento con las condiciones",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "documento con las condiciones"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1344.1925000000047,
+        "load_ms": 4.7197,
+        "generation_ms": 217.061,
+        "tokens_per_second": 73.71199800977605
+      },
+      "timing": {
+        "total_ms": 1344.219299999997
+      }
+    },
+    {
+      "user": "No he decidido, quiero ver el catalogo",
+      "expected": [
+        "list_services",
+        "clarify_selection"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "revision de frenos: S/ 85. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1398.391100000008,
+        "load_ms": 6.6699,
+        "generation_ms": 149,
+        "tokens_per_second": 73.8255033557047
+      },
+      "timing": {
+        "total_ms": 1398.4290000000037
+      }
+    },
+    {
+      "user": "Tienen un servicio de viajes a Marte",
+      "expected": [
+        "knowledge_search",
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "revision de frenos: S/ 85. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1097.9932000000263,
+        "load_ms": 5.5041,
+        "generation_ms": 167.533,
+        "tokens_per_second": 65.65870604597303
+      },
+      "timing": {
+        "total_ms": 1098.0181999999913
+      }
+    },
+    {
+      "user": "Prefiero hablar con un asesor por un reclamo",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Lamento la molestia. Te derivo a una persona del equipo para revisar tu caso.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 984.8397000000114,
+        "load_ms": 5.9634,
+        "generation_ms": 235.568,
+        "tokens_per_second": 72.16599877742308
+      },
+      "timing": {
+        "total_ms": 984.865599999961
+      }
+    }
+  ]
+}

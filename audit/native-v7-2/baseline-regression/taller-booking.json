@@ -1,0 +1,243 @@
+{
+  "business": "taller",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 7898.973099999996,
+        "load_ms": 5812.9992,
+        "generation_ms": 279.672,
+        "tokens_per_second": 57.20987442432564
+      },
+      "usage": {
+        "input_tokens": 694,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Que precio tiene revision de frenos",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "revision de frenos: S/ 80.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1144.6581000000006,
+        "load_ms": 6.7948,
+        "generation_ms": 224.528,
+        "tokens_per_second": 48.99166250979833
+      },
+      "usage": {
+        "input_tokens": 498,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero revision de frenos con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1584.0006999999969,
+        "load_ms": 7.3267,
+        "generation_ms": 284.72,
+        "tokens_per_second": 59.70778308513628
+      },
+      "usage": {
+        "input_tokens": 718,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 739.2458999999944,
+        "load_ms": 7.2199,
+        "generation_ms": 242.202,
+        "tokens_per_second": 57.80299089190015
+      },
+      "usage": {
+        "input_tokens": 762,
+        "output_tokens": 14
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 473.0039000000106,
+        "load_ms": 8.3584,
+        "generation_ms": 281.994,
+        "tokens_per_second": 56.73879586090484
+      },
+      "usage": {
+        "input_tokens": 794,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero revision de frenos con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": false,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-04\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1029.3895000000048,
+        "load_ms": 7.2169,
+        "generation_ms": 285.357,
+        "tokens_per_second": 45.55696898972164
+      },
+      "usage": {
+        "input_tokens": 855,
+        "output_tokens": 13
+      }
+    }
+  ]
+}

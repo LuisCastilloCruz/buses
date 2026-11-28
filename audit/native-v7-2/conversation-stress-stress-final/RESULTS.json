@@ -1,0 +1,418 @@
+{
+  "kind": "complete conversations through persistent local worker",
+  "started": "2026-11-28T09:23:33.199Z",
+  "manifest_sha256": "e7d984824942dc735f588757a139970731e635b9953caae585b7628211bf0b2f",
+  "levels": [
+    {
+      "clients": 1,
+      "conversations": 1,
+      "turns": 18,
+      "elapsed_ms": 28639.8625,
+      "model_calls": 18,
+      "acknowledgements": 18
+    },
+    {
+      "clients": 2,
+      "conversations": 2,
+      "turns": 36,
+      "elapsed_ms": 40940.702000000005,
+      "model_calls": 54,
+      "acknowledgements": 54
+    },
+    {
+      "clients": 3,
+      "conversations": 3,
+      "turns": 54,
+      "elapsed_ms": 63382.32770000001,
+      "model_calls": 108,
+      "acknowledgements": 108
+    }
+  ],
+  "samples": [
+    {
+      "cpu_percent": 11.716057891109577,
+      "at": "2026-11-28T09:23:33.323Z",
+      "free_mib": 4826,
+      "queue_depth": 1,
+      "gpu": "0, 0"
+    },
+    {
+      "cpu_percent": 23.060604855282875,
+      "at": "2026-11-28T09:23:39.545Z",
+      "free_mib": 4200,
+      "queue_depth": 1,
+      "gpu": "1717, 100"
+    },
+    {
+      "cpu_percent": 19.69818473427134,
+      "at": "2026-11-28T09:23:40.680Z",
+      "free_mib": 4114,
+      "queue_depth": 1,
+      "gpu": "1717, 72"
+    },
+    {
+      "cpu_percent": 18.59256297481008,
+      "at": "2026-11-28T09:23:41.508Z",
+      "free_mib": 4119,
+      "queue_depth": 1,
+      "gpu": "1719, 65"
+    },
+    {
+      "cpu_percent": 17.240706410381502,
+      "at": "2026-11-28T09:23:42.362Z",
+      "free_mib": 4115,
+      "queue_depth": 1,
+      "gpu": "1719, 66"
+    },
+    {
+      "cpu_percent": 21.924804627407546,
+      "at": "2026-11-28T09:23:43.709Z",
+      "free_mib": 4052,
+      "queue_depth": 1,
+      "gpu": "1719, 78"
+    },
+    {
+      "cpu_percent": 21.703101570515347,
+      "at": "2026-11-28T09:23:45.811Z",
+      "free_mib": 3999,
+      "queue_depth": 1,
+      "gpu": "1719, 100"
+    },
+    {
+      "cpu_percent": 18.90659398259775,
+      "at": "2026-11-28T09:23:47.395Z",
+      "free_mib": 3963,
+      "queue_depth": 1,
+      "gpu": "1719, 94"
+    },
+    {
+      "cpu_percent": 13.399605092939337,
+      "at": "2026-11-28T09:23:48.604Z",
+      "free_mib": 3964,
+      "queue_depth": 1,
+      "gpu": "1719, 76"
+    },
+    {
+      "cpu_percent": 13.154732098147226,
+      "at": "2026-11-28T09:23:50.271Z",
+      "free_mib": 3921,
+      "queue_depth": 1,
+      "gpu": "1719, 81"
+    },
+    {
+      "cpu_percent": 14.859228362877996,
+      "at": "2026-11-28T09:23:51.548Z",
+      "free_mib": 3897,
+      "queue_depth": 1,
+      "gpu": "1719, 85"
+    },
+    {
+      "cpu_percent": 14.241032807612964,
+      "at": "2026-11-28T09:23:52.801Z",
+      "free_mib": 3900,
+      "queue_depth": 1,
+      "gpu": "1719, 71"
+    },
+    {
+      "cpu_percent": 12.12459840759883,
+      "at": "2026-11-28T09:23:53.989Z",
+      "free_mib": 3905,
+      "queue_depth": 1,
+      "gpu": "1719, 73"
+    },
+    {
+      "cpu_percent": 12.787958115183251,
+      "at": "2026-11-28T09:23:55.257Z",
+      "free_mib": 3903,
+      "queue_depth": 1,
+      "gpu": "1719, 74"
+    },
+    {
+      "cpu_percent": 16.182425232649,
+      "at": "2026-11-28T09:23:56.424Z",
+      "free_mib": 3907,
+      "queue_depth": 1,
+      "gpu": "1719, 84"
+    },
+    {
+      "cpu_percent": 13.354901326431579,
+      "at": "2026-11-28T09:23:57.704Z",
+      "free_mib": 3911,
+      "queue_depth": 1,
+      "gpu": "1719, 78"
+    },
+    {
+      "cpu_percent": 13.71386212008896,
+      "at": "2026-11-28T09:23:59.051Z",
+      "free_mib": 3908,
+      "queue_depth": 1,
+      "gpu": "1719, 65"
+    },
+    {
+      "cpu_percent": 13.59947212141207,
+      "at": "2026-11-28T09:24:00.303Z",
+      "free_mib": 3831,
+      "queue_depth": 1,
+      "gpu": "1719, 81"
+    },
+    {
+      "cpu_percent": 17.668280641792467,
+      "at": "2026-11-28T09:24:02.045Z",
+      "free_mib": 3775,
+      "queue_depth": 2,
+      "gpu": "1719, 92"
+    },
+    {
+      "cpu_percent": 26.16661681124738,
+      "at": "2026-11-28T09:24:03.157Z",
+      "free_mib": 3740,
+      "queue_depth": 2,
+      "gpu": "1719, 59"
+    },
+    {
+      "cpu_percent": 16.39813032719274,
+      "at": "2026-11-28T09:24:04.665Z",
+      "free_mib": 3736,
+      "queue_depth": 2,
+      "gpu": "1719, 89"
+    },
+    {
+      "cpu_percent": 18.690889895746277,
+      "at": "2026-11-28T09:24:06.544Z",
+      "free_mib": 3737,
+      "queue_depth": 2,
+      "gpu": "1719, 73"
+    },
+    {
+      "cpu_percent": 16.14285157923433,
+      "at": "2026-11-28T09:24:08.678Z",
+      "free_mib": 3750,
+      "queue_depth": 2,
+      "gpu": "1719, 91"
+    },
+    {
+      "cpu_percent": 18.653291637899528,
+      "at": "2026-11-28T09:24:10.710Z",
+      "free_mib": 3698,
+      "queue_depth": 2,
+      "gpu": "1719, 86"
+    },
+    {
+      "cpu_percent": 19.515016891110182,
+      "at": "2026-11-28T09:24:12.498Z",
+      "free_mib": 3719,
+      "queue_depth": 2,
+      "gpu": "1719, 75"
+    },
+    {
+      "cpu_percent": 24.032308170239205,
+      "at": "2026-11-28T09:24:15.174Z",
+      "free_mib": 3640,
+      "queue_depth": 2,
+      "gpu": "1719, 90"
+    },
+    {
+      "cpu_percent": 12.773833159471016,
+      "at": "2026-11-28T09:24:17.644Z",
+      "free_mib": 3633,
+      "queue_depth": 2,
+      "gpu": "1719, 92"
+    },
+    {
+      "cpu_percent": 17.41419133050438,
+      "at": "2026-11-28T09:24:20.730Z",
+      "free_mib": 3520,
+      "queue_depth": 2,
+      "gpu": "1719, 96"
+    },
+    {
+      "cpu_percent": 17.689447533809354,
+      "at": "2026-11-28T09:24:23.246Z",
+      "free_mib": 3497,
+      "queue_depth": 2,
+      "gpu": "1719, 85"
+    },
+    {
+      "cpu_percent": 14.41167629671688,
+      "at": "2026-11-28T09:24:25.738Z",
+      "free_mib": 3497,
+      "queue_depth": 2,
+      "gpu": "1719, 93"
+    },
+    {
+      "cpu_percent": 15.703851261620184,
+      "at": "2026-11-28T09:24:28.237Z",
+      "free_mib": 3502,
+      "queue_depth": 2,
+      "gpu": "1719, 88"
+    },
+    {
+      "cpu_percent": 14.530048642711435,
+      "at": "2026-11-28T09:24:30.869Z",
+      "free_mib": 3487,
+      "queue_depth": 2,
+      "gpu": "1719, 94"
+    },
+    {
+      "cpu_percent": 18.690843155031732,
+      "at": "2026-11-28T09:24:33.158Z",
+      "free_mib": 3497,
+      "queue_depth": 2,
+      "gpu": "1719, 87"
+    },
+    {
+      "cpu_percent": 16.827974809413327,
+      "at": "2026-11-28T09:24:35.657Z",
+      "free_mib": 3515,
+      "queue_depth": 2,
+      "gpu": "1719, 81"
+    },
+    {
+      "cpu_percent": 15.683987600135051,
+      "at": "2026-11-28T09:24:38.361Z",
+      "free_mib": 3526,
+      "queue_depth": 2,
+      "gpu": "1719, 92"
+    },
+    {
+      "cpu_percent": 14.941593726613089,
+      "at": "2026-11-28T09:24:40.908Z",
+      "free_mib": 3523,
+      "queue_depth": 2,
+      "gpu": "1719, 92"
+    },
+    {
+      "cpu_percent": 21.394013295047788,
+      "at": "2026-11-28T09:24:43.007Z",
+      "free_mib": 3463,
+      "queue_depth": 3,
+      "gpu": "1719, 97"
+    },
+    {
+      "cpu_percent": 31.676856546376374,
+      "at": "2026-11-28T09:24:45.215Z",
+      "free_mib": 3466,
+      "queue_depth": 3,
+      "gpu": "1719, 93"
+    },
+    {
+      "cpu_percent": 24.92171471763308,
+      "at": "2026-11-28T09:24:47.495Z",
+      "free_mib": 3471,
+      "queue_depth": 3,
+      "gpu": "1719, 86"
+    },
+    {
+      "cpu_percent": 22.915378044829314,
+      "at": "2026-11-28T09:24:50.310Z",
+      "free_mib": 3474,
+      "queue_depth": 3,
+      "gpu": "1719, 86"
+    },
+    {
+      "cpu_percent": 15.413751380924822,
+      "at": "2026-11-28T09:24:53.463Z",
+      "free_mib": 3462,
+      "queue_depth": 3,
+      "gpu": "1719, 92"
+    },
+    {
+      "cpu_percent": 14.618103847936947,
+      "at": "2026-11-28T09:24:56.334Z",
+      "free_mib": 3421,
+      "queue_depth": 3,
+      "gpu": "1719, 89"
+    },
+    {
+      "cpu_percent": 19.07211453830657,
+      "at": "2026-11-28T09:25:00.565Z",
+      "free_mib": 3398,
+      "queue_depth": 3,
+      "gpu": "1719, 94"
+    },
+    {
+      "cpu_percent": 15.496730647542712,
+      "at": "2026-11-28T09:25:04.496Z",
+      "free_mib": 3302,
+      "queue_depth": 3,
+      "gpu": "1719, 94"
+    },
+    {
+      "cpu_percent": 16.873416033079902,
+      "at": "2026-11-28T09:25:08.239Z",
+      "free_mib": 3260,
+      "queue_depth": 3,
+      "gpu": "1719, 92"
+    },
+    {
+      "cpu_percent": 16.009293680297397,
+      "at": "2026-11-28T09:25:12.688Z",
+      "free_mib": 3174,
+      "queue_depth": 3,
+      "gpu": "1719, 53"
+    },
+    {
+      "cpu_percent": 30.095277547638776,
+      "at": "2026-11-28T09:25:16.673Z",
+      "free_mib": 3129,
+      "queue_depth": 3,
+      "gpu": "1719, 27"
+    },
+    {
+      "cpu_percent": 33.24088169666132,
+      "at": "2026-11-28T09:25:20.638Z",
+      "free_mib": 3102,
+      "queue_depth": 3,
+      "gpu": "1719, 86"
+    },
+    {
+      "cpu_percent": 24.355054050562043,
+      "at": "2026-11-28T09:25:24.482Z",
+      "free_mib": 3146,
+      "queue_depth": 3,
+      "gpu": "1719, 88"
+    },
+    {
+      "cpu_percent": 26.06000700150326,
+      "at": "2026-11-28T09:25:28.499Z",
+      "free_mib": 3079,
+      "queue_depth": 3,
+      "gpu": "1719, 86"
+    },
+    {
+      "cpu_percent": 28.61474624960102,
+      "at": "2026-11-28T09:25:32.129Z",
+      "free_mib": 2900,
+      "queue_depth": 3,
+      "gpu": "1719, 70"
+    },
+    {
+      "cpu_percent": 20.042767026622478,
+      "at": "2026-11-28T09:25:36.009Z",
+      "free_mib": 2964,
+      "queue_depth": 3,
+      "gpu": "1719, 66"
+    },
+    {
+      "cpu_percent": 20.370486787787346,
+      "at": "2026-11-28T09:25:39.964Z",
+      "free_mib": 2970,
+      "queue_depth": 3,
+      "gpu": "1719, 63"
+    },
+    {
+      "cpu_percent": 25.578319828708175,
+      "at": "2026-11-28T09:25:43.903Z",
+      "free_mib": 2947,
+      "queue_depth": 3,
+      "gpu": "1719, 51"
+    }
+  ],
+  "limits": "No external API. Clinical or financial facts never generated. Human language ratings pending.",
+  "recovery": {
+    "injected": true,
+    "persisted_result_reused": true,
+    "sqlite_closed_and_reopened": true,
+    "no_duplicate_inference": true
+  }
+}

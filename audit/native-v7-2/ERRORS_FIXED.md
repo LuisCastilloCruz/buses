@@ -7,6 +7,6 @@
 5. Presentacion de derivacion empatica preserva avisos clinicos y hechos/confirmaciones del backend. Pruebas de regresion13 aprobadas.
 6. Runner nuevo tuvo dos errores de sintaxis antes de inferencia; corregidos y node --check aprobado. Un healthcheck Ollama agoto2segundos; ejecucion parcial conservada, reintento independiente, sin repetir operaciones externas ni afirmar suite aprobada.
 
-Tercer ciclo para los casos largos afectados:78/78 (seis conversaciones). El conjunto inicial parcial dejo de ser reservado al usarse para diagnostico. INDEPENDENT_MANIFEST.json contiene12 conversaciones/196turnos nuevos congelados despues; no se usan para afinar esta version. Resultados pendientes de consolidar.
+Tercer ciclo para los casos largos afectados:78/78 (seis conversaciones). El conjunto inicial parcial dejo de ser reservado al usarse para diagnostico. INDEPENDENT_MANIFEST.json contiene12 conversaciones/196turnos nuevos congelados despues; no se usan para afinar esta version. Resultado independiente:168/196 (85.71%); no aprobado. Las28 desviaciones quedan documentadas, sin adaptar expectativas ni una cuarta iteracion sobre los mismos fallos.
 
 Las reglas no contienen los nombres de los diez negocios ni precios/frases completas de tests. Seleccionan capacidades a partir de intencion informativa, campos verificados y estado. La clasificacion deterministica sigue siendo limitada; casos no comprendidos no autorizan escrituras.

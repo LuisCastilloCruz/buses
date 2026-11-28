@@ -1,0 +1,824 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "restaurante",
+    "Mesa Peru",
+    "menu del dia",
+    24,
+    "cercano"
+  ],
+  "id": "restaurante-independent-long",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Buen dia, quisiera hacer una consulta",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Hola, soy Recepcion de Mesa Peru. En que puedo ayudarte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 6069.145699999994,
+        "load_ms": 4228.0437,
+        "generation_ms": 215.115,
+        "tokens_per_second": 74.37882063082537
+      },
+      "timing": {
+        "total_ms": 6069.170200000051
+      }
+    },
+    {
+      "user": "Me muestras el catalogo de servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "menu del dia: S/ 24. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 888.8081000000238,
+        "load_ms": 4.2339,
+        "generation_ms": 157.889,
+        "tokens_per_second": 69.66919798085998
+      },
+      "timing": {
+        "total_ms": 888.8306999999913
+      }
+    },
+    {
+      "user": "Que costo tiene menu del dia",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "menu del dia: S/ 24. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 618.0836000000127,
+        "load_ms": 4.184,
+        "generation_ms": 208.813,
+        "tokens_per_second": 52.67871253226571
+      },
+      "timing": {
+        "total_ms": 618.1059000000241
+      }
+    },
+    {
+      "user": "Hay alguna oferta de temporada",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "oferta de temporada"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 642.1763999999966,
+        "load_ms": 7.7151,
+        "generation_ms": 216.439,
+        "tokens_per_second": 73.92383073290858
+      },
+      "timing": {
+        "total_ms": 642.2128999999841
+      }
+    },
+    {
+      "user": "Podrias darme la ubicacion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Mesa Peru atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 106.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1050.556500000006,
+        "load_ms": 4.9459,
+        "generation_ms": 186.917,
+        "tokens_per_second": 58.849649844583425
+      },
+      "timing": {
+        "total_ms": 1050.5802000000258
+      }
+    },
+    {
+      "user": "Necesito saber quienes atienden",
+      "expected": [
+        "list_professionals"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1132.9265000000014,
+        "load_ms": 6.1521,
+        "generation_ms": 181.37,
+        "tokens_per_second": 66.16309202183382
+      },
+      "timing": {
+        "total_ms": 1132.9511000000057
+      }
+    },
+    {
+      "user": "Donde puedo leer las politicas",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "Mesa Peru atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 106.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 573.1701999999932,
+        "load_ms": 5.366,
+        "generation_ms": 214.15,
+        "tokens_per_second": 51.36586504786364
+      },
+      "timing": {
+        "total_ms": 573.1964999999618
+      }
+    },
+    {
+      "user": "Que requisitos debo llevar",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "requisitos debo llevar"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1374.344299999997,
+        "load_ms": 4.7427,
+        "generation_ms": 248.282,
+        "tokens_per_second": 72.49820768319894
+      },
+      "timing": {
+        "total_ms": 1374.369400000025
+      }
+    },
+    {
+      "user": "Hay estacionamiento para visitantes",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "estacionamiento para visitantes"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 970.6390000000247,
+        "load_ms": 7.2957,
+        "generation_ms": 243.178,
+        "tokens_per_second": 74.01985376966667
+      },
+      "timing": {
+        "total_ms": 970.6734999999753
+      }
+    },
+    {
+      "user": "A que hora abren normalmente",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Mesa Peru atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 106.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1917.9674999999697,
+        "load_ms": 6.8548,
+        "generation_ms": 193.408,
+        "tokens_per_second": 56.87458636664461
+      },
+      "timing": {
+        "total_ms": 1917.9987000000547
+      }
+    },
+    {
+      "user": "Deseo informacion de sus servicios",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "menu del dia: S/ 24. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1447.3258999999962,
+        "load_ms": 5.8907,
+        "generation_ms": 165.895,
+        "tokens_per_second": 66.30700141655868
+      },
+      "timing": {
+        "total_ms": 1447.3521000000183
+      }
+    },
+    {
+      "user": "Puedo consultar el precio de menu del dia",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "menu del dia: S/ 24. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 998.9954000000143,
+        "load_ms": 4.4324,
+        "generation_ms": 187.867,
+        "tokens_per_second": 58.55206076639325
+      },
+      "timing": {
+        "total_ms": 999.022100000002
+      }
+    },
+    {
+      "user": "Manejan descuentos para esta fecha",
+      "expected": [
+        "knowledge_search",
+        "list_services"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "Manejan descuentos para esta fecha"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1096.1396999999997,
+        "load_ms": 5.0586,
+        "generation_ms": 288.77,
+        "tokens_per_second": 72.72223568930289
+      },
+      "timing": {
+        "total_ms": 1096.1646000000183
+      }
+    },
+    {
+      "user": "Me pasas nuevamente la direccion",
+      "expected": [
+        "business_info"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Mesa Peru atiende de lunes a viernes de 09:00 a 18:00, en Avenida Ficticia 106.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 948.1804999999586,
+        "load_ms": 4.2018,
+        "generation_ms": 183.515,
+        "tokens_per_second": 59.94060431027436
+      },
+      "timing": {
+        "total_ms": 948.2048000000068
+      }
+    },
+    {
+      "user": "Busco el documento con las condiciones",
+      "expected": [
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "knowledge_search",
+        "arguments": {
+          "query": "documento con las condiciones"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "No dispongo de una fuente verificada para esa consulta. Puedo derivarte a una persona del equipo.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1350.1005000000005,
+        "load_ms": 4.9556,
+        "generation_ms": 218.278,
+        "tokens_per_second": 73.30101980043797
+      },
+      "timing": {
+        "total_ms": 1350.125699999975
+      }
+    },
+    {
+      "user": "No he decidido, quiero ver el catalogo",
+      "expected": [
+        "list_services",
+        "clarify_selection"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "menu del dia: S/ 24. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1407.5013000000035,
+        "load_ms": 4.7585,
+        "generation_ms": 168.352,
+        "tokens_per_second": 65.3392891085345
+      },
+      "timing": {
+        "total_ms": 1407.5278999999864
+      }
+    },
+    {
+      "user": "Tienen un servicio de viajes a Marte",
+      "expected": [
+        "knowledge_search",
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": false,
+      "reply": "menu del dia: S/ 24. No hay promociones vigentes.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1100.2887999999803,
+        "load_ms": 7.6995,
+        "generation_ms": 171.433,
+        "tokens_per_second": 64.16500907059901
+      },
+      "timing": {
+        "total_ms": 1100.3252000000211
+      }
+    },
+    {
+      "user": "Prefiero hablar con un asesor por un reclamo",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Lamento la molestia. Te derivo a una persona del equipo para revisar tu caso.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "clarification",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 933.5206999999937,
+        "load_ms": 6.1838,
+        "generation_ms": 184.548,
+        "tokens_per_second": 65.02373366278692
+      },
+      "timing": {
+        "total_ms": 933.5491000000038
+      }
+    }
+  ]
+}

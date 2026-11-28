@@ -1,0 +1,418 @@
+{
+  "fictional": true,
+  "model": "real qwen3:1.7b",
+  "backend": "fixture facts, production PHP policy; not booking E2E",
+  "profile": [
+    "dental",
+    "Sonrisa del Sur",
+    "limpieza dental",
+    95,
+    "cordial"
+  ],
+  "id": "dental-workflow",
+  "complete": true,
+  "rows": [
+    {
+      "user": "Quisiera limpieza dental",
+      "expected": [
+        "clarify_selection"
+      ],
+      "proposal": {
+        "name": "clarify_selection",
+        "arguments": {
+          "field": "professional"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Con que profesional prefieres atenderte?",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 10020.187400000003,
+        "load_ms": 8525.8448,
+        "generation_ms": 269.327,
+        "tokens_per_second": 51.98142035518162
+      },
+      "timing": {
+        "total_ms": 10020.288800000002
+      }
+    },
+    {
+      "user": "Prefiero con Ana el 2027-02-12",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 1,
+          "service_id": 1,
+          "day": "2027-02-12"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Para 2027-02-12 hay horarios a las 09:00 y 10:00. Cual prefieres? No se ha reservado.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2027-02-12"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 3106.0620999999956,
+        "load_ms": 10.0145,
+        "generation_ms": 854.933,
+        "tokens_per_second": 57.31443282689988
+      },
+      "timing": {
+        "total_ms": 3106.1083
+      }
+    },
+    {
+      "user": "Cambie de opinion, mejor con Luis",
+      "expected": [
+        "availability",
+        "clarify_selection"
+      ],
+      "proposal": {
+        "name": "prepare_rescheduling",
+        "arguments": {
+          "booking_id": 1,
+          "day": "2027-02-12",
+          "start": "10:00"
+        }
+      },
+      "allowed": false,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 2,
+          "day": "2027-02-12"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "professional_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1717.6924,
+        "load_ms": 15.9188,
+        "generation_ms": 1052.790999,
+        "tokens_per_second": 51.29223184021542
+      },
+      "timing": {
+        "total_ms": 1717.7448999999979
+      }
+    },
+    {
+      "user": "Mejor el 2027-02-15",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 2,
+          "service_id": 1,
+          "day": "2027-02-15"
+        }
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Para 2027-02-15 hay horarios a las 09:00 y 10:00. Cual prefieres? No se ha reservado.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 2,
+          "day": "2027-02-15"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1590.904300000002,
+        "load_ms": 6.8096,
+        "generation_ms": 890.096,
+        "tokens_per_second": 55.05024177167407
+      },
+      "timing": {
+        "total_ms": 1590.9514000000054
+      }
+    },
+    {
+      "user": "Puedes recapitular lo que elegi",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Tu preferencia es limpieza dental con Luis para 2027-02-15. Todavia no es una reserva.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 2,
+          "day": "2027-02-15"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 3050.0170999999973,
+        "load_ms": 8.6335,
+        "generation_ms": 289.105,
+        "tokens_per_second": 55.34321440307155
+      },
+      "timing": {
+        "total_ms": 3050.0579
+      }
+    },
+    {
+      "user": "si",
+      "expected": [
+        "clarify_selection",
+        "availability"
+      ],
+      "proposal": {
+        "name": "prepare_cancellation",
+        "arguments": {
+          "booking_id": 1
+        }
+      },
+      "allowed": false,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 2,
+          "day": "2027-02-15"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1417.0524000000005,
+        "load_ms": 16.8931,
+        "generation_ms": 326.703,
+        "tokens_per_second": 45.91326066794611
+      },
+      "timing": {
+        "total_ms": 1417.1457999999984
+      }
+    },
+    {
+      "user": "Elijo las 10:00",
+      "expected": [
+        "prepare_booking",
+        "availability"
+      ],
+      "proposal": {
+        "name": "prepare_rescheduling",
+        "arguments": {
+          "booking_id": 1,
+          "day": "2027-02-15",
+          "start": "10:00"
+        }
+      },
+      "allowed": false,
+      "passed": false,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 2,
+          "day": "2027-02-15",
+          "start": "10:00"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [],
+        "explicit_fields": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 3618.6402000000016,
+        "load_ms": 10.2751,
+        "generation_ms": 1096.054,
+        "tokens_per_second": 49.26764557220721
+      },
+      "timing": {
+        "total_ms": 3618.681300000004
+      }
+    },
+    {
+      "user": "Quiero hablar con una persona",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "allowed": true,
+      "passed": true,
+      "reply": "Te derivo a una persona del equipo para ayudarte. No se ha confirmado ninguna operacion.",
+      "checks": {
+        "no_false_confirmation": true,
+        "no_repeated_greeting": true,
+        "tenant_profile": true
+      },
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 2,
+          "day": "2027-02-15",
+          "start": "10:00"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 1749.7626999999993,
+        "load_ms": 13.7705,
+        "generation_ms": 267.358,
+        "tokens_per_second": 44.883639165463535
+      },
+      "timing": {
+        "total_ms": 1749.8176000000021
+      }
+    }
+  ]
+}

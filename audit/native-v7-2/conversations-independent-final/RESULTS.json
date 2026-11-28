@@ -1,0 +1,17 @@
+{
+  "kind": "real Ollama + actual PHP selection/policy + fictional fact backend",
+  "started": "2026-11-28T09:15:29.348Z",
+  "manifest_sha256": "81305fddb49e989af3c7f81ea55d4aa5457ce491b34d2eee322109c57eab0350",
+  "levels": [
+    {
+      "clients": 1,
+      "conversations": 12,
+      "turns": 196,
+      "elapsed_ms": 405303.4281,
+      "model_calls": 196,
+      "acknowledgements": 0
+    }
+  ],
+  "samples": [],
+  "limits": "No external API. Clinical or financial facts never generated. Human language ratings pending."
+}

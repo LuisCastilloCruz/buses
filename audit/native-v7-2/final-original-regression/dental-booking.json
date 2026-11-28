@@ -1,0 +1,286 @@
+{
+  "business": "dental",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 7710.610100000001,
+        "load_ms": 5840.72,
+        "generation_ms": 165.134,
+        "tokens_per_second": 66.61256918623663
+      },
+      "usage": {
+        "input_tokens": 687,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene limpieza dental",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "limpieza dental: S/ 90.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 879.9934000000003,
+        "load_ms": 5.7468,
+        "generation_ms": 157.674,
+        "tokens_per_second": 69.76419701409236
+      },
+      "usage": {
+        "input_tokens": 453,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero limpieza dental con Ana el 2026-12-04",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 1,
+          "service_id": 1,
+          "day": "2026-12-04"
+        }
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Disponibilidad ficticia de evaluacion: 09:00, 10:00. No se ha reservado.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1475.2973000000002,
+        "load_ms": 7.1799,
+        "generation_ms": 682.455,
+        "tokens_per_second": 71.79960583481694
+      },
+      "usage": {
+        "input_tokens": 507,
+        "output_tokens": 49
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "availability",
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 1,
+          "service_id": 1,
+          "day": "2026-12-07"
+        }
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Disponibilidad ficticia de evaluacion: 09:00, 10:00. No se ha reservado.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 2172.0962,
+        "load_ms": 4.8889,
+        "generation_ms": 700.805,
+        "tokens_per_second": 69.91959246866104
+      },
+      "usage": {
+        "input_tokens": 829,
+        "output_tokens": 49
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": []
+      },
+      "metrics": {
+        "elapsed_ms": 2153.525600000001,
+        "load_ms": 6.0996,
+        "generation_ms": 218.387,
+        "tokens_per_second": 73.26443423830173
+      },
+      "usage": {
+        "input_tokens": 971,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero limpieza dental con Ana el 2026-12-04",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 1,
+          "service_id": 1,
+          "day": "2026-12-04"
+        }
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Disponibilidad ficticia de evaluacion: 09:00, 10:00. No se ha reservado.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ],
+        "explicit_fields": [
+          "service_id",
+          "professional_id",
+          "day"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 976.0789999999997,
+        "load_ms": 5.3847,
+        "generation_ms": 429.065,
+        "tokens_per_second": 72.25012527239463
+      },
+      "usage": {
+        "input_tokens": 664,
+        "output_tokens": 31
+      }
+    }
+  ]
+}

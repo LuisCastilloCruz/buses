@@ -1,0 +1,1553 @@
+[
+  {
+    "run": "baseline-regression",
+    "conversations": 10,
+    "turns": 60,
+    "passed": 51,
+    "percent": 85.0,
+    "businesses": {
+      "barberia": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "dental": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "estetica": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "hotel": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "peluqueria": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "restaurante": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "taller": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "tattoo": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "tienda": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "veterinaria": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      }
+    },
+    "failures": [
+      {
+        "case": "barberia-booking.json",
+        "turn": 6,
+        "user": "Quiero arreglo de barba con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-booking.json",
+        "turn": 6,
+        "user": "Quiero limpieza dental con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "availability"
+        ],
+        "error": null
+      },
+      {
+        "case": "estetica-booking.json",
+        "turn": 6,
+        "user": "Quiero limpieza facial con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "hotel-booking.json",
+        "turn": 6,
+        "user": "Quiero habitacion simple con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-booking.json",
+        "turn": 6,
+        "user": "Quiero corte de cabello con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "taller-booking.json",
+        "turn": 6,
+        "user": "Quiero revision de frenos con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-booking.json",
+        "turn": 6,
+        "user": "Quiero consulta de diseno con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "availability"
+        ],
+        "error": null
+      },
+      {
+        "case": "tienda-booking.json",
+        "turn": 6,
+        "user": "Quiero mochila azul con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "veterinaria-booking.json",
+        "turn": 6,
+        "user": "Quiero consulta veterinaria con Ana el 2026-12-04",
+        "proposal": {
+          "name": "request_summary",
+          "arguments": {}
+        },
+        "expected": [
+          "human_handoff"
+        ],
+        "error": null
+      }
+    ],
+    "response_checks": {
+      "no_false_confirmation": 0,
+      "no_repeated_greeting": 0,
+      "tenant_profile": 0
+    },
+    "human_language_score": null
+  },
+  {
+    "run": "corrected-regression",
+    "conversations": 10,
+    "turns": 60,
+    "passed": 58,
+    "percent": 96.66666666666667,
+    "businesses": {
+      "barberia": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "dental": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "estetica": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "hotel": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "peluqueria": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "restaurante": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "taller": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "tattoo": {
+        "turns": 6,
+        "passed": 5,
+        "conversations": 1
+      },
+      "tienda": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "veterinaria": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      }
+    },
+    "failures": [
+      {
+        "case": "dental-booking.json",
+        "turn": 6,
+        "user": "Quiero limpieza dental con Ana el 2026-12-04",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "availability"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-booking.json",
+        "turn": 6,
+        "user": "Quiero consulta de diseno con Ana el 2026-12-04",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "availability"
+        ],
+        "error": null
+      }
+    ],
+    "response_checks": {
+      "no_false_confirmation": 0,
+      "no_repeated_greeting": 0,
+      "tenant_profile": 0
+    },
+    "human_language_score": null
+  },
+  {
+    "run": "corrected-regression-2",
+    "conversations": 10,
+    "turns": 60,
+    "passed": 60,
+    "percent": 100.0,
+    "businesses": {
+      "barberia": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "dental": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "estetica": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "hotel": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "peluqueria": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "restaurante": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "taller": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "tattoo": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "tienda": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      },
+      "veterinaria": {
+        "turns": 6,
+        "passed": 6,
+        "conversations": 1
+      }
+    },
+    "failures": [],
+    "response_checks": {
+      "no_false_confirmation": 0,
+      "no_repeated_greeting": 0,
+      "tenant_profile": 0
+    },
+    "human_language_score": null
+  },
+  {
+    "run": "held-out-conversations",
+    "conversations": 9,
+    "turns": 107,
+    "passed": 76,
+    "percent": 71.02803738317758,
+    "businesses": {
+      "barberia": {
+        "turns": 26,
+        "passed": 18,
+        "conversations": 2
+      },
+      "dental": {
+        "turns": 26,
+        "passed": 18,
+        "conversations": 2
+      },
+      "estetica": {
+        "turns": 3,
+        "passed": 3,
+        "conversations": 1
+      },
+      "peluqueria": {
+        "turns": 26,
+        "passed": 19,
+        "conversations": 2
+      },
+      "tattoo": {
+        "turns": 26,
+        "passed": 18,
+        "conversations": 2
+      }
+    },
+    "failures": [
+      {
+        "case": "barberia-information.json",
+        "turn": 7,
+        "user": "Cual es su politica de cancelacion",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-information.json",
+        "turn": 8,
+        "user": "Y como funciona el estacionamiento",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-information.json",
+        "turn": 13,
+        "user": "Hay descuentos esta semana",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-information.json",
+        "turn": 15,
+        "user": "Quiero revisar sus servicios antes de decidir",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-information.json",
+        "turn": 16,
+        "user": "Cuales son sus requisitos administrativos",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-information.json",
+        "turn": 17,
+        "user": "No encuentro el documento de politicas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-workflow.json",
+        "turn": 6,
+        "user": "Que politicas tienen",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-workflow.json",
+        "turn": 7,
+        "user": "Necesito informacion de sus servicios",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-information.json",
+        "turn": 7,
+        "user": "Cual es su politica de cancelacion",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-information.json",
+        "turn": 8,
+        "user": "Y como funciona el estacionamiento",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-information.json",
+        "turn": 15,
+        "user": "Quiero revisar sus servicios antes de decidir",
+        "proposal": {
+          "name": "knowledge_search",
+          "arguments": {
+            "query": "servicios"
+          }
+        },
+        "expected": [
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-information.json",
+        "turn": 16,
+        "user": "Cuales son sus requisitos administrativos",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-information.json",
+        "turn": 17,
+        "user": "No encuentro el documento de politicas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-workflow.json",
+        "turn": 3,
+        "user": "Cambie de opinion, mejor con Luis",
+        "proposal": {
+          "name": "prepare_rescheduling",
+          "arguments": {
+            "booking_id": 1,
+            "day": "2027-02-12",
+            "start": "10:00"
+          }
+        },
+        "expected": [
+          "availability",
+          "clarify_selection"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-workflow.json",
+        "turn": 6,
+        "user": "si",
+        "proposal": {
+          "name": "prepare_cancellation",
+          "arguments": {
+            "booking_id": 1
+          }
+        },
+        "expected": [
+          "clarify_selection",
+          "availability"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-workflow.json",
+        "turn": 7,
+        "user": "Elijo las 10:00",
+        "proposal": {
+          "name": "prepare_rescheduling",
+          "arguments": {
+            "booking_id": 1,
+            "day": "2027-02-15",
+            "start": "10:00"
+          }
+        },
+        "expected": [
+          "prepare_booking",
+          "availability"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 7,
+        "user": "Cual es su politica de cancelacion",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 8,
+        "user": "Y como funciona el estacionamiento",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 15,
+        "user": "Quiero revisar sus servicios antes de decidir",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 16,
+        "user": "Cuales son sus requisitos administrativos",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 17,
+        "user": "No encuentro el documento de politicas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-workflow.json",
+        "turn": 6,
+        "user": "Que politicas tienen",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-workflow.json",
+        "turn": 7,
+        "user": "Necesito informacion de sus servicios",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 7,
+        "user": "Cual es su politica de cancelacion",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 8,
+        "user": "Y como funciona el estacionamiento",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 15,
+        "user": "Quiero revisar sus servicios antes de decidir",
+        "proposal": {
+          "name": "knowledge_search",
+          "arguments": {
+            "query": "servicios"
+          }
+        },
+        "expected": [
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 16,
+        "user": "Cuales son sus requisitos administrativos",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 17,
+        "user": "No encuentro el documento de politicas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-workflow.json",
+        "turn": 3,
+        "user": "Cambie de opinion, mejor con Luis",
+        "proposal": {
+          "name": "prepare_rescheduling",
+          "arguments": {
+            "booking_id": 1,
+            "day": "2027-02-12",
+            "start": "10:00"
+          }
+        },
+        "expected": [
+          "availability",
+          "clarify_selection"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-workflow.json",
+        "turn": 6,
+        "user": "si",
+        "proposal": {
+          "name": "prepare_cancellation",
+          "arguments": {
+            "booking_id": 1
+          }
+        },
+        "expected": [
+          "clarify_selection",
+          "availability"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-workflow.json",
+        "turn": 7,
+        "user": "Elijo las 10:00",
+        "proposal": {
+          "name": "prepare_rescheduling",
+          "arguments": {
+            "booking_id": 1,
+            "day": "2027-02-15",
+            "start": "10:00"
+          }
+        },
+        "expected": [
+          "prepare_booking",
+          "availability"
+        ],
+        "error": null
+      }
+    ],
+    "response_checks": {
+      "no_false_confirmation": 0,
+      "no_repeated_greeting": 0,
+      "tenant_profile": 0
+    },
+    "human_language_score": null
+  },
+  {
+    "run": "conversations-regression",
+    "conversations": 5,
+    "turns": 70,
+    "passed": 53,
+    "percent": 75.71428571428571,
+    "businesses": {
+      "dental": {
+        "turns": 26,
+        "passed": 21,
+        "conversations": 2
+      },
+      "peluqueria": {
+        "turns": 18,
+        "passed": 13,
+        "conversations": 1
+      },
+      "tattoo": {
+        "turns": 26,
+        "passed": 19,
+        "conversations": 2
+      }
+    },
+    "failures": [
+      {
+        "case": "dental-information.json",
+        "turn": 7,
+        "user": "Cual es su politica de cancelacion",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-information.json",
+        "turn": 10,
+        "user": "Me repites la direccion, por favor",
+        "proposal": {
+          "name": "greeting",
+          "arguments": {}
+        },
+        "expected": [
+          "business_info"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-information.json",
+        "turn": 13,
+        "user": "Hay descuentos esta semana",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-information.json",
+        "turn": 17,
+        "user": "No encuentro el documento de politicas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-workflow.json",
+        "turn": 6,
+        "user": "si",
+        "proposal": {
+          "name": "greeting",
+          "arguments": {}
+        },
+        "expected": [
+          "clarify_selection",
+          "availability"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 7,
+        "user": "Cual es su politica de cancelacion",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 8,
+        "user": "Y como funciona el estacionamiento",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 9,
+        "user": "El precio incluye algo mas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 13,
+        "user": "Hay descuentos esta semana",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-information.json",
+        "turn": 17,
+        "user": "No encuentro el documento de politicas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 7,
+        "user": "Cual es su politica de cancelacion",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 8,
+        "user": "Y como funciona el estacionamiento",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 9,
+        "user": "El precio incluye algo mas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 10,
+        "user": "Me repites la direccion, por favor",
+        "proposal": {
+          "name": "greeting",
+          "arguments": {}
+        },
+        "expected": [
+          "business_info"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 13,
+        "user": "Hay descuentos esta semana",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "list_services"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-information.json",
+        "turn": 17,
+        "user": "No encuentro el documento de politicas",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-workflow.json",
+        "turn": 6,
+        "user": "si",
+        "proposal": {
+          "name": "greeting",
+          "arguments": {}
+        },
+        "expected": [
+          "clarify_selection",
+          "availability"
+        ],
+        "error": null
+      }
+    ],
+    "response_checks": {
+      "no_false_confirmation": 0,
+      "no_repeated_greeting": 4,
+      "tenant_profile": 0
+    },
+    "human_language_score": null
+  },
+  {
+    "run": "conversations-regression-final",
+    "conversations": 6,
+    "turns": 78,
+    "passed": 78,
+    "percent": 100.0,
+    "businesses": {
+      "dental": {
+        "turns": 26,
+        "passed": 26,
+        "conversations": 2
+      },
+      "peluqueria": {
+        "turns": 26,
+        "passed": 26,
+        "conversations": 2
+      },
+      "tattoo": {
+        "turns": 26,
+        "passed": 26,
+        "conversations": 2
+      }
+    },
+    "failures": [],
+    "response_checks": {
+      "no_false_confirmation": 0,
+      "no_repeated_greeting": 0,
+      "tenant_profile": 0
+    },
+    "human_language_score": null
+  },
+  {
+    "run": "conversations-independent-final",
+    "conversations": 12,
+    "turns": 196,
+    "passed": 168,
+    "percent": 85.71428571428571,
+    "businesses": {
+      "barberia": {
+        "turns": 18,
+        "passed": 15,
+        "conversations": 1
+      },
+      "dental": {
+        "turns": 26,
+        "passed": 24,
+        "conversations": 2
+      },
+      "estetica": {
+        "turns": 18,
+        "passed": 15,
+        "conversations": 1
+      },
+      "hotel": {
+        "turns": 18,
+        "passed": 15,
+        "conversations": 1
+      },
+      "peluqueria": {
+        "turns": 18,
+        "passed": 15,
+        "conversations": 1
+      },
+      "restaurante": {
+        "turns": 18,
+        "passed": 15,
+        "conversations": 1
+      },
+      "taller": {
+        "turns": 18,
+        "passed": 15,
+        "conversations": 1
+      },
+      "tattoo": {
+        "turns": 26,
+        "passed": 24,
+        "conversations": 2
+      },
+      "tienda": {
+        "turns": 18,
+        "passed": 15,
+        "conversations": 1
+      },
+      "veterinaria": {
+        "turns": 18,
+        "passed": 15,
+        "conversations": 1
+      }
+    },
+    "failures": [
+      {
+        "case": "barberia-independent-long.json",
+        "turn": 6,
+        "user": "Necesito saber quienes atienden",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_professionals"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "barberia-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "dental-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "estetica-independent-long.json",
+        "turn": 6,
+        "user": "Necesito saber quienes atienden",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_professionals"
+        ],
+        "error": null
+      },
+      {
+        "case": "estetica-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "estetica-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "hotel-independent-long.json",
+        "turn": 6,
+        "user": "Necesito saber quienes atienden",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_professionals"
+        ],
+        "error": null
+      },
+      {
+        "case": "hotel-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "hotel-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-independent-long.json",
+        "turn": 6,
+        "user": "Necesito saber quienes atienden",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_professionals"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "peluqueria-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "restaurante-independent-long.json",
+        "turn": 6,
+        "user": "Necesito saber quienes atienden",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_professionals"
+        ],
+        "error": null
+      },
+      {
+        "case": "restaurante-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "restaurante-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "taller-independent-long.json",
+        "turn": 6,
+        "user": "Necesito saber quienes atienden",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_professionals"
+        ],
+        "error": null
+      },
+      {
+        "case": "taller-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "taller-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tattoo-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "tienda-independent-long.json",
+        "turn": 6,
+        "user": "Necesito saber quienes atienden",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_professionals"
+        ],
+        "error": null
+      },
+      {
+        "case": "tienda-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "tienda-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      },
+      {
+        "case": "veterinaria-independent-long.json",
+        "turn": 6,
+        "user": "Necesito saber quienes atienden",
+        "proposal": {
+          "name": "human_handoff",
+          "arguments": {}
+        },
+        "expected": [
+          "list_professionals"
+        ],
+        "error": null
+      },
+      {
+        "case": "veterinaria-independent-long.json",
+        "turn": 7,
+        "user": "Donde puedo leer las politicas",
+        "proposal": {
+          "name": "business_info",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search"
+        ],
+        "error": null
+      },
+      {
+        "case": "veterinaria-independent-long.json",
+        "turn": 17,
+        "user": "Tienen un servicio de viajes a Marte",
+        "proposal": {
+          "name": "list_services",
+          "arguments": {}
+        },
+        "expected": [
+          "knowledge_search",
+          "human_handoff"
+        ],
+        "error": null
+      }
+    ],
+    "response_checks": {
+      "no_false_confirmation": 0,
+      "no_repeated_greeting": 0,
+      "tenant_profile": 0
+    },
+    "human_language_score": null
+  }
+]

@@ -10,7 +10,7 @@ try{
  & $php native-lab/v72-policy-tests.php
  if($LASTEXITCODE -ne 0){throw 'Policy regression failed'}
  if($Profile -eq 'independent'){& $node qa/ai-reception-evaluation/v72-conversations.mjs --manifest=INDEPENDENT_MANIFEST --attempt=independent-final}
- elseif($Profile -eq 'stress'){& $node qa/ai-reception-evaluation/v72-conversations.mjs --stress --attempt=stress-final}
+ elseif($Profile -eq 'stress'){& $node qa/ai-reception-evaluation/v72-conversations.mjs --stress ("--attempt=stress-"+(Get-Date -Format yyyyMMdd-HHmmss))}
  elseif($Profile -eq 'recovery'){& python -X utf8 native-lab/backup-restore-v6.py --offline-source}
  else{& powershell -NoProfile -File native-lab/run-v71-validation.ps1 -Profile $Profile}
  exit $LASTEXITCODE

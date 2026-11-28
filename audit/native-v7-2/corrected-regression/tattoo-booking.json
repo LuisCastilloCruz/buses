@@ -1,0 +1,261 @@
+{
+  "business": "tattoo",
+  "scenario": "booking",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 2248.276,
+        "load_ms": 15.472,
+        "generation_ms": 226.215,
+        "tokens_per_second": 48.62630683199611
+      },
+      "usage": {
+        "input_tokens": 856,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene consulta de diseno",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "consulta de diseno: S/ 40.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1164.3041999999987,
+        "load_ms": 13.1882,
+        "generation_ms": 200.59,
+        "tokens_per_second": 54.83822722967247
+      },
+      "usage": {
+        "input_tokens": 487,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero consulta de diseno con Ana el 2026-12-04",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 1,
+          "service_id": 1,
+          "day": "2026-12-04"
+        }
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Disponibilidad ficticia de evaluacion: 09:00, 10:00. No se ha reservado.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 2907.616600000001,
+        "load_ms": 12.8454,
+        "generation_ms": 863.133,
+        "tokens_per_second": 56.76993001078628
+      },
+      "usage": {
+        "input_tokens": 980,
+        "output_tokens": 49
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "availability",
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "availability",
+        "arguments": {
+          "professional_id": 1,
+          "service_id": 1,
+          "day": "2026-12-07"
+        }
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Disponibilidad ficticia de evaluacion: 09:00, 10:00. No se ha reservado.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1519.040399999998,
+        "load_ms": 11.7804,
+        "generation_ms": 942.812,
+        "tokens_per_second": 51.97218533493422
+      },
+      "usage": {
+        "input_tokens": 1034,
+        "output_tokens": 49
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [
+          "09:00",
+          "10:00"
+        ],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 2894.1677999999993,
+        "load_ms": 14.5922,
+        "generation_ms": 285.752,
+        "tokens_per_second": 55.99260897561522
+      },
+      "usage": {
+        "input_tokens": 1127,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero consulta de diseno con Ana el 2026-12-04",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": false,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1321.4979999999996,
+        "load_ms": 13.8934,
+        "generation_ms": 256.180999,
+        "tokens_per_second": 54.648861760430556
+      },
+      "usage": {
+        "input_tokens": 1137,
+        "output_tokens": 14
+      }
+    }
+  ]
+}

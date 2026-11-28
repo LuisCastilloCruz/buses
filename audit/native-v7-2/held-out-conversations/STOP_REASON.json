@@ -1,0 +1,5 @@
+{
+  "reason": "Controlled stop after repeated root causes identified; preserve partial evidence, not a passed suite",
+  "completed": 8,
+  "turns": 107
+}
