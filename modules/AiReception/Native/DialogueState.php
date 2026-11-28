@@ -9,7 +9,7 @@ final class DialogueState {
   $state['selection']=$selection;if(preg_match('/^(no|mejor no|ya no)\b/iu',trim($text))){$state['pending']=null;$state['offered']=[];$state['phase']='clarification';}
   $newBooking=preg_match('/(?:nueva|otra)\s+(?:cita|reserva)|(?:cita|reserva)\s+nueva/iu',$text)===1;
   if($newBooking){$state['intent']='book';$state['booking_id']=null;$state['pending']=null;$state['offered']=[];$state['phase']='collecting';}
-  if(!$newBooking&&preg_match('/cancel/iu',$text))$state['intent']='cancel';elseif(preg_match('/reprogram|cambiar mi cita|mover mi cita/iu',$text))$state['intent']='reschedule';elseif(preg_match('/quiero|reserv|cita/iu',$text)&&$state['intent']==='information')$state['intent']='book';
+  if(!$newBooking&&!preg_match('/politic|pol\x{ed}tic|requisit|documento/iu',$text)&&preg_match('/cancel/iu',$text))$state['intent']='cancel';elseif(preg_match('/reprogram|cambiar mi cita|mover mi cita/iu',$text))$state['intent']='reschedule';elseif(preg_match('/quiero|quisiera|reserv|agend|cita|turno/iu',$text)&&$state['intent']==='information')$state['intent']='book';
   if(preg_match('/(?:cita|reserva)\s*#\s*(\d+)/iu',$text,$m))$state['booking_id']=(int)$m[1];
   $required=$state['intent']==='cancel'?['booking_id']:($state['intent']==='reschedule'?['booking_id','day','start']:['service_id','professional_id','day','start']);$state['missing']=[];foreach($required as $key)if($key==='booking_id'?!$state['booking_id']:!isset($selection[$key]))$state['missing'][]=$key;
   return $state;

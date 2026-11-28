@@ -12,14 +12,14 @@ def fingerprint():
  return h.hexdigest()
 
 def snapshot():
- s=json.loads((RUNTIME/'settings.json').read_text());a=json.loads((RUNTIME/'admin.json').read_text());f=RUNTIME/'validation-digest-private.json';f.write_text(json.dumps({'port':13325,'user':'root','password':a['password'],'datadir':str(RUNTIME/'mysql-data')}))
+ s=json.loads((RUNTIME/'settings.json').read_text());a=json.loads((RUNTIME/'admin.json').read_text());f=RUNTIME/'validation-digest-private.json';f.write_text(json.dumps({'port':13327,'user':'root','password':a['password'],'datadir':str(RUNTIME/'mysql-data')}))
  r=subprocess.run([PHP,'native-lab/recovery-digest.php',str(f)],cwd=ROOT,capture_output=True,timeout=180)
  if r.returncode:raise RuntimeError('Database snapshot unavailable; do not resume stateful stages')
  return hashlib.sha256(r.stdout).hexdigest()
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('--profile',choices=['smoke','integration','functional','browser','ollama','benchmark','recovery','full'],default='smoke');p.add_argument('--resume');a=p.parse_args()
- s=json.loads((RUNTIME/'settings.json').read_text());assert s['purpose']=='multifactura-native-v7-1' and Path(s['root']).resolve()==ROOT
+ s=json.loads((RUNTIME/'settings.json').read_text());assert s['purpose']=='multifactura-native-v7-2' and Path(s['root']).resolve()==ROOT
  if (RUNTIME/'sandbox-authorization.json').exists():raise RuntimeError('External sandbox authorization must be absent')
  with (RUNTIME/'v7-validation.lock').open('a+b') as lock:
   lock.seek(0);lock.write(b'0');lock.flush();lock.seek(0);msvcrt.locking(lock.fileno(),msvcrt.LK_NBLCK,1)

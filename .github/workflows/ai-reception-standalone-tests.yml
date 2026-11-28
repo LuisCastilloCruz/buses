@@ -9,6 +9,7 @@ on:
       - feature/multifactura-ai-reception-release-candidate-v6
       - feature/multifactura-ollama-universal-v7
       - feature/multifactura-ollama-coherence-v7-1
+      - feature/multifactura-ollama-quality-v7-2
       - feature/ai-reception-agenda-v1
       - feature/multifactura-native-aireception-odontologia-v3
       - "integration/ai-reception-tattoo-20261120*"
@@ -20,6 +21,7 @@ on:
       - 'qa/performance/**'
       - 'qa/ai-reception-evaluation/**'
       - 'audit/native-v7-1/**'
+      - 'audit/native-v7-2/**'
       - 'app/Exceptions/Handler.php'
       - 'database/migrations/tenant/2026_11_28_*'
       - 'database/migrations/tenant/2026_11_23_*'
@@ -87,6 +89,7 @@ jobs:
           php native-lab/v7-unit-tests.php
           php native-lab/v71-state-tests.php
           php native-lab/v71-new-request-test.php
+          php native-lab/v72-policy-tests.php
 
   gateway:
     name: Isolated gateway contracts

@@ -1,5 +1,5 @@
 ﻿import fs from 'node:fs';import os from 'node:os';import {execFileSync} from 'node:child_process';import {performance} from 'node:perf_hooks';
-const model='qwen3:1.7b',out='audit/native-v7-1/INFERENCE_BENCHMARK.json';const results={model,started:new Date().toISOString(),levels:[],resource_samples:[],scope:'Local API only; observed concurrency is not unlimited production capacity'};
+const model='qwen3:1.7b',out='audit/native-v7-2/INFERENCE_BENCHMARK.json';const results={model,started:new Date().toISOString(),levels:[],resource_samples:[],scope:'Local API only; observed concurrency is not unlimited production capacity'};
 const save=()=>fs.writeFileSync(out,JSON.stringify(results,null,2));
 const ps=await(await fetch('http://127.0.0.1:11434/api/ps')).json();const loaded=ps.models?.some(m=>m.name===model);const required=(loaded?2.3:3.25)*1024**3;
 if(os.freemem()<required){results.blocked={reason:'Insufficient free RAM for safe inference',free_mb:Math.round(os.freemem()/1024**2),required_mb:Math.round(required/1024**2)};save();console.log(JSON.stringify(results.blocked));process.exitCode=2;}else{

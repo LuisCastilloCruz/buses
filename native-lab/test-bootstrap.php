@@ -4,9 +4,9 @@ $host = $argv[1] ?? 'dental';
 if (!in_array($host, ['tattoo', 'dental', 'comercio', 'cuarta'], true)) {
     throw new RuntimeException('Unknown fixture host');
 }
-$_SERVER['HTTP_HOST'] = $host . '.localhost:8881';
+$_SERVER['HTTP_HOST'] = $host . '.localhost:8882';
 $_SERVER['SERVER_NAME'] = $host . '.localhost';
-$_SERVER['SERVER_PORT'] = 8881;
+$_SERVER['SERVER_PORT'] = 8882;
 $_SERVER['REQUEST_URI'] = '/aireception/calendar';
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
@@ -19,8 +19,8 @@ $environment->hostname($hostname);
 $environment->tenant($hostname->website);
 $db = app('db')->connection('tenant');
 $meta = $db->selectOne('SELECT @@port port,@@datadir dir,DATABASE() db');
-$expected = ['tattoo' => 'mf_v71_tattoo', 'dental' => 'mf_v71_dental', 'comercio' => 'mf_v71_commerce', 'cuarta'=>'mf_v71_cuarta'][$host];
-if ((int) $meta->port !== 13325 || $meta->db !== $expected || strtolower(str_replace('\\', '/', $meta->dir)) !== strtolower(str_replace('\\', '/', realpath(dirname(__DIR__))) . '/.native-runtime/mysql-data/')) {
+$expected = ['tattoo' => 'mf_v72_tattoo', 'dental' => 'mf_v72_dental', 'comercio' => 'mf_v72_commerce', 'cuarta'=>'mf_v72_cuarta'][$host];
+if ((int) $meta->port !== 13327 || $meta->db !== $expected || strtolower(str_replace('\\', '/', $meta->dir)) !== strtolower(str_replace('\\', '/', realpath(dirname(__DIR__))) . '/.native-runtime/mysql-data/')) {
     throw new RuntimeException('Unsafe test database');
 }
 $actor = (int) ($argv[2] ?? 1);

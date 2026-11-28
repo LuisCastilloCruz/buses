@@ -29,12 +29,13 @@ final class ConversationCoordinator {
      $catalog=['services'=>$db->table('aireception_services')->where('business_id',$business)->where('active',true)->select('id','name','duration_minutes')->limit(20)->get()->toArray(),'professionals'=>$db->table('aireception_professionals')->where('business_id',$business)->where('active',true)->select('id','name')->limit(20)->get()->toArray()];
      array_unshift($messages,['role'=>'assistant','content'=>'Catalogo verificado: '.json_encode($catalog)]);
      $memoryService=app(ConversationMemory::class);$memoryService->rememberRequest((int)$turn['conversation_id'],$person,$text);$memory=app(ConversationMemory::class)->load((int)$turn['conversation_id'],$person);$dialogue=app(DialogueSession::class);$state=$dialogue->begin((int)$turn['conversation_id'],$person,$text,$memory);array_unshift($messages,['role'=>'assistant','content'=>'Seleccion previa verificada, no reserva confirmada: '.json_encode($memory)]);
-     $response=app($settings['mode']==='local'?LocalResponses::class:BudgetedResponses::class)->propose($messages,$tools->availableDefinitions($memory,$text),'conversation-turn-'.$turn['id']);
+     $response=app($settings['mode']==='local'?LocalResponses::class:BudgetedResponses::class)->propose($messages,$tools->availableDefinitions($memory,$text,$state,app(DomainRegistry::class)->supportsBookings()),'conversation-turn-'.$turn['id']);
      if(count($response['proposals'])!==1)throw new \RuntimeException('Verified tool proposal required.');
      $proposal=$response['proposals'][0];if(!DialogueState::permitted($state,$proposal['name'],$proposal['arguments'])){$reply=$dialogue->recoverable($state);}else{$reply=$tools->run($proposal['name'],$proposal['arguments'],$person,(int)$turn['conversation_id']);app(ConversationMemory::class)->record((int)$turn['conversation_id'],$person,$proposal['name'],$proposal['arguments']);$dialogue->result((int)$turn['conversation_id'],$person,$proposal['name'],$reply);}
     }
    }
   }catch(\Throwable $e){$reply=['reply'=>'No puedo completar la solicitud automaticamente. La he derivado a recepcion humana; no se ha confirmado ninguna cita.','handoff'=>true];}
+  $reply=ReceptionReply::present($reply,$text);
   $reply['conversation_id']=$turn['conversation_id'];
   $reply=$db->transaction(function()use($db,$turn,$reply){
    $current=$db->table('aireception_conversations')->where('id',$turn['conversation_id'])->lockForUpdate()->first();

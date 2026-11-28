@@ -8,18 +8,41 @@ final class ReceptionTools {
   foreach($tools as &$tool){if($tool['name']==='list_services')$tool['description']='Consultar servicios, productos y sus precios verificados del catalogo. Usar para precio, cuesta o servicios.';if($tool['name']==='business_info')$tool['description']='Consultar nombre, direccion y horario general del negocio. No consulta precios ni disponibilidad de citas.';}unset($tool);
   return $tools;
  }
- public function availableDefinitions(array $selection,string $text=''):array {
+ public function availableDefinitions(array $selection,string $text='',array $state=[],bool $booking=true):array {
+  $act=ReceptionAct::kind($text);
   $tools=[];$fields=['service'=>'service_id','professional'=>'professional_id','day'=>'day','time'=>'start'];$missing=[];
   foreach($fields as $field=>$key)if(!isset($selection[$key]))$missing[]=$field;
   foreach($this->definitions() as $tool){
+   if($tool['name']==='greeting'&&$act!=='greeting'&&trim($text)!=='')continue;
+   if($act==='information'&&$tool['name']!=='business_info')continue;
+   if(preg_match('/^(si|s\x{ed}|ok|dale|de acuerdo)[.!]?$/iu',trim($text))&&$missing){
+    $next=$missing===['time']&&empty($state['offered'])?'availability':'clarify_selection';
+    if($tool['name']!==$next)continue;
+   }
+
+   if($act==='knowledge'&&$tool['name']!=='knowledge_search')continue;
+   if($act==='catalogue'&&!in_array($tool['name'],['list_services','knowledge_search'],true))continue;
+   if($tool['name']==='prepare_cancellation'&&(($state['intent']??'')!=='cancel'||empty($state['booking_id'])))continue;
+   if($tool['name']==='prepare_rescheduling'&&(($state['intent']??'')!=='reschedule'||empty($state['booking_id'])))continue;
+
+   if($booking&&$act==='booking'&&in_array('service_id',$state['explicit_fields']??[],true)){
+    $next=isset($selection['service_id'],$selection['professional_id'],$selection['day'])?'availability':'clarify_selection';
+    if(isset($selection['start'])&&in_array($selection['start'],$state['offered']??[],true))$next='prepare_booking';
+    if($tool['name']!==$next)continue;
+   }
+
+   if($tool['name']==='request_summary'&&$act!=='summary'&&trim($text)!=='')continue;
+   if(!$booking&&in_array($tool['name'],['availability','prepare_booking','prepare_cancellation','prepare_rescheduling','own_bookings'],true))continue;
+   if(!$booking&&in_array($act,['booking','change'],true)&&$tool['name']!=='human_handoff')continue;
    if(preg_match('/(?:nueva|otra)\s+(?:cita|reserva)|(?:cita|reserva)\s+nueva/iu',$text)&&!in_array($tool['name'],['availability','clarify_selection','human_handoff'],true))continue;
    if(preg_match('/hablar con (una )?(persona|humano)|revela.*(prompt|instrucciones)|ignora.*reglas|datos de otra empresa|SQL/iu',$text)&&$tool['name']!=='human_handoff')continue;
    if(preg_match('/precio|presio|cuesta|costo/iu',$text)&&!in_array($tool['name'],['list_services','knowledge_search','human_handoff'],true))continue;
    if($tool['name']==='prepare_booking'&&!isset($selection['service_id'],$selection['professional_id'],$selection['day'],$selection['start']))continue;
    if($tool['name']==='availability'&&!isset($selection['service_id'],$selection['professional_id'],$selection['day']))continue;
-   if($tool['name']==='clarify_selection'){if(!$missing||$missing===['time'])continue;$tool['parameters']['properties']['field']['enum']=$missing;}
+   if($tool['name']==='clarify_selection'){if(!$missing||($missing===['time']&&empty($state['offered'])))continue;$tool['parameters']['properties']['field']['enum']=$missing;}
    $tools[]=$tool;
   }
+  if(!$tools){foreach($this->definitions() as $tool)if($tool['name']==='human_handoff')$tools[]=$tool;}
   return $tools;
  }
  public static function clinical(string $text):bool {return (bool)preg_match('/diagnost|prescri|medicamento|receta|dolor|sangrad|urgencia|emergencia|no puedo respirar|desmayo|hinchaz/iu',$text);}
@@ -37,6 +60,7 @@ final class ReceptionTools {
   if($name==='human_handoff')return ['reply'=>'Te derivo a recepcion humana. La automatizacion queda pausada.','handoff'=>true];
   if($name==='business_info'){$c=$db->table('companies')->first();$e=$db->table('establishments')->orderBy('id')->first();$profile=app(AgentSettings::class)->privateConfiguration()['profile']??[];return ['reply'=>$c->name.'. Direccion registrada: '.(($e ? $e->address : null)?:'Consultar con recepcion').'.'.(!empty($profile['hours'])?' Horario informativo configurado: '.$profile['hours'].'. La disponibilidad de citas se consulta por separado.':'')];}
   if($name==='knowledge_search'){$sources=app(KnowledgeBase::class)->search($arguments['query']);return ['reply'=>$sources?implode("\n",array_map(function($s){return $s['excerpt'].' [Fuente: '.$s['source'].' v'.$s['version'].']';},$sources)):'No dispongo de una fuente verificada. Consulta a recepcion humana.','sources'=>$sources];}
+  if(in_array($name,['availability','prepare_booking','prepare_cancellation','prepare_rescheduling'],true)&&!app(DomainRegistry::class)->supportsBookings())return ['reply'=>'Este negocio no tiene una agenda conectada para esa operacion. Te derivo a una persona del equipo.','handoff'=>true];
   $engine=app(EngineFactory::class)->make('aireception');
   if($name==='list_services'){$rows=$db->table('aireception_services as s')->leftJoin('items as i','i.id','=','s.item_id')->where('s.business_id',$business)->where('s.active',true)->select('s.name','s.duration_minutes','i.sale_unit_price','i.currency_type_id')->limit(20)->get();$lines=[];foreach($rows as $s)$lines[]=$s->name.' ('.$s->duration_minutes.' min)'.($s->sale_unit_price!==null?' / precio de catalogo '.number_format((float)$s->sale_unit_price,2).' '.$s->currency_type_id:' / precio no confirmado');return ['reply'=>$lines?implode("\n",$lines):'No hay servicios habilitados. Consulta a recepcion.'];}
   if($name==='list_professionals'){$names=$db->table('aireception_professionals')->where('business_id',$business)->where('active',true)->pluck('name')->all();return ['reply'=>$names?'Profesionales: '.implode(', ',$names).'.':'No hay profesionales habilitados.'];}

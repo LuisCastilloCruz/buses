@@ -15,7 +15,7 @@ def main():
  if sha(source/'fictional-v7.sql')!=verified['dump_sha256']:raise ValueError('Dump checksum changed')
  parent=Path(r'C:\Users\luis castillo\MultiFactura-private-backups')
  if not parent.is_dir():raise ValueError('Expected private backup root missing')
- target=parent/('native-v7-1-'+datetime.datetime.now().strftime('%Y%m%d-%H%M%S'));target.mkdir(exist_ok=False)
+ target=parent/('native-v7-2-'+datetime.datetime.now().strftime('%Y%m%d-%H%M%S'));target.mkdir(exist_ok=False)
  user=subprocess.check_output(['whoami'],text=True).strip()
  subprocess.run(['icacls',str(target),'/inheritance:r','/grant:r',user+':(OI)(CI)F','*S-1-5-18:(OI)(CI)F','*S-1-5-32-544:(OI)(CI)F'],capture_output=True,check=True)
  files={}
@@ -29,7 +29,7 @@ def main():
    dest=target/('private-'+name);shutil.copy2(source_file,dest)
    if sha(dest)!=sha(source_file):raise ValueError('Private configuration backup mismatch')
    files[dest.name]=sha(dest)
- base='44ff5486e6a4898a725f1b8d06f71699d24f428e'
+ base='241e4ce8bf38e3447fb2c97fe32cc723aa57af51'
  bundle=target/'v7.bundle';git('bundle','create',str(bundle),'HEAD','^'+base)
  git('bundle','verify',str(bundle));files[bundle.name]=sha(bundle)
  report={'commit':git('rev-parse','HEAD'),'base_required':base,'branch':git('branch','--show-current'),'files':files,'database_restore_verified':verified}

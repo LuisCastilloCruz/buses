@@ -13,7 +13,7 @@ $refused=State::advance(['pending'=>['action'=>'book'],'offered'=>['09:00'],'sel
 
 $x=Modules\AiReception\Native\RequestSelection::extract('Quiero con Ana Torres',[],[['id'=>2,'name'=>'Ana Torres'],['id'=>3,'name'=>'Ana Perez']],'2026-11-28');ok(($x['professional_id']??null)===2,'full professional name takes priority over ambiguous first name');
 
-require __DIR__.'/../modules/AiReception/Native/ReceptionTools.php';$tools=(new Modules\AiReception\Native\ReceptionTools)->availableDefinitions(['service_id'=>1,'professional_id'=>2,'day'=>'2090-01-06']);ok(!in_array('clarify_selection',array_column($tools,'name'),true),'known date never offered as a clarification target');
+require_once __DIR__.'/../modules/AiReception/Native/ReceptionAct.php';require __DIR__.'/../modules/AiReception/Native/ReceptionTools.php';$tools=(new Modules\AiReception\Native\ReceptionTools)->availableDefinitions(['service_id'=>1,'professional_id'=>2,'day'=>'2090-01-06']);ok(!in_array('clarify_selection',array_column($tools,'name'),true),'known date never offered as a clarification target');
 
 $tools=(new Modules\AiReception\Native\ReceptionTools)->availableDefinitions([],'Que precio tiene');ok(in_array('list_services',array_column($tools,'name'),true)&&!in_array('business_info',array_column($tools,'name'),true),'explicit price request exposes only catalogue knowledge or handoff');
 

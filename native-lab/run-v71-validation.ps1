@@ -4,7 +4,7 @@ $root=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 Push-Location $root
 try {
  $settings=Get-Content '.native-runtime/settings.json' -Raw | ConvertFrom-Json
- if($settings.purpose -ne 'multifactura-native-v7-1' -or [IO.Path]::GetFullPath($settings.root) -ne $root){throw 'Wrong isolated lab'}
+ if($settings.purpose -ne 'multifactura-native-v7-2' -or [IO.Path]::GetFullPath($settings.root) -ne $root){throw 'Wrong isolated lab'}
  $node='C:\Program Files\nodejs\node.exe'
  $php='C:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe'
  if($Profile -eq 'benchmark'){& $node qa/ai-reception-evaluation/v71-benchmark.mjs;exit $LASTEXITCODE}
@@ -16,7 +16,7 @@ try {
   foreach($tenant in @('dental','tattoo')){& $php native-lab/v71-e2e-real.php $tenant 1 prepare;if($LASTEXITCODE -ne 0){throw 'Fixture preparation failed'}}
   & $php native-lab/configure-ollama-v7.php dental 1
   if($LASTEXITCODE -ne 0){throw 'Private gateway configuration failed'}
-  if(Get-NetTCPConnection -LocalPort 8899 -State Listen -ErrorAction SilentlyContinue){throw 'Gateway port occupied; inspect owner'}
+  if(Get-NetTCPConnection -LocalPort 8900 -State Listen -ErrorAction SilentlyContinue){throw 'Gateway port occupied; inspect owner'}
   $env:AR_GATEWAY_CONFIG=Join-Path $root '.native-runtime/ollama-gateway.json'
   $gateway=Start-Process -FilePath $node -ArgumentList 'gateway/server.mjs' -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput '.native-runtime/v71-gateway.out' -RedirectStandardError '.native-runtime/v71-gateway.err'
   try {Start-Sleep -Seconds 1;foreach($tenant in @('dental','tattoo')){& $php native-lab/v71-e2e-real.php $tenant 1;if($LASTEXITCODE -ne 0){throw "Real E2E failed for $tenant"}}}finally{$gateway.Refresh();if(!$gateway.HasExited){Stop-Process -Id $gateway.Id};Remove-Item Env:AR_GATEWAY_CONFIG}

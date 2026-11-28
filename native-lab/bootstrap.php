@@ -13,13 +13,13 @@ $app->loadEnvironmentFrom('.no-original-env');
 $app->useStoragePath($runtime . '/storage');
 $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\LoadConfiguration::class, function ($app) use($root, $runtime) {
     $s = json_decode(file_get_contents($runtime . '/settings.json'), true);
-    if (($s['purpose'] ?? '') !== 'multifactura-native-v7-1' || $s['root'] !== str_replace('\\', '/', realpath($root))) {
+    if (($s['purpose'] ?? '') !== 'multifactura-native-v7-2' || $s['root'] !== str_replace('\\', '/', realpath($root))) {
         throw new RuntimeException('Invalid native lab settings');
     }
-    $db = ['driver' => 'mysql', 'host' => '127.0.0.1', 'port' => 13325, 'database' => 'mf_v71_system', 'username' => $s['user'], 'password' => $s['password'], 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'prefix' => '', 'strict' => false, 'engine' => 'InnoDB'];
-    $probe = new PDO('mysql:host=127.0.0.1;port=13325;dbname=mf_v71_system', $s['user'], $s['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $db = ['driver' => 'mysql', 'host' => '127.0.0.1', 'port' => 13327, 'database' => 'mf_v72_system', 'username' => $s['user'], 'password' => $s['password'], 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'prefix' => '', 'strict' => false, 'engine' => 'InnoDB'];
+    $probe = new PDO('mysql:host=127.0.0.1;port=13327;dbname=mf_v72_system', $s['user'], $s['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     $m = $probe->query('SELECT @@port port,@@datadir datadir')->fetch(PDO::FETCH_ASSOC);
-    if ((int) $m['port'] !== 13325 || strtolower(str_replace('\\', '/', $m['datadir'])) !== strtolower($s['root'] . '/.native-runtime/mysql-data/')) {
+    if ((int) $m['port'] !== 13327 || strtolower(str_replace('\\', '/', $m['datadir'])) !== strtolower($s['root'] . '/.native-runtime/mysql-data/')) {
         throw new RuntimeException('Unsafe server');
     }
     $app->detectEnvironment(function () {
@@ -27,7 +27,7 @@ $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\LoadConfiguration::clas
     });
     $app['config']->set('database.connections', ['system' => $db]);
     $app['config']->set('database.default', 'system');
-    foreach (['app.env' => 'local', 'app.debug' => true, 'debugbar.enabled' => false, 'app.key' => $s['key'], 'app.url' => 'http://localhost:8881', 'app.timezone' => 'America/Lima', 'tenant.prefix_database' => 'mf_v7', 'tenant.app_url_base' => 'localhost', 'tenant.force_https' => false, 'cache.default' => 'array', 'session.driver' => 'file', 'session.files' => $runtime . '/storage/framework/sessions', 'session.domain' => null, 'session.cookie' => 'mf_v71_session', 'mail.driver' => 'log', 'queue.failed.database'=>'system', 'queue.failed.table'=>'aireception_failed_jobs', 'queue.default' => 'database', 'broadcasting.default' => 'log', 'aireception.meta_sandbox_enabled'=>true, 'aireception.reminders_simulation_enabled'=>true, 'aireception.native_enabled' => true, 'aireception.enabled' => false, 'aireception.external_connections_enabled' => false, 'tattooinbox.ai.enabled' => false, 'tattooinbox.meta.require_signature'=>true, 'tattooinbox.meta.verify_token'=>null, 'tattooinbox.meta.page_access_token'=>null, 'tattooinbox.meta.app_secret' => null, 'tattooinbox.meta.whatsapp_access_token' => null, 'odontologia.clinical_records_enabled' => true, 'native_lab.enabled' => true, 'tenancy.hostname.cache' => false, 'tenancy.website.cache' => false] as $k => $v) {
+    foreach (['app.env' => 'local', 'app.debug' => true, 'debugbar.enabled' => false, 'app.key' => $s['key'], 'app.url' => 'http://localhost:8882', 'app.timezone' => 'America/Lima', 'tenant.prefix_database' => 'mf_v7', 'tenant.app_url_base' => 'localhost', 'tenant.force_https' => false, 'cache.default' => 'array', 'session.driver' => 'file', 'session.files' => $runtime . '/storage/framework/sessions', 'session.domain' => null, 'session.cookie' => 'mf_v72_session', 'mail.driver' => 'log', 'queue.failed.database'=>'system', 'queue.failed.table'=>'aireception_failed_jobs', 'queue.default' => 'database', 'broadcasting.default' => 'log', 'aireception.meta_sandbox_enabled'=>true, 'aireception.reminders_simulation_enabled'=>true, 'aireception.native_enabled' => true, 'aireception.enabled' => false, 'aireception.external_connections_enabled' => false, 'tattooinbox.ai.enabled' => false, 'tattooinbox.meta.require_signature'=>true, 'tattooinbox.meta.verify_token'=>null, 'tattooinbox.meta.page_access_token'=>null, 'tattooinbox.meta.app_secret' => null, 'tattooinbox.meta.whatsapp_access_token' => null, 'odontologia.clinical_records_enabled' => true, 'native_lab.enabled' => true, 'tenancy.hostname.cache' => false, 'tenancy.website.cache' => false] as $k => $v) {
         $app['config']->set($k, $v);
     }
 });
@@ -43,7 +43,7 @@ $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\LoadConfiguration::clas
 $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\LoadConfiguration::class,function($app)use($runtime,$root){
  $file=$runtime.'/ollama-authorization.json';if(!is_file($file))return;$a=json_decode(file_get_contents($file),true);
  if(!is_array($a)||($a['purpose']??'')!=='multifactura-v7-local-ollama'||($a['root']??'')!==str_replace('\\','/',realpath($root))||($a['enabled']??false)!==true||!is_int($a['expires_at']??null)||$a['expires_at']<=time()||$a['expires_at']>time()+604800)return;
- if(($a['gateway']['port']??0)!==8899)return;$app['config']->set('aireception.gateway',$a['gateway']);$app['config']->set('aireception.gateway_channels',$a['gateway_channels']);$app['config']->set('aireception.gateway_authorized',true);$app['config']->set('aireception.ollama_enabled',true);
+ if(($a['gateway']['port']??0)!==8900)return;$app['config']->set('aireception.gateway',$a['gateway']);$app['config']->set('aireception.gateway_channels',$a['gateway_channels']);$app['config']->set('aireception.gateway_authorized',true);$app['config']->set('aireception.ollama_enabled',true);
 });
 $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\RegisterProviders::class, function ($app) {
     require_once __DIR__.'/ReservedDatabase.php';

@@ -11,7 +11,7 @@ class Client:
   self.base=account['url']
   port=os.environ.get('MULTIFACTURA_TEST_PORT')
   if port:
-   if port not in ('8881','8889'):raise ValueError('Only V6 loopback test ports allowed')
+   if port not in ('8882','8889'):raise ValueError('Only V6 loopback test ports allowed')
    u=urllib.parse.urlsplit(self.base)
    if u.scheme!='http' or not (u.hostname=='localhost' or u.hostname.endswith('.localhost')):raise ValueError('Only local fixture hosts allowed')
    self.base=urllib.parse.urlunsplit((u.scheme,u.hostname+':'+port,u.path,u.query,u.fragment))
