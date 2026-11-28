@@ -8,4 +8,4 @@ Servicios propios:MySQL13325 yHTTP8881 activos. Gateway8899 yMySQLrecuperacion13
 
 No reinicializar ni repetir migraciones. Reanudar solo native-lab/resume-v6.ps1 adaptadoV7.1. Para nueva evaluacion usar nuevo --run; nombres existentes omiten conversaciones completas. Para repetir E2E usar perfil e2e. No cerrar servicios ajenos.
 
-Pendientes:revision humana, calidad de solicitudes repetidas, mitigacion monolito, sandboxexterno, validacionclinica/legal. No declaracion comercial/productiva. Siguiente paso de entrega:commit de evidencias, escaneo de secretos, push solo ramaV7.1 y verificacionCI.
+Pendientes:revision humana, calidad de solicitudes repetidas, mitigacion monolito, sandboxexterno, validacionclinica/legal. No declaracion comercial/productiva. Rama publicada y verificada e429296f; sin merge ni despliegue. Siguiente paso: comprobar CI del commit documental y conservar bundle final.

@@ -19,6 +19,7 @@ on:
       - 'app/Providers/AuthServiceProvider.php'
       - 'qa/performance/**'
       - 'qa/ai-reception-evaluation/**'
+      - 'audit/native-v7-1/**'
       - 'app/Exceptions/Handler.php'
       - 'database/migrations/tenant/2026_11_28_*'
       - 'database/migrations/tenant/2026_11_23_*'
