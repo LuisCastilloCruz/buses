@@ -85,6 +85,7 @@ jobs:
         run: |
           php native-lab/v7-unit-tests.php
           php native-lab/v71-state-tests.php
+          php native-lab/v71-new-request-test.php
 
   gateway:
     name: Isolated gateway contracts

@@ -28,6 +28,9 @@ def main():
    rows=fixture('verify',run)['rows']
    if len([r for r in rows if r['start'][:5]==f'{9+index:02}:00' and r['status']!='cancelled'])!=1:raise RuntimeError('Checkpoint database invariant changed')
    continue
+  capacity=baseline['database']['max_connections']
+  if n*2+4>capacity:
+   report['blocked_level']={'workers':n,'reason':'Two connections per tenant worker plus four reserved exceed laboratory ceiling','max_connections':capacity};save();break
   resources,_=sample(ROOT);require_margin(resources)
   # Reserve conservative headroom for each PHP worker before spawning it.
   if resources['memory_free_mb']-n*80<2048:

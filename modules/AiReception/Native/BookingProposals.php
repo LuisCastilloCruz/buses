@@ -38,6 +38,7 @@ final class BookingProposals
             if($contextGuard)$contextGuard();
             $draft=$db->table('aireception_booking_drafts')->where('business_id',$business)->where('actor_id',$actor)->where('token_hash',hash('sha256',$token))->lockForUpdate()->first();
             if(!$draft)abort(404);
+            if($draft->conversation_id && !$draft->result){$conversation=$db->table('aireception_conversations')->where('id',$draft->conversation_id)->lockForUpdate()->first();if(!$conversation||$conversation->status!=='automated')abort(409,'Conversacion pausada.');$state=app(DialogueSession::class)->load((int)$conversation->id,(int)$conversation->person_id);if(($state['pending']['token_hash']??null)!==hash('sha256',$token))abort(409,'La propuesta ya no corresponde a la solicitud actual.');}
             if($draft->result){$previous=json_decode($draft->result,true);$current=$db->table('aireception_bookings')->where('business_id',$business)->where('id',$previous['booking']['id'])->first();if(!$current || (int)$current->version!==(int)$previous['booking']['version'])abort(409,'La reserva ya cambio; consulta el calendario.');return $previous+['replayed'=>true];}
             if($draft->expires_at<=date('Y-m-d H:i:s'))abort(409,'Propuesta vencida; consulta disponibilidad otra vez.');
             $payload=json_decode($draft->payload,true);$action=$payload['_action']??'book';
@@ -48,6 +49,7 @@ final class BookingProposals
             $db->table('aireception_events')->insert(['business_id'=>$business,'actor_id'=>$actor,'booking_id'=>$result['booking']['id'],'action'=>'confirmed_proposal','details'=>json_encode(['action'=>$action,'draft_id'=>$draft->id]),'created_at'=>date('Y-m-d H:i:s')]);
             app(ReminderSchedule::class)->sync($result['booking']);
             $db->table('aireception_booking_drafts')->where('id',$draft->id)->update(['result'=>json_encode(['booking'=>$result['booking']])]);
+            if($draft->conversation_id)app(DialogueSession::class)->result((int)$draft->conversation_id,(int)$result['booking']['person_id'],'confirmed',['booking'=>$result['booking']]);
             return $result;
         },3);
     }

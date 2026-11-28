@@ -32,9 +32,9 @@ def main():
   def save():reportfile.write_text(json.dumps(report,indent=2))
   save();stages=[]
   if a.profile in ['smoke','full']:
-   stages += [('unit',[PHP,'native-lab/v7-unit-tests.php'],{}),('gateway',[NODE,'--test',*['gateway/'+f for f in ['core.test.mjs','http.test.mjs','concurrency.test.mjs','provider-failures.test.mjs','recovery.test.mjs','stress.test.mjs','ollama.test.mjs','ollama-gateway.test.mjs','inference-jobs.test.mjs','private-worker.test.mjs']]],{})]
+   stages += [('unit',[PHP,'native-lab/v7-unit-tests.php'],{}),('gateway',[NODE,'--test',*['gateway/'+f for f in ['core.test.mjs','http.test.mjs','concurrency.test.mjs','provider-failures.test.mjs','recovery.test.mjs','stress.test.mjs','ollama.test.mjs','ollama-gateway.test.mjs','inference-jobs.test.mjs','private-worker.test.mjs','v71-recovery.test.mjs']]],{})]
   if a.profile in ['integration','full']:
-   stages += [('persistence',[PHP,'native-lab/v7-persistence-tests.php','dental'],{}),('tattoo',[PHP,'native-lab/v5-flow-tests.php','tattoo'],{}),('dental',[PHP,'native-lab/v5-flow-tests.php','dental'],{}),('concurrency',[sys.executable,'-X','utf8','qa/performance/concurrency.py'],{})]
+   stages += [('persistence',[PHP,'native-lab/v7-persistence-tests.php','dental'],{}),('tattoo',[PHP,'native-lab/v5-flow-tests.php','tattoo'],{}),('dental',[PHP,'native-lab/v5-flow-tests.php','dental'],{}),('concurrency',[sys.executable,'-X','utf8','native-lab/v71-concurrency.py'],{})]
   if a.profile in ['functional','full']:
    stages += [('http',[sys.executable,'-X','utf8','native-lab/http-tests.py'],{}),('agent-http',[sys.executable,'-X','utf8','native-lab/agent-http-tests.py'],{}),('v7-http',[sys.executable,'-X','utf8','native-lab/v7-http-tests.py'],{})]
   if a.profile in ['browser','full']:

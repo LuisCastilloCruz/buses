@@ -7,7 +7,9 @@ final class DialogueState {
   $changed=false;foreach(['service_id','professional_id','day','start'] as $key)if(($state['selection'][$key]??null)!==($selection[$key]??null))$changed=true;
   if($changed){$state['pending']=null;$state['phase']='collecting';foreach(['service_id','professional_id','day'] as $key)if(($state['selection'][$key]??null)!==($selection[$key]??null)){$state['offered']=[];break;}}
   $state['selection']=$selection;if(preg_match('/^(no|mejor no|ya no)\b/iu',trim($text))){$state['pending']=null;$state['offered']=[];$state['phase']='clarification';}
-  if(preg_match('/cancel/iu',$text))$state['intent']='cancel';elseif(preg_match('/reprogram|cambiar mi cita|mover mi cita/iu',$text))$state['intent']='reschedule';elseif(preg_match('/quiero|reserv|cita/iu',$text)&&$state['intent']==='information')$state['intent']='book';
+  $newBooking=preg_match('/(?:nueva|otra)\s+(?:cita|reserva)|(?:cita|reserva)\s+nueva/iu',$text)===1;
+  if($newBooking){$state['intent']='book';$state['booking_id']=null;$state['pending']=null;$state['offered']=[];$state['phase']='collecting';}
+  if(!$newBooking&&preg_match('/cancel/iu',$text))$state['intent']='cancel';elseif(preg_match('/reprogram|cambiar mi cita|mover mi cita/iu',$text))$state['intent']='reschedule';elseif(preg_match('/quiero|reserv|cita/iu',$text)&&$state['intent']==='information')$state['intent']='book';
   if(preg_match('/(?:cita|reserva)\s*#\s*(\d+)/iu',$text,$m))$state['booking_id']=(int)$m[1];
   $required=$state['intent']==='cancel'?['booking_id']:($state['intent']==='reschedule'?['booking_id','day','start']:['service_id','professional_id','day','start']);$state['missing']=[];foreach($required as $key)if($key==='booking_id'?!$state['booking_id']:!isset($selection[$key]))$state['missing'][]=$key;
   return $state;
