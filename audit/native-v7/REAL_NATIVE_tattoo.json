@@ -1,0 +1,21 @@
+{
+    "fictional": true,
+    "provider": "real Ollama qwen3:1.7b",
+    "turns": [
+        {
+            "reply": "No hay horarios disponibles para esa seleccion.",
+            "slots": [],
+            "conversation_id": 5
+        },
+        {
+            "reply": "No hay horarios disponibles para esa seleccion.",
+            "slots": [],
+            "conversation_id": 5
+        },
+        {
+            "reply": "Tu solicitud es Sesion tatuaje ficticia con Tatuador ficticio 1 para 2090-01-08. Es una preferencia; no confirma una reserva.",
+            "conversation_id": 5
+        }
+    ],
+    "tests": 8
+}

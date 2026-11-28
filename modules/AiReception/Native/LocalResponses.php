@@ -14,6 +14,7 @@ final class LocalResponses {
   $plan=app('db')->connection('system')->table('clients as c')->join('hostnames as h','h.id','=','c.hostname_id')->join('aireception_plan_controls as p','p.plan_id','=','c.plan_id')->where('h.website_id',$business)->select('p.message_limit')->first();
   if(!$plan || (int)$plan->message_limit<1)abort(409,'Plan sin cuota local; atencion humana.');
   $payload=['model'=>$configuration['model'],'messages'=>$messages,'tools'=>$tools,'max_output_tokens'=>min(1024,$configuration['max_output_tokens']),'instructions'=>'Usa español del Perú sin voseo. Selecciona una herramienta autorizada; no confirmes operaciones. '.ReceptionProfile::context($configuration['profile']??[])];
+  $payload['temperature']=$configuration['local_options']['temperature']??0;$payload['context']=$configuration['local_options']['context']??4096;
   $hash=hash('sha256',json_encode(['actor'=>(int)auth('web')->id(),'payload'=>$payload]));// Local inference has a call quota, never an invented USD price.
   $entry=$db->transaction(function()use($db,$business,$period,$key,$hash,$plan,$configuration){
    $db->table('companies')->orderBy('id')->lockForUpdate()->first();

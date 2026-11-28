@@ -1,0 +1,169 @@
+[
+  {
+    "run": "20261128-014946",
+    "profile": "smoke",
+    "code": "1cb39c735fb8b6dfe1f815cec88383100b7f60a882aaa0a61b95730f210876f1",
+    "stages": [
+      {
+        "name": "unit",
+        "status": "passed",
+        "started": "2026-11-28T06:49:53.979905+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T06:49:54.031948+00:00"
+      },
+      {
+        "name": "gateway",
+        "status": "passed",
+        "started": "2026-11-28T06:49:57.296621+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T06:49:58.733975+00:00"
+      }
+    ],
+    "release_approved": false
+  },
+  {
+    "run": "20261128-015830",
+    "profile": "integration",
+    "code": "085637be6b40cc08afdf6729ad43ddc86663e8ea2aa50f9c04ad347e5b774747",
+    "stages": [
+      {
+        "name": "persistence",
+        "status": "passed",
+        "started": "2026-11-28T06:58:33.694926+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T06:58:34.845389+00:00"
+      },
+      {
+        "name": "tattoo",
+        "status": "passed",
+        "started": "2026-11-28T06:58:37.700373+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T06:58:42.450872+00:00"
+      },
+      {
+        "name": "dental",
+        "status": "passed",
+        "started": "2026-11-28T06:58:45.223352+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T06:58:49.828923+00:00"
+      },
+      {
+        "name": "concurrency",
+        "status": "blocked",
+        "started": "2026-11-28T06:58:52.564389+00:00",
+        "exit_code": 2,
+        "finished": "2026-11-28T06:58:57.328278+00:00"
+      }
+    ],
+    "release_approved": false
+  },
+  {
+    "run": "20261128-020659",
+    "profile": "browser",
+    "code": "085637be6b40cc08afdf6729ad43ddc86663e8ea2aa50f9c04ad347e5b774747",
+    "stages": [
+      {
+        "name": "chrome-tattoo",
+        "status": "passed",
+        "started": "2026-11-28T07:07:01.487719+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:07:23.567892+00:00"
+      },
+      {
+        "name": "chrome-dental",
+        "status": "passed",
+        "started": "2026-11-28T07:07:25.886493+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:07:47.439204+00:00"
+      },
+      {
+        "name": "chrome-comercio",
+        "status": "passed",
+        "started": "2026-11-28T07:07:49.928428+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:08:02.405599+00:00"
+      },
+      {
+        "name": "chrome-system",
+        "status": "passed",
+        "started": "2026-11-28T07:08:04.742417+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:08:16.124717+00:00"
+      },
+      {
+        "name": "chrome-v7",
+        "status": "passed",
+        "started": "2026-11-28T07:08:18.377311+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:08:29.605595+00:00"
+      }
+    ],
+    "release_approved": false
+  },
+  {
+    "run": "20261128-021215",
+    "profile": "smoke",
+    "code": "15a8eca40afca89e0f3ef35277778da431d1946d118a66414df66cd20b9e8566",
+    "stages": [
+      {
+        "name": "unit",
+        "status": "failed",
+        "started": "2026-11-28T07:12:17.687001+00:00",
+        "exit_code": 255,
+        "finished": "2026-11-28T07:12:17.732783+00:00"
+      }
+    ],
+    "release_approved": false
+  },
+  {
+    "run": "20261128-021241",
+    "profile": "smoke",
+    "code": "87fb3c8620181640efa97eaa30fc3ac0574e8690cef791299aaa00a53648c84e",
+    "stages": [
+      {
+        "name": "unit",
+        "status": "passed",
+        "started": "2026-11-28T07:12:43.883370+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:12:43.932458+00:00"
+      },
+      {
+        "name": "gateway",
+        "status": "passed",
+        "started": "2026-11-28T07:12:46.328948+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:12:47.422275+00:00"
+      }
+    ],
+    "release_approved": false
+  },
+  {
+    "run": "20261128-021251",
+    "profile": "functional",
+    "code": "87fb3c8620181640efa97eaa30fc3ac0574e8690cef791299aaa00a53648c84e",
+    "stages": [
+      {
+        "name": "http",
+        "status": "passed",
+        "started": "2026-11-28T07:12:54.127674+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:13:31.707546+00:00"
+      },
+      {
+        "name": "agent-http",
+        "status": "passed",
+        "started": "2026-11-28T07:13:34.226796+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:13:48.321548+00:00"
+      },
+      {
+        "name": "v7-http",
+        "status": "passed",
+        "started": "2026-11-28T07:13:50.547656+00:00",
+        "exit_code": 0,
+        "finished": "2026-11-28T07:14:05.639439+00:00"
+      }
+    ],
+    "release_approved": false
+  }
+]

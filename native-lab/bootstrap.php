@@ -39,6 +39,12 @@ $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\LoadConfiguration::clas
  foreach(['gateway','gateway_channels','channel_actors','audio','reminder_templates'] as $key)$app['config']->set('aireception.'.$key,$a[$key]??[]);
  $app['config']->set('aireception.gateway_authorized',true);$app['config']->set('aireception.external_connections_enabled',true);$app['config']->set('aireception.channel_processing_enabled',true);$app['config']->set('aireception.v5_transport_mode','sandbox');
 });
+// Independent local authorization. Expiry disables only inference, never the original dashboard.
+$app->afterBootstrapping(Illuminate\Foundation\Bootstrap\LoadConfiguration::class,function($app)use($runtime,$root){
+ $file=$runtime.'/ollama-authorization.json';if(!is_file($file))return;$a=json_decode(file_get_contents($file),true);
+ if(!is_array($a)||($a['purpose']??'')!=='multifactura-v7-local-ollama'||($a['root']??'')!==str_replace('\\','/',realpath($root))||($a['enabled']??false)!==true||!is_int($a['expires_at']??null)||$a['expires_at']<=time()||$a['expires_at']>time()+604800)return;
+ if(($a['gateway']['port']??0)!==8898)return;$app['config']->set('aireception.gateway',$a['gateway']);$app['config']->set('aireception.gateway_channels',$a['gateway_channels']);$app['config']->set('aireception.gateway_authorized',true);$app['config']->set('aireception.ollama_enabled',true);
+});
 $app->afterBootstrapping(Illuminate\Foundation\Bootstrap\RegisterProviders::class, function ($app) {
     require_once __DIR__.'/ReservedDatabase.php';
     $app->bind(Hyn\Tenancy\Contracts\Database\PasswordGenerator::class, NativeReservedPassword::class);

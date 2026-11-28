@@ -10,7 +10,7 @@ function Listening([int]$port){$c=New-Object Net.Sockets.TcpClient;try{return $c
 $stamp=Get-Date -Format 'yyyyMMdd-HHmmss'
 if(!(Listening 13323)){
  $data=(Join-Path $runtime 'mysql-data').Replace('\','/')
- $p=Start-Process (Join-Path $mysql 'bin/mysqld.exe') -ArgumentList @('--no-defaults',"--basedir=`"$mysql`"","--datadir=`"$data`"",'--port=13323','--bind-address=127.0.0.1','--mysqlx=0','--restrict-fk-on-non-standard-key=OFF','--console') -WindowStyle Hidden -PassThru -RedirectStandardOutput "$runtime/mysql-resume-$stamp.out.log" -RedirectStandardError "$runtime/mysql-resume-$stamp.err.log"
+ $p=Start-Process (Join-Path $mysql 'bin/mysqld.exe') -ArgumentList @('--no-defaults',"--basedir=`"$mysql`"","--datadir=`"$data`"",'--port=13323','--bind-address=127.0.0.1','--mysqlx=0','--innodb-buffer-pool-size=64M','--max-connections=20','--performance-schema=OFF','--table-open-cache=128','--restrict-fk-on-non-standard-key=OFF','--console') -WindowStyle Hidden -PassThru -RedirectStandardOutput "$runtime/mysql-resume-$stamp.out.log" -RedirectStandardError "$runtime/mysql-resume-$stamp.err.log"
  $p.Id | Set-Content "$runtime/mysql.pid"
  for($i=0;$i -lt 60 -and !(Listening 13323);$i++){Start-Sleep -Milliseconds 500}
 }
@@ -25,5 +25,5 @@ try{
  }
  & python -X utf8 qa/performance/preflight.py
  if($LASTEXITCODE -ne 0){throw 'Recovery preflight failed'}
- Write-Output 'PASS resumed existing V6 services; no migrations or fixtures executed.'
+ Write-Output 'PASS resumed existing V7 services; no migrations or fixtures executed.'
 }finally{Pop-Location}

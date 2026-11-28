@@ -1,15 +1,15 @@
 import {InferenceJobs} from './inference-jobs.mjs';
-import {OllamaProvider} from './ollama.mjs';
+import {OllamaProvider,localHeadroom} from './ollama.mjs';
 import {transcribeMedia} from './audio.mjs';
 import {createHmac,timingSafeEqual,createCipheriv,createDecipheriv,randomBytes} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
 export function mac(key,value){return createHmac('sha256',key).update(value).digest('hex');}
 function equal(a,b){return typeof a==='string'&&typeof b==='string'&&a.length===b.length&&timingSafeEqual(Buffer.from(a),Buffer.from(b));}
 export class Gateway {
- constructor({database,keys,channels,encryptionKey,live=false,fetcher=fetch}){
+ constructor({database,keys,channels,encryptionKey,live=false,fetcher=fetch,localResourceProbe=localHeadroom}){
   if(!Buffer.isBuffer(encryptionKey)||encryptionKey.length!==32)throw Error('32-byte encryption key required');
   for(const value of Object.values(keys)){if(typeof value.secret!=='string'||value.secret.length<32||!Array.isArray(value.tenants)||value.tenants.some(t=>!Number.isSafeInteger(t)||t<1))throw Error('Invalid internal credentials');}
-  this.localProviders=new Map();this.keys=keys;this.channels=channels;this.key=encryptionKey;this.live=live;this.fetcher=fetcher;
+  this.localResourceProbe=localResourceProbe;this.localProviders=new Map();this.keys=keys;this.channels=channels;this.key=encryptionKey;this.live=live;this.fetcher=fetcher;
   this.db=new DatabaseSync(database);this.db.exec('PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS local_leases (slot TEXT PRIMARY KEY, owner TEXT, expires INTEGER); CREATE TABLE IF NOT EXISTS nonces (client TEXT, nonce TEXT, expires INTEGER, PRIMARY KEY(client,nonce)); CREATE TABLE IF NOT EXISTS ingress (id INTEGER PRIMARY KEY, channel TEXT, hash TEXT, payload TEXT, state TEXT, owner TEXT, lease INTEGER, UNIQUE(channel,hash)); CREATE TABLE IF NOT EXISTS caps (tenant INTEGER, period TEXT, used INTEGER NOT NULL, PRIMARY KEY(tenant,period)); CREATE TABLE IF NOT EXISTS requests (scope TEXT, id TEXT, hash TEXT, state TEXT, response TEXT, attempts INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(scope,id));');this.jobs=new InferenceJobs(this);
  }
  encrypt(value){const iv=randomBytes(12),c=createCipheriv('aes-256-gcm',this.key,iv);const data=Buffer.concat([c.update(JSON.stringify(value)),c.final()]);return Buffer.concat([iv,c.getAuthTag(),data]).toString('base64');}
@@ -49,7 +49,7 @@ export class Gateway {
   try{
    if(operation==='ollama'){
     if(payload.model!==cfg.ollamaModel)throw Error('Local model mismatch');
-    let provider=this.localProviders.get(cfg.ollamaModel);if(!provider){provider=new OllamaProvider({model:cfg.ollamaModel,fetcher:this.fetcher});this.localProviders.set(cfg.ollamaModel,provider);}
+    let provider=this.localProviders.get(cfg.ollamaModel);if(!provider){provider=new OllamaProvider({model:cfg.ollamaModel,fetcher:this.fetcher,resourceGuard:this.localResourceProbe});this.localProviders.set(cfg.ollamaModel,provider);}
     const result=await provider.propose(payload);this.db.prepare('UPDATE requests SET state=?,response=? WHERE scope=? AND id=?').run('completed',this.encrypt(result),scope,id);return result;
    }
    if(!this.live||!cfg.sandboxAuthorized)throw Error('External sandbox disabled');

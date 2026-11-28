@@ -1,6 +1,6 @@
-"""Exclusive offline test stage: logical V6 backup and isolated MySQL restore, no source writes."""
+"""Exclusive offline test stage: logical V7 backup and isolated MySQL restore, no source writes."""
 from pathlib import Path
-import datetime,hashlib,json,os,secrets,socket,subprocess,time,sys
+import datetime,hashlib,json,os,secrets,socket,subprocess,time,sys,atexit
 ROOT=Path(__file__).resolve().parents[1]
 MYSQL=Path(r'C:\laragon\bin\mysql\mysql-8.4.3-winx64\bin')
 PHP=r'C:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe'
@@ -24,10 +24,20 @@ def main():
   if p.returncode:raise RuntimeError('Digest failed; inspect private runtime')
   out=target/(name+'-digest.json');out.write_bytes(p.stdout);return json.loads(p.stdout)
  before=digest('source',13323,admin['password'],ROOT/'.native-runtime/mysql-data')
- dump=target/'fictional-v6.sql'
+ dump=target/'fictional-v7.sql'
  with dump.open('xb') as output,(target/'dump.err.log').open('xb') as error:
   p=subprocess.run([str(MYSQL/'mysqldump.exe'),'--defaults-extra-file='+str(source),'--single-transaction','--skip-comments','--routines','--triggers','--hex-blob','--set-gtid-purged=OFF','--column-statistics=0','--no-tablespaces','--databases',*DBS],stdout=output,stderr=error,timeout=180)
   if p.returncode:raise RuntimeError('Dump failed; inspect private log')
+ if '--offline-source' in sys.argv:
+  # Stop only the already-verified V7 server, after its snapshot is complete.
+  marker=target/'source-offline.json';marker.write_text(json.dumps({'source_port':13323,'next':'native-lab/resume-v6.ps1 (adapted V7; no migrations)'}))
+  subprocess.run([str(MYSQL/'mysqladmin.exe'),'--defaults-extra-file='+str(source),'shutdown'],capture_output=True,check=True,timeout=30)
+  def resume_source():
+   with (target/'source-resume.log').open('wb') as resume_log:
+    p=subprocess.run(['powershell','-NoProfile','-File',str(ROOT/'native-lab/resume-v6.ps1')],cwd=ROOT,stdout=resume_log,stderr=resume_log,timeout=90)
+   marker.write_text(json.dumps({'source_port':13323,'resumed':p.returncode==0}))
+   print('Source V7 resumed:',p.returncode==0,flush=True)
+  atexit.register(resume_source)
  with (target/'initialize.log').open('xb') as log:
   subprocess.run([str(MYSQL/'mysqld.exe'),'--no-defaults','--initialize-insecure','--basedir='+str(MYSQL.parent),'--datadir='+str(data)],stdout=log,stderr=log,check=True,timeout=120,creationflags=subprocess.CREATE_NO_WINDOW)
  log=(target/'restore-server.log').open('xb')

@@ -1,12 +1,93 @@
 {
   "model": "qwen3:1.7b",
-  "started": "2026-11-28T06:24:31.123Z",
-  "levels": [],
-  "resource_samples": [],
-  "scope": "Local API only; observed concurrency is not unlimited production capacity",
-  "blocked": {
-    "reason": "Insufficient free RAM for safe inference",
-    "free_mb": 2630,
-    "required_mb": 3328
-  }
+  "started": "2026-11-28T07:06:40.640Z",
+  "levels": [
+    {
+      "concurrent": 1,
+      "rows": [
+        {
+          "elapsed_ms": 5202.196199999999,
+          "first_content_ms": 5054.310799999999,
+          "output_tokens": 12,
+          "tokens_per_second": 80.67877744759241
+        }
+      ],
+      "stopped": false
+    },
+    {
+      "concurrent": 2,
+      "rows": [
+        {
+          "elapsed_ms": 173.27319999999963,
+          "first_content_ms": 28.440599999999904,
+          "output_tokens": 12,
+          "tokens_per_second": 82.8117344227677
+        },
+        {
+          "elapsed_ms": 332.78909999999996,
+          "first_content_ms": 188.33730000000014,
+          "output_tokens": 12,
+          "tokens_per_second": 83.18948484911508
+        }
+      ],
+      "stopped": false
+    },
+    {
+      "concurrent": 3,
+      "rows": [
+        {
+          "elapsed_ms": 170.33240000000023,
+          "first_content_ms": 26.904499999999643,
+          "output_tokens": 12,
+          "tokens_per_second": 83.6266071988571
+        },
+        {
+          "elapsed_ms": 331.7452000000003,
+          "first_content_ms": 189.76379999999972,
+          "output_tokens": 12,
+          "tokens_per_second": 81.96329410479007
+        },
+        {
+          "elapsed_ms": 491.29869999999937,
+          "first_content_ms": 346.96919999999955,
+          "output_tokens": 12,
+          "tokens_per_second": 83.13127814340145
+        }
+      ],
+      "stopped": false
+    }
+  ],
+  "resource_samples": [
+    {
+      "at": "2026-11-28T07:06:41.432Z",
+      "free_mb": 3905,
+      "gpu": "0, 0"
+    },
+    {
+      "at": "2026-11-28T07:06:42.195Z",
+      "free_mb": 3903,
+      "gpu": "9, 0"
+    },
+    {
+      "at": "2026-11-28T07:06:42.946Z",
+      "free_mb": 3938,
+      "gpu": "0, 1"
+    },
+    {
+      "at": "2026-11-28T07:06:43.708Z",
+      "free_mb": 3903,
+      "gpu": "8, 2"
+    },
+    {
+      "at": "2026-11-28T07:06:44.470Z",
+      "free_mb": 3749,
+      "gpu": "55, 2"
+    },
+    {
+      "at": "2026-11-28T07:06:45.235Z",
+      "free_mb": 3477,
+      "gpu": "1467, 2"
+    }
+  ],
+  "scope": "Local API only; observed concurrency is not unlimited production capacity"
 }

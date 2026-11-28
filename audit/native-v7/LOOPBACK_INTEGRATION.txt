@@ -1,0 +1,7 @@
+PASS 1 native coordinator traverses signed loopback bridge
+PASS 2 visible reply comes from real tenant catalogue
+PASS 3 conversation retry does not repeat inference
+PASS 4 local inference usage committed in MySQL
+PASS 5 OpenAI and Meta remain disabled
+PASS 6 thinking never reaches visible reply
+RESULT 6 Laravel/gateway/HTTP/MySQL checks; Ollama response mocked explicitly.

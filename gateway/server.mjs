@@ -1,9 +1,10 @@
 import http from 'node:http';
 import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {Gateway,mac} from './core.mjs';
 // Configuration is an ACL-protected file outside the repository. No public bind option.
-const config=JSON.parse(fs.readFileSync(process.env.AR_GATEWAY_CONFIG,'utf8'));
-const gateway=new Gateway({...config,encryptionKey:Buffer.from(config.encryptionKey,'base64')});
+export function createGatewayServer(gateway,config){
 const server=http.createServer(async(req,res)=>{
  let principal=null;res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type','application/json');
  try{
@@ -16,4 +17,6 @@ const server=http.createServer(async(req,res)=>{
  }catch(e){res.statusCode=e.retryAfter?429:409;const encoded=JSON.stringify(e.retryAfter?{error:'retryable_provider_rejection',retry_after:e.retryAfter}:{error:'request_rejected_or_reconciliation_required'});if(principal)res.setHeader('X-AR-Response-Signature',mac(principal.secret,req.headers['x-ar-nonce']+'\n'+encoded));res.end(encoded);}
 });
 server.requestTimeout=30000;server.headersTimeout=5000;server.maxHeadersCount=20;server.maxConnections=32;
-server.listen(config.port||8890,'127.0.0.1');
+return server;
+}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const config=JSON.parse(fs.readFileSync(process.env.AR_GATEWAY_CONFIG,'utf8'));const gateway=new Gateway({...config,encryptionKey:Buffer.from(config.encryptionKey,'base64')});createGatewayServer(gateway,config).listen(config.port||8890,'127.0.0.1');}

@@ -1,0 +1,1059 @@
+{
+  "scope": "Deterministic checks on original unguarded real-model responses. Does not assess all linguistic quality or production isolation.",
+  "aggregates": {
+    "no_unknown_numeric_price": {
+      "passed": 100,
+      "total": 100,
+      "percent": 100
+    },
+    "no_unknown_clock": {
+      "passed": 100,
+      "total": 100,
+      "percent": 100
+    },
+    "known_price_answered": {
+      "passed": 10,
+      "total": 10,
+      "percent": 100
+    },
+    "service_retained": {
+      "passed": 19,
+      "total": 20,
+      "percent": 95
+    },
+    "professional_retained": {
+      "passed": 9,
+      "total": 10,
+      "percent": 90
+    },
+    "date_changed": {
+      "passed": 6,
+      "total": 10,
+      "percent": 60
+    }
+  },
+  "failures": [
+    {
+      "business": "barberia",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": false
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": false
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": false
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": false
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": false
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": false,
+        "date_changed": true
+      }
+    }
+  ],
+  "rows": [
+    {
+      "business": "barberia",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": false
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "barberia",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "dental",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "estetica",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": false
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "hotel",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "peluqueria",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": false
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "restaurante",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "taller",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tattoo",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": true,
+        "date_changed": false
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": false
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "tienda",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "precio",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "known_price_answered": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "horario",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "reserva",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true,
+        "professional_retained": false,
+        "date_changed": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "profesional",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true,
+        "service_retained": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "cancelacion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "desconocido",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "inyeccion",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "molesto",
+      "split": "development",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "ambiguo",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    },
+    {
+      "business": "veterinaria",
+      "scenario": "reprogramacion",
+      "split": "held-out",
+      "facts": {
+        "no_unknown_numeric_price": true,
+        "no_unknown_clock": true
+      }
+    }
+  ]
+}

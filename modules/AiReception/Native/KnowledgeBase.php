@@ -3,7 +3,7 @@ namespace Modules\AiReception\Native;
 /** Lexical retrieval over explicitly approved administrative documents, never clinical records. */
 final class KnowledgeBase {
  public static function terms(string $text):array {
-  $text=mb_strtolower($text,'UTF-8');preg_match_all('/[\p{L}\p{N}]{3,40}/u',$text,$matches);return array_values(array_unique(array_slice($matches[0],0,2000)));
+  $text=mb_strtolower($text,'UTF-8');preg_match_all('/[\p{L}\p{N}]{3,40}/u',$text,$matches);return array_slice(array_values(array_unique($matches[0])),0,4096);
  }
  private function hashes(string $text):array {return array_map(function($term){return hash_hmac('sha256',$term,config('app.key'));},self::terms($text));}
  public function save(array $input):int {
@@ -13,6 +13,7 @@ final class KnowledgeBase {
   $db=app('db')->connection('tenant');return $db->transaction(function()use($db,$v,$business){
    $db->table('companies')->orderBy('id')->lockForUpdate()->first();
    if($db->table('aireception_knowledge_documents')->where('business_id',$business)->where('active',true)->where('source','<>',$v['source'])->count()>=100)abort(422,'Limite documental del laboratorio.');
+   $current=$db->table('aireception_knowledge_documents')->where('business_id',$business)->where('source',$v['source'])->where('active',true)->first();if($current && is_array(json_decode($current->term_hashes,true)) && hash_equals($current->content_hash,hash('sha256',$v['body'])) && $current->title===$v['title'])return (int)$current->id;
    $version=1+(int)$db->table('aireception_knowledge_documents')->where('business_id',$business)->where('source',$v['source'])->max('version');
    $db->table('aireception_knowledge_documents')->where('business_id',$business)->where('source',$v['source'])->update(['active'=>false]);$now=date('Y-m-d H:i:s');
    $id=$db->table('aireception_knowledge_documents')->insertGetId(['business_id'=>$business,'source'=>$v['source'],'version'=>$version,'title'=>$v['title'],'content_hash'=>hash('sha256',$v['body']),'encrypted_body'=>app('encrypter')->encrypt($v['body']),'term_hashes'=>json_encode($this->hashes($v['title'].' '.$v['body'])),'active'=>true,'actor_id'=>(int)auth('web')->id(),'created_at'=>$now,'updated_at'=>$now]);
@@ -25,7 +26,7 @@ final class KnowledgeBase {
  private function audit(string $action,string $source,int $version):void {app('db')->connection('tenant')->table('aireception_events')->insert(['business_id'=>app(Access::class)->business(),'actor_id'=>(int)auth('web')->id(),'booking_id'=>null,'action'=>$action,'details'=>json_encode(['source'=>$source,'version'=>$version]),'created_at'=>date('Y-m-d H:i:s')]);}
  public function search(string $query):array {
   $a=app(Access::class);$a->require('aireception','conversations');if(strlen($query)>200||strlen(trim($query))<2)abort(422);$terms=$this->hashes($query);$matches=[];
-  foreach(app('db')->connection('tenant')->table('aireception_knowledge_documents')->where('business_id',$a->business())->where('active',true)->limit(100)->get() as $row){$score=count(array_intersect($terms,json_decode($row->term_hashes,true)));if(!$score||!$row->encrypted_body)continue;$matches[]=['score'=>$score,'source'=>$row->source,'version'=>(int)$row->version,'title'=>$row->title,'excerpt'=>mb_substr(app('encrypter')->decrypt($row->encrypted_body),0,800,'UTF-8')];}
+  foreach(app('db')->connection('tenant')->table('aireception_knowledge_documents')->where('business_id',$a->business())->where('active',true)->limit(100)->get() as $row){$index=json_decode($row->term_hashes,true);if(!is_array($index))throw new \RuntimeException('Knowledge index requires rebuild.');$score=count(array_intersect($terms,$index));if(!$score||!$row->encrypted_body)continue;$body=app('encrypter')->decrypt($row->encrypted_body);$positions=[];foreach(self::terms($query) as $term){$position=mb_stripos($body,$term,0,'UTF-8');if($position!==false)$positions[]=$position;}$offset=$positions?max(0,min($positions)-250):0;$matches[]=['score'=>$score,'source'=>$row->source,'version'=>(int)$row->version,'title'=>$row->title,'excerpt'=>mb_substr($body,$offset,800,'UTF-8')];}
   usort($matches,function($a,$b){return $b['score']<=>$a['score'];});return array_slice($matches,0,3);
  }
 }

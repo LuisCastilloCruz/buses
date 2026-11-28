@@ -1,4 +1,4 @@
-﻿import {randomBytes,createHmac,timingSafeEqual} from 'node:crypto';
+﻿import {randomBytes,randomUUID,createHmac,timingSafeEqual} from 'node:crypto';
 /** Outgoing HTTPS only. Deploy only against an explicitly configured private gateway. */
 export class PrivateGatewayClient {
  constructor({origin,client,secret,tenant,channel,fetcher=fetch}){const u=new URL(origin);if(u.protocol!=='https:'||u.username||u.password||u.pathname!=='/'||u.search||u.hash||typeof secret!=='string'||secret.length<32)throw Error('Private TLS gateway required');Object.assign(this,{origin:u.origin,client,secret,tenant,channel,fetcher});}
@@ -7,6 +7,10 @@ export class PrivateGatewayClient {
 export class OutboundInferenceWorker {
  constructor({vault,remote,provider}){Object.assign(this,{vault,remote,provider});this.db=vault.db;this.db.exec('CREATE TABLE IF NOT EXISTS worker_results (id TEXT PRIMARY KEY, hash TEXT, job TEXT, state TEXT, result TEXT);');}
  async once(){
+  const owner=randomUUID(),now=Date.now();this.db.exec('BEGIN IMMEDIATE');try{const old=this.db.prepare('SELECT * FROM local_leases WHERE slot=?').get('inference');if(old&&old.expires>now)throw Error('Local worker busy');this.db.prepare('INSERT INTO local_leases VALUES(?,?,?) ON CONFLICT(slot) DO UPDATE SET owner=excluded.owner,expires=excluded.expires').run('inference',owner,now+120000);this.db.exec('COMMIT');}catch(e){this.db.exec('ROLLBACK');throw e;}
+  try{return await this.processOne();}finally{this.db.prepare('DELETE FROM local_leases WHERE slot=? AND owner=?').run('inference',owner);}
+ }
+ async processOne(){
   const saved=this.db.prepare("SELECT * FROM worker_results WHERE state='completed' ORDER BY rowid LIMIT 1").get();if(saved){const job=this.vault.decrypt(saved.job),result=this.vault.decrypt(saved.result);await this.remote.call('job_complete',{job,result});this.db.prepare("UPDATE worker_results SET state='acknowledged',job='',result='' WHERE id=?").run(saved.id);return 'acknowledged';}
   const {job}=await this.remote.call('job_pull');if(!job)return 'idle';const prior=this.db.prepare('SELECT * FROM worker_results WHERE id=?').get(job.id);if(prior){if(prior.hash!==job.hash)throw Error('Worker job conflict');return 'reconciliation_required';}
   await this.remote.call('job_start',job);this.db.prepare("INSERT INTO worker_results VALUES(?,?,?,'pending',NULL)").run(job.id,job.hash,this.vault.encrypt(job));

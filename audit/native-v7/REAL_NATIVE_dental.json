@@ -1,0 +1,21 @@
+{
+    "fictional": true,
+    "provider": "real Ollama qwen3:1.7b",
+    "turns": [
+        {
+            "reply": "No hay horarios disponibles para esa seleccion.",
+            "slots": [],
+            "conversation_id": 24
+        },
+        {
+            "reply": "No hay horarios disponibles para esa seleccion.",
+            "slots": [],
+            "conversation_id": 24
+        },
+        {
+            "reply": "Tu solicitud es Limpieza dental ficticia con Odontologo ficticio 1 para 2090-01-08. Es una preferencia; no confirma una reserva.",
+            "conversation_id": 24
+        }
+    ],
+    "tests": 8
+}

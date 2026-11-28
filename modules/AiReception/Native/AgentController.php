@@ -3,7 +3,7 @@ namespace Modules\AiReception\Native;
 use Illuminate\Http\Request;
 class AgentController extends \Illuminate\Routing\Controller {
  public function index(){
-  $settings=app('db')->connection('tenant')->table('aireception_agent_settings')->where('id',1)->select('enabled','mode','model','max_output_tokens')->first();$profile=app(AgentSettings::class)->publicProfile();return view('aireception::agent-settings',compact('settings','profile'));
+  $settings=app('db')->connection('tenant')->table('aireception_agent_settings')->where('id',1)->select('enabled','mode','model','max_output_tokens')->first();$profile=app(AgentSettings::class)->publicProfile();$localOptions=app(AgentSettings::class)->localOptions();return view('aireception::agent-settings',compact('settings','profile','localOptions'));
  }
  public function save(Request $r){app(AgentSettings::class)->save($r->all());return redirect('/aireception/agent-settings');}
  public function overview(){

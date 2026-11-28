@@ -1,0 +1,31 @@
+{
+  "run": "8b0f628f92a962d0a01bd3d5",
+  "levels": [
+    {
+      "workers": 2,
+      "persisted_count": 1,
+      "p50_ms": 82.32688903808594,
+      "p95_ms": 149.66511726379395,
+      "p99_ms": 149.66511726379395,
+      "passed": true
+    },
+    {
+      "workers": 5,
+      "persisted_count": 1,
+      "p50_ms": 223.30904006958008,
+      "p95_ms": 328.3209800720215,
+      "p99_ms": 328.3209800720215,
+      "passed": true
+    },
+    {
+      "workers": 10,
+      "persisted_count": 1,
+      "p50_ms": 282.3829650878906,
+      "p95_ms": 552.239179611206,
+      "p99_ms": 552.239179611206,
+      "passed": true
+    }
+  ],
+  "blocked_workers": 25,
+  "scope": "Real MySQL CLI writers; not HTTP production capacity"
+}
