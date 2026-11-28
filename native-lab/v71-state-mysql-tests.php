@@ -1,0 +1,12 @@
+<?php
+require __DIR__.'/test-bootstrap.php';
+use Modules\AiReception\Native\DialogueSession;
+$n=0;function ok($x,$name){global $n;if(!$x)throw new RuntimeException($name);echo 'PASS '.++$n.' '.$name.PHP_EOL;}
+$db->beginTransaction();try{
+ $person=(int)$db->table('persons')->where('type','customers')->value('id');$now=date('Y-m-d H:i:s');$cid=$db->table('aireception_conversations')->insertGetId(['person_id'=>$person,'status'=>'automated','created_at'=>$now,'updated_at'=>$now]);$service=app(DialogueSession::class);$selection=['service_id'=>1,'professional_id'=>1,'day'=>'2090-01-06'];$state=$service->begin($cid,$person,'Quiero una cita',$selection);ok($state['identity']['business_id']===$business&&$state['identity']['person_id']===$person,'identity resolved from trusted context');ok(strpos($db->table('aireception_dialogue_states')->where('conversation_id',$cid)->value('encrypted_state'),'2090')===false,'workflow state encrypted');
+ $state['pending']=['action'=>'book','expires_at'=>date('Y-m-d H:i:s',time()+300)];$service->save($cid,$person,$state);$db->table('aireception_pending_confirmations')->insert(['conversation_id'=>$cid,'actor_id'=>1,'encrypted_token'=>app('encrypter')->encrypt(str_repeat('a',64)),'code'=>'ABCD1234','expires_at'=>date('Y-m-d H:i:s',time()+300)]);
+ $state=$service->begin($cid,$person,'Que servicios tienen',$selection);ok($state['pending']!==null&&$db->table('aireception_pending_confirmations')->where('conversation_id',$cid)->exists(),'informational question preserves pending confirmation');$selection['day']='2090-01-08';$state=$service->begin($cid,$person,'Mejor otra fecha',$selection);ok($state['pending']===null&&!$db->table('aireception_pending_confirmations')->where('conversation_id',$cid)->exists(),'date change invalidates actual confirmation row');ok($state['selection']['service_id']===1&&$state['selection']['professional_id']===1,'date change preserves selected identities');
+ try{$service->load($cid,$person+999);throw new LogicException('Foreign identity accepted');}catch(Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e){ok($e->getStatusCode()===404,'foreign person rejected');}
+ $db->table('aireception_dialogue_states')->where('conversation_id',$cid)->update(['expires_at'=>'2020-01-01 00:00:00']);ok($service->load($cid,$person)===[],'expired workflow ignored');ok($service->purgeExpired()>=1,'expired workflow removed within tenant');
+}finally{$db->rollBack();}
+echo "RESULT $n MySQL workflow assertions\n";

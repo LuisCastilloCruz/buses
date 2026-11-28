@@ -11,7 +11,7 @@ def main():
  if any(n not in [1,5,10,20] for n in levels) or not 10<=args.seconds<=900:raise ValueError('Bounded local profile only')
  if args.soak and (levels!=[1] or args.seconds<600):raise ValueError('Initial soak requires 1 user, at least 600 seconds')
  report={'baseline':check(),'mode':'loopback PHP single-process; no production capacity claim','levels':[],'slo':{'read_p95_ms':2000,'unexpected_errors':0,'timeout_seconds':15}}
- port=8889 if args.pool else 8879
+ port=8889 if args.pool else 8881
  if args.pool:
   report['mode']='loopback nginx with four PHP CGI workers; HP laboratory only'
   response=urllib.request.build_opener(urllib.request.ProxyHandler({})).open('http://127.0.0.1:8889/login',timeout=15)
@@ -37,7 +37,7 @@ def main():
    while not stop.is_set() and time.monotonic()<deadline:
     begin=time.monotonic();status=0;error=None
     try:
-     r=opener.open(urllib.request.Request(f'http://127.0.0.1:{port}'+paths[counter%len(paths)],headers={'Host':'dental.localhost:8879','Cookie':cookie,'Accept':'application/json'}),timeout=15)
+     r=opener.open(urllib.request.Request(f'http://127.0.0.1:{port}'+paths[counter%len(paths)],headers={'Host':'dental.localhost:8881','Cookie':cookie,'Accept':'application/json'}),timeout=15)
      status=r.status;raw=r.read(2097153);r.close()
      if len(raw)>2097152:raise ValueError('Oversized response')
      json.loads(raw)

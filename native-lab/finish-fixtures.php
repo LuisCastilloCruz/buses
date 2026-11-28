@@ -1,7 +1,7 @@
 <?php
 
 $app = (require __DIR__ . '/schema-bootstrap.php');
-if ($name === 'mf_v7_system') {
+if ($name === 'mf_v71_system') {
     throw new RuntimeException('Tenant only');
 }
 if (!$db->table('format_templates')->exists()) {

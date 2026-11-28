@@ -4,19 +4,19 @@ $app = (require __DIR__ . '/schema-bootstrap.php');
 $runtime = dirname(__DIR__) . '/.native-runtime';
 $accounts = is_file($runtime . '/accounts.json') ? json_decode(file_get_contents($runtime . '/accounts.json'), true) : [];
 $system = $app['db']->connection('system');
-if ($name === 'mf_v7_system') {
+if ($name === 'mf_v71_system') {
     if (!$system->table('plans')->exists()) {
         $system->table('plans')->insert(['name' => 'Laboratorio ficticio', 'pricing' => 0, 'limit_users' => 20, 'limit_documents' => 99999, 'plan_documents' => '["01","03","80"]']);
     }
     if (!$system->table('users')->exists()) {
         $pass = bin2hex(random_bytes(12));
         $system->table('users')->insert(['name' => 'Superadministrador ficticio', 'email' => 'superadmin@example.test', 'password' => password_hash($pass, PASSWORD_BCRYPT)]);
-        $accounts['system'] = ['url' => 'http://localhost:8879', 'email' => 'superadmin@example.test', 'password' => $pass];
+        $accounts['system'] = ['url' => 'http://localhost:8881', 'email' => 'superadmin@example.test', 'password' => $pass];
         file_put_contents($runtime . '/accounts.json', json_encode($accounts, JSON_PRETTY_PRINT));
     }
     $admin = json_decode(file_get_contents($runtime . '/admin.json'), true);
-    $pdo = new PDO('mysql:host=127.0.0.1;port=13323', $admin['user'], $admin['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-    foreach (['tattoo' => 'mf_v7_tattoo', 'dental' => 'mf_v7_dental', 'comercio' => 'mf_v7_commerce'] as $host => $database) {
+    $pdo = new PDO('mysql:host=127.0.0.1;port=13325', $admin['user'], $admin['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    foreach (['tattoo' => 'mf_v71_tattoo', 'dental' => 'mf_v71_dental', 'comercio' => 'mf_v71_commerce'] as $host => $database) {
         $id = $system->table('websites')->where('uuid', $database)->value('id');
         if (!$id) {
             $id = $system->table('websites')->insertGetId(['uuid' => $database, 'created_at' => date('Y-m-d H:i:s')]);
@@ -40,7 +40,7 @@ if (!$website) {
     throw new RuntimeException('Seed system first.');
 }
 $biz = (int) $website->id;
-$host = ['mf_v7_tattoo' => 'tattoo', 'mf_v7_dental' => 'dental', 'mf_v7_commerce' => 'comercio'][$name];
+$host = ['mf_v71_tattoo' => 'tattoo', 'mf_v71_dental' => 'dental', 'mf_v71_commerce' => 'comercio'][$name];
 if ($db->table('companies')->exists()) {
     echo "SKIP already seeded {$name}\n";
     exit;
@@ -94,6 +94,6 @@ $db->transaction(function () use($db, $host, $biz, $pass, $system, $website) {
         $db->table('aireception_professional_links')->insert(['professional_id' => $pro, 'domain' => $host === 'dental' ? 'dental' : 'tattoo', 'source_id' => $source]);
     }
 });
-$accounts[$host] = ['url' => 'http://' . $host . '.localhost:8879', 'email' => $host . '@example.test', 'password' => $pass];
+$accounts[$host] = ['url' => 'http://' . $host . '.localhost:8881', 'email' => $host . '@example.test', 'password' => $pass];
 file_put_contents($runtime . '/accounts.json', json_encode($accounts, JSON_PRETTY_PRINT));
 echo "PASS {$name}: original company, user, catalogs and native fixtures.\n";

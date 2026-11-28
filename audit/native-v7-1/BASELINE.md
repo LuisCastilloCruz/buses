@@ -1,0 +1,1 @@
+V7.1 starts from clean V7 44ff5486. Isolated worktree native-v7-1. Existing V7 backup native-v7-20261128-021835 verified previously; no environment or credentials copied. New ports: MySQL13325, HTTP8881, gateway8899, recovery13326. Initial free RAM2820MiB: real inference blocked until >=3328MiB. Only qwen3:1.7b installed; GPU4096MiB.

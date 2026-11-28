@@ -8,6 +8,7 @@ on:
       - feature/multifactura-aireception-segura-v5
       - feature/multifactura-ai-reception-release-candidate-v6
       - feature/multifactura-ollama-universal-v7
+      - feature/multifactura-ollama-coherence-v7-1
       - feature/ai-reception-agenda-v1
       - feature/multifactura-native-aireception-odontologia-v3
       - "integration/ai-reception-tattoo-20261120*"
@@ -81,7 +82,9 @@ jobs:
         run: php modules/AiReception/Tests/AudioContractsTest.php
 
       - name: V7 profile memory and lexical index unit checks
-        run: php native-lab/v7-unit-tests.php
+        run: |
+          php native-lab/v7-unit-tests.php
+          php native-lab/v71-state-tests.php
 
   gateway:
     name: Isolated gateway contracts
@@ -93,4 +96,4 @@ jobs:
           node-version: '26'
           package-manager-cache: false
       - name: Test gateway without external providers
-        run: node --test gateway/core.test.mjs gateway/http.test.mjs gateway/concurrency.test.mjs gateway/stress.test.mjs gateway/recovery.test.mjs gateway/provider-failures.test.mjs gateway/ollama.test.mjs gateway/ollama-gateway.test.mjs gateway/inference-jobs.test.mjs gateway/private-worker.test.mjs
+        run: node --test gateway/core.test.mjs gateway/http.test.mjs gateway/concurrency.test.mjs gateway/stress.test.mjs gateway/recovery.test.mjs gateway/provider-failures.test.mjs gateway/ollama.test.mjs gateway/ollama-gateway.test.mjs gateway/inference-jobs.test.mjs gateway/private-worker.test.mjs gateway/v71-recovery.test.mjs

@@ -4,15 +4,22 @@ final class ReceptionTools {
  public function definitions():array {
   $integer=['type'=>'integer','minimum'=>1];$date=['type'=>'string','pattern'=>'^\\d{4}-\\d{2}-\\d{2}$'];$time=['type'=>'string','pattern'=>'^\\d{2}:\\d{2}$'];
   $definitions=['request_summary'=>[],'greeting'=>[],'clarify_selection'=>['field'=>['type'=>'string','enum'=>['service','professional','day','time']]],'knowledge_search'=>['query'=>['type'=>'string','minLength'=>2,'maxLength'=>200]],'business_info'=>[],'list_services'=>[],'list_professionals'=>[],'availability'=>['professional_id'=>$integer,'service_id'=>$integer,'day'=>$date],'prepare_booking'=>['professional_id'=>$integer,'service_id'=>$integer,'day'=>$date,'start'=>$time],'prepare_cancellation'=>['booking_id'=>$integer],'prepare_rescheduling'=>['booking_id'=>$integer,'day'=>$date,'start'=>$time],'own_bookings'=>[],'human_handoff'=>[]];$tools=[];
-  foreach($definitions as $name=>$properties)$tools[]=['type'=>'function','name'=>$name,'description'=>($name==='availability'?'Consultar horarios reales cuando ya se conocen servicio, profesional y fecha. No inventar hora.':($name==='request_summary'?'Resumir la seleccion actual cuando el usuario pregunta que eligio.':'Authorized administrative '.$name.'. Booking preparation never confirms a booking.')),'strict'=>true,'parameters'=>['type'=>'object','properties'=>$properties?:new \stdClass(),'required'=>array_keys($properties),'additionalProperties'=>false]];
+  foreach($definitions as $name=>$properties)$tools[]=['type'=>'function','name'=>$name,'description'=>($name==='availability'?'Consultar horarios reales cuando ya se conocen servicio, profesional y fecha. No inventar hora.':($name==='request_summary'?'Resumir la seleccion actual cuando el usuario pregunta que eligio.':($name==='prepare_cancellation'?'Preparar cancelacion de la cita identificada por el cliente; requiere confirmacion posterior.':($name==='prepare_rescheduling'?'Preparar cambio de fecha y hora para la cita identificada por el cliente. Requiere confirmacion posterior.':($name==='prepare_booking'?'Preparar cita solo cuando el cliente eligio una hora ofrecida. Nunca confirmar.':'Authorized administrative '.$name.'. Booking preparation never confirms a booking.'))))),'strict'=>true,'parameters'=>['type'=>'object','properties'=>$properties?:new \stdClass(),'required'=>array_keys($properties),'additionalProperties'=>false]];
+  foreach($tools as &$tool){if($tool['name']==='list_services')$tool['description']='Consultar servicios, productos y sus precios verificados del catalogo. Usar para precio, cuesta o servicios.';if($tool['name']==='business_info')$tool['description']='Consultar nombre, direccion y horario general del negocio. No consulta precios ni disponibilidad de citas.';}unset($tool);
   return $tools;
  }
- public function availableDefinitions(array $selection):array {
-  return array_values(array_filter($this->definitions(),function($tool)use($selection){
-   if($tool['name']==='prepare_booking')return isset($selection['service_id'],$selection['professional_id'],$selection['day'],$selection['start']);
-   if($tool['name']==='availability')return isset($selection['service_id'],$selection['professional_id'],$selection['day']);
-   return true;
-  }));
+ public function availableDefinitions(array $selection,string $text=''):array {
+  $tools=[];$fields=['service'=>'service_id','professional'=>'professional_id','day'=>'day','time'=>'start'];$missing=[];
+  foreach($fields as $field=>$key)if(!isset($selection[$key]))$missing[]=$field;
+  foreach($this->definitions() as $tool){
+   if(preg_match('/hablar con (una )?(persona|humano)|revela.*(prompt|instrucciones)|ignora.*reglas|datos de otra empresa|SQL/iu',$text)&&$tool['name']!=='human_handoff')continue;
+   if(preg_match('/precio|presio|cuesta|costo/iu',$text)&&!in_array($tool['name'],['list_services','knowledge_search','human_handoff'],true))continue;
+   if($tool['name']==='prepare_booking'&&!isset($selection['service_id'],$selection['professional_id'],$selection['day'],$selection['start']))continue;
+   if($tool['name']==='availability'&&!isset($selection['service_id'],$selection['professional_id'],$selection['day']))continue;
+   if($tool['name']==='clarify_selection'){if(!$missing||$missing===['time'])continue;$tool['parameters']['properties']['field']['enum']=$missing;}
+   $tools[]=$tool;
+  }
+  return $tools;
  }
  public static function clinical(string $text):bool {return (bool)preg_match('/diagnost|prescri|medicamento|receta|dolor|sangrad|urgencia|emergencia|no puedo respirar|desmayo|hinchaz/iu',$text);}
  public function run(string $name,array $arguments,int $person,?int $conversation=null):array {

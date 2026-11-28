@@ -1,7 +1,7 @@
 <?php
 require __DIR__.'/test-bootstrap.php';
 $path=dirname(__DIR__).'/.native-runtime/ollama-gateway.json';$channel=app('db')->connection('system')->table('aireception_channels')->where('website_id',$business)->where('enabled',true)->first();if(!$channel)throw new RuntimeException('Fixture channel missing');
-$cfg=json_decode(file_get_contents($path),true);config(['aireception.ollama_enabled'=>true,'aireception.gateway_authorized'=>true,'aireception.gateway'=>['client'=>'nativeV7','secret'=>$cfg['keys']['nativeV7']['secret'],'port'=>8898,'node_binary'=>'C:/Program Files/nodejs/node.exe'],'aireception.gateway_channels.'.$business=>(int)$channel->id]);
+$cfg=json_decode(file_get_contents($path),true);config(['aireception.ollama_enabled'=>true,'aireception.gateway_authorized'=>true,'aireception.gateway'=>['client'=>'nativeV7','secret'=>$cfg['keys']['nativeV7']['secret'],'port'=>8899,'node_binary'=>'C:/Program Files/nodejs/node.exe'],'aireception.gateway_channels.'.$business=>(int)$channel->id]);
 $n=0;function check($ok,$label){global $n;if(!$ok)throw new RuntimeException($label);echo 'PASS '.++$n.' '.$label.PHP_EOL;}
 $old=$db->table('aireception_agent_settings')->where('id',1)->first();try{
  app(Modules\AiReception\Native\AgentSettings::class)->save(['enabled'=>true,'mode'=>'local','model'=>'qwen3:1.7b','max_output_tokens'=>256]);$person=(int)$db->table('persons')->where('type','customers')->value('id');$key='loopback-'.bin2hex(random_bytes(10));
@@ -15,6 +15,6 @@ $old=$db->table('aireception_agent_settings')->where('id',1)->first();try{
  check(($memory['service_id']??null)===(int)$catalogService->id && ($memory['professional_id']??null)===(int)$catalogProfessional->id && ($memory['day']??null)==='2090-01-08','real multi-turn date change preserves service and professional');
  $third=$service->turn($person,'Resume mi solicitud, que servicio, profesional y fecha elegi',$first['conversation_id'],'real-summary-'.bin2hex(random_bytes(10)));
  check(empty($third['handoff']) && strpos($third['reply'],'2090-01-08')!==false && strpos($third['reply'],$catalogService->name)!==false,'real model selects backend summary with retained date');
- file_put_contents(dirname(__DIR__).'/audit/native-v7/REAL_NATIVE_'.($argv[1]??'tenant').'.json',json_encode(['fictional'=>true,'provider'=>'real Ollama qwen3:1.7b','turns'=>[$first,$second,$third],'tests'=>$n],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+ file_put_contents(dirname(__DIR__).'/audit/native-v7-1/REAL_NATIVE_'.($argv[1]??'tenant').'.json',json_encode(['fictional'=>true,'provider'=>'real Ollama qwen3:1.7b','turns'=>[$first,$second,$third],'tests'=>$n],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
 }finally{if($old)$db->table('aireception_agent_settings')->where('id',1)->update((array)$old);else $db->table('aireception_agent_settings')->where('id',1)->delete();}
 echo "RESULT $n Laravel/gateway/HTTP/MySQL checks; REAL Ollama qwen3:1.7b; original tenant catalogue; no external provider.\n";

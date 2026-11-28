@@ -15,13 +15,13 @@ def main():
     p.add_argument('--tests', required=True)
     args=p.parse_args()
     settings=json.loads((ROOT/'.native-runtime/settings.json').read_text())
-    if settings['purpose']!='multifactura-native-v7' or pathlib.Path(settings['root']).resolve()!=ROOT:
+    if settings['purpose']!='multifactura-native-v7-1' or pathlib.Path(settings['root']).resolve()!=ROOT:
         raise RuntimeError('Wrong lab')
     files=git('ls-files','--modified','--others','--exclude-standard').splitlines()
     hashes={f:hashlib.sha256((ROOT/f).read_bytes()).hexdigest() for f in files if (ROOT/f).is_file()}
     row=dict(vars(args), timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat(),
              branch=git('branch','--show-current'), commit=git('rev-parse','HEAD'), files=hashes,
-             ports={'mysql':13323,'http':8879}, pid_markers={})
+             ports={'mysql':13325,'http':8881}, pid_markers={})
     for service in ('mysql','web'):
         path=ROOT/'.native-runtime'/f'{service}.pid'
         row['pid_markers'][service]=path.read_text().strip() if path.exists() else None

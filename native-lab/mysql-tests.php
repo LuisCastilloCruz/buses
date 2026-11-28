@@ -157,7 +157,7 @@ try {
 }
 check(!config('aireception.enabled') && !config('aireception.external_connections_enabled'), 'external AI and Meta remain disabled');
 try {
-    $db->select('SELECT COUNT(*) FROM mf_v7_tattoo.aireception_bookings');
+    $db->select('SELECT COUNT(*) FROM mf_v71_tattoo.aireception_bookings');
     throw new RuntimeException('Unexpected cross-database access');
 } catch (\Illuminate\Database\QueryException $e) {
     check(in_array((int) ($e->errorInfo[1] ?? 0), [1044, 1142], true), 'Hyn database credentials cannot read another tenant');

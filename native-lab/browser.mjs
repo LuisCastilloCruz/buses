@@ -8,7 +8,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const chrome=process.env.AGENDA_TEST_CHROME||'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const port=19231;
 const clientName='Cliente ficticio UI '+Date.now();
-const artifacts=path.join(root,'audit/native-v7/screenshots');await fs.mkdir(artifacts,{recursive:true});
+const artifacts=path.join(root,'audit/native-v7-1/screenshots');await fs.mkdir(artifacts,{recursive:true});
 const profile=path.join(root,'.native-runtime/browser-'+Date.now());
 if(os.freemem()<2400*1024**2)throw Error('RESOURCE_BLOCKED: Chrome requires headroom');
 const proc=spawn(chrome,['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--disable-background-networking','--remote-debugging-address=127.0.0.1','--remote-debugging-port='+port,'--user-data-dir='+profile,'about:blank'],{windowsHide:true,stdio:'ignore'});
