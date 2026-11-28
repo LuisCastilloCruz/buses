@@ -24,11 +24,12 @@ export class Gateway {
   if(operation==='ingress_pull')return this.pull(channel,id);
   if(operation==='ingress_ack'){const row=this.db.prepare('SELECT * FROM ingress WHERE id=? AND channel=? AND owner=?').get(payload.id,String(channel),payload.owner);if(!row)throw Error('Lease mismatch');this.db.prepare("UPDATE ingress SET state='done',payload='' WHERE id=?").run(row.id);return {acknowledged:true};}
   const scope=`${tenant}:${channel}:${operation}`,hash=mac(this.key,JSON.stringify(payload));
-  const old=this.db.prepare('SELECT * FROM requests WHERE scope=? AND id=?').get(scope,id);
-  if(old){if(old.hash!==hash)throw Error('Idempotency conflict');if(old.state==='completed')return this.decrypt(old.response);if(old.state!=='retryable'||old.attempts>=3)throw Error('Reconciliation required');}
   // Persist the attempt BEFORE network I/O. Crash/timeout never repeats a paid POST.
   this.db.exec('BEGIN IMMEDIATE');
   try{
+   // Re-read under the write lock: another process may have claimed a retry while BEGIN waited.
+   const old=this.db.prepare('SELECT * FROM requests WHERE scope=? AND id=?').get(scope,id);
+   if(old){if(old.hash!==hash)throw Error('Idempotency conflict');if(old.state==='completed'){const result=this.decrypt(old.response);this.db.exec('COMMIT');return result;}if(old.state!=='retryable'||old.attempts>=3)throw Error('Reconciliation required');}
    if(this.live){const period=new Date().toISOString().slice(0,7);if(!Number.isSafeInteger(cfg.monthlyCapUnits)||cfg.monthlyCapUnits<1||!Number.isSafeInteger(cfg.maxRequestUnits)||cfg.maxRequestUnits<1)throw Error('Sandbox spending cap missing');const used=this.db.prepare('SELECT used FROM caps WHERE tenant=? AND period=?').get(tenant,period)?.used||0;if(used+cfg.maxRequestUnits>cfg.monthlyCapUnits)throw Error('Sandbox cap exhausted');this.db.prepare('INSERT INTO caps VALUES(?,?,?) ON CONFLICT(tenant,period) DO UPDATE SET used=excluded.used').run(tenant,period,used+cfg.maxRequestUnits);}
    if(old)this.db.prepare("UPDATE requests SET state='pending',attempts=attempts+1 WHERE scope=? AND id=?").run(scope,id);else this.db.prepare('INSERT INTO requests(scope,id,hash,state,response,attempts) VALUES(?,?,?,?,NULL,1)').run(scope,id,hash,'pending');this.db.exec('COMMIT');
   }catch(e){this.db.exec('ROLLBACK');throw e;}
