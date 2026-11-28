@@ -1,0 +1,242 @@
+{
+  "business": "peluqueria",
+  "scenario": "reschedule",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 318.2699999999604,
+        "load_ms": 6.563,
+        "generation_ms": 217.39,
+        "tokens_per_second": 73.60044160264961
+      },
+      "usage": {
+        "input_tokens": 695,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Que precio tiene corte de cabello",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "corte de cabello: S/ 35.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 292.79019999998854,
+        "load_ms": 11.6916,
+        "generation_ms": 164.204,
+        "tokens_per_second": 66.98984190397312
+      },
+      "usage": {
+        "input_tokens": 500,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero corte de cabello con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 683.4345000000321,
+        "load_ms": 5.2124,
+        "generation_ms": 233.853,
+        "tokens_per_second": 72.69524017224495
+      },
+      "usage": {
+        "input_tokens": 722,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 710.7926999999909,
+        "load_ms": 6.4631,
+        "generation_ms": 196.21,
+        "tokens_per_second": 71.35212272565109
+      },
+      "usage": {
+        "input_tokens": 766,
+        "output_tokens": 14
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 378.5095000000438,
+        "load_ms": 5.4045,
+        "generation_ms": 224.604,
+        "tokens_per_second": 71.23648732880982
+      },
+      "usage": {
+        "input_tokens": 798,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Quiero reprogramar cita #17 al 2026-12-09 a las 10:00",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "reschedule",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-09",
+          "start": "10:00"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": 17,
+        "site_id": null,
+        "missing": []
+      },
+      "metrics": {
+        "elapsed_ms": 1069.131800000032,
+        "load_ms": 5.3839,
+        "generation_ms": 218.05,
+        "tokens_per_second": 55.03324925475808
+      },
+      "usage": {
+        "input_tokens": 877,
+        "output_tokens": 12
+      }
+    }
+  ]
+}

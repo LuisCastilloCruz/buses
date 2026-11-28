@@ -1,0 +1,6 @@
+{
+  "at": "2026-11-28T07:57:55.493189+00:00",
+  "ollama_ps": "NAME          ID              SIZE      PROCESSOR    CONTEXT    RUNNER      UNTIL                   \nqwen3:1.7b    8f68893c685c    1.7 GB    100% GPU     4096       llamacpp    About a minute from now    \n",
+  "gpu": "NVIDIA GeForce GTX 1650, 4096 MiB, 1721 MiB, 0 %\n",
+  "scope": "Snapshot during real inference evaluation, not a full CPU/RAM time series"
+}

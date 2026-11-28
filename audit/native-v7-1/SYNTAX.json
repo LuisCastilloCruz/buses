@@ -1,0 +1,186 @@
+[
+  {
+    "file": "modules/AiReception/Native/Access.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/AgentController.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/AgentSettings.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/Authority.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/AutomationController.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/BookingProposals.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/BudgetedAudio.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/BudgetedResponses.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/CalendarGuard.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/Catalog.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ChannelOwnership.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ChannelReception.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ChannelSettings.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ContactLinker.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/Controller.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ConversationController.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ConversationCoordinator.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ConversationMemory.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/DialogueSession.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/DialogueState.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/DomainRegistry.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/EngineFactory.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/InboxController.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/KnowledgeBase.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/KnowledgeController.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/LocalResponses.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ModuleMiddleware.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/Outbox.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ProfessionalQuota.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ProposalController.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/Provider.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ReceptionProfile.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ReceptionTools.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ReminderOutbox.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ReminderPolicy.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ReminderProcessor.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ReminderSchedule.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/RequestSelection.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/SchemaInstaller.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/SubscriptionPolicy.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/SystemController.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/TenantSession.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/UsageBudget.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/WebhookController.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-e2e-real.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-state-mysql-tests.php",
+    "exit_code": 0
+  }
+]

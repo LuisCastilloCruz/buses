@@ -1,0 +1,244 @@
+{
+  "business": "estetica",
+  "scenario": "unknown_fact",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 306.5746999999974,
+        "load_ms": 6.5551,
+        "generation_ms": 216.444,
+        "tokens_per_second": 73.9221230433738
+      },
+      "usage": {
+        "input_tokens": 691,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Que precio tiene limpieza facial",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "list_services",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "limpieza facial: S/ 70.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 292.3351000000257,
+        "load_ms": 9.3189,
+        "generation_ms": 166.635,
+        "tokens_per_second": 66.01254238305278
+      },
+      "usage": {
+        "input_tokens": 495,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero limpieza facial con Ana el 2026-12-04",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 625.1284999999916,
+        "load_ms": 7.6342,
+        "generation_ms": 233.833,
+        "tokens_per_second": 72.70145787805826
+      },
+      "usage": {
+        "input_tokens": 715,
+        "output_tokens": 17
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "human_handoff"
+      ],
+      "proposal": {
+        "name": "human_handoff",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Recepcion humana revisara la solicitud; no se ha confirmado ninguna operacion.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 644.5557999999728,
+        "load_ms": 8.3054,
+        "generation_ms": 194.767,
+        "tokens_per_second": 71.88076008769453
+      },
+      "usage": {
+        "input_tokens": 759,
+        "output_tokens": 14
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 380.61060000001453,
+        "load_ms": 7.4475,
+        "generation_ms": 225.221,
+        "tokens_per_second": 71.04133273540211
+      },
+      "usage": {
+        "input_tokens": 791,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Cual es el nombre del dueno que no esta en los datos",
+      "expected": [
+        "human_handoff",
+        "knowledge_search"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "passed": false,
+      "authorized": true,
+      "reply": "Centro Brisa, Avenida Ficticia 100, lunes a viernes 09:00-18:00.",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 452.38930000003893,
+        "load_ms": 6.5578,
+        "generation_ms": 178.363,
+        "tokens_per_second": 61.67198353918694
+      },
+      "usage": {
+        "input_tokens": 846,
+        "output_tokens": 11
+      }
+    }
+  ]
+}

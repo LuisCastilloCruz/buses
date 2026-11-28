@@ -1,0 +1,44 @@
+{
+  "run": "a361b9ffd4a0175cb2a4b9b3",
+  "scope": "real concurrent CLI/MySQL; not HTTP capacity",
+  "levels": [
+    {
+      "workers": 2,
+      "persisted_count": 1,
+      "p50_ms": 70.57690620422363,
+      "p95_ms": 124.05014038085938,
+      "p99_ms": 124.05014038085938,
+      "passed": true
+    },
+    {
+      "workers": 5,
+      "persisted_count": 1,
+      "p50_ms": 187.08491325378418,
+      "p95_ms": 314.4409656524658,
+      "p99_ms": 314.4409656524658,
+      "passed": true
+    },
+    {
+      "workers": 10,
+      "persisted_count": 1,
+      "p50_ms": 370.24903297424316,
+      "p95_ms": 648.2470035552979,
+      "p99_ms": 648.2470035552979,
+      "passed": true
+    },
+    {
+      "workers": 25,
+      "persisted_count": 1,
+      "p50_ms": 971.747875213623,
+      "p95_ms": 1702.491044998169,
+      "p99_ms": 1759.6549987792969,
+      "passed": true
+    }
+  ],
+  "blocked_level": {
+    "workers": 50,
+    "reason": "Two connections per tenant worker plus four reserved exceed laboratory ceiling",
+    "max_connections": 64
+  },
+  "initial_failures": "25 at ceiling20 and50 at ceiling64 failed worker bootstrap; retained in logs; corrected preflight now blocks50."
+}

@@ -1,0 +1,251 @@
+{
+  "business": "dental",
+  "scenario": "professional_change",
+  "split": "development",
+  "fictional": true,
+  "real_model": true,
+  "backend": "fixture plus real PHP state logic; no DB writes",
+  "rows": [
+    {
+      "user": "Hola",
+      "expected": [
+        "greeting"
+      ],
+      "proposal": {
+        "name": "greeting",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Hola. En que puedo ayudarte?",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": [],
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "service_id",
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1153.6872000000003,
+        "load_ms": 5.0318,
+        "generation_ms": 148.268,
+        "tokens_per_second": 74.1899803059325
+      },
+      "usage": {
+        "input_tokens": 847,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Que precio tiene limpieza dental",
+      "expected": [
+        "list_services"
+      ],
+      "proposal": {
+        "name": "business_info",
+        "arguments": {}
+      },
+      "passed": false,
+      "authorized": true,
+      "reply": "Clinica Alba, Avenida Ficticia 100, lunes a viernes 09:00-18:00.",
+      "state": {
+        "intent": "information",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "professional_id",
+          "day",
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 443.5639999999985,
+        "load_ms": 6.2927,
+        "generation_ms": 171.365,
+        "tokens_per_second": 64.19047063285969
+      },
+      "usage": {
+        "input_tokens": 873,
+        "output_tokens": 11
+      }
+    },
+    {
+      "user": "Quiero limpieza dental con Ana el 2026-12-04",
+      "expected": [
+        "availability"
+      ],
+      "proposal": {
+        "name": "clarify_selection",
+        "arguments": {
+          "field": "day"
+        }
+      },
+      "passed": false,
+      "authorized": true,
+      "reply": "Que day prefieres?",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-04"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 1837.7117999999973,
+        "load_ms": 5.1311,
+        "generation_ms": 376.817,
+        "tokens_per_second": 68.99901012958544
+      },
+      "usage": {
+        "input_tokens": 1049,
+        "output_tokens": 26
+      }
+    },
+    {
+      "user": "Mejor el 2026-12-07",
+      "expected": [
+        "availability",
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "clarify_selection",
+        "arguments": {
+          "field": "day"
+        }
+      },
+      "passed": false,
+      "authorized": true,
+      "reply": "Que day prefieres?",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 763.1438999999955,
+        "load_ms": 7.0704,
+        "generation_ms": 256.49,
+        "tokens_per_second": 70.17817458770323
+      },
+      "usage": {
+        "input_tokens": 1079,
+        "output_tokens": 18
+      }
+    },
+    {
+      "user": "Resume mi solicitud",
+      "expected": [
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "request_summary",
+        "arguments": {}
+      },
+      "passed": true,
+      "authorized": true,
+      "reply": "Preferencias, no reserva: {\"service_id\":1,\"professional_id\":1,\"day\":\"2026-12-07\"}",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 1,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 351.9441999999981,
+        "load_ms": 5.9208,
+        "generation_ms": 226.491,
+        "tokens_per_second": 70.64298360641261
+      },
+      "usage": {
+        "input_tokens": 1097,
+        "output_tokens": 16
+      }
+    },
+    {
+      "user": "Mejor con Luis",
+      "expected": [
+        "availability",
+        "request_summary"
+      ],
+      "proposal": {
+        "name": "clarify_selection",
+        "arguments": {
+          "field": "professional"
+        }
+      },
+      "passed": false,
+      "authorized": true,
+      "reply": "Que professional prefieres?",
+      "state": {
+        "intent": "book",
+        "phase": "collecting",
+        "selection": {
+          "service_id": 1,
+          "professional_id": 2,
+          "day": "2026-12-07"
+        },
+        "offered": [],
+        "pending": null,
+        "booking_id": null,
+        "site_id": null,
+        "missing": [
+          "start"
+        ]
+      },
+      "metrics": {
+        "elapsed_ms": 999.4452999999994,
+        "load_ms": 6.2391,
+        "generation_ms": 290.888,
+        "tokens_per_second": 61.87948626275406
+      },
+      "usage": {
+        "input_tokens": 1143,
+        "output_tokens": 18
+      }
+    }
+  ]
+}

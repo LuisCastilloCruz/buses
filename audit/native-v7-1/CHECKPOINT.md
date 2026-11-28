@@ -1,11 +1,11 @@
-# V7.1: punto de reanudacion
+# Checkpoint final V7.1
 
-Laboratorio listo en http://localhost:8881. MySQL13325; gateway temporal8899 solo durante pruebas. V7 intacto.
+Codigo36ec1322, baseV7 preservada44ff5486. Worktree native-v7-1, rama feature/multifactura-ollama-coherence-v7-1.
 
-E2E real completado en dental y Tattoo:17 comprobaciones cada uno. Incluye crear, reprogramar, cancelar, verificar MySQL, repetir confirmaciones y outbox simulada. Tras correcciones de enrutamiento posteriores, falta repetir E2E con el ultimo codigo.
+Completado:230 conversaciones/1410 turnos con Ollama; conjunto reservado50; regresion final10; E2E21+21; MySQL/HTTP/gateway/Chrome; benchmark1/2/3; concurrenciahasta25; respaldo restaurado4bases1083tablas. Evidencias JSON/CSV/PNG en esta carpeta. Correcciones y fallos residuales documentados.
 
-Evaluacion multinegocio: iteraciones0/1/2 parciales conservadas; iteracion3 en curso. Casos reservados separados y no utilizados para ajustes. No aprobar calidad global hasta calcular resultados y revision humana.
+Servicios propios:MySQL13325 yHTTP8881 activos. Gateway8899 yMySQLrecuperacion13326 detenidos. Ollama11434 loopback, modelo descargado de memoria al acabar inferencia. No procesos de prueba pendientes. Credenciales en .native-runtime, nunca Git.
 
-HTTP inicial fallo por configuracion que dejaba el fixture E2E; corregida restauracion y repetidos17+16 checks. Estado15, MySQL8, gateway41, canales33 por negocio. Datos exclusivamente ficticios.
+No reinicializar ni repetir migraciones. Reanudar solo native-lab/resume-v6.ps1 adaptadoV7.1. Para nueva evaluacion usar nuevo --run; nombres existentes omiten conversaciones completas. Para repetir E2E usar perfil e2e. No cerrar servicios ajenos.
 
-Ollama requiere3.25GiB libres en frio,2.3GiB cargado y corte2GiB. Opera cerrado normalmente; utilidades Taskmgr/Lively/Settings cerradas con autorizacion del usuario. Servicios y servidores preservados. No repetir trabajos ya terminados ni reducir guardas.
+Pendientes:revision humana, calidad de solicitudes repetidas, mitigacion monolito, sandboxexterno, validacionclinica/legal. No declaracion comercial/productiva. Siguiente paso de entrega:commit de evidencias, escaneo de secretos, push solo ramaV7.1 y verificacionCI.

@@ -1,0 +1,214 @@
+[
+  {
+    "run": "20261128-025606",
+    "profile": "functional",
+    "stages": [
+      {
+        "name": "http",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 42,
+        "summary": [
+          "RESULT 42 native HTTP assertions"
+        ]
+      },
+      {
+        "name": "agent-http",
+        "status": "failed",
+        "exit_code": 1,
+        "pass_lines": 11,
+        "summary": []
+      }
+    ]
+  },
+  {
+    "run": "20261128-030723",
+    "profile": "functional",
+    "stages": [
+      {
+        "name": "http",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 42,
+        "summary": [
+          "RESULT 42 native HTTP assertions"
+        ]
+      },
+      {
+        "name": "agent-http",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 17,
+        "summary": [
+          "RESULT 17 agent HTTP checks; no external providers"
+        ]
+      },
+      {
+        "name": "v7-http",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 16,
+        "summary": [
+          "RESULT 16 V7 HTTP checks; no model or external provider called"
+        ]
+      }
+    ]
+  },
+  {
+    "run": "20261128-032135",
+    "profile": "integration",
+    "stages": [
+      {
+        "name": "persistence",
+        "status": "failed",
+        "exit_code": 1,
+        "pass_lines": 18,
+        "summary": []
+      }
+    ]
+  },
+  {
+    "run": "20261128-032219",
+    "profile": "integration",
+    "stages": [
+      {
+        "name": "persistence",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 20,
+        "summary": [
+          "RESULT 20 V7 Laravel/MySQL checks; inference transport mocked."
+        ]
+      },
+      {
+        "name": "tattoo",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 33,
+        "summary": [
+          "RESULT 33 V5 MySQL checks; providers simulated; host tattoo."
+        ]
+      },
+      {
+        "name": "dental",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 33,
+        "summary": [
+          "RESULT 33 V5 MySQL checks; providers simulated; host dental."
+        ]
+      },
+      {
+        "name": "concurrency",
+        "status": "failed",
+        "exit_code": 1,
+        "pass_lines": 0,
+        "summary": []
+      }
+    ]
+  },
+  {
+    "run": "20261128-032745",
+    "profile": "functional",
+    "stages": [
+      {
+        "name": "http",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 42,
+        "summary": [
+          "RESULT 42 native HTTP assertions"
+        ]
+      },
+      {
+        "name": "agent-http",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 17,
+        "summary": [
+          "RESULT 17 agent HTTP checks; no external providers"
+        ]
+      },
+      {
+        "name": "v7-http",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 16,
+        "summary": [
+          "RESULT 16 V7 HTTP checks; no model or external provider called"
+        ]
+      }
+    ]
+  },
+  {
+    "run": "20261128-032926",
+    "profile": "smoke",
+    "stages": [
+      {
+        "name": "unit",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 15,
+        "summary": []
+      },
+      {
+        "name": "gateway",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 0,
+        "summary": []
+      }
+    ]
+  },
+  {
+    "run": "20261128-033015",
+    "profile": "browser",
+    "stages": [
+      {
+        "name": "chrome-tattoo",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 5,
+        "summary": [
+          "RESULT 5 real Chrome assertions"
+        ]
+      },
+      {
+        "name": "chrome-dental",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 4,
+        "summary": [
+          "RESULT 4 real Chrome assertions"
+        ]
+      },
+      {
+        "name": "chrome-comercio",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 3,
+        "summary": [
+          "RESULT 3 real Chrome assertions"
+        ]
+      },
+      {
+        "name": "chrome-system",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 4,
+        "summary": [
+          "RESULT 4 real Chrome assertions"
+        ]
+      },
+      {
+        "name": "chrome-v7",
+        "status": "passed",
+        "exit_code": 0,
+        "pass_lines": 4,
+        "summary": [
+          "RESULT 4 V7 real Chrome assertions"
+        ]
+      }
+    ]
+  }
+]

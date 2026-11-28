@@ -1,0 +1,98 @@
+{
+  "profiles": [
+    [
+      "dental",
+      "Clinica Alba",
+      "limpieza dental",
+      90
+    ],
+    [
+      "tattoo",
+      "Estudio Tinta",
+      "consulta de diseno",
+      40
+    ],
+    [
+      "peluqueria",
+      "Peluqueria Aurora",
+      "corte de cabello",
+      35
+    ],
+    [
+      "barberia",
+      "Barberia Faro",
+      "arreglo de barba",
+      25
+    ],
+    [
+      "estetica",
+      "Centro Brisa",
+      "limpieza facial",
+      70
+    ],
+    [
+      "taller",
+      "Taller Rueda",
+      "revision de frenos",
+      80
+    ],
+    [
+      "restaurante",
+      "Restaurante Olivo",
+      "menu del dia",
+      22
+    ],
+    [
+      "hotel",
+      "Hotel Mirador",
+      "habitacion simple",
+      120
+    ],
+    [
+      "tienda",
+      "Tienda Nube",
+      "mochila azul",
+      65
+    ],
+    [
+      "veterinaria",
+      "Veterinaria Huella",
+      "consulta veterinaria",
+      60
+    ]
+  ],
+  "scenarios": [
+    "greeting",
+    "simple",
+    "price",
+    "hours",
+    "booking",
+    "date_change",
+    "professional_change",
+    "cancel",
+    "reschedule",
+    "unknown_service",
+    "occupied",
+    "indecisive",
+    "angry",
+    "typo",
+    "ambiguous",
+    "long",
+    "change_mind",
+    "human",
+    "unknown_fact",
+    "injection",
+    "out_of_scope",
+    "duplicate",
+    "resume"
+  ],
+  "held_out": [
+    "typo",
+    "ambiguous",
+    "long",
+    "change_mind",
+    "resume"
+  ],
+  "rules": "Expected tool names fixed before inference. Native PHP state extractor, fictional backend responses, real model. No booking writes in this suite.",
+  "hash": "0ac9e7aff2bce411ed5add6bc4a8920a6b41b05929083e5f9615f64b38a7804d"
+}

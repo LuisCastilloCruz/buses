@@ -1,0 +1,3260 @@
+{
+  "same_case_comparison": [
+    {
+      "before": "coherence-iteration-0",
+      "same_conversations": 9,
+      "turns": 54,
+      "before_passed": 23,
+      "after_passed": 52
+    },
+    {
+      "before": "coherence",
+      "same_conversations": 11,
+      "turns": 66,
+      "before_passed": 53,
+      "after_passed": 64
+    },
+    {
+      "before": "coherence-iteration-2",
+      "same_conversations": 28,
+      "turns": 168,
+      "before_passed": 160,
+      "after_passed": 161
+    }
+  ],
+  "memory_assertions": [
+    {
+      "case": "barberia-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "barberia-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "dental-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "estetica-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "hotel-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "peluqueria-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "restaurante-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "taller-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tattoo-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "tienda-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-ambiguous.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-angry.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-booking.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-cancel.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-change_mind.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-09"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-date_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-duplicate.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-greeting.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-hours.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-human.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-indecisive.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-injection.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-long.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-08"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-occupied.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-out_of_scope.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-price.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-professional_change.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 2,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-reschedule.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-09",
+        "start": "10:00"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-resume.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-simple.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-typo.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-unknown_fact.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    },
+    {
+      "case": "veterinaria-unknown_service.json",
+      "expected": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "actual": {
+        "service_id": 1,
+        "professional_id": 1,
+        "day": "2026-12-07"
+      },
+      "passed": true
+    }
+  ],
+  "memory_passed": 230,
+  "memory_total": 230,
+  "limitations": "Post-run independent deterministic state audit; no language rating, no database booking claims. Expected values derived from explicit fixture user turns."
+}

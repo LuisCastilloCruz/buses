@@ -1,0 +1,150 @@
+[
+  {
+    "file": "database/migrations/tenant/2026_11_28_000005_create_reception_dialogue_v71.php",
+    "exit_code": 0
+  },
+  {
+    "file": "database/migrations/tenant/2026_11_28_000006_bind_booking_draft_conversation_v71.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/BookingProposals.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ChannelReception.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ConversationCoordinator.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/DialogueSession.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/DialogueState.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/ReceptionTools.php",
+    "exit_code": 0
+  },
+  {
+    "file": "modules/AiReception/Native/RequestSelection.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/ReservedDatabase.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/bootstrap.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/configure-ollama-v7.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/contact-link-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/finish-fixtures.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/inbound-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/init.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/migrate-modules.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/migrate-original.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/mysql-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/recovery-digest.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/reserve-fourth.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/schema-bootstrap.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/seed.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/test-bootstrap.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v5-flow-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v7-ollama-real-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v7-persistence-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v7-status.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-connection-limit.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-draft-mysql-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-e2e-real.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-evaluation-state.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-new-request-test.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-recovery-mysql-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-state-mysql-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "native-lab/v71-state-tests.php",
+    "exit_code": 0
+  },
+  {
+    "file": "qa/performance/db-metrics.php",
+    "exit_code": 0
+  }
+]

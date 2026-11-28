@@ -1,0 +1,337 @@
+{
+    "fictional": true,
+    "model": "real qwen3:1.7b",
+    "assertions": 21,
+    "transcript": [
+        {
+            "user": "Quiero Limpieza dental ficticia con Odontologo ficticio 1 el 2027-01-09",
+            "reply": {
+                "reply": "Horarios disponibles el 2027-01-09: 09:15, 09:30, 09:45, 10:00, 10:15, 10:30, 10:45, 11:00, 11:15, 11:30, 11:45, 12:00. El horario se revalida al confirmar.",
+                "slots": [
+                    {
+                        "start": "09:15",
+                        "end": "09:45"
+                    },
+                    {
+                        "start": "09:30",
+                        "end": "10:00"
+                    },
+                    {
+                        "start": "09:45",
+                        "end": "10:15"
+                    },
+                    {
+                        "start": "10:00",
+                        "end": "10:30"
+                    },
+                    {
+                        "start": "10:15",
+                        "end": "10:45"
+                    },
+                    {
+                        "start": "10:30",
+                        "end": "11:00"
+                    },
+                    {
+                        "start": "10:45",
+                        "end": "11:15"
+                    },
+                    {
+                        "start": "11:00",
+                        "end": "11:30"
+                    },
+                    {
+                        "start": "11:15",
+                        "end": "11:45"
+                    },
+                    {
+                        "start": "11:30",
+                        "end": "12:00"
+                    },
+                    {
+                        "start": "11:45",
+                        "end": "12:15"
+                    },
+                    {
+                        "start": "12:00",
+                        "end": "12:30"
+                    },
+                    {
+                        "start": "12:15",
+                        "end": "12:45"
+                    },
+                    {
+                        "start": "14:15",
+                        "end": "14:45"
+                    },
+                    {
+                        "start": "14:30",
+                        "end": "15:00"
+                    },
+                    {
+                        "start": "14:45",
+                        "end": "15:15"
+                    },
+                    {
+                        "start": "15:00",
+                        "end": "15:30"
+                    },
+                    {
+                        "start": "15:15",
+                        "end": "15:45"
+                    },
+                    {
+                        "start": "15:30",
+                        "end": "16:00"
+                    },
+                    {
+                        "start": "15:45",
+                        "end": "16:15"
+                    },
+                    {
+                        "start": "16:00",
+                        "end": "16:30"
+                    },
+                    {
+                        "start": "16:15",
+                        "end": "16:45"
+                    },
+                    {
+                        "start": "16:30",
+                        "end": "17:00"
+                    },
+                    {
+                        "start": "16:45",
+                        "end": "17:15"
+                    },
+                    {
+                        "start": "17:00",
+                        "end": "17:30"
+                    },
+                    {
+                        "start": "17:15",
+                        "end": "17:45"
+                    }
+                ],
+                "outbox_id": 53,
+                "state": "completed"
+            }
+        },
+        {
+            "user": "Elijo el horario 09:15. Prepara mi solicitud de cita",
+            "reply": {
+                "reply": "Propuesta: Limpieza dental ficticia con Odontologo ficticio 1 para 2027-01-09 a las 09:15. Aun no esta reservada. Confirma explicitamente para guardarla. Responde exactamente CONFIRMAR 4012E697 antes de 5 minutos.",
+                "outbox_id": 54,
+                "state": "completed"
+            }
+        },
+        {
+            "user": "CONFIRMAR 4012E697",
+            "reply": {
+                "reply": "Cita #13: 2027-01-09 09:15 \/ confirmed.",
+                "booking": {
+                    "id": 13,
+                    "business_id": 2,
+                    "professional_id": 1,
+                    "service_id": 1,
+                    "person_id": 1,
+                    "client_name": "Clientes - Varios",
+                    "day": "2027-01-09",
+                    "start": "09:15",
+                    "end": "09:45",
+                    "duration_minutes": 30,
+                    "buffer_minutes": 15,
+                    "status": "confirmed",
+                    "version": 1,
+                    "created_at": "2026-11-28 03:27:25",
+                    "updated_at": "2026-11-28 03:27:25",
+                    "origin": "assisted"
+                },
+                "outbox_id": 55,
+                "state": "completed"
+            }
+        },
+        {
+            "user": "Quiero reprogramar cita #13 al 2027-01-11 a las 09:15",
+            "reply": {
+                "reply": "Solicitud de reprogramacion para cita #13 al 2027-01-11 a las 09:15. Requiere confirmacion explicita; aun no se ha modificado. Responde exactamente CONFIRMAR 868964E9 antes de 5 minutos.",
+                "outbox_id": 56,
+                "state": "completed"
+            }
+        },
+        {
+            "user": "CONFIRMAR 868964E9",
+            "reply": {
+                "reply": "Cita #13: 2027-01-11 09:15 \/ confirmed.",
+                "booking": {
+                    "id": 13,
+                    "business_id": 2,
+                    "professional_id": 1,
+                    "service_id": 1,
+                    "person_id": 1,
+                    "client_name": "Clientes - Varios",
+                    "day": "2027-01-11",
+                    "start": "09:15",
+                    "end": "09:45",
+                    "duration_minutes": 30,
+                    "buffer_minutes": 15,
+                    "status": "confirmed",
+                    "version": 2,
+                    "created_at": "2026-11-28 03:27:25",
+                    "updated_at": "2026-11-28 03:27:28",
+                    "origin": "assisted"
+                },
+                "outbox_id": 57,
+                "state": "completed"
+            }
+        },
+        {
+            "user": "Quiero cancelar cita #13",
+            "reply": {
+                "reply": "Solicitud de cancelacion para cita #13 del 2027-01-11 a las 09:15. Requiere confirmacion explicita; aun no se ha modificado. Responde exactamente CONFIRMAR 9E3FB2C6 antes de 5 minutos.",
+                "outbox_id": 58,
+                "state": "completed"
+            }
+        },
+        {
+            "user": "CONFIRMAR 9E3FB2C6",
+            "reply": {
+                "reply": "Cita #13: 2027-01-11 09:15 \/ cancelled.",
+                "booking": {
+                    "id": 13,
+                    "business_id": 2,
+                    "professional_id": 1,
+                    "service_id": 1,
+                    "person_id": 1,
+                    "client_name": "Clientes - Varios",
+                    "day": "2027-01-11",
+                    "start": "09:15",
+                    "end": "09:45",
+                    "duration_minutes": 30,
+                    "buffer_minutes": 15,
+                    "status": "cancelled",
+                    "version": 3,
+                    "created_at": "2026-11-28 03:27:25",
+                    "updated_at": "2026-11-28 03:27:31",
+                    "origin": "assisted"
+                },
+                "outbox_id": 59,
+                "state": "completed"
+            }
+        },
+        {
+            "user": "Quiero una nueva cita para Limpieza dental ficticia con Odontologo ficticio 1 el 2027-01-13",
+            "reply": {
+                "reply": "Horarios disponibles el 2027-01-13: 09:15, 09:30, 09:45, 10:00, 10:15, 10:30, 10:45, 11:00, 11:15, 11:30, 11:45, 12:00. El horario se revalida al confirmar.",
+                "slots": [
+                    {
+                        "start": "09:15",
+                        "end": "09:45"
+                    },
+                    {
+                        "start": "09:30",
+                        "end": "10:00"
+                    },
+                    {
+                        "start": "09:45",
+                        "end": "10:15"
+                    },
+                    {
+                        "start": "10:00",
+                        "end": "10:30"
+                    },
+                    {
+                        "start": "10:15",
+                        "end": "10:45"
+                    },
+                    {
+                        "start": "10:30",
+                        "end": "11:00"
+                    },
+                    {
+                        "start": "10:45",
+                        "end": "11:15"
+                    },
+                    {
+                        "start": "11:00",
+                        "end": "11:30"
+                    },
+                    {
+                        "start": "11:15",
+                        "end": "11:45"
+                    },
+                    {
+                        "start": "11:30",
+                        "end": "12:00"
+                    },
+                    {
+                        "start": "11:45",
+                        "end": "12:15"
+                    },
+                    {
+                        "start": "12:00",
+                        "end": "12:30"
+                    },
+                    {
+                        "start": "12:15",
+                        "end": "12:45"
+                    },
+                    {
+                        "start": "14:15",
+                        "end": "14:45"
+                    },
+                    {
+                        "start": "14:30",
+                        "end": "15:00"
+                    },
+                    {
+                        "start": "14:45",
+                        "end": "15:15"
+                    },
+                    {
+                        "start": "15:00",
+                        "end": "15:30"
+                    },
+                    {
+                        "start": "15:15",
+                        "end": "15:45"
+                    },
+                    {
+                        "start": "15:30",
+                        "end": "16:00"
+                    },
+                    {
+                        "start": "15:45",
+                        "end": "16:15"
+                    },
+                    {
+                        "start": "16:00",
+                        "end": "16:30"
+                    },
+                    {
+                        "start": "16:15",
+                        "end": "16:45"
+                    },
+                    {
+                        "start": "16:30",
+                        "end": "17:00"
+                    },
+                    {
+                        "start": "16:45",
+                        "end": "17:15"
+                    },
+                    {
+                        "start": "17:00",
+                        "end": "17:30"
+                    },
+                    {
+                        "start": "17:15",
+                        "end": "17:45"
+                    }
+                ],
+                "outbox_id": 60,
+                "state": "completed"
+            }
+        }
+    ]
+}

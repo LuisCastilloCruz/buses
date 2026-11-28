@@ -1,0 +1,16 @@
+{
+    "fictional": true,
+    "model": "real qwen3:1.7b",
+    "assertions": 0,
+    "transcript": [
+        {
+            "user": "Quiero Limpieza dental ficticia con Odontologo ficticio 1 el 2027-01-09",
+            "reply": {
+                "reply": "No tengo un horario verificado para esa operación. Consulta la disponibilidad y elige una opción; aún no se ha confirmado nada.",
+                "needs_clarification": true,
+                "outbox_id": 1,
+                "state": "completed"
+            }
+        }
+    ]
+}
